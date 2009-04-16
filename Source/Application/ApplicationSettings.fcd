@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="ApplicationSettings"
+	parent="FieldContainer"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="false"
+>
+The Main Application.
+	<Field
+		name="DataDirectory"
+		type="Path"
+		cardinality="single"
+		visibility="external"
+		defaultValue=""
+		header="OpenSG/Toolbox/OSGPathType.h"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="LastOpenedProjectFile"
+		type="Path"
+		cardinality="single"
+		visibility="external"
+		defaultValue=""
+		header="OpenSG/Toolbox/OSGPathType.h"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="DefaultWindowPosition"
+		type="Pnt2f"
+		cardinality="single"
+		visibility="external"
+		defaultValue="0.0f,0.0f"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="DefaultWindowSize"
+		type="Vec2f"
+		cardinality="single"
+		visibility="external"
+		defaultValue="900.0f,800.0f"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="HideAdvancedFields"
+		type="bool"
+		cardinality="single"
+		visibility="external"
+		defaultValue="true"
+		access="public"
+	>
+	</Field>
+</FieldContainer>

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="ApplicationBuilder"
+	parent="ApplicationMode"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+The ApplicationBuilder.
+        <Field
+          name="EditingProject"
+          type="ProjectPtr"
+          cardinality="single"
+          visibility="external"
+          access="public"
+          defaultValue="NullFC"
+          header="Project/KEProjectFields.h"
+          >
+	 </Field>
+</FieldContainer>

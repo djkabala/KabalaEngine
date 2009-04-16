@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="BackgroundsListComponentGenerator"
+	parent="ListComponentGenerator"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+A UI Backgrounds List ComponentGenerator.
+	<Field
+		name="IconSize"
+		type="Vec2f"
+		cardinality="single"
+		visibility="external"
+		defaultValue="30.0,30.0"
+		access="public"
+	>
+	</Field>
+</FieldContainer>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="SceneBackgroundsEditor"
+	parent="SceneComponentEditor"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+The Scene Backgrounds Editor.
+        <Field
+          name="EditingBackground"
+          type="BackgroundPtr"
+          cardinality="single"
+          visibility="external"
+          access="public"
+          defaultValue="NullFC"
+          >
+	 </Field>
+</FieldContainer>

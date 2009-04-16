@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<project name="VSE WorldBuilder Icons" default="compile-icons" basedir=".">
+   <target name="init">
+      <property name="InkscapeExe" value="C:\Program Files\Inkscape\inkscape.exe" />
+      <property name="SVGIconDir" value="C:\Documents and Settings\David\My Documents\Work\VSE\WorldBuilder\WorldBuilder\Interface\Images\Icons" />
+      <property name="16x16IconDir" value="${SVGIconDir}\16x16" />
+      <property name="22x22IconDir" value="${SVGIconDir}\22x22" />
+      <property name="32x32IconDir" value="${SVGIconDir}\32x32" />
+      <property name="48x48IconDir" value="${SVGIconDir}\48x48" />
+      <property name="SVGExtension" value=".svg" />
+      <property name="ImageExtension" value=".png" />
+   </target>
+   <target name="prepare" depends="init">
+      <mkdir dir="${16x16IconDir}" />
+      <mkdir dir="${22x22IconDir}" />
+      <mkdir dir="${32x32IconDir}" />
+      <mkdir dir="${48x48IconDir}" />
+   </target>
+   <target name="clean" depends="init">
+      <delete>
+         <fileset dir="${16x16IconDir}" includes="**/*${ImageExtension}"/>
+         <fileset dir="${22x22IconDir}" includes="**/*${ImageExtension}"/>
+         <fileset dir="${32x32IconDir}" includes="**/*${ImageExtension}"/>
+         <fileset dir="${48x48IconDir}" includes="**/*${ImageExtension}"/>
+      </delete>
+   </target>
+   <target name="compile-icons" depends="prepare">
+      <apply executable="${InkscapeExe}">
+        <fileset dir="${SVGIconDir}" includes="**/*${SVGExtension}"/>
+        <arg value="-w"/>
+        <arg value="16"/>
+        <arg value="-h"/>
+        <arg value="16"/>
+        <arg value="-e"/>
+        <targetfile/>
+        <srcfile/>
+        <mapper type="glob" from="*${SVGExtension}" to="${16x16IconDir}/*${ImageExtension}" />
+      </apply>
+      
+      <apply executable="${InkscapeExe}">
+        <fileset dir="${SVGIconDir}" includes="**/*${SVGExtension}"/>
+        <arg value="-w"/>
+        <arg value="22"/>
+        <arg value="-h"/>
+        <arg value="22"/>
+        <arg value="-e"/>
+        <targetfile/>
+        <srcfile/>
+        <mapper type="glob" from="*${SVGExtension}" to="${22x22IconDir}/*${ImageExtension}" />
+      </apply>
+      
+      <apply executable="${InkscapeExe}">
+        <fileset dir="${SVGIconDir}" includes="**/*${SVGExtension}"/>
+        <arg value="-w"/>
+        <arg value="32"/>
+        <arg value="-h"/>
+        <arg value="32"/>
+        <arg value="-e"/>
+        <targetfile/>
+        <srcfile/>
+        <mapper type="glob" from="*${SVGExtension}" to="${32x32IconDir}/*${ImageExtension}" />
+      </apply>
+      
+      <apply executable="${InkscapeExe}">
+        <fileset dir="${SVGIconDir}" includes="**/*${SVGExtension}"/>
+        <arg value="-w"/>
+        <arg value="48"/>
+        <arg value="-h"/>
+        <arg value="48"/>
+        <arg value="-e"/>
+        <targetfile/>
+        <srcfile/>
+        <mapper type="glob" from="*${SVGExtension}" to="${48x48IconDir}/*${ImageExtension}" />
+      </apply>
+   </target>
+</project>

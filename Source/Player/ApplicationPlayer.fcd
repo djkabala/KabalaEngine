@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="ApplicationPlayer"
+	parent="ApplicationMode"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+The ApplicationPlayer.
+</FieldContainer>

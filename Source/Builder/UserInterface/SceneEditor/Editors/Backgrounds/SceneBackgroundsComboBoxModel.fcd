@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="SceneBackgroundsComboBoxModel"
+	parent="AbstractComboBoxModel"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+A UI SceneBackgroundsComboBoxModel.
+        <Field
+          name="EditingScene"
+          type="ScenePtr"
+          cardinality="single"
+          visibility="external"
+          access="public"
+          defaultValue="NullFC"
+          header="Project/Scene/KESceneFields.h"
+          >
+	 </Field>
+</FieldContainer>
