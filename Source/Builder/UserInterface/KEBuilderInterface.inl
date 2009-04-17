@@ -41,5 +41,11 @@
 
 KE_BEGIN_NAMESPACE
 
+inline
+BuilderInterface::CommandManagerListener::CommandManagerListener(BuilderInterfacePtr BuilderInterface) :
+	_BuilderInterface(BuilderInterface)
+{
+}
+
 KE_END_NAMESPACE
 

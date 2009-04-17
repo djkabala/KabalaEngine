@@ -44,6 +44,7 @@
 #include <OpenSG/UserInterface/OSGMenuFields.h>
 #include <OpenSG/UserInterface/OSGMenuItemFields.h>
 #include <OpenSG/UserInterface/OSGButtonFields.h>
+#include <OpenSG/UserInterface/OSGChangeListener.h>
 #include "KEBuilderInterfaceBase.h"
 #include "Builder/UserInterface/Commands/KECommandActionListener.h"
 
@@ -159,6 +160,23 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterface : public BuilderInterfaceBa
 	CommandActionListener _AboutKabalaEngineActionListener;
 
 	void updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager);
+    
+	class CommandManagerListener: public ChangeListener
+	{
+	  public:
+		CommandManagerListener(BuilderInterfacePtr BuilderInterface);
+
+		virtual void stateChanged(const ChangeEvent& e);
+
+        void setApplicationBuilder(ApplicationBuilderPtr TheApplicationBuilder);
+	  protected :
+		BuilderInterfacePtr _BuilderInterface;
+        ApplicationBuilderPtr _ApplicationBuilder;
+	};
+
+	friend class CommandManagerListener;
+
+	CommandManagerListener _CommandManagerListener;
 
     /*==========================  PRIVATE  ================================*/
   private:

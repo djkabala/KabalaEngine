@@ -78,6 +78,7 @@
 #include "Builder/UserInterface/Commands/KEUndoCommand.h"
 #include "Builder/UserInterface/Commands/KERedoCommand.h"
 #include "Builder/UserInterface/Commands/KEAboutKabalaEngineCommand.h"
+#include <OpenSG/UserInterface/OSGCommandManager.h>
 KE_USING_NAMESPACE
 
 /***************************************************************************\
@@ -479,6 +480,8 @@ void BuilderInterface::connectInterface(ApplicationBuilderPtr TheApplicationBuil
 
 	//Editor
 	getEditor()->connectInterface(TheApplicationBuilder);
+
+	_CommandManagerListener.setApplicationBuilder(TheApplicationBuilder);
 }
 
 void BuilderInterface::disconnectInterface(ApplicationBuilderPtr TheApplicationBuilder)
@@ -504,16 +507,32 @@ void BuilderInterface::updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager)
 	beginEditCP(_UndoButton, ::osg::Button::EnabledFieldMask);
 		_UndoButton->setEnabled(TheUndoManager->canUndo());
 	endEditCP(_UndoButton, ::osg::Button::EnabledFieldMask);
-	beginEditCP(_UndoMenuItem, MenuItem::EnabledFieldMask);
+	beginEditCP(_UndoMenuItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
 		_UndoMenuItem->setEnabled(TheUndoManager->canUndo());
-	endEditCP(_UndoMenuItem, MenuItem::EnabledFieldMask);
+		if(TheUndoManager->canUndo())
+		{
+			_UndoMenuItem->setText(TheUndoManager->getUndoPresentationName());
+		}
+		else
+		{
+			_UndoMenuItem->setText("Undo");
+		}
+	endEditCP(_UndoMenuItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
 	
-	beginEditCP(_RedoButton, ::osg::Button::EnabledFieldMask);
+	beginEditCP(_RedoButton, ::osg::Button::EnabledFieldMask | MenuItem::TextFieldMask);
 		_RedoButton->setEnabled(TheUndoManager->canRedo());
 	endEditCP(_RedoButton, ::osg::Button::EnabledFieldMask);
 	beginEditCP(_RedoMenuItem, MenuItem::EnabledFieldMask);
 		_RedoMenuItem->setEnabled(TheUndoManager->canRedo());
-	endEditCP(_RedoMenuItem, MenuItem::EnabledFieldMask);
+		if(TheUndoManager->canRedo())
+		{
+			_RedoMenuItem->setText(TheUndoManager->getRedoPresentationName());
+		}
+		else
+		{
+			_RedoMenuItem->setText("Redo");
+		}
+	endEditCP(_RedoMenuItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
 }
 
 /*-------------------------------------------------------------------------*\
@@ -534,7 +553,8 @@ BuilderInterface::BuilderInterface(void) :
 	_QuitActionListener(NULL,NULL),
 	_UndoActionListener(NULL,NULL),
 	_RedoActionListener(NULL,NULL),
-	_AboutKabalaEngineActionListener(NULL,NULL)
+	_AboutKabalaEngineActionListener(NULL,NULL),
+	_CommandManagerListener(BuilderInterfacePtr(this))
 {
 }
 
@@ -550,7 +570,8 @@ BuilderInterface::BuilderInterface(const BuilderInterface &source) :
 	_QuitActionListener(NULL,NULL),
 	_UndoActionListener(NULL,NULL),
 	_RedoActionListener(NULL,NULL),
-	_AboutKabalaEngineActionListener(NULL,NULL)
+	_AboutKabalaEngineActionListener(NULL,NULL),
+	_CommandManagerListener(BuilderInterfacePtr(this))
 {
 }
 
@@ -571,3 +592,13 @@ void BuilderInterface::dump(      ::osg::UInt32    ,
     SLOG << "Dump BuilderInterface NI" << std::endl;
 }
 
+void BuilderInterface::CommandManagerListener::stateChanged(const ChangeEvent& e)
+{
+	_BuilderInterface->updateUndoRedoInterfaces(_ApplicationBuilder->getUndoManager());
+}
+
+void BuilderInterface::CommandManagerListener::setApplicationBuilder(ApplicationBuilderPtr TheApplicationBuilder)
+{
+    _ApplicationBuilder = TheApplicationBuilder;
+	_ApplicationBuilder->getUndoManager()->addChangeListener(this);
+}

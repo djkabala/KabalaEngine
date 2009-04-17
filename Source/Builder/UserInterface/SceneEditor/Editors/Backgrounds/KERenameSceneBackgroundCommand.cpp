@@ -63,7 +63,7 @@ A RenameSceneBackgroundCommand.
  *                           Class variables                               *
 \***************************************************************************/
 
-CommandType RenameSceneBackgroundCommand::_Type("RenameSceneBackgroundCommand", "Command");
+CommandType RenameSceneBackgroundCommand::_Type("RenameSceneBackgroundCommand", "UndoableCommand");
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
@@ -79,15 +79,46 @@ RenameSceneBackgroundCommandPtr RenameSceneBackgroundCommand::create(SceneBackgr
 
 void RenameSceneBackgroundCommand::execute(void)
 {
-    if(_TheModel != NullFC)
-    {
-        _TheModel->renameBackground(_Index, _NewName);
-    }
+	_HasBeenDone = true;
+
+	//Get Previous Name
+	try
+	{
+		const Char8* Name = getName(boost::any_cast<BackgroundPtr>(_TheModel->getElementAt(_Index)));
+		_PreviousName = Name;
+	}
+	catch(boost::bad_any_cast&)
+	{
+	}
+        
+	_TheModel->renameBackground(_Index, _NewName);
+}
+
+std::string RenameSceneBackgroundCommand::getPresentationName(void) const
+{
+	return getCommandDescription();
 }
 
 std::string RenameSceneBackgroundCommand::getCommandDescription(void) const
 {
-	return std::string("RenameSceneBackground");
+	return std::string("Set Background Name to: ") + _NewName;
+}
+
+void RenameSceneBackgroundCommand::redo(void)
+{
+	Inherited::redo();
+	_TheModel->renameBackground(_Index, _NewName);
+}
+
+void RenameSceneBackgroundCommand::undo(void)
+{
+	Inherited::undo();
+	_TheModel->renameBackground(_Index, _PreviousName);
+}
+
+bool RenameSceneBackgroundCommand::isSignificant(void) const
+{
+	return _PreviousName.compare(_NewName) != 0;
 }
 
 const CommandType &RenameSceneBackgroundCommand::getType(void) const
