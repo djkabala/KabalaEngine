@@ -29,16 +29,15 @@
 #include "KEConfig.h"
 
 KE_BEGIN_NAMESPACE
-    
-inline
-SolidBackgroundEditor::SolidBackgroundEditor(void) : Inherited()
-{
-}
 
 inline
 const FieldContainerEditorType& SolidBackgroundEditor::getClassType(void)
 {
     return _Type;
+}
+inline
+SolidBackgroundEditor::ColorChangeListener::ColorChangeListener(SolidBackgroundEditorPtr TheSolidBackgroundEditor) : _SolidBackgroundEditor(TheSolidBackgroundEditor)
+{
 }
   
 KE_END_NAMESPACE

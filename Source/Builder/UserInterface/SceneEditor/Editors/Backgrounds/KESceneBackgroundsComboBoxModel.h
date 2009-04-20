@@ -94,6 +94,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBackgroundsComboBoxModel : public Scene
     virtual void setSelectedItem(const boost::any& anObject);
 
     Int32 addBackground(BackgroundPtr TheBackground);
+    BackgroundPtr getBackground(UInt32 Index);
     void removeBackground( UInt32 RemoveIndex);
     void renameBackground( UInt32 Index, const std::string& NewName);
     /*=========================  PROTECTED  ===============================*/

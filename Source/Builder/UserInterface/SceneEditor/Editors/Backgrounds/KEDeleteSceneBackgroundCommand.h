@@ -34,7 +34,7 @@
 #include "KEConfig.h"
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
+#include <OpenSG/UserInterface/OSGUndoableCommand.h>
 #include "KESceneBackgroundsComboBoxModel.h"
 
 OSG_USING_NAMESPACE
@@ -43,10 +43,10 @@ KE_BEGIN_NAMESPACE
 class DeleteSceneBackgroundCommand;
 typedef boost::intrusive_ptr<DeleteSceneBackgroundCommand> DeleteSceneBackgroundCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING DeleteSceneBackgroundCommand: public Command
+class KE_KABALAENGINELIB_DLLMAPPING DeleteSceneBackgroundCommand: public UndoableCommand
 {
 protected:
-	typedef Command Inherited;
+	typedef UndoableCommand Inherited;
 	typedef DeleteSceneBackgroundCommandPtr Ptr;
 
 	DeleteSceneBackgroundCommand(SceneBackgroundsComboBoxModelPtr TheModel,UInt32 TheIndex);
@@ -58,9 +58,13 @@ protected:
 	static CommandType _Type;
 	
 	virtual void execute(void);
+	virtual std::string getPresentationName(void) const;
+	virtual void redo(void);
+	virtual void undo(void);
 
 	SceneBackgroundsComboBoxModelPtr _TheModel;
     UInt32 _TheIndex;
+	BackgroundPtr _RemovedBackground;
 public:
 
 	virtual std::string getCommandDescription(void) const;

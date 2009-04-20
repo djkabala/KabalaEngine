@@ -63,7 +63,7 @@ A DeleteSceneBackgroundCommand.
  *                           Class variables                               *
 \***************************************************************************/
 
-CommandType DeleteSceneBackgroundCommand::_Type("DeleteSceneBackgroundCommand", "Command");
+CommandType DeleteSceneBackgroundCommand::_Type("DeleteSceneBackgroundCommand", "UndoableCommand");
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
@@ -79,12 +79,30 @@ DeleteSceneBackgroundCommandPtr DeleteSceneBackgroundCommand::create(SceneBackgr
 
 void DeleteSceneBackgroundCommand::execute(void)
 {
+	_RemovedBackground = BackgroundPtr::dcast(_TheModel->getBackground(_TheIndex));
     _TheModel->removeBackground(_TheIndex);
 }
 
 std::string DeleteSceneBackgroundCommand::getCommandDescription(void) const
 {
-	return std::string("DeleteSceneBackground");
+	return std::string("Delete ") + getName(_TheModel->getBackground(_TheIndex));
+}
+
+std::string DeleteSceneBackgroundCommand::getPresentationName(void) const
+{
+	return getCommandDescription();
+}
+
+void DeleteSceneBackgroundCommand::redo(void)
+{
+    Inherited::redo();
+    _TheModel->removeBackground(_TheIndex);
+}
+
+void DeleteSceneBackgroundCommand::undo(void)
+{
+    Inherited::undo();
+	_TheIndex = _TheModel->addBackground(_RemovedBackground);
 }
 
 const CommandType &DeleteSceneBackgroundCommand::getType(void) const

@@ -48,16 +48,20 @@ class KE_KABALAENGINELIB_DLLMAPPING FieldColorSelectionModel : public AbstractCo
 {
     /*==========================  PUBLIC  =================================*/
   public:
+	  FieldColorSelectionModel(void);
 	  
 	virtual Color4f getSelectedColor(void) const;
 
-	virtual void setSelectedColor(const Color4f& Value);
+	virtual void setSelectedColor(const Color4f& Value, bool isValueAdjusting);
 
     void attachColorField(FieldContainerPtr Target, UInt32 FieldId);
+
+	bool getValueAdjusting(void) const;
 
   protected:
     FieldContainerPtr _Target;
     UInt32            _ColorFieldID;
+	bool _IsValueAdjusting;
 
     /*==========================  PRIVATE  ================================*/
   private:

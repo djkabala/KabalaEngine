@@ -38,8 +38,15 @@
 //---------------------------------------------------------------------------
 
 #include "KEConfig.h"
+#include <Project/Scene/KEScene.h>
 
 KE_BEGIN_NAMESPACE
+
+inline
+BackgroundPtr SceneBackgroundsComboBoxModel::getBackground(UInt32 Index)
+{
+	return getEditingScene()->getBackgrounds()[Index];
+}
 
 KE_END_NAMESPACE
 

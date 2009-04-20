@@ -51,9 +51,15 @@
 #include "Builder/UserInterface/Editors/KEFieldColorSelectionModel.h"
 
 #include <OpenSG/UserInterface/OSGColorChooser.h>
+#include <OpenSG/UserInterface/OSGChangeListener.h>
+#include "Builder/KEApplicationBuilder.h"
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
+
+class SolidBackgroundEditor;
+
+typedef boost::shared_ptr<SolidBackgroundEditor> SolidBackgroundEditorPtr;
 
 class KE_KABALAENGINELIB_DLLMAPPING SolidBackgroundEditor : public FieldContainerEditor
 {
@@ -80,12 +86,26 @@ class KE_KABALAENGINELIB_DLLMAPPING SolidBackgroundEditor : public FieldContaine
 
     ColorChooserPtr _Chooser;
     FieldColorSelectionModel _ColorModel;
+	
+
+	class ColorChangeListener: public ChangeListener
+	{
+	  public:
+		ColorChangeListener(SolidBackgroundEditorPtr TheSolidBackgroundEditor);
+
+		virtual void stateChanged(const ChangeEvent& e);
+	  protected :
+		SolidBackgroundEditorPtr _SolidBackgroundEditor;
+	};
+
+	friend class ColorChangeListener;
+
+	ColorChangeListener _ColorChangeListener;
     
   private:
      static FieldContainerEditorType _Type;
 };
 
-typedef boost::shared_ptr<SolidBackgroundEditor> SolidBackgroundEditorPtr;
 
 KE_END_NAMESPACE
 

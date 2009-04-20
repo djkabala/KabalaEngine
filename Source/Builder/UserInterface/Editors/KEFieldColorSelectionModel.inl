@@ -41,6 +41,11 @@
 
 KE_BEGIN_NAMESPACE
 
+inline
+bool FieldColorSelectionModel::getValueAdjusting(void) const
+{
+	return _IsValueAdjusting;
+}
 KE_END_NAMESPACE
 
 

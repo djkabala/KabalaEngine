@@ -70,6 +70,7 @@ ComponentPtr SolidBackgroundEditor::createInterface(void)
         //Create Color Chooser Panel
 	    _Chooser = ColorChooser::create();
         _Chooser->setSelectionModel(&_ColorModel);
+		_ColorModel.addChangeListener(&_ColorChangeListener);
     }
     return _Chooser;
 }
@@ -91,6 +92,10 @@ void SolidBackgroundEditor::detachTarget(void)
 /*-------------------------------------------------------------------------*/
 /*                            Constructors                                 */
 
+SolidBackgroundEditor::SolidBackgroundEditor(void) : Inherited(),
+													_ColorChangeListener(SolidBackgroundEditorPtr(this))
+{
+}
 /*-------------------------------------------------------------------------*/
 /*                             Destructor                                  */
 
@@ -101,4 +106,9 @@ SolidBackgroundEditor::~SolidBackgroundEditor(void)
 /*-------------------------------------------------------------------------*/
 /*                             Comparison                                  */
 
+
+//Other
+void SolidBackgroundEditor::ColorChangeListener::stateChanged(const ChangeEvent& e)
+{
+}
 KE_END_NAMESPACE

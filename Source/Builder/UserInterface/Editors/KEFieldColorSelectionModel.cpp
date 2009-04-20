@@ -97,8 +97,9 @@ Color4f FieldColorSelectionModel::getSelectedColor(void) const
     return Color4f();
 }
 
-void FieldColorSelectionModel::setSelectedColor(const Color4f& Value)
+void FieldColorSelectionModel::setSelectedColor(const Color4f& Value, bool isValueAdjusting)
 {
+	_IsValueAdjusting = isValueAdjusting;
     if(_Target != NullFC &&
         _Target->getType().getNumFieldDescs() > _ColorFieldID)
     {
@@ -150,6 +151,10 @@ void FieldColorSelectionModel::attachColorField(FieldContainerPtr Target, UInt32
 \*-------------------------------------------------------------------------*/
 
 /*----------------------- constructors & destructors ----------------------*/
+
+FieldColorSelectionModel::FieldColorSelectionModel(void) : _IsValueAdjusting(false)
+{
+}
 
 /*----------------------------- class specific ----------------------------*/
 KE_END_NAMESPACE
