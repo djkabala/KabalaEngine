@@ -63,7 +63,7 @@ A CreateSceneBackgroundCommand.
  *                           Class variables                               *
 \***************************************************************************/
 
-CommandType CreateSceneBackgroundCommand::_Type("CreateSceneBackgroundCommand", "Command");
+CommandType CreateSceneBackgroundCommand::_Type("CreateSceneBackgroundCommand", "UndoableCommand");
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
@@ -79,20 +79,42 @@ CreateSceneBackgroundCommandPtr CreateSceneBackgroundCommand::create(SceneBackgr
 
 void CreateSceneBackgroundCommand::execute(void)
 {
-    if(_TheModel != NullFC &&
-       _FCType != NULL &&
-       _FCType->isDerivedFrom(Background::getClassType()) &&
+	_HasBeenDone = true;
+
+    if(_FCType->isDerivedFrom(Background::getClassType()) &&
        !_FCType->isAbstract())
     {
         BackgroundPtr NewBackground = Background::Ptr::dcast(_FCType->createFieldContainer());
         setName(NewBackground,_FCType->getCName());
-        _TheModel->addBackground(NewBackground);
+        _CreatedIndex = _TheModel->addBackground(NewBackground);
     }
+}
+std::string CreateSceneBackgroundCommand::getPresentationName(void) const
+{
+	return getCommandDescription();
+}
+
+void CreateSceneBackgroundCommand::redo(void)
+{
+    Inherited::redo();
+    if(_FCType->isDerivedFrom(Background::getClassType()) &&
+       !_FCType->isAbstract())
+    {
+        BackgroundPtr NewBackground = Background::Ptr::dcast(_FCType->createFieldContainer());
+        setName(NewBackground,_FCType->getCName());
+        _CreatedIndex = _TheModel->addBackground(NewBackground);
+    }
+}
+
+void CreateSceneBackgroundCommand::undo(void)
+{
+    Inherited::undo();
+    _TheModel->removeBackground(_CreatedIndex);
 }
 
 std::string CreateSceneBackgroundCommand::getCommandDescription(void) const
 {
-	return std::string("CreateSceneBackground");
+	return std::string("Create ") + _FCType->getCName();
 }
 
 const CommandType &CreateSceneBackgroundCommand::getType(void) const

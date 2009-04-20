@@ -94,6 +94,20 @@ void RenameSceneBackgroundCommand::execute(void)
 	_TheModel->renameBackground(_Index, _NewName);
 }
 
+bool RenameSceneBackgroundCommand::addEdit(const UndoableEditPtr anEdit)
+{
+    if(dcast(anEdit) != NULL &&
+        dcast(anEdit)->getType() == RenameSceneBackgroundCommand::getClassType())
+    {
+        _NewName = dynamic_cast<RenameSceneBackgroundCommand*>(anEdit.get())->_NewName;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 std::string RenameSceneBackgroundCommand::getPresentationName(void) const
 {
 	return getCommandDescription();

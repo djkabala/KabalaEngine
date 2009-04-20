@@ -75,7 +75,7 @@ void SceneBackgroundsComboBoxModel::initMethod (void)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void SceneBackgroundsComboBoxModel::addBackground(BackgroundPtr TheBackground)
+Int32 SceneBackgroundsComboBoxModel::addBackground(BackgroundPtr TheBackground)
 {
     if(TheBackground != NullFC)
     {
@@ -83,6 +83,11 @@ void SceneBackgroundsComboBoxModel::addBackground(BackgroundPtr TheBackground)
             getEditingScene()->getBackgrounds().push_back(TheBackground );
         endEditCP(getEditingScene(), Scene::BackgroundsFieldMask);
         produceListDataIntervalAdded(NullFC,getEditingScene()->getBackgrounds().getSize()-1,getEditingScene()->getBackgrounds().getSize()-1);
+        return getEditingScene()->getBackgrounds().size()-1;
+    }
+    else
+    {
+        return -1;
     }
 }
 

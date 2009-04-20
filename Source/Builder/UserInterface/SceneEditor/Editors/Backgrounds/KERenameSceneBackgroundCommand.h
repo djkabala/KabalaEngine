@@ -62,9 +62,11 @@ protected:
 	virtual void redo(void);
 	virtual void undo(void);
 	virtual bool isSignificant(void) const;
+    
+	//This UndoableEdit should absorb anEdit if it can.
+	virtual bool addEdit(const UndoableEditPtr anEdit);
 
 	SceneBackgroundsComboBoxModelPtr _TheModel;
-    UInt32 _TheIndex;
     UInt32 _Index;
     std::string _NewName;
 	std::string _PreviousName;

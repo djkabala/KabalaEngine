@@ -79,10 +79,7 @@ DeleteSceneBackgroundCommandPtr DeleteSceneBackgroundCommand::create(SceneBackgr
 
 void DeleteSceneBackgroundCommand::execute(void)
 {
-    if(_TheModel != NullFC)
-    {
-        _TheModel->removeBackground(_TheIndex);
-    }
+    _TheModel->removeBackground(_TheIndex);
 }
 
 std::string DeleteSceneBackgroundCommand::getCommandDescription(void) const
