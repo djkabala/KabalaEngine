@@ -154,6 +154,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBackgroundsEditor : public SceneBackgro
     TextFieldPtr _BackgroundNameTextField;
     ImageComponentPtr _BackgroundTypeIcon;
     LabelPtr _BackgroundTypeLabel;
+	
+	NodePtr _CameraBeaconNode;
 
     //The Background creator Menu Button
     MenuButtonPtr _BackgroundCreateMenuButton;

@@ -339,22 +339,22 @@ void SceneBackgroundsEditor::createInterface(ApplicationBuilderPtr TheApplicatio
 		CameraBeaconTransform->setMatrix(TransformMatrix);
 	endEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
 
-	NodePtr CameraBeaconNode = Node::create();
-	beginEditCP(CameraBeaconNode, Node::CoreFieldMask);
-		CameraBeaconNode->setCore(CameraBeaconTransform);
-	endEditCP(CameraBeaconNode, Node::CoreFieldMask);
+	_CameraBeaconNode = Node::create();
+	beginEditCP(_CameraBeaconNode, Node::CoreFieldMask);
+		_CameraBeaconNode->setCore(CameraBeaconTransform);
+	endEditCP(_CameraBeaconNode, Node::CoreFieldMask);
 
     // Make Main Scene Node
     NodePtr DefaultRootNode = osg::Node::create();
     beginEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
         DefaultRootNode->setCore(osg::Group::create());
-        DefaultRootNode->addChild(CameraBeaconNode);
+        DefaultRootNode->addChild(_CameraBeaconNode);
     endEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
 
 	//Camera
 	PerspectiveCameraPtr DefaultCamera = PerspectiveCamera::create();
      beginEditCP(DefaultCamera);
-		 DefaultCamera->setBeacon(CameraBeaconNode);
+		 DefaultCamera->setBeacon(_CameraBeaconNode);
 		 DefaultCamera->setFov   (deg2rad(60.f));
 		 DefaultCamera->setNear  (0.1f);
 		 DefaultCamera->setFar   (100.f);
@@ -388,7 +388,7 @@ void SceneBackgroundsEditor::createInterface(ApplicationBuilderPtr TheApplicatio
     BackgroundViewEditorPanelLayout->putConstraint(SpringLayoutConstraints::HORIZONTAL_CENTER_EDGE, _BackgroundPreviewComponent, 0, SpringLayoutConstraints::HORIZONTAL_CENTER_EDGE, _BackgroundViewEditorPanel);
 	BackgroundViewEditorPanelLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _BackgroundPreviewComponent, 0, SpringLayoutConstraints::SOUTH_EDGE, _BackgroundViewEditorPanel);
     BackgroundViewEditorPanelLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _BackgroundPreviewComponent,2, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, _BackgroundViewEditorPanel);
-    BackgroundViewEditorPanelLayout->putConstraint(SpringLayoutConstraints::WIDTH_EDGE, _BackgroundPreviewComponent, LayoutSpring::scale(BackgroundViewEditorPanelLayout->getConstraint(SpringLayoutConstraints::HEIGHT_EDGE, _BackgroundPreviewComponent),1.3333));
+    BackgroundViewEditorPanelLayout->putConstraint(SpringLayoutConstraints::WIDTH_EDGE, _BackgroundPreviewComponent, LayoutSpring::scale(BackgroundViewEditorPanelLayout->getConstraint(SpringLayoutConstraints::HEIGHT_EDGE, _BackgroundPreviewComponent),1.77778));
 
 
 	beginEditCP(_BackgroundViewEditorPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
@@ -505,6 +505,11 @@ void SceneBackgroundsEditor::changed(BitVector whichField, ::osg::UInt32 origin)
 
 	if(whichField & EditingBackgroundFieldMask)
 	{
+		CameraPtr TheCamera = Camera::Ptr::dcast(getEditingScene()->getInitialCamera()->shallowCopy());
+		beginEditCP(TheCamera, Camera::BeaconFieldMask);
+			TheCamera->setBeacon(_CameraBeaconNode);
+		endEditCP(TheCamera, Camera::BeaconFieldMask);
+
 		NodePtr RootNode = Node::create();
 		beginEditCP(RootNode, Node::ChildrenFieldMask);
 		
@@ -513,14 +518,17 @@ void SceneBackgroundsEditor::changed(BitVector whichField, ::osg::UInt32 origin)
 			{
 				RootNode->addChild(getEditingScene()->getInitialModelNodes()[i]);
 			}
+			RootNode->addChild(_CameraBeaconNode);
 		endEditCP(RootNode, Node::ChildrenFieldMask);
+
 		//Update Background Viewport
-		beginEditCP(_BackgroundPreviewViewport);
-			_BackgroundPreviewViewport->setCamera                  (getEditingScene()->getInitialCamera());
+		beginEditCP(_BackgroundPreviewViewport, Viewport::CameraFieldMask | Viewport::RootFieldMask | Viewport::BackgroundFieldMask);
+			_BackgroundPreviewViewport->setCamera                  (TheCamera);
 			_BackgroundPreviewViewport->setRoot                    (RootNode);
-			_BackgroundPreviewViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
 			_BackgroundPreviewViewport->setBackground              (getEditingBackground());
-		endEditCP(_BackgroundPreviewViewport);
+		endEditCP(_BackgroundPreviewViewport, Viewport::CameraFieldMask | Viewport::RootFieldMask | Viewport::BackgroundFieldMask);
+
+		_BackgroundPreviewComponent->set(getEditingScene()->getInitialCamera()->getBeacon()->getToWorld());
 
         //Editor
         if(getEditingBackground() != NullFC)
