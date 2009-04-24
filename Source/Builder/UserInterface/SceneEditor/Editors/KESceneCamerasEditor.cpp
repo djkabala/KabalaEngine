@@ -81,8 +81,14 @@
 
 #include <OpenSG/OSGCamera.h>
 #include <OpenSG/OSGMatrixCamera.h>
+#include <OpenSG/OSGViewPort.h>
+#include <OpenSG/UserInterface/OSGGLViewPort.h>
 #include <OpenSG/OSGPerspectiveCamera.h>
 
+#include <OpenSG/UserInterface/OSGSpinner.h>
+#include <OpenSG/UserInterface/OSGNumberSpinnerModel.h>
+#include "Project/Scene/KEScene.h"
+#include <OpenSG/OSGSolidBackground.h>
 
 KE_USING_NAMESPACE
 
@@ -92,6 +98,18 @@ PanelPtr panel2, matrixPanel, perspectivePanel;
 DefaultListModelPtr cameraListModel;
 MenuButtonPtr cameraMenuButton;
 ListPtr cameraTypeList, cameraList;
+SpinnerPtr nearSpinner; 
+SpinnerPtr farSpinner;
+SpinnerPtr sfFarSpinner; 
+SpinnerPtr sfNearSpinner; 
+
+ComboBoxPtr beaconCombo;
+ComboBoxPtr sfBeaconCombo;
+
+ViewportPtr cameraViewport;
+GLViewportPtr viewPort;
+
+
 
 class CameraAddButtonListener: public ActionListener
 	{
@@ -306,6 +324,166 @@ void SceneCamerasEditor::createInterface(ApplicationBuilderPtr TheApplicationBui
 	//perspective panel
 	perspectivePanel = Panel::create();
 	perspectivePanel->setPreferredSize(Vec2f(900, 300));
+	
+	{
+		Real32SpinnerModelPtr model = new Real32SpinnerModel();
+		model->setStepSize(.5);
+		// model->setValue(boost::any(Real32(0)));
+		model->setMaximum(1000);
+		model->setMinimum(-1000);
+		nearSpinner = Spinner::create();
+		nearSpinner->setModel(model);
+
+		LabelPtr label = Label::create();
+	    beginEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+        label->setText("Near:");
+		endEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+
+		beginEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+		perspectivePanel->getChildren().push_back(label);
+		perspectivePanel->getChildren().push_back(nearSpinner);
+		endEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+	}
+
+	{
+		Real32SpinnerModelPtr model = new Real32SpinnerModel();
+		model->setStepSize(.5);
+		// model->setValue(boost::any(Real32(0)));
+		model->setMaximum(1000);
+		model->setMinimum(-1000);
+		farSpinner = Spinner::create();
+		farSpinner->setModel(model);
+
+		LabelPtr label = Label::create();
+	    beginEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+        label->setText("Far:");
+		endEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+
+		beginEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+		perspectivePanel->getChildren().push_back(label);
+		perspectivePanel->getChildren().push_back(farSpinner);
+		endEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+	}
+
+	{
+		Real32SpinnerModelPtr model = new Real32SpinnerModel();
+		model->setStepSize(.5);
+		// model->setValue(boost::any(Real32(0)));
+		model->setMaximum(1000);
+		model->setMinimum(-1000);
+		sfNearSpinner = Spinner::create();
+		sfNearSpinner->setModel(model);
+
+		LabelPtr label = Label::create();
+	    beginEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+        label->setText("SF Near:");
+		endEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+
+		beginEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+		perspectivePanel->getChildren().push_back(label);
+		perspectivePanel->getChildren().push_back(sfNearSpinner);
+		endEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+	}
+
+	{
+		Real32SpinnerModelPtr model = new Real32SpinnerModel();
+		model->setStepSize(.5);
+		// model->setValue(boost::any(Real32(0)));
+		model->setMaximum(1000);
+		model->setMinimum(-1000);
+		sfFarSpinner = Spinner::create();
+		sfFarSpinner->setModel(model);
+
+		LabelPtr label = Label::create();
+	    beginEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+        label->setText("SF Far:");
+		endEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+
+		beginEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+		perspectivePanel->getChildren().push_back(label);
+		perspectivePanel->getChildren().push_back(sfFarSpinner);
+		endEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+	}
+
+	{
+		DefaultMutableComboBoxModelPtr comboModel = DefaultMutableComboBoxModel::create();
+		comboModel->addElement(boost::any(std::string("Light")));
+		comboModel->addElement(boost::any(std::string("Torus")));
+
+		beaconCombo = ComboBox::create();
+
+		beginEditCP(beaconCombo, ComboBox::ModelFieldMask);
+		// Set the Model created above to the ComboBox
+			beaconCombo->setModel(comboModel);
+		endEditCP(beaconCombo, ComboBox::ModelFieldMask);
+
+		// Determine where the ComboBox starts
+		beaconCombo->setSelectedIndex(0);
+
+		LabelPtr label = Label::create();
+	    beginEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+        label->setText("Beacon:");
+		endEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+
+		beginEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+		perspectivePanel->getChildren().push_back(label);
+		perspectivePanel->getChildren().push_back(beaconCombo);
+		endEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+	}
+
+	{
+		DefaultMutableComboBoxModelPtr comboModel = DefaultMutableComboBoxModel::create();
+		comboModel->addElement(boost::any(std::string("Light")));
+		comboModel->addElement(boost::any(std::string("Torus")));
+
+		sfBeaconCombo = ComboBox::create();
+
+		beginEditCP(sfBeaconCombo, ComboBox::ModelFieldMask);
+		// Set the Model created above to the ComboBox
+			sfBeaconCombo->setModel(comboModel);
+		endEditCP(sfBeaconCombo, ComboBox::ModelFieldMask);
+
+		// Determine where the ComboBox starts
+		sfBeaconCombo->setSelectedIndex(0);
+
+		LabelPtr label = Label::create();
+	    beginEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+        label->setText("SF Beacon:");
+		endEditCP(label, Label::TextFieldMask | Label::FontFieldMask);
+
+		beginEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+		perspectivePanel->getChildren().push_back(label);
+		perspectivePanel->getChildren().push_back(sfBeaconCombo);
+		endEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+	}
+
+	{
+	//view port
+	//Viewport
+	cameraViewport = Viewport::create();
+	beginEditCP(cameraViewport);
+	cameraViewport->setCamera                  (MatrixCamera::create());
+		//cameraViewport->setRoot                    (DefaultRootNode);
+		//cameraViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
+	cameraViewport->setBackground              (SolidBackground::create());//getEditingScene()->getInitialBackground());
+	endEditCP(cameraViewport);
+	
+	//GL Viewport Component
+	viewPort = GLViewport::create();
+	beginEditCP(viewPort, GLViewport::PortFieldMask | GLViewport::PreferredSizeFieldMask);
+		viewPort->setPort(cameraViewport);
+		viewPort->setPreferredSize(Vec2f(800.0f,600.0f));
+	endEditCP(viewPort, GLViewport::PortFieldMask | GLViewport::PreferredSizeFieldMask);
+
+	/*
+	beginEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+		perspectivePanel->getChildren().push_back(viewPort);
+	endEditCP(perspectivePanel, Panel::ChildrenFieldMask );
+	*/
+	}
+	beginEditCP(perspectivePanel, Panel::LayoutFieldMask | Panel::MinSizeFieldMask );
+		perspectivePanel->setLayout(flowLayout);
+    endEditCP(perspectivePanel,  Panel::LayoutFieldMask | Panel::MinSizeFieldMask );
 
 	//right panel
 	beginEditCP(panel2, Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::MinSizeFieldMask );
@@ -313,7 +491,7 @@ void SceneCamerasEditor::createInterface(ApplicationBuilderPtr TheApplicationBui
 		panel2->getChildren().push_back(nameTextField);
 		panel2->getChildren().push_back(matrixPanel);
 		//panel2->setMinSize(Vec2f(400, 400));
-		
+		panel2->getChildren().push_back(viewPort);
 		panel2->setLayout(flowLayout);
     endEditCP(panel2, Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::MinSizeFieldMask );
 
@@ -351,7 +529,7 @@ void SceneCamerasEditor::createInterface(ApplicationBuilderPtr TheApplicationBui
 	endEditCP(SceneCamerasEditorPtr(this), SceneCamerasEditor::ChildrenFieldMask | SceneCamerasEditor::LayoutFieldMask);
 
 	
-#if 0
+#if 0 
 	//components in panel 1
 	DefaultMutableComboBoxModelPtr comboBoxModel1 = DefaultMutableComboBoxModel::create();
 	comboBoxModel1->addElement(boost::any(std::string("Matrix")));
