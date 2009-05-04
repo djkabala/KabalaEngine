@@ -84,21 +84,32 @@ The Main Application.
 boost::program_options::options_description MainApplication::_OptionsDescription("Allowed options");
 boost::program_options::positional_options_description MainApplication::_PositionalOptions = boost::program_options::positional_options_description();
 
+
+MainApplication *MainApplication::_Instance = NULL;
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-void MainApplication::initMethod (void)
-{
-	_OptionsDescription.add_options()
-		("help,h", "Produce help message.")
-		("settings-file,s", boost::program_options::value<std::string>()->default_value("./.KEDefaultSettings.xml"), "The settings file to use.")
-		("project-file,f", boost::program_options::value<std::string>(), "The Project file to use.")
-		("builder,b", "Start the world builder.")
-		("play,p", "Play the project file.")
-		;
 
-	_PositionalOptions.add("project-file", -1);
+MainApplication *MainApplication::the(void)
+{
+    if(_Instance == NULL)
+    {
+        _Instance = new MainApplication;
+
+        //Initialize static variables
+	    _OptionsDescription.add_options()
+		    ("help,h", "Produce help message.")
+		    ("settings-file,s", boost::program_options::value<std::string>()->default_value("./.KEDefaultSettings.xml"), "The settings file to use.")
+		    ("project-file,f", boost::program_options::value<std::string>(), "The Project file to use.")
+		    ("builder,b", "Start the world builder.")
+		    ("play,p", "Play the project file.")
+		    ;
+
+	    _PositionalOptions.add("project-file", -1);
+    }
+
+    return _Instance;
 }
 
 ApplicationSettingsPtr MainApplication::createDefaultSettings(void)
@@ -157,15 +168,11 @@ Int32 MainApplication::run(int argc, char **argv)
 
     if(getSettings() == NullFC)
     {
-        beginEditCP(MainApplicationPtr(this), SettingsFieldMask);
-            setSettings(createDefaultSettings());
-        endEditCP(MainApplicationPtr(this), SettingsFieldMask);
+        setSettings(createDefaultSettings());
     }
 
     // Set up Window
-	beginEditCP(MainApplicationPtr(this), MainApplication::MainWindowEventProducerFieldMask);
-		setMainWindowEventProducer(createDefaultWindowEventProducer());
-	endEditCP(MainApplicationPtr(this), MainApplication::MainWindowEventProducerFieldMask);
+    setMainWindowEventProducer(createDefaultWindowEventProducer());
 
     ::osg::WindowPtr MainWindow = getMainWindowEventProducer()->initWindow();
 
@@ -195,9 +202,7 @@ Int32 MainApplication::run(int argc, char **argv)
 	if(getProject() == NullFC)
 	{
 		//Project Failed to load, or file didn't exist
-		beginEditCP(MainApplicationPtr(this), ProjectFieldMask);
-			setProject(createDefaultProject());
-		endEditCP(MainApplicationPtr(this), ProjectFieldMask);
+        setProject(createDefaultProject());
 	}
 
 	if(OptionsVariableMap.count("builder"))
@@ -242,10 +247,8 @@ void MainApplication::attachStartScreen(void)
 		getCurrentMode()->dettachApplication();
 	}
 	
-	getStartScreenMode()->attachApplication(MainApplicationPtr(this));
-	beginEditCP(MainApplicationPtr(this), CurrentModeFieldMask);
-		setCurrentMode(getStartScreenMode());
-	endEditCP(MainApplicationPtr(this), CurrentModeFieldMask);
+	getStartScreenMode()->attachApplication();
+    setCurrentMode(getStartScreenMode());
 	
 	getCurrentMode()->start();
 }
@@ -260,10 +263,8 @@ void MainApplication::attachBuilder(void)
 		getCurrentMode()->dettachApplication();
 	}
 	
-	getBuilderMode()->attachApplication(MainApplicationPtr(this));
-	beginEditCP(MainApplicationPtr(this), CurrentModeFieldMask);
-		setCurrentMode(getBuilderMode());
-	endEditCP(MainApplicationPtr(this), CurrentModeFieldMask);
+	getBuilderMode()->attachApplication();
+    setCurrentMode(getBuilderMode());
 	
 	getCurrentMode()->start();
 }
@@ -278,10 +279,8 @@ void MainApplication::attachPlayer(void)
 		getCurrentMode()->dettachApplication();
 	}
 	
-	getPlayerMode()->attachApplication(MainApplicationPtr(this));
-	beginEditCP(MainApplicationPtr(this), CurrentModeFieldMask);
-		setCurrentMode(getPlayerMode());
-	endEditCP(MainApplicationPtr(this), CurrentModeFieldMask);
+	getPlayerMode()->attachApplication();
+    setCurrentMode(getPlayerMode());
 	
 	getCurrentMode()->start();
 }
@@ -300,9 +299,7 @@ void MainApplication::loadProject(const Path& ProjectFile)
 
 	if(LoadedProject != NullFC)
 	{
-		beginEditCP(MainApplicationPtr(this), ProjectFieldMask);
-			setProject(LoadedProject);
-		endEditCP(MainApplicationPtr(this), ProjectFieldMask);
+    setProject(LoadedProject);
 		
 		beginEditCP(getSettings(), ApplicationSettings::LastOpenedProjectFileFieldMask);
 			getSettings()->setLastOpenedProjectFile(ProjectFile);
@@ -324,9 +321,7 @@ void MainApplication::loadSettings(const Path& SettingsFile)
 
 	if(LoadedSettings != NullFC)
 	{
-		beginEditCP(MainApplicationPtr(this), MainApplication::SettingsFieldMask);
-			setSettings(LoadedSettings);
-		endEditCP(MainApplicationPtr(this), MainApplication::SettingsFieldMask);
+        setSettings(LoadedSettings);
 	}
 }
 
@@ -334,9 +329,7 @@ void MainApplication::createDefaultBuilderMode(void)
 {
 	if(getBuilderMode() == NullFC)
 	{
-		beginEditCP(MainApplicationPtr(this), BuilderModeFieldMask);
-			setBuilderMode(ApplicationBuilder::create());
-		endEditCP(MainApplicationPtr(this), BuilderModeFieldMask);
+        setBuilderMode(ApplicationBuilder::create());
 	}
 }
 
@@ -344,9 +337,7 @@ void MainApplication::createDefaultPlayerMode(void)
 {
 	if(getPlayerMode() == NullFC)
 	{
-		beginEditCP(MainApplicationPtr(this), PlayerModeFieldMask);
-			setPlayerMode(ApplicationPlayer::create());
-		endEditCP(MainApplicationPtr(this), PlayerModeFieldMask);
+        setPlayerMode(ApplicationPlayer::create());
 	}
 }
 
@@ -354,9 +345,7 @@ void MainApplication::createDefaultStartScreenMode(void)
 {
 	if(getStartScreenMode() == NullFC)
 	{
-		beginEditCP(MainApplicationPtr(this), StartScreenModeFieldMask);
-			setStartScreenMode(ApplicationStartScreen::create());
-		endEditCP(MainApplicationPtr(this), StartScreenModeFieldMask);
+        setStartScreenMode(ApplicationStartScreen::create());
 	}
 }
 
@@ -435,6 +424,108 @@ ProjectPtr MainApplication::createDefaultProject(void)
 
 	return TheDefaultProject;
 }
+
+
+void MainApplication::setSettings( const ApplicationSettingsPtr &value )
+{
+    if(_Settings != NullFC)
+    {
+        subRefCP(_Settings);
+    }
+    _Settings = value;
+    if(_Settings != NullFC)
+    {
+        addRefCP(_Settings);
+    }
+}
+
+void MainApplication::setSettingsLoadFile( const Path &value )
+{
+    _SettingsPath = value;
+}
+
+void MainApplication::setMainWindowEventProducer( const WindowEventProducerPtr &value )
+{
+    if(_MainWindowEventProducer != NullFC)
+    {
+        subRefCP(_MainWindowEventProducer);
+    }
+    _MainWindowEventProducer = value;
+    if(_MainWindowEventProducer != NullFC)
+    {
+        addRefCP(_MainWindowEventProducer);
+    }
+}
+
+void MainApplication::setProject ( const ProjectPtr &value )
+{
+    if(_Project != NullFC)
+    {
+        subRefCP(_Project);
+    }
+    _Project = value;
+    if(_Project != NullFC)
+    {
+        addRefCP(_Project);
+    }
+    if(getCurrentMode() != NullFC)
+    {
+        getCurrentMode()->reset();
+    }
+}
+
+void MainApplication::setBuilderMode( const ApplicationModePtr &value )
+{
+    if(_BuilderMode != NullFC)
+    {
+        subRefCP(_BuilderMode);
+    }
+    _BuilderMode = value;
+    if(_BuilderMode != NullFC)
+    {
+        addRefCP(_BuilderMode);
+    }
+}
+
+void MainApplication::setPlayerMode( const ApplicationModePtr &value )
+{
+    if(_PlayerMode != NullFC)
+    {
+        subRefCP(_PlayerMode);
+    }
+    _PlayerMode = value;
+    if(_PlayerMode != NullFC)
+    {
+        addRefCP(_PlayerMode);
+    }
+}
+
+void MainApplication::setStartScreenMode( const ApplicationModePtr &value )
+{
+    if(_StartScreenMode != NullFC)
+    {
+        subRefCP(_StartScreenMode);
+    }
+    _StartScreenMode = value;
+    if(_StartScreenMode != NullFC)
+    {
+        addRefCP(_StartScreenMode);
+    }
+}
+
+void MainApplication::setCurrentMode( const ApplicationModePtr &value )
+{
+    if(_CurrentMode != NullFC)
+    {
+        subRefCP(_CurrentMode);
+    }
+    _CurrentMode = value;
+    if(_CurrentMode != NullFC)
+    {
+        addRefCP(_CurrentMode);
+    }
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -442,39 +533,48 @@ ProjectPtr MainApplication::createDefaultProject(void)
 /*----------------------- constructors & destructors ----------------------*/
 
 MainApplication::MainApplication(void) :
-    Inherited(),
-		_MainWindowListener(MainApplicationPtr(this))
+		_MainWindowListener(this)
 {
 }
 
 MainApplication::MainApplication(const MainApplication &source) :
-    Inherited(source),
-		_MainWindowListener(MainApplicationPtr(this))
+		_MainWindowListener(this)
 {
 }
 
 MainApplication::~MainApplication(void)
 {
-}
-
-/*----------------------------- class specific ----------------------------*/
-
-void MainApplication::changed(BitVector whichField, ::osg::UInt32 origin)
-{
-    Inherited::changed(whichField, origin);
-
-    if((whichField & ProjectFieldMask) &&
-        getCurrentMode() != NullFC)
+    if(_Settings != NullFC)
     {
-        getCurrentMode()->reset();
+        subRefCP(_Settings);
+    }
+    if(_MainWindowEventProducer != NullFC)
+    {
+        subRefCP(_MainWindowEventProducer);
+    }
+    if(_Project != NullFC)
+    {
+        subRefCP(_Project);
+    }
+    if(_BuilderMode != NullFC)
+    {
+        subRefCP(_BuilderMode);
+    }
+    if(_StartScreenMode != NullFC)
+    {
+        subRefCP(_StartScreenMode);
+    }
+    if(_PlayerMode != NullFC)
+    {
+        subRefCP(_PlayerMode);
+    }
+    if(_CurrentMode != NullFC)
+    {
+        subRefCP(_CurrentMode);
     }
 }
 
-void MainApplication::dump(      ::osg::UInt32    , 
-                         const BitVector ) const
-{
-    SLOG << "Dump MainApplication NI" << std::endl;
-}
+/*----------------------------- class specific ----------------------------*/
 
 void MainApplication::MainWindowListener::windowClosing(const WindowEvent& e)
 {

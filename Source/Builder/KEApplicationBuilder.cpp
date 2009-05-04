@@ -59,6 +59,7 @@
 #include "Project/KEProject.h"
 #include "Builder/UserInterface/KEBuilderInterface.h"
 #include "Builder/UserInterface/IconManager/KEDefaultIconManager.h"
+#include "Application/KEMainApplication.h"
 
 KE_USING_NAMESPACE
 
@@ -93,7 +94,7 @@ void ApplicationBuilder::reset(void)
 	_TheBuilderInterface->disconnectInterface(ApplicationBuilderPtr(this));
 
     beginEditCP(ApplicationBuilderPtr(this) , ApplicationBuilder::EditingProjectFieldMask);
-		setEditingProject(getParentApplication()->getProject());
+		setEditingProject(MainApplication::the()->getProject());
 	endEditCP(ApplicationBuilderPtr(this) , ApplicationBuilder::EditingProjectFieldMask);
     
 	_TheBuilderInterface->connectInterface(ApplicationBuilderPtr(this));
@@ -124,12 +125,12 @@ bool ApplicationBuilder::saveProject(const Path& ProjectFile)
 	return false;
 }
 
-void ApplicationBuilder::attachApplication(MainApplicationPtr TheApplication)
+void ApplicationBuilder::attachApplication(void)
 {
-	Inherited::attachApplication(TheApplication);
+	Inherited::attachApplication();
 
 	beginEditCP(ApplicationBuilderPtr(this) , ApplicationBuilder::EditingProjectFieldMask);
-		setEditingProject(TheApplication->getProject());
+		setEditingProject(MainApplication::the()->getProject());
 	endEditCP(ApplicationBuilderPtr(this) , ApplicationBuilder::EditingProjectFieldMask);
 
 	
@@ -168,16 +169,16 @@ void ApplicationBuilder::attachApplication(MainApplicationPtr TheApplication)
 	endEditCP(DefaultBackground, SolidBackground::ColorFieldMask);
 
 	//Icon Manager
-	_IconManager = DefaultIconManager::create(getParentApplication());
+	_IconManager = DefaultIconManager::create();
 	
 	//User Interface
 	ForegroundPtr UserInterfaceForeground = createInterface();
     beginEditCP(_TheBuilderInterface->getDrawingSurface(), UIDrawingSurface::EventProducerFieldMask);
-        _TheBuilderInterface->getDrawingSurface()->setEventProducer(getParentApplication()->getMainWindowEventProducer());
+        _TheBuilderInterface->getDrawingSurface()->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
     endEditCP(_TheBuilderInterface->getDrawingSurface(), UIDrawingSurface::EventProducerFieldMask);
 
 	//Viewport
-	if(getParentApplication()->getMainWindowEventProducer()->getWindow() != NullFC && getParentApplication()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
+	if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC && MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
 	{
 		ViewportPtr DefaultViewport = Viewport::create();
 		beginEditCP(DefaultViewport);
@@ -188,9 +189,9 @@ void ApplicationBuilder::attachApplication(MainApplicationPtr TheApplication)
 			DefaultViewport->getForegrounds().push_back    (UserInterfaceForeground);
 		endEditCP(DefaultViewport);
 
-		beginEditCP(getParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-			getParentApplication()->getMainWindowEventProducer()->getWindow()->addPort(DefaultViewport);
-		endEditCP(getParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+		beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+			MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(DefaultViewport);
+		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
 }
 
@@ -201,11 +202,11 @@ void ApplicationBuilder::dettachApplication(void)
     endEditCP(_TheBuilderInterface->getDrawingSurface(), UIDrawingSurface::EventProducerFieldMask);
 
 
-	if(getParentApplication()->getMainWindowEventProducer()->getWindow() != NullFC)
+	if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC)
 	{
-		beginEditCP(getParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-			getParentApplication()->getMainWindowEventProducer()->getWindow()->subPort(0);
-		endEditCP(getParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+		beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+			MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(0);
+		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
 
 	Inherited::dettachApplication();

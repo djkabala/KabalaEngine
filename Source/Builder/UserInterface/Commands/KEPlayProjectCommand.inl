@@ -3,22 +3,13 @@
 KE_BEGIN_NAMESPACE
 
 inline
-PlayProjectCommand::PlayProjectCommand(MainApplicationPtr TheMainApp) : Inherited(),
-_TheMainApp(TheMainApp)
+PlayProjectCommand::PlayProjectCommand(void) : Inherited()
 {
 }
 
 inline
-PlayProjectCommand::PlayProjectCommand(const PlayProjectCommand& source) : Inherited(source),
-_TheMainApp(source._TheMainApp)
+PlayProjectCommand::PlayProjectCommand(const PlayProjectCommand& source) : Inherited(source)
 {
-}
-
-inline 
-void PlayProjectCommand::operator =(const PlayProjectCommand& source)
-{
-	Inherited::operator=(source);
-	_TheMainApp = source._TheMainApp;
 }
 
 inline 

@@ -61,7 +61,7 @@ OSG::FieldContainerType &ApplicationModeBase::getClassType(void)
 
 //! access the numerical type of the class
 inline
-::osg::UInt32 ApplicationModeBase::getClassTypeId(void) 
+OSG::UInt32 ApplicationModeBase::getClassTypeId(void) 
 {
     return _type.getId(); 
 } 
@@ -69,34 +69,6 @@ inline
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the ApplicationMode::_sfInternalParentApplication field.
-inline
-SFMainApplicationPtr *ApplicationModeBase::getSFInternalParentApplication(void)
-{
-    return &_sfInternalParentApplication;
-}
-
-
-//! Get the value of the ApplicationMode::_sfInternalParentApplication field.
-inline
-MainApplicationPtr &ApplicationModeBase::getInternalParentApplication(void)
-{
-    return _sfInternalParentApplication.getValue();
-}
-
-//! Get the value of the ApplicationMode::_sfInternalParentApplication field.
-inline
-const MainApplicationPtr &ApplicationModeBase::getInternalParentApplication(void) const
-{
-    return _sfInternalParentApplication.getValue();
-}
-
-//! Set the value of the ApplicationMode::_sfInternalParentApplication field.
-inline
-void ApplicationModeBase::setInternalParentApplication(const MainApplicationPtr &value)
-{
-    _sfInternalParentApplication.setValue(value);
-}
 
 
 KE_END_NAMESPACE

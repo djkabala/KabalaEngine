@@ -35,7 +35,6 @@
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
-#include "Application/KEMainApplication.h"
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -49,17 +48,13 @@ protected:
 	typedef Command Inherited;
 	typedef PlayProjectCommandPtr Ptr;
 
-	PlayProjectCommand(MainApplicationPtr TheMainApp);
+	PlayProjectCommand(void);
 
 	PlayProjectCommand(const PlayProjectCommand& source);
-
-	void operator =(const PlayProjectCommand& source);
 
 	static CommandType _Type;
 	
 	virtual void execute(void);
-
-	MainApplicationPtr _TheMainApp;
 public:
 
 	virtual std::string getCommandDescription(void) const;
@@ -70,7 +65,7 @@ public:
 
 	virtual ~PlayProjectCommand(void);
 	
-	static PlayProjectCommandPtr create(MainApplicationPtr TheMainApp);
+	static PlayProjectCommandPtr create(void);
 };
 
 KE_END_NAMESPACE

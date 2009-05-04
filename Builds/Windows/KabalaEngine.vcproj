@@ -363,22 +363,6 @@
 					RelativePath="..\..\Source\Application\KEMainApplication.inl"
 					>
 				</File>
-				<File
-					RelativePath="..\..\Source\Application\KEMainApplicationBase.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Source\Application\KEMainApplicationBase.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Source\Application\KEMainApplicationBase.inl"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Source\Application\KEMainApplicationFields.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Builder"

@@ -75,7 +75,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
-	virtual void attachApplication(MainApplicationPtr TheApplication);
+	virtual void attachApplication(void);
 	virtual void dettachApplication(void);
 	virtual void attachInterface(void);
 	virtual void attachListeners(void);

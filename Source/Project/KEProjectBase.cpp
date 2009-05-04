@@ -103,9 +103,6 @@ const OSG::BitVector  ProjectBase::CamerasFieldMask =
 const OSG::BitVector  ProjectBase::InternalActiveCameraFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::InternalActiveCameraFieldId);
 
-const OSG::BitVector  ProjectBase::InternalParentApplicationFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::InternalParentApplicationFieldId);
-
 const OSG::BitVector  ProjectBase::InternalActiveViewportFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::InternalActiveViewportFieldId);
 
@@ -156,9 +153,6 @@ const OSG::BitVector ProjectBase::MTInfluenceMask =
     
 */
 /*! \var CameraPtr       ProjectBase::_sfInternalActiveCamera
-    
-*/
-/*! \var MainApplicationPtr ProjectBase::_sfInternalParentApplication
     
 */
 /*! \var ViewportPtr     ProjectBase::_sfInternalActiveViewport
@@ -239,11 +233,6 @@ FieldDescription *ProjectBase::_desc[] =
                      InternalActiveCameraFieldId, InternalActiveCameraFieldMask,
                      true,
                      (FieldAccessMethod) &ProjectBase::getSFInternalActiveCamera),
-    new FieldDescription(SFMainApplicationPtr::getClassType(), 
-                     "InternalParentApplication", 
-                     InternalParentApplicationFieldId, InternalParentApplicationFieldMask,
-                     true,
-                     (FieldAccessMethod) &ProjectBase::getSFInternalParentApplication),
     new FieldDescription(SFViewportPtr::getClassType(), 
                      "InternalActiveViewport", 
                      InternalActiveViewportFieldId, InternalActiveViewportFieldMask,
@@ -285,7 +274,7 @@ FieldContainerPtr ProjectBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 ProjectBase::getContainerSize(void) const 
+UInt32 ProjectBase::getContainerSize(void) const 
 { 
     return sizeof(Project); 
 }
@@ -304,13 +293,13 @@ void ProjectBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((ProjectBase *) &other, whichField, sInfo);
 }
 void ProjectBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void ProjectBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void ProjectBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -341,7 +330,6 @@ ProjectBase::ProjectBase(void) :
     _mfInternalActiveModelNodes(), 
     _mfCameras                (), 
     _sfInternalActiveCamera   (CameraPtr(NullFC)), 
-    _sfInternalParentApplication(MainApplicationPtr(NullFC)), 
     _sfInternalActiveViewport (ViewportPtr(NullFC)), 
     Inherited() 
 {
@@ -362,7 +350,6 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _mfInternalActiveModelNodes(source._mfInternalActiveModelNodes), 
     _mfCameras                (source._mfCameras                ), 
     _sfInternalActiveCamera   (source._sfInternalActiveCamera   ), 
-    _sfInternalParentApplication(source._sfInternalParentApplication), 
     _sfInternalActiveViewport (source._sfInternalActiveViewport ), 
     Inherited                 (source)
 {
@@ -376,9 +363,9 @@ ProjectBase::~ProjectBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 ProjectBase::getBinSize(const BitVector &whichField)
+UInt32 ProjectBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
     if(FieldBits::NoField != (NameFieldMask & whichField))
     {
@@ -448,11 +435,6 @@ ProjectBase::~ProjectBase(void)
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
     {
         returnValue += _sfInternalActiveCamera.getBinSize();
-    }
-
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-    {
-        returnValue += _sfInternalParentApplication.getBinSize();
     }
 
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
@@ -539,11 +521,6 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
         _sfInternalActiveCamera.copyToBin(pMem);
     }
 
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-    {
-        _sfInternalParentApplication.copyToBin(pMem);
-    }
-
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
     {
         _sfInternalActiveViewport.copyToBin(pMem);
@@ -627,11 +604,6 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
         _sfInternalActiveCamera.copyFromBin(pMem);
     }
 
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-    {
-        _sfInternalParentApplication.copyFromBin(pMem);
-    }
-
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
     {
         _sfInternalActiveViewport.copyFromBin(pMem);
@@ -689,9 +661,6 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
         _sfInternalActiveCamera.syncWith(pOther->_sfInternalActiveCamera);
 
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-        _sfInternalParentApplication.syncWith(pOther->_sfInternalParentApplication);
-
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
         _sfInternalActiveViewport.syncWith(pOther->_sfInternalActiveViewport);
 
@@ -726,9 +695,6 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
         _sfInternalActiveCamera.syncWith(pOther->_sfInternalActiveCamera);
 
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-        _sfInternalParentApplication.syncWith(pOther->_sfInternalParentApplication);
-
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
         _sfInternalActiveViewport.syncWith(pOther->_sfInternalActiveViewport);
 
@@ -758,8 +724,8 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 }
 
 void ProjectBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 

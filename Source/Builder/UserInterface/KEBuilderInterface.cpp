@@ -66,6 +66,7 @@
 #include "Builder/KEApplicationBuilder.h"
 
 #include "Project/KEProject.h"
+#include "Application/KEMainApplication.h"
 
 #include "Builder/UserInterface/Commands/KENewProjectCommand.h"
 #include "Builder/UserInterface/Commands/KEOpenProjectCommand.h"
@@ -445,9 +446,9 @@ void BuilderInterface::connectInterface(ApplicationBuilderPtr TheApplicationBuil
 	_CloseProjectActionListener = CommandActionListener(CloseProjectCommand::create(TheApplicationBuilder), TheApplicationBuilder->getCommandManager());
 	_SaveProjectActionListener = CommandActionListener(SaveProjectCommand::create(TheApplicationBuilder), TheApplicationBuilder->getCommandManager());
 	_SaveProjectAsActionListener = CommandActionListener(SaveProjectAsCommand::create(TheApplicationBuilder), TheApplicationBuilder->getCommandManager());
-	_PlayProjectListener = CommandActionListener(PlayProjectCommand::create(TheApplicationBuilder->getParentApplication()), TheApplicationBuilder->getCommandManager());
-	_StartScreenListener = CommandActionListener(StartScreenCommand::create(TheApplicationBuilder->getParentApplication()), TheApplicationBuilder->getCommandManager());
-	_QuitActionListener = CommandActionListener(QuitAppCommand::create(TheApplicationBuilder->getParentApplication()), TheApplicationBuilder->getCommandManager());
+	_PlayProjectListener = CommandActionListener(PlayProjectCommand::create(), TheApplicationBuilder->getCommandManager());
+	_StartScreenListener = CommandActionListener(StartScreenCommand::create(), TheApplicationBuilder->getCommandManager());
+	_QuitActionListener = CommandActionListener(QuitAppCommand::create(), TheApplicationBuilder->getCommandManager());
 	_UndoActionListener = CommandActionListener(UndoCommand::create(TheApplicationBuilder), TheApplicationBuilder->getCommandManager());
 	_RedoActionListener = CommandActionListener(RedoCommand::create(TheApplicationBuilder), TheApplicationBuilder->getCommandManager());
 	_AboutKabalaEngineActionListener = CommandActionListener(AboutKabalaEngineCommand::create(TheApplicationBuilder), TheApplicationBuilder->getCommandManager());
@@ -474,9 +475,9 @@ void BuilderInterface::connectInterface(ApplicationBuilderPtr TheApplicationBuil
 	updateUndoRedoInterfaces(TheApplicationBuilder->getUndoManager());
 
 	//Main Window Titlebar
-	ProjectPtr TheProject(TheApplicationBuilder->getParentApplication()->getProject());
+	ProjectPtr TheProject(MainApplication::the()->getProject());
 	std::string MainWindowTitle(TheProject->getName() + " -  Kabala Engine Builder");
-	TheApplicationBuilder->getParentApplication()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
+	MainApplication::the()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
 
 	//Editor
 	getEditor()->connectInterface(TheApplicationBuilder);

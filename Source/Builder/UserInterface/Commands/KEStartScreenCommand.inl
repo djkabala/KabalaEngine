@@ -3,22 +3,13 @@
 KE_BEGIN_NAMESPACE
 
 inline
-StartScreenCommand::StartScreenCommand(MainApplicationPtr TheMainApp) : Inherited(),
-_TheMainApp(TheMainApp)
+StartScreenCommand::StartScreenCommand(void) : Inherited()
 {
 }
 
 inline
-StartScreenCommand::StartScreenCommand(const StartScreenCommand& source) : Inherited(source),
-_TheMainApp(source._TheMainApp)
+StartScreenCommand::StartScreenCommand(const StartScreenCommand& source) : Inherited(source)
 {
-}
-
-inline 
-void StartScreenCommand::operator =(const StartScreenCommand& source)
-{
-	Inherited::operator=(source);
-	_TheMainApp = source._TheMainApp;
 }
 
 inline 

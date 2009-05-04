@@ -10,9 +10,7 @@ int main(int argc, char **argv)
 	osg::osgInit(argc,argv);
 
 	//Start the Main Application
-	ke::MainApplicationPtr TheApplication = ke::MainApplication::create();
-
-	Int32 AppReturnValue = TheApplication->run(argc, argv);
+    Int32 AppReturnValue = ke::MainApplication::the()->run(argc, argv);
 
 	//OSG exit
     osg::osgExit();

@@ -3,22 +3,13 @@
 KE_BEGIN_NAMESPACE
 
 inline
-QuitAppCommand::QuitAppCommand(MainApplicationPtr TheMainApp) : Inherited(),
-_TheMainApp(TheMainApp)
+QuitAppCommand::QuitAppCommand(void) : Inherited()
 {
 }
 
 inline
-QuitAppCommand::QuitAppCommand(const QuitAppCommand& source) : Inherited(source),
-_TheMainApp(source._TheMainApp)
+QuitAppCommand::QuitAppCommand(const QuitAppCommand& source) : Inherited(source)
 {
-}
-
-inline 
-void QuitAppCommand::operator =(const QuitAppCommand& source)
-{
-	Inherited::operator=(source);
-	_TheMainApp = source._TheMainApp;
 }
 
 inline 

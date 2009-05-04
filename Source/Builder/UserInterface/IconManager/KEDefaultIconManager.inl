@@ -3,8 +3,7 @@
 KE_BEGIN_NAMESPACE
 
 inline
-DefaultIconManager::DefaultIconManager(MainApplicationPtr MainApp) : Inherited(),
-_MainApplication(MainApp)
+DefaultIconManager::DefaultIconManager(void) : Inherited()
 {
 }
 

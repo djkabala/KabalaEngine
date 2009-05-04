@@ -35,7 +35,6 @@
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
-#include "Application/KEMainApplication.h"
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -49,17 +48,13 @@ protected:
 	typedef Command Inherited;
 	typedef QuitAppCommandPtr Ptr;
 
-	QuitAppCommand(MainApplicationPtr TheMainApp);
+	QuitAppCommand(void);
 
 	QuitAppCommand(const QuitAppCommand& source);
-
-	void operator =(const QuitAppCommand& source);
 
 	static CommandType _Type;
 	
 	virtual void execute(void);
-
-	MainApplicationPtr _TheMainApp;
 public:
 
 	virtual std::string getCommandDescription(void) const;
@@ -70,7 +65,7 @@ public:
 
 	virtual ~QuitAppCommand(void);
 	
-	static QuitAppCommandPtr create(MainApplicationPtr TheMainApp);
+	static QuitAppCommandPtr create(void);
 };
 
 KE_END_NAMESPACE

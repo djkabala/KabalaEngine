@@ -193,13 +193,6 @@ SFCameraPtr *ProjectBase::getSFInternalActiveCamera(void)
     return &_sfInternalActiveCamera;
 }
 
-//! Get the Project::_sfInternalParentApplication field.
-inline
-SFMainApplicationPtr *ProjectBase::getSFInternalParentApplication(void)
-{
-    return &_sfInternalParentApplication;
-}
-
 //! Get the Project::_sfInternalActiveViewport field.
 inline
 SFViewportPtr *ProjectBase::getSFInternalActiveViewport(void)
@@ -353,27 +346,6 @@ inline
 void ProjectBase::setInternalActiveCamera(const CameraPtr &value)
 {
     _sfInternalActiveCamera.setValue(value);
-}
-
-//! Get the value of the Project::_sfInternalParentApplication field.
-inline
-MainApplicationPtr &ProjectBase::getInternalParentApplication(void)
-{
-    return _sfInternalParentApplication.getValue();
-}
-
-//! Get the value of the Project::_sfInternalParentApplication field.
-inline
-const MainApplicationPtr &ProjectBase::getInternalParentApplication(void) const
-{
-    return _sfInternalParentApplication.getValue();
-}
-
-//! Set the value of the Project::_sfInternalParentApplication field.
-inline
-void ProjectBase::setInternalParentApplication(const MainApplicationPtr &value)
-{
-    _sfInternalParentApplication.setValue(value);
 }
 
 //! Get the value of the Project::_sfInternalActiveViewport field.

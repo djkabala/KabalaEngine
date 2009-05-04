@@ -47,6 +47,7 @@
 #include "KESaveProjectCommand.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <boost/filesystem/operations.hpp>
+#include "Application/KEMainApplication.h"
 
 #include "Project/KEProject.h"
 
@@ -80,7 +81,7 @@ SaveProjectCommandPtr SaveProjectCommand::create(ApplicationBuilderPtr TheApplic
 
 void SaveProjectCommand::execute(void)
 {
-	if(!boost::filesystem::exists(_TheApplicationBuilder->getParentApplication()->getProject()->getFilePath()))
+    if(!boost::filesystem::exists(MainApplication::the()->getProject()->getFilePath()))
 	{
 		std::vector<WindowEventProducer::FileDialogFilter> KEProjectFileFilters;
 		KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("Project File","*.xml"));
@@ -91,9 +92,9 @@ void SaveProjectCommand::execute(void)
 		Path InitialProjectFilePath("./KEProject.xml");
 
 		Path ProjectFilePath;
-		ProjectFilePath = _TheApplicationBuilder->getParentApplication()->getMainWindowEventProducer()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath,InitialProjectFilePath.parent_path(), true);
+		ProjectFilePath = MainApplication::the()->getMainWindowEventProducer()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath,InitialProjectFilePath.parent_path(), true);
 
-		_TheApplicationBuilder->getParentApplication()->saveProject(ProjectFilePath);
+		MainApplication::the()->saveProject(ProjectFilePath);
 	}
 	else
 	{

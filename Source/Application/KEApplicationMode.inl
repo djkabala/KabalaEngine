@@ -41,10 +41,5 @@
 
 KE_BEGIN_NAMESPACE
 
-inline
-MainApplicationPtr ApplicationMode::getParentApplication(void) const
-{
-	return getInternalParentApplication();
-}
 KE_END_NAMESPACE
 

@@ -12,14 +12,4 @@
 	useLocalIncludes="false"
 >
 The ApplicationMode.
-	<Field
-		name="InternalParentApplication"
-		type="MainApplicationPtr"
-		cardinality="single"
-		visibility="external"
-		defaultValue="NullFC"
-		header="KEMainApplication.h"
-		access="protected"
-	>
-	</Field>
 </FieldContainer>

@@ -82,7 +82,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationS
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
-	virtual void attachApplication(MainApplicationPtr TheApplication);
+	virtual void attachApplication(void);
 	virtual void dettachApplication(void);
 	ForegroundPtr createInterface(void);
 	virtual void start(void);

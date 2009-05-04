@@ -59,6 +59,7 @@
 #include "Builder/KEApplicationBuilder.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
+#include "Application/KEMainApplication.h"
 
 KE_USING_NAMESPACE
 
@@ -257,7 +258,7 @@ PanelPtr SceneEditor::createEditorTab(SceneComponentEditorPtr Editor, IconManage
 void SceneEditor::connectInterface(ApplicationBuilderPtr TheApplicationBuilder)
 {
 	beginEditCP(SceneEditorPtr(this), EditingSceneFieldMask);
-		setEditingScene(TheApplicationBuilder->getParentApplication()->getProject()->getInitialScene());
+		setEditingScene(MainApplication::the()->getProject()->getInitialScene());
 	endEditCP(SceneEditorPtr(this), EditingSceneFieldMask);
 
     //_SceneEditorsTabPanel->addChangeListener(&_EditorsTabPanelListener);

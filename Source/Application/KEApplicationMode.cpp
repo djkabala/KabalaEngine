@@ -73,18 +73,12 @@ void ApplicationMode::initMethod (void)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void ApplicationMode::attachApplication(MainApplicationPtr TheApplication)
+void ApplicationMode::attachApplication(void)
 {
-	beginEditCP(ApplicationModePtr(this), InternalParentApplicationFieldMask);
-		setInternalParentApplication(TheApplication);
-	endEditCP(ApplicationModePtr(this), InternalParentApplicationFieldMask);
 }
 
 void ApplicationMode::dettachApplication(void)
 {
-	beginEditCP(ApplicationModePtr(this), InternalParentApplicationFieldMask);
-		setInternalParentApplication(NullFC);
-	endEditCP(ApplicationModePtr(this), InternalParentApplicationFieldMask);
 }
 
 /*-------------------------------------------------------------------------*\

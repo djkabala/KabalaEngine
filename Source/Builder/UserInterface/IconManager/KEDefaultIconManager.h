@@ -35,7 +35,6 @@
 #include "KEKabalaEngineDef.h"
 
 #include "KEIconManager.h"
-#include "Application/KEMainApplication.h"
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -52,15 +51,13 @@ protected:
     typedef DefaultIconManagerPtr  Ptr;
     typedef DefaultIconManager  Self;
 
-	DefaultIconManager(MainApplicationPtr MainApp);
+	DefaultIconManager(void);
 
 	DefaultIconManager(const DefaultIconManager& source);
 	
     void operator =(const DefaultIconManager& source);
 
 	virtual TextureChunkPtr createTexture(const Path& TexturePath);
-
-	MainApplicationPtr _MainApplication;
 
 	std::string statusToString(IconSet::IconStatusType Status) const;
 public:
@@ -71,7 +68,7 @@ public:
 
 	virtual bool canCreateIconSet(const std::string& IconSetName);
 
-	static DefaultIconManagerPtr create(MainApplicationPtr MainApp);
+	static DefaultIconManagerPtr create(void);
 };
 
 

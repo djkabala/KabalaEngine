@@ -124,13 +124,6 @@ void Project::save(const Path& ProjectFile)
 	save();
 }
 
-void Project::setParentApplication(MainApplicationPtr TheMainApplication)
-{
-	beginEditCP(ProjectPtr(this), InternalParentApplicationFieldMask);
-		setInternalParentApplication(TheMainApplication);
-	endEditCP(ProjectPtr(this), InternalParentApplicationFieldMask);
-}
-
 void Project::start(void)
 {
 	//If needed create a default Viewport
@@ -148,22 +141,23 @@ void Project::start(void)
 	}
 
 	//Attach the viewport to the window
-	if(getInternalParentApplication()->getMainWindowEventProducer()->getWindow() != NullFC && getInternalParentApplication()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
+    if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC && 
+       MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
 	{
-		beginEditCP(getInternalParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-			getInternalParentApplication()->getMainWindowEventProducer()->getWindow()->addPort(getInternalActiveViewport());
-		endEditCP(getInternalParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+		beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+			MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(getInternalActiveViewport());
+		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
 }
 
 void Project::stop(void)
 {
 	setActiveScene(NullFC);
-	if(getInternalParentApplication()->getMainWindowEventProducer()->getWindow() != NullFC && getInternalParentApplication()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
+	if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC && MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
 	{
-		beginEditCP(getInternalParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-			getInternalParentApplication()->getMainWindowEventProducer()->getWindow()->subPort(0);
-		endEditCP(getInternalParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+		beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+			MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(0);
+		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
 }
 

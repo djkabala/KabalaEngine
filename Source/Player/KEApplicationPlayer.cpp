@@ -47,6 +47,7 @@
 
 #include "KEApplicationPlayer.h"
 #include "Project/KEProject.h"
+#include "Application/KEMainApplication.h"
 
 KE_USING_NAMESPACE
 
@@ -80,20 +81,14 @@ void ApplicationPlayer::reset(void)
 {
 }
 
-void ApplicationPlayer::attachApplication(MainApplicationPtr TheApplication)
+void ApplicationPlayer::attachApplication(void)
 {
-	Inherited::attachApplication(TheApplication);
-
-	if(getParentApplication() != NullFC &&
-       getParentApplication()->getProject() != NullFC)
-	{
-		getParentApplication()->getProject()->setParentApplication(getParentApplication());
-	}
+	Inherited::attachApplication();
 
 	//Main Window Titlebar
-	ProjectPtr TheProject(getParentApplication()->getProject());
+	ProjectPtr TheProject(MainApplication::the()->getProject());
 	std::string MainWindowTitle(TheProject->getName());
-	getParentApplication()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
+	MainApplication::the()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
 }
 
 void ApplicationPlayer::dettachApplication(void)
@@ -111,19 +106,17 @@ void ApplicationPlayer::attachListeners(void)
 
 void ApplicationPlayer::start(void)
 {
-	if(getParentApplication() != NullFC &&
-       getParentApplication()->getProject() != NullFC)
+	if(MainApplication::the()->getProject() != NullFC)
 	{
-		getParentApplication()->getProject()->start();
+		MainApplication::the()->getProject()->start();
 	}
 }
 
 void ApplicationPlayer::stop(void)
 {
-	if(getParentApplication() != NullFC &&
-       getParentApplication()->getProject() != NullFC)
+	if(MainApplication::the()->getProject() != NullFC)
 	{
-		getParentApplication()->getProject()->stop();
+		MainApplication::the()->getProject()->stop();
 	}
 }
 /*-------------------------------------------------------------------------*\

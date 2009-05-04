@@ -63,7 +63,6 @@
 #include <OpenSG/OSGCoredNodePtr.h>
 
 #include <OpenSG/OSGFieldContainer.h> // Parent
-#include "KEMainApplication.h" // InternalParentApplication type
 
 #include "KEApplicationModeFields.h"
 
@@ -86,14 +85,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationModeBase : public FieldContainer
 
     typedef ApplicationModePtr  Ptr;
 
-    enum
-    {
-        InternalParentApplicationFieldId = Inherited::NextFieldId,
-        NextFieldId                      = InternalParentApplicationFieldId + 1
-    };
-
-    static const OSG::BitVector InternalParentApplicationFieldMask;
-
 
     static const OSG::BitVector MTInfluenceMask;
 
@@ -102,7 +93,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationModeBase : public FieldContainer
     /*! \{                                                                 */
 
     static        FieldContainerType &getClassType    (void); 
-    static        ::osg::UInt32              getClassTypeId  (void); 
+    static        UInt32              getClassTypeId  (void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -112,7 +103,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationModeBase : public FieldContainer
     virtual       FieldContainerType &getType  (void); 
     virtual const FieldContainerType &getType  (void) const; 
 
-    virtual       ::osg::UInt32              getContainerSize(void) const;
+    virtual       UInt32              getContainerSize(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -124,7 +115,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationModeBase : public FieldContainer
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual ::osg::UInt32 getBinSize (const BitVector         &whichField);
+    virtual UInt32 getBinSize (const BitVector         &whichField);
     virtual void   copyToBin  (      BinaryDataHandler &pMem,
                                const BitVector         &whichField);
     virtual void   copyFromBin(      BinaryDataHandler &pMem,
@@ -135,13 +126,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationModeBase : public FieldContainer
     /*=========================  PROTECTED  ===============================*/
   protected:
 
-    /*---------------------------------------------------------------------*/
-    /*! \name                      Fields                                  */
-    /*! \{                                                                 */
-
-    SFMainApplicationPtr   _sfInternalParentApplication;
-
-    /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
@@ -155,23 +139,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationModeBase : public FieldContainer
     /*! \{                                                                 */
 
     virtual ~ApplicationModeBase(void); 
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-           SFMainApplicationPtr *getSFInternalParentApplication(void);
-
-           MainApplicationPtr  &getInternalParentApplication(void);
-     const MainApplicationPtr  &getInternalParentApplication(void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-     void setInternalParentApplication(const MainApplicationPtr &value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -194,14 +161,14 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationModeBase : public FieldContainer
                                const SyncInfo          &sInfo);
 
     virtual void execBeginEdit     (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
             void execBeginEditImpl (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
-    virtual void onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect);
+    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
 #endif
 
     /*! \}                                                                 */
@@ -210,7 +177,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationModeBase : public FieldContainer
 
     friend class FieldContainer;
 
-    static FieldDescription   *_desc[];
     static FieldContainerType  _type;
 
 

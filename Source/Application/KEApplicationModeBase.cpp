@@ -61,30 +61,10 @@
 
 KE_USING_NAMESPACE
 
-const OSG::BitVector  ApplicationModeBase::InternalParentApplicationFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationModeBase::InternalParentApplicationFieldId);
-
 const OSG::BitVector ApplicationModeBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
     (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
 
-
-// Field descriptions
-
-/*! \var MainApplicationPtr ApplicationModeBase::_sfInternalParentApplication
-    
-*/
-
-//! ApplicationMode description
-
-FieldDescription *ApplicationModeBase::_desc[] = 
-{
-    new FieldDescription(SFMainApplicationPtr::getClassType(), 
-                     "InternalParentApplication", 
-                     InternalParentApplicationFieldId, InternalParentApplicationFieldMask,
-                     false,
-                     (FieldAccessMethod) &ApplicationModeBase::getSFInternalParentApplication)
-};
 
 
 FieldContainerType ApplicationModeBase::_type(
@@ -93,8 +73,8 @@ FieldContainerType ApplicationModeBase::_type(
     NULL,
     NULL, 
     ApplicationMode::initMethod,
-    _desc,
-    sizeof(_desc));
+    NULL,
+    0);
 
 //OSG_FIELD_CONTAINER_DEF(ApplicationModeBase, ApplicationModePtr)
 
@@ -111,7 +91,7 @@ const FieldContainerType &ApplicationModeBase::getType(void) const
 } 
 
 
-::osg::UInt32 ApplicationModeBase::getContainerSize(void) const 
+UInt32 ApplicationModeBase::getContainerSize(void) const 
 { 
     return sizeof(ApplicationMode); 
 }
@@ -130,13 +110,13 @@ void ApplicationModeBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((ApplicationModeBase *) &other, whichField, sInfo);
 }
 void ApplicationModeBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void ApplicationModeBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void ApplicationModeBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -146,13 +126,11 @@ void ApplicationModeBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAs
 /*------------------------- constructors ----------------------------------*/
 
 ApplicationModeBase::ApplicationModeBase(void) :
-    _sfInternalParentApplication(MainApplicationPtr(NullFC)), 
     Inherited() 
 {
 }
 
 ApplicationModeBase::ApplicationModeBase(const ApplicationModeBase &source) :
-    _sfInternalParentApplication(source._sfInternalParentApplication), 
     Inherited                 (source)
 {
 }
@@ -165,14 +143,9 @@ ApplicationModeBase::~ApplicationModeBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 ApplicationModeBase::getBinSize(const BitVector &whichField)
+UInt32 ApplicationModeBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
-
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-    {
-        returnValue += _sfInternalParentApplication.getBinSize();
-    }
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
 
     return returnValue;
@@ -183,11 +156,6 @@ void ApplicationModeBase::copyToBin(      BinaryDataHandler &pMem,
 {
     Inherited::copyToBin(pMem, whichField);
 
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-    {
-        _sfInternalParentApplication.copyToBin(pMem);
-    }
-
 
 }
 
@@ -195,11 +163,6 @@ void ApplicationModeBase::copyFromBin(      BinaryDataHandler &pMem,
                                     const BitVector    &whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
-
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-    {
-        _sfInternalParentApplication.copyFromBin(pMem);
-    }
 
 
 }
@@ -211,9 +174,6 @@ void ApplicationModeBase::executeSyncImpl(      ApplicationModeBase *pOther,
 
     Inherited::executeSyncImpl(pOther, whichField);
 
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-        _sfInternalParentApplication.syncWith(pOther->_sfInternalParentApplication);
-
 
 }
 #else
@@ -224,16 +184,13 @@ void ApplicationModeBase::executeSyncImpl(      ApplicationModeBase *pOther,
 
     Inherited::executeSyncImpl(pOther, whichField, sInfo);
 
-    if(FieldBits::NoField != (InternalParentApplicationFieldMask & whichField))
-        _sfInternalParentApplication.syncWith(pOther->_sfInternalParentApplication);
-
 
 
 }
 
 void ApplicationModeBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 

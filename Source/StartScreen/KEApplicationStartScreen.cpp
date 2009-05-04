@@ -112,9 +112,9 @@ void ApplicationStartScreen::initMethod (void)
 \***************************************************************************/
 
 
-void ApplicationStartScreen::attachApplication(MainApplicationPtr TheApplication)
+void ApplicationStartScreen::attachApplication(void)
 {
-	Inherited::attachApplication(TheApplication);
+	Inherited::attachApplication();
 
     //Camera Transformation Node
 	Matrix CameraTransformMatrix;
@@ -131,7 +131,7 @@ void ApplicationStartScreen::attachApplication(MainApplicationPtr TheApplication
 
     // Make Torus Node (creates Torus in background of scene)
     NodePtr TorusGeometryNode = NullFC;
-    Path TorusKnotFile(TheApplication->getSettings()->getDataDirectory() / std::string("Models") / std::string("TorusKnot.osb"));
+    Path TorusKnotFile(MainApplication::the()->getSettings()->getDataDirectory() / std::string("Models") / std::string("TorusKnot.osb"));
     if(boost::filesystem::exists(TorusKnotFile))
     {
         TorusGeometryNode = SceneFileHandler::the().read(TorusKnotFile.native_file_string().c_str());
@@ -232,7 +232,7 @@ void ApplicationStartScreen::attachApplication(MainApplicationPtr TheApplication
 
 	//Foreground
 	//ImageForegroundPtr LogoForeground = ImageForeground::create();
-	//Path LogoPath(TheApplication->getSettings()->getDataDirectory() / "Images/Logo.png");
+	//Path LogoPath(MainApplication::the()->getSettings()->getDataDirectory() / "Images/Logo.png");
     //ImagePtr LoadedImage = ImageFileHandler::the().read(LogoPath.string().c_str());
 
 	//beginEditCP(LogoForeground);
@@ -241,10 +241,10 @@ void ApplicationStartScreen::attachApplication(MainApplicationPtr TheApplication
 
 	ForegroundPtr UserInterfaceForeground = createInterface();
     beginEditCP(_TheUIDrawingSurface, UIDrawingSurface::EventProducerFieldMask);
-        _TheUIDrawingSurface->setEventProducer(getParentApplication()->getMainWindowEventProducer());
+        _TheUIDrawingSurface->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
     endEditCP(_TheUIDrawingSurface, UIDrawingSurface::EventProducerFieldMask);
 
-	if(TheApplication->getMainWindowEventProducer()->getWindow() != NullFC && TheApplication->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
+	if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC && MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
 	{
 		ViewportPtr DefaultViewport = Viewport::create();
 		beginEditCP(DefaultViewport);
@@ -256,13 +256,13 @@ void ApplicationStartScreen::attachApplication(MainApplicationPtr TheApplication
 			DefaultViewport->getForegrounds().push_back    (UserInterfaceForeground);
 		endEditCP(DefaultViewport);
 
-		beginEditCP(getParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-			getParentApplication()->getMainWindowEventProducer()->getWindow()->addPort(DefaultViewport);
-		endEditCP(getParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+		beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+			MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(DefaultViewport);
+		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
 
-	getParentApplication()->getMainWindowEventProducer()->addKeyListener(&_StartScreenKeyListener);
-	getParentApplication()->getMainWindowEventProducer()->addUpdateListener(&_ScreenUpdateListener);
+	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_StartScreenKeyListener);
+	MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_ScreenUpdateListener);
     
 }
 
@@ -272,14 +272,14 @@ void ApplicationStartScreen::dettachApplication(void)
         _TheUIDrawingSurface->setEventProducer(NullFC);
     endEditCP(_TheUIDrawingSurface, UIDrawingSurface::EventProducerFieldMask);
 
-	getParentApplication()->getMainWindowEventProducer()->removeKeyListener(&_StartScreenKeyListener);
-	getParentApplication()->getMainWindowEventProducer()->removeUpdateListener(&_ScreenUpdateListener);
+	MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_StartScreenKeyListener);
+	MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_ScreenUpdateListener);
 
-	if(getParentApplication()->getMainWindowEventProducer()->getWindow() != NullFC)
+	if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC)
 	{
-		beginEditCP(getParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-			getParentApplication()->getMainWindowEventProducer()->getWindow()->subPort(0);
-		endEditCP(getParentApplication()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+		beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
+			MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(0);
+		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
 
 	Inherited::dettachApplication();
@@ -497,23 +497,23 @@ void ApplicationStartScreen::StartScreenKeyListener::keyTyped(const KeyEvent& e)
 {
    if(e.getKey() == KeyEvent::KEY_Q && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
    {
-		_ApplicationStartScreen->getParentApplication()->exit();
+		MainApplication::the()->exit();
    }
 }
 
 void ApplicationStartScreen::BuilderButtonActionListener::actionPerformed(const ActionEvent& e)
 {
-	_ApplicationStartScreen->getParentApplication()->attachBuilder();
+	MainApplication::the()->attachBuilder();
 }
 
 void ApplicationStartScreen::PlayerButtonActionListener::actionPerformed(const ActionEvent& e)
 {
-	_ApplicationStartScreen->getParentApplication()->attachPlayer();
+	MainApplication::the()->attachPlayer();
 }
 
 void ApplicationStartScreen::ExitButtonActionListener::actionPerformed(const ActionEvent& e)
 {
-	_ApplicationStartScreen->getParentApplication()->exit();
+	MainApplication::the()->exit();
 }
 
 void ApplicationStartScreen::ScreenUpdateListener::update(const UpdateEvent& e)

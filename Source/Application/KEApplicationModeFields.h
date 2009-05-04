@@ -80,10 +80,9 @@ typedef FCPtr<FieldContainerPtr, ApplicationMode> ApplicationModePtr;
 
 KE_END_NAMESPACE
 
-OSG_BEGIN_NAMESPACE
 template <>
-struct FieldDataTraits< ::ke::ApplicationModePtr> : 
-    public FieldTraitsRecurseMapper< ::ke::ApplicationModePtr, true>
+struct FieldDataTraits<ke::ApplicationModePtr> : 
+    public FieldTraitsRecurseMapper<ke::ApplicationModePtr, true>
 {
     static DataType             _type;                       
 
@@ -95,7 +94,6 @@ struct FieldDataTraits< ::ke::ApplicationModePtr> :
     static char     *getSName(void) { return "SFApplicationModePtr"; }
     static char     *getMName(void) { return "MFApplicationModePtr"; }
 };
-OSG_END_NAMESPACE
 
 KE_BEGIN_NAMESPACE
 

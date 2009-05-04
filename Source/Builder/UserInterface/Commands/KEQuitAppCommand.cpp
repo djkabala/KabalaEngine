@@ -45,6 +45,7 @@
 #include "KEConfig.h"
 
 #include "KEQuitAppCommand.h"
+#include "Application/KEMainApplication.h"
 
 KE_USING_NAMESPACE
 
@@ -65,9 +66,9 @@ CommandType QuitAppCommand::_Type("QuitAppCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-QuitAppCommandPtr QuitAppCommand::create(MainApplicationPtr TheMainApp)
+QuitAppCommandPtr QuitAppCommand::create(void)
 {
-	return Ptr(new QuitAppCommand(TheMainApp));
+	return Ptr(new QuitAppCommand());
 }
 
 /***************************************************************************\
@@ -76,7 +77,7 @@ QuitAppCommandPtr QuitAppCommand::create(MainApplicationPtr TheMainApp)
 
 void QuitAppCommand::execute(void)
 {
-	_TheMainApp->exit();
+	MainApplication::the()->exit();
 }
 
 std::string QuitAppCommand::getCommandDescription(void) const

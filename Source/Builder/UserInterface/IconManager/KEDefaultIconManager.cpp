@@ -46,6 +46,7 @@
 
 #include "KEDefaultIconManager.h"
 #include "Application/KEApplicationSettings.h"
+#include "Application/KEMainApplication.h"
 #include <boost/filesystem.hpp>
 #include <OpenSG/OSGImageFileHandler.h>
 
@@ -98,17 +99,17 @@ std::string DefaultIconManager::statusToString(IconSet::IconStatusType Status) c
 	
 Path DefaultIconManager::getTextureFilePath(const std::string& IconSetName, IconSet::IconStatusType Status)
 {
-	return Path(_MainApplication->getSettings()->getDataDirectory() / std::string("Images") / std::string("Icons") / IconSetName / (IconSetName + statusToString(Status) + std::string(".png")));
+	return Path(MainApplication::the()->getSettings()->getDataDirectory() / std::string("Images") / std::string("Icons") / IconSetName / (IconSetName + statusToString(Status) + std::string(".png")));
 }
 
 bool DefaultIconManager::canCreateIconSet(const std::string& IconSetName)
 {
-	return boost::filesystem::exists(Path(_MainApplication->getSettings()->getDataDirectory() / std::string("Images") / std::string("Icons") / IconSetName));
+	return boost::filesystem::exists(Path(MainApplication::the()->getSettings()->getDataDirectory() / std::string("Images") / std::string("Icons") / IconSetName));
 }
 
-DefaultIconManagerPtr DefaultIconManager::create(MainApplicationPtr MainApp)
+DefaultIconManagerPtr DefaultIconManager::create(void)
 {
-	return Ptr(new DefaultIconManager(MainApp));
+	return Ptr(new DefaultIconManager());
 }
 
 

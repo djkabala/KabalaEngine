@@ -78,8 +78,6 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 
     /*! \}                                                                 */
 
-	void setParentApplication(MainApplicationPtr TheMainApplication);
-
 	void start(void);
 
 	void stop(void);

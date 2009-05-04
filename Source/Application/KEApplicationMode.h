@@ -42,7 +42,6 @@
 #include "KEConfig.h"
 
 #include "KEApplicationModeBase.h"
-#include "KEMainApplicationFields.h"
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -77,13 +76,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationMode : public ApplicationModeBase
 
     /*! \}                                                                 */
 
-	virtual void attachApplication(MainApplicationPtr TheApplication);
+	virtual void attachApplication(void);
 	virtual void dettachApplication(void);
 	virtual void start(void) = 0;
 	virtual void stop(void) = 0;
     virtual void reset(void) = 0;
-
-	MainApplicationPtr getParentApplication(void) const;
     /*=========================  PROTECTED  ===============================*/
   protected:
 

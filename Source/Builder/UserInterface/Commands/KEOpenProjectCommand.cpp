@@ -46,6 +46,7 @@
 
 #include "KEOpenProjectCommand.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
+#include "Application/KEMainApplication.h"
 
 KE_USING_NAMESPACE
 
@@ -82,11 +83,11 @@ void OpenProjectCommand::execute(void)
 	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("All Files","*.*"));
 
 	std::vector<Path> Paths;
-	Paths = _TheApplicationBuilder->getParentApplication()->getMainWindowEventProducer()->openFileDialog("Open Project ...",KEProjectFileFilters,Path("."), false);
+	Paths = MainApplication::the()->getMainWindowEventProducer()->openFileDialog("Open Project ...",KEProjectFileFilters,Path("."), false);
 
 	if(Paths.size() > 0)
 	{
-		_TheApplicationBuilder->getParentApplication()->loadProject(Paths.front());
+		MainApplication::the()->loadProject(Paths.front());
 	}
 }
 

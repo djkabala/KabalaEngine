@@ -77,7 +77,6 @@
 #include <OpenSG/OSGNodeFields.h> // InternalActiveModelNodes type
 #include <OpenSG/OSGCameraFields.h> // Cameras type
 #include <OpenSG/OSGCameraFields.h> // InternalActiveCamera type
-#include <Application/KEMainApplicationFields.h> // InternalParentApplication type
 #include <OpenSG/OSGViewportFields.h> // InternalActiveViewport type
 
 #include "KEProjectFields.h"
@@ -117,8 +116,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
         InternalActiveModelNodesFieldId  = ModelNodesFieldId                + 1,
         CamerasFieldId                   = InternalActiveModelNodesFieldId  + 1,
         InternalActiveCameraFieldId      = CamerasFieldId                   + 1,
-        InternalParentApplicationFieldId = InternalActiveCameraFieldId      + 1,
-        InternalActiveViewportFieldId    = InternalParentApplicationFieldId + 1,
+        InternalActiveViewportFieldId    = InternalActiveCameraFieldId      + 1,
         NextFieldId                      = InternalActiveViewportFieldId    + 1
     };
 
@@ -136,7 +134,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     static const OSG::BitVector InternalActiveModelNodesFieldMask;
     static const OSG::BitVector CamerasFieldMask;
     static const OSG::BitVector InternalActiveCameraFieldMask;
-    static const OSG::BitVector InternalParentApplicationFieldMask;
     static const OSG::BitVector InternalActiveViewportFieldMask;
 
 
@@ -147,7 +144,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     /*! \{                                                                 */
 
     static        FieldContainerType &getClassType    (void); 
-    static        ::osg::UInt32              getClassTypeId  (void); 
+    static        UInt32              getClassTypeId  (void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -157,7 +154,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     virtual       FieldContainerType &getType  (void); 
     virtual const FieldContainerType &getType  (void) const; 
 
-    virtual       ::osg::UInt32              getContainerSize(void) const;
+    virtual       UInt32              getContainerSize(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -182,19 +179,19 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
      const Path                &getFilePath       (void) const;
            ScenePtr            &getInitialScene   (void);
      const ScenePtr            &getInitialScene   (void) const;
-           ScenePtr            &getScenes         (const ::osg::UInt32 index);
+           ScenePtr            &getScenes         (const UInt32 index);
            MFScenePtr          &getScenes         (void);
      const MFScenePtr          &getScenes         (void) const;
-           BackgroundPtr       &getBackgrounds    (const ::osg::UInt32 index);
+           BackgroundPtr       &getBackgrounds    (const UInt32 index);
            MFBackgroundPtr     &getBackgrounds    (void);
      const MFBackgroundPtr     &getBackgrounds    (void) const;
-           ForegroundPtr       &getForegrounds    (const ::osg::UInt32 index);
+           ForegroundPtr       &getForegrounds    (const UInt32 index);
            MFForegroundPtr     &getForegrounds    (void);
      const MFForegroundPtr     &getForegrounds    (void) const;
-           NodePtr             &getModelNodes     (const ::osg::UInt32 index);
+           NodePtr             &getModelNodes     (const UInt32 index);
            MFNodePtr           &getModelNodes     (void);
      const MFNodePtr           &getModelNodes     (void) const;
-           CameraPtr           &getCameras        (const ::osg::UInt32 index);
+           CameraPtr           &getCameras        (const UInt32 index);
            MFCameraPtr         &getCameras        (void);
      const MFCameraPtr         &getCameras        (void) const;
 
@@ -218,7 +215,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual ::osg::UInt32 getBinSize (const BitVector         &whichField);
+    virtual UInt32 getBinSize (const BitVector         &whichField);
     virtual void   copyToBin  (      BinaryDataHandler &pMem,
                                const BitVector         &whichField);
     virtual void   copyFromBin(      BinaryDataHandler &pMem,
@@ -263,7 +260,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     MFNodePtr           _mfInternalActiveModelNodes;
     MFCameraPtr         _mfCameras;
     SFCameraPtr         _sfInternalActiveCamera;
-    SFMainApplicationPtr   _sfInternalParentApplication;
     SFViewportPtr       _sfInternalActiveViewport;
 
     /*! \}                                                                 */
@@ -291,7 +287,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
            MFForegroundPtr     *getMFInternalActiveForegrounds(void);
            MFNodePtr           *getMFInternalActiveModelNodes(void);
            SFCameraPtr         *getSFInternalActiveCamera(void);
-           SFMainApplicationPtr *getSFInternalParentApplication(void);
            SFViewportPtr       *getSFInternalActiveViewport(void);
 
            ScenePtr            &getInternalActiveScene(void);
@@ -300,14 +295,12 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
      const BackgroundPtr       &getInternalActiveBackground(void) const;
            CameraPtr           &getInternalActiveCamera(void);
      const CameraPtr           &getInternalActiveCamera(void) const;
-           MainApplicationPtr  &getInternalParentApplication(void);
-     const MainApplicationPtr  &getInternalParentApplication(void) const;
            ViewportPtr         &getInternalActiveViewport(void);
      const ViewportPtr         &getInternalActiveViewport(void) const;
-           ForegroundPtr       &getInternalActiveForegrounds(::osg::UInt32 index);
+           ForegroundPtr       &getInternalActiveForegrounds(UInt32 index);
            MFForegroundPtr     &getInternalActiveForegrounds(void);
      const MFForegroundPtr     &getInternalActiveForegrounds(void) const;
-           NodePtr             &getInternalActiveModelNodes(::osg::UInt32 index);
+           NodePtr             &getInternalActiveModelNodes(UInt32 index);
            MFNodePtr           &getInternalActiveModelNodes(void);
      const MFNodePtr           &getInternalActiveModelNodes(void) const;
 
@@ -319,7 +312,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
      void setInternalActiveScene(const ScenePtr &value);
      void setInternalActiveBackground(const BackgroundPtr &value);
      void setInternalActiveCamera(const CameraPtr &value);
-     void setInternalParentApplication(const MainApplicationPtr &value);
      void setInternalActiveViewport(const ViewportPtr &value);
 
     /*! \}                                                                 */
@@ -343,14 +335,14 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
                                const SyncInfo          &sInfo);
 
     virtual void execBeginEdit     (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
             void execBeginEditImpl (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
-    virtual void onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect);
+    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
 #endif
 
     /*! \}                                                                 */

@@ -35,7 +35,6 @@
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
-#include "Application/KEMainApplication.h"
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -49,17 +48,13 @@ protected:
 	typedef Command Inherited;
 	typedef StartScreenCommandPtr Ptr;
 
-	StartScreenCommand(MainApplicationPtr TheMainApp);
+	StartScreenCommand(void);
 
 	StartScreenCommand(const StartScreenCommand& source);
-
-	void operator =(const StartScreenCommand& source);
 
 	static CommandType _Type;
 	
 	virtual void execute(void);
-
-	MainApplicationPtr _TheMainApp;
 public:
 
 	virtual std::string getCommandDescription(void) const;
@@ -70,7 +65,7 @@ public:
 
 	virtual ~StartScreenCommand(void);
 	
-	static StartScreenCommandPtr create(MainApplicationPtr TheMainApp);
+	static StartScreenCommandPtr create(void);
 };
 
 KE_END_NAMESPACE

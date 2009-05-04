@@ -79,7 +79,7 @@ typedef FCPtr<FieldContainerPtr, Project> ProjectPtr;
 #endif
 
 KE_END_NAMESPACE
-OSG_BEGIN_NAMESPACE
+
 template <>
 struct FieldDataTraits<ke::ProjectPtr> : 
     public FieldTraitsRecurseMapper<ke::ProjectPtr, true>
@@ -94,7 +94,7 @@ struct FieldDataTraits<ke::ProjectPtr> :
     static char     *getSName(void) { return "SFProjectPtr"; }
     static char     *getMName(void) { return "MFProjectPtr"; }
 };
-OSG_END_NAMESPACE
+
 KE_BEGIN_NAMESPACE
 
 #if !defined(OSG_DOC_DEV_TRAITS)

@@ -45,6 +45,7 @@
 #include "KEConfig.h"
 
 #include "KEStartScreenCommand.h"
+#include "Application/KEMainApplication.h"
 
 KE_USING_NAMESPACE
 
@@ -65,9 +66,9 @@ CommandType StartScreenCommand::_Type("StartScreenCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-StartScreenCommandPtr StartScreenCommand::create(MainApplicationPtr TheMainApp)
+StartScreenCommandPtr StartScreenCommand::create(void)
 {
-	return Ptr(new StartScreenCommand(TheMainApp));
+	return Ptr(new StartScreenCommand());
 }
 
 /***************************************************************************\
@@ -76,7 +77,7 @@ StartScreenCommandPtr StartScreenCommand::create(MainApplicationPtr TheMainApp)
 
 void StartScreenCommand::execute(void)
 {
-	_TheMainApp->attachStartScreen();
+	MainApplication::the()->attachStartScreen();
 }
 
 std::string StartScreenCommand::getCommandDescription(void) const

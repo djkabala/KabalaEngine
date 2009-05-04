@@ -45,6 +45,7 @@
 #include "KEConfig.h"
 
 #include "KEPlayProjectCommand.h"
+#include "Application/KEMainApplication.h"
 
 KE_USING_NAMESPACE
 
@@ -65,9 +66,9 @@ CommandType PlayProjectCommand::_Type("PlayProjectCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-PlayProjectCommandPtr PlayProjectCommand::create(MainApplicationPtr TheMainApp)
+PlayProjectCommandPtr PlayProjectCommand::create(void)
 {
-	return Ptr(new PlayProjectCommand(TheMainApp));
+	return Ptr(new PlayProjectCommand());
 }
 
 /***************************************************************************\
@@ -76,7 +77,7 @@ PlayProjectCommandPtr PlayProjectCommand::create(MainApplicationPtr TheMainApp)
 
 void PlayProjectCommand::execute(void)
 {
-	_TheMainApp->attachPlayer();
+	MainApplication::the()->attachPlayer();
 }
 
 std::string PlayProjectCommand::getCommandDescription(void) const

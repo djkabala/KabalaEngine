@@ -49,6 +49,7 @@
 #include <boost/filesystem/operations.hpp>
 
 #include "Project/KEProject.h"
+#include "Application/KEMainApplication.h"
 
 KE_USING_NAMESPACE
 
@@ -86,16 +87,16 @@ void SaveProjectAsCommand::execute(void)
 
 
 	//Project File
-	Path InitialProjectFilePath(_TheApplicationBuilder->getParentApplication()->getProject()->getFilePath());
+	Path InitialProjectFilePath(MainApplication::the()->getProject()->getFilePath());
 	if(!boost::filesystem::exists(InitialProjectFilePath))
 	{
 		InitialProjectFilePath = Path("./KEProject.xml");
 	}
 
 	Path ProjectFilePath;
-	ProjectFilePath = _TheApplicationBuilder->getParentApplication()->getMainWindowEventProducer()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath,InitialProjectFilePath.parent_path(), true);
+	ProjectFilePath = MainApplication::the()->getMainWindowEventProducer()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath,InitialProjectFilePath.parent_path(), true);
 
-	_TheApplicationBuilder->getParentApplication()->saveProject(ProjectFilePath);
+	MainApplication::the()->saveProject(ProjectFilePath);
 }
 
 std::string SaveProjectAsCommand::getCommandDescription(void) const

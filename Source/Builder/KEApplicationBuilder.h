@@ -81,7 +81,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationBuilder : public ApplicationBuild
                       const BitVector  bvFlags ) const;
 
     /*! \}                                                                 */
-	virtual void attachApplication(MainApplicationPtr TheApplication);
+	virtual void attachApplication(void);
 	virtual void dettachApplication(void);
 	ForegroundPtr createInterface(void);
 	virtual void start(void);

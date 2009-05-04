@@ -41,11 +41,14 @@
 
 #include "KEConfig.h"
 
-#include "KEMainApplicationBase.h"
 #include <OpenSG/OSGWindowFields.h>
 #include <OpenSG/Input/OSGWindowAdapter.h>
 #include <boost/program_options.hpp>
-#include "Project/KEProjectFields.h"
+#include <Application/KEApplicationSettingsFields.h> // Settings type
+#include <OpenSG/Toolbox/OSGPathType.h> // SettingsLoadFile type
+#include <OpenSG/Input/OSGWindowEventProducerFields.h> // MainWindowEventProducer type
+#include <Project/KEProjectFields.h> // Project type
+#include <Application/KEApplicationModeFields.h> 
 
 
 OSG_USING_NAMESPACE
@@ -55,29 +58,14 @@ KE_BEGIN_NAMESPACE
            PageKabalaEngineMainApplication for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING MainApplication : public MainApplicationBase
+class KE_KABALAENGINELIB_DLLMAPPING MainApplication
 {
   private:
-
-    typedef MainApplicationBase Inherited;
-
     /*==========================  PUBLIC  =================================*/
+      static MainApplication* _Instance;
   public:
 
-    /*---------------------------------------------------------------------*/
-    /*! \name                      Sync                                    */
-    /*! \{                                                                 */
-
-    virtual void changed(BitVector  whichField, 
-                         ::osg::UInt32     origin    );
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                     Output                                   */
-    /*! \{                                                                 */
-
-    virtual void dump(      ::osg::UInt32     uiIndent = 0, 
-                      const BitVector  bvFlags  = 0) const;
+      static MainApplication* the(void);
 
     /*! \}                                                                 */
 
@@ -99,8 +87,42 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication : public MainApplicationBase
 
 	void attachStartScreen(void);
 
+           ApplicationSettingsPtr &getSettings       (void);
+     const ApplicationSettingsPtr &getSettings       (void) const;
+           Path                &getSettingsLoadFile(void);
+     const Path                &getSettingsLoadFile(void) const;
+           WindowEventProducerPtr &getMainWindowEventProducer(void);
+     const WindowEventProducerPtr &getMainWindowEventProducer(void) const;
+           ProjectPtr          &getProject        (void);
+     const ProjectPtr          &getProject        (void) const;
+           ApplicationModePtr  &getBuilderMode    (void);
+     const ApplicationModePtr  &getBuilderMode    (void) const;
+           ApplicationModePtr  &getPlayerMode     (void);
+     const ApplicationModePtr  &getPlayerMode     (void) const;
+           ApplicationModePtr  &getStartScreenMode(void);
+     const ApplicationModePtr  &getStartScreenMode(void) const;
+           ApplicationModePtr  &getCurrentMode    (void);
+     const ApplicationModePtr  &getCurrentMode    (void) const;
+     
+     void setSettings       ( const ApplicationSettingsPtr &value );
+     void setSettingsLoadFile( const Path &value );
+     void setMainWindowEventProducer( const WindowEventProducerPtr &value );
+     void setProject        ( const ProjectPtr &value );
+     void setBuilderMode    ( const ApplicationModePtr &value );
+     void setPlayerMode     ( const ApplicationModePtr &value );
+     void setStartScreenMode( const ApplicationModePtr &value );
+     void setCurrentMode    ( const ApplicationModePtr &value );
     /*=========================  PROTECTED  ===============================*/
   protected:
+
+    ApplicationSettingsPtr _Settings;
+    Path                   _SettingsPath;
+    WindowEventProducerPtr _MainWindowEventProducer;
+    ProjectPtr             _Project;
+    ApplicationModePtr     _BuilderMode;
+    ApplicationModePtr     _StartScreenMode;
+    ApplicationModePtr     _PlayerMode;
+    ApplicationModePtr     _CurrentMode;
 
     static ApplicationSettingsPtr createDefaultSettings(void);
 
@@ -117,8 +139,6 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication : public MainApplicationBase
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    MainApplication(void);
-    MainApplication(const MainApplication &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -130,12 +150,12 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication : public MainApplicationBase
 	class MainWindowListener : public WindowAdapter
 	{
 	public :
-		MainWindowListener(MainApplicationPtr TheMainApplication);
+		MainWindowListener(MainApplication* TheMainApplication);
 		virtual void windowClosing(const WindowEvent& e);
 
 		virtual void windowClosed(const WindowEvent& e);
 	protected :
-		MainApplicationPtr _MainApplication;
+		MainApplication* _MainApplication;
 	};
 
 	MainWindowListener _MainWindowListener;
@@ -148,21 +168,15 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication : public MainApplicationBase
     /*==========================  PRIVATE  ================================*/
   private:
 
-    friend class FieldContainer;
-    friend class MainApplicationBase;
-
-    static void initMethod(void);
-
-    // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const MainApplication &source);
+    MainApplication(void);
+    MainApplication(const MainApplication &source);
 };
 
 typedef MainApplication *MainApplicationP;
 
 KE_END_NAMESPACE
 
-#include "KEMainApplicationBase.inl"
 #include "KEMainApplication.inl"
 
 #endif /* _KEMAINAPPLICATION_H_ */
