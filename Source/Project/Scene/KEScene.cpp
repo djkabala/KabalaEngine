@@ -88,19 +88,36 @@ void Scene::enter(void)
 
 	//Set up Initial Model Nodes
 	beginEditCP(getRoot(), Node::ChildrenFieldMask);
+		while(getRoot()->getNChildren() > 0)
+		{
+			getRoot()->subChild(getRoot()->getNChildren()-1);
+		}
 		for(::osg::UInt32 i(0) ; i<getInitialModelNodes().size() ; ++i)
 		{
 			getRoot()->addChild(getInitialModelNodes()[i]);
 		}
 	endEditCP(getRoot(), Node::ChildrenFieldMask);
 
+	//Background
 	getInternalParentProject()->setActiveBackground(getInitialBackground());
+
+	//Camera
 	getInternalParentProject()->setActiveCamera(getInitialCamera());
     
+	//Root Node
     if(getInitialModelNodes().size() != 0)
     {
 	    getInternalParentProject()->setActiveNode(getInitialModelNodes().front());
     }
+
+	//Foregrounds
+	beginEditCP(getInternalParentProject(), Project::InternalActiveForegroundsFieldMask);
+		getInternalParentProject()->getActiveForegrounds().clear();
+		for(::osg::UInt32 i(0) ; i<getInitialForegrounds().size() ; ++i)
+		{
+			getInternalParentProject()->getActiveForegrounds().push_back(getInitialForegrounds(i));
+		}
+	endEditCP(getInternalParentProject(), Project::InternalActiveForegroundsFieldMask);
 }
 
 void Scene::exit(void)
