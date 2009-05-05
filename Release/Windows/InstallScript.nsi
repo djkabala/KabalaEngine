@@ -1,7 +1,7 @@
 # name the installer
 !define ProjectName "KabalaEngine"
 !define SMPROGRAMSFolder $SMPROGRAMS\${ProjectName}
-!define OutFileName ${ProjectName}.exe
+!define OutFileName Install${ProjectName}.exe
 !define InstallDirName ${ProjectName}
 !define ProjectRootDirName "..\.."
 !define InputDirName "..\..\Builds\Windows"
@@ -45,6 +45,7 @@ section
    # create a shortcut named "new shortcut" in the start menu programs directory
    # presently, the new shortcut doesn't call anything (the second field is blank)
    CreateDirectory "${SMPROGRAMSFolder}"
+   createShortCut "${SMPROGRAMSFolder}\${ProjectName}.lnk" "$INSTDIR\KabalaEngine.exe"
    createShortCut "${SMPROGRAMSFolder}\Uninstall ${ProjectName}.lnk" "$INSTDIR\${UninstallFileName}"
 
 # default section end
@@ -104,6 +105,47 @@ section "Main Application"
    
    #File "${InputDirName}\lib\OSG*[^D].lib"
    #File "${InputDirName}\lib\OSG*[^D].dll"
+   File "${InputDirName}\lib\OSGToolbox.dll"
+   File "${InputDirName}\lib\OSGInput.dll"
+   File "${InputDirName}\lib\OSGUserInterface.dll"
+   File "${InputDirName}\lib\OSGAnimation.dll"
+   File "${InputDirName}\lib\OSGDynamics.dll"
+   File "${InputDirName}\lib\OSGParticleSystem.dll"
+   File "${InputDirName}\lib\OSGGame.dll"
+   
+   File "${InputDirName}\lib\OSGBase.dll"
+   File "${InputDirName}\lib\OSGSystem.dll"
+   File "${InputDirName}\lib\OSGWindowWIN32.dll"
+   
+   File "${InputDirName}\lib\libmmd.dll"
+   File "${InputDirName}\lib\msvcp80.dll"
+   File "${InputDirName}\lib\msvcr80.dll"
+   File "${InputDirName}\lib\msvcrt.dll"
+   File "${InputDirName}\lib\stlport_icl46.dll"
+   File "${InputDirName}\lib\stlport_vc7146.dll"
+   File "${InputDirName}\lib\msvcp60.dll"
+   File "${InputDirName}\lib\msvcp71.dll"
+   File "${InputDirName}\lib\msvcr71.dll"
+   
+   File "${InputDirName}\lib\boost_filesystem-vc80-mt-gd-1_36.dll"
+   File "${InputDirName}\lib\boost_program_options-vc80-mt-1_36.dll"
+   File "${InputDirName}\lib\boost_program_options-vc80-mt-gd-1_36.dll"
+   File "${InputDirName}\lib\boost_system-vc80-mt-gd-1_36.dll"
+   
+   File "${ProjectRootDirName}\KabalaEngine.exe"
+   File "${ProjectRootDirName}\.KEDefaultSettings.xml"
+   
+   #Create the Data Directory
+   CreateDirectory $INSTDIR\Data
+   
+   CreateDirectory $INSTDIR\Data\Models
+   setOutPath $INSTDIR\Data\Models
+   File "${ProjectRootDirName}\Data\Models\TorusKnot.osb"
+   
+   CreateDirectory $INSTDIR\Data\Images
+   CreateDirectory $INSTDIR\Data\Images\icons
+   setOutPath $INSTDIR\Data\Images\icons
+   File /r "${ProjectRootDirName}\Data\Images\icons\"
 sectionEnd
 
 section "Documentation"
