@@ -40,6 +40,15 @@ The Scene.
 	>
 	</Field>
 	<Field
+		name="UIDrawingSurfaces"
+		type="UIDrawingSurfacePtr"
+		cardinality="multi"
+		visibility="external"
+		header="OpenSG/UserInterface/OSGUIDrawingSurfaceFields.h"
+		access="public"
+	>
+	</Field>
+	<Field
 		name="InitialBackground"
 		type="BackgroundPtr"
 		cardinality="single"

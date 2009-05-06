@@ -44,6 +44,7 @@
 #include "KEProjectBase.h"
 
 #include <OpenSG/Toolbox/OSGPathType.h>
+#include <OpenSG/Input/OSGWindowEventProducerFields.h>
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -101,6 +102,9 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 	void save(void);
 
 	void attachNames(void);
+
+	WindowEventProducerPtr getEventProducer(void) const;
+	
     /*=========================  PROTECTED  ===============================*/
   protected:
 	  ViewportPtr createDefaultViewport(void) const;

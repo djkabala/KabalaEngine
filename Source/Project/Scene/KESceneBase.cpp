@@ -70,6 +70,9 @@ const OSG::BitVector  SceneBase::NameFieldMask =
 const OSG::BitVector  SceneBase::BackgroundsFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::BackgroundsFieldId);
 
+const OSG::BitVector  SceneBase::UIDrawingSurfacesFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::UIDrawingSurfacesFieldId);
+
 const OSG::BitVector  SceneBase::InitialBackgroundFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::InitialBackgroundFieldId);
 
@@ -117,6 +120,9 @@ const OSG::BitVector SceneBase::MTInfluenceMask =
     
 */
 /*! \var BackgroundPtr   SceneBase::_mfBackgrounds
+    
+*/
+/*! \var UIDrawingSurfacePtr SceneBase::_mfUIDrawingSurfaces
     
 */
 /*! \var BackgroundPtr   SceneBase::_sfInitialBackground
@@ -172,6 +178,11 @@ FieldDescription *SceneBase::_desc[] =
                      BackgroundsFieldId, BackgroundsFieldMask,
                      false,
                      (FieldAccessMethod) &SceneBase::getMFBackgrounds),
+    new FieldDescription(MFUIDrawingSurfacePtr::getClassType(), 
+                     "UIDrawingSurfaces", 
+                     UIDrawingSurfacesFieldId, UIDrawingSurfacesFieldMask,
+                     false,
+                     (FieldAccessMethod) &SceneBase::getMFUIDrawingSurfaces),
     new FieldDescription(SFBackgroundPtr::getClassType(), 
                      "InitialBackground", 
                      InitialBackgroundFieldId, InitialBackgroundFieldMask,
@@ -263,7 +274,7 @@ FieldContainerPtr SceneBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 SceneBase::getContainerSize(void) const 
+UInt32 SceneBase::getContainerSize(void) const 
 { 
     return sizeof(Scene); 
 }
@@ -282,17 +293,18 @@ void SceneBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((SceneBase *) &other, whichField, sInfo);
 }
 void SceneBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void SceneBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void SceneBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
     _mfBackgrounds.terminateShare(uiAspect, this->getContainerSize());
+    _mfUIDrawingSurfaces.terminateShare(uiAspect, this->getContainerSize());
     _mfForegrounds.terminateShare(uiAspect, this->getContainerSize());
     _mfInitialForegrounds.terminateShare(uiAspect, this->getContainerSize());
     _mfModelNodes.terminateShare(uiAspect, this->getContainerSize());
@@ -307,6 +319,7 @@ SceneBase::SceneBase(void) :
     _sfInternalParentProject  (ProjectPtr(NullFC)), 
     _sfName                   (), 
     _mfBackgrounds            (), 
+    _mfUIDrawingSurfaces      (), 
     _sfInitialBackground      (BackgroundPtr(NullFC)), 
     _mfForegrounds            (), 
     _mfInitialForegrounds     (), 
@@ -326,6 +339,7 @@ SceneBase::SceneBase(const SceneBase &source) :
     _sfInternalParentProject  (source._sfInternalParentProject  ), 
     _sfName                   (source._sfName                   ), 
     _mfBackgrounds            (source._mfBackgrounds            ), 
+    _mfUIDrawingSurfaces      (source._mfUIDrawingSurfaces      ), 
     _sfInitialBackground      (source._sfInitialBackground      ), 
     _mfForegrounds            (source._mfForegrounds            ), 
     _mfInitialForegrounds     (source._mfInitialForegrounds     ), 
@@ -349,9 +363,9 @@ SceneBase::~SceneBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 SceneBase::getBinSize(const BitVector &whichField)
+UInt32 SceneBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
@@ -366,6 +380,11 @@ SceneBase::~SceneBase(void)
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
     {
         returnValue += _mfBackgrounds.getBinSize();
+    }
+
+    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
+    {
+        returnValue += _mfUIDrawingSurfaces.getBinSize();
     }
 
     if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
@@ -447,6 +466,11 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
         _mfBackgrounds.copyToBin(pMem);
     }
 
+    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
+    {
+        _mfUIDrawingSurfaces.copyToBin(pMem);
+    }
+
     if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
     {
         _sfInitialBackground.copyToBin(pMem);
@@ -525,6 +549,11 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
         _mfBackgrounds.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
+    {
+        _mfUIDrawingSurfaces.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
     {
         _sfInitialBackground.copyFromBin(pMem);
@@ -599,6 +628,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
         _mfBackgrounds.syncWith(pOther->_mfBackgrounds);
 
+    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
+        _mfUIDrawingSurfaces.syncWith(pOther->_mfUIDrawingSurfaces);
+
     if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
         _sfInitialBackground.syncWith(pOther->_sfInitialBackground);
 
@@ -670,6 +702,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
         _mfBackgrounds.syncWith(pOther->_mfBackgrounds, sInfo);
 
+    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
+        _mfUIDrawingSurfaces.syncWith(pOther->_mfUIDrawingSurfaces, sInfo);
+
     if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
         _mfForegrounds.syncWith(pOther->_mfForegrounds, sInfo);
 
@@ -689,13 +724,16 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 }
 
 void SceneBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
         _mfBackgrounds.beginEdit(uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
+        _mfUIDrawingSurfaces.beginEdit(uiAspect, uiContainerSize);
 
     if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
         _mfForegrounds.beginEdit(uiAspect, uiContainerSize);

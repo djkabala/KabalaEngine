@@ -54,6 +54,8 @@ KE_USING_NAMESPACE
 #include "Project/Scene/KEScene.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <OpenSG/Toolbox/OSGFCFileHandler.h>
+#include "Application/KEMainApplication.h"
+#include <OpenSG/Input/OSGWindowEventProducer.h>
 /***************************************************************************\
  *                            Description                                  *
 \***************************************************************************/
@@ -104,6 +106,11 @@ ProjectPtr Project::create(const Path& ProjectFile)
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
+
+WindowEventProducerPtr Project::getEventProducer(void) const
+{
+	return MainApplication::the()->getMainWindowEventProducer();
+}
 
 void Project::save(void)
 {

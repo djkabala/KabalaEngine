@@ -49,6 +49,7 @@
 #include "Project/KEProject.h"
 #include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGNode.h>
+#include <OpenSG/UserInterface/OSGUIDrawingSurface.h>
 
 KE_USING_NAMESPACE
 
@@ -105,10 +106,7 @@ void Scene::enter(void)
 	getInternalParentProject()->setActiveCamera(getInitialCamera());
     
 	//Root Node
-    if(getInitialModelNodes().size() != 0)
-    {
-	    getInternalParentProject()->setActiveNode(getInitialModelNodes().front());
-    }
+	getInternalParentProject()->setActiveNode(getRoot());
 
 	//Foregrounds
 	beginEditCP(getInternalParentProject(), Project::InternalActiveForegroundsFieldMask);
@@ -118,6 +116,14 @@ void Scene::enter(void)
 			getInternalParentProject()->getActiveForegrounds().push_back(getInitialForegrounds(i));
 		}
 	endEditCP(getInternalParentProject(), Project::InternalActiveForegroundsFieldMask);
+
+	//Attach the User Interface Drawing Surfaces to the Window Event Producer
+	for(::osg::UInt32 i(0) ; i<getUIDrawingSurfaces().size() ; ++i)
+	{
+		beginEditCP(getUIDrawingSurfaces(i), UIDrawingSurface::EventProducerFieldMask);
+			getUIDrawingSurfaces(i)->setEventProducer(getInternalParentProject()->getEventProducer());
+		endEditCP(getUIDrawingSurfaces(i), UIDrawingSurface::EventProducerFieldMask);
+	}
 }
 
 void Scene::exit(void)

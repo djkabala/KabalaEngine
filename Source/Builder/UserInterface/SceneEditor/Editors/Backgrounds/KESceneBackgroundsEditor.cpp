@@ -527,6 +527,11 @@ void SceneBackgroundsEditor::changed(BitVector whichField, ::osg::UInt32 origin)
 			_BackgroundPreviewViewport->setRoot                    (RootNode);
 			_BackgroundPreviewViewport->setBackground              (getEditingBackground());
 		endEditCP(_BackgroundPreviewViewport, Viewport::CameraFieldMask | Viewport::RootFieldMask | Viewport::BackgroundFieldMask);
+		_BackgroundPreviewViewport->clearForegrounds();
+		for(UInt32 i(0) ; i<getEditingScene()->getInitialForegrounds().size(); ++i)
+		{
+			_BackgroundPreviewViewport->addForeground(getEditingScene()->getInitialForegrounds(i));
+		}
 
 		_BackgroundPreviewComponent->set(getEditingScene()->getInitialCamera()->getBeacon()->getToWorld());
 

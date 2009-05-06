@@ -66,6 +66,7 @@
 #include <Project/KEProjectFields.h> // InternalParentProject type
 #include <OpenSG/OSGStringFields.h> // Name type
 #include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
+#include <OpenSG/UserInterface/OSGUIDrawingSurfaceFields.h> // UIDrawingSurfaces type
 #include <OpenSG/OSGBackgroundFields.h> // InitialBackground type
 #include <OpenSG/OSGForegroundFields.h> // Foregrounds type
 #include <OpenSG/OSGForegroundFields.h> // InitialForegrounds type
@@ -104,7 +105,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
         InternalParentProjectFieldId   = Inherited::NextFieldId,
         NameFieldId                    = InternalParentProjectFieldId   + 1,
         BackgroundsFieldId             = NameFieldId                    + 1,
-        InitialBackgroundFieldId       = BackgroundsFieldId             + 1,
+        UIDrawingSurfacesFieldId       = BackgroundsFieldId             + 1,
+        InitialBackgroundFieldId       = UIDrawingSurfacesFieldId       + 1,
         ForegroundsFieldId             = InitialBackgroundFieldId       + 1,
         InitialForegroundsFieldId      = ForegroundsFieldId             + 1,
         ModelNodesFieldId              = InitialForegroundsFieldId      + 1,
@@ -121,6 +123,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
     static const OSG::BitVector InternalParentProjectFieldMask;
     static const OSG::BitVector NameFieldMask;
     static const OSG::BitVector BackgroundsFieldMask;
+    static const OSG::BitVector UIDrawingSurfacesFieldMask;
     static const OSG::BitVector InitialBackgroundFieldMask;
     static const OSG::BitVector ForegroundsFieldMask;
     static const OSG::BitVector InitialForegroundsFieldMask;
@@ -141,7 +144,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
     /*! \{                                                                 */
 
     static        FieldContainerType &getClassType    (void); 
-    static        ::osg::UInt32              getClassTypeId  (void); 
+    static        UInt32              getClassTypeId  (void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -151,7 +154,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
     virtual       FieldContainerType &getType  (void); 
     virtual const FieldContainerType &getType  (void) const; 
 
-    virtual       ::osg::UInt32              getContainerSize(void) const;
+    virtual       UInt32              getContainerSize(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -160,6 +163,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
 
            SFString            *getSFName           (void);
            MFBackgroundPtr     *getMFBackgrounds    (void);
+           MFUIDrawingSurfacePtr *getMFUIDrawingSurfaces(void);
            SFBackgroundPtr     *getSFInitialBackground(void);
            MFForegroundPtr     *getMFForegrounds    (void);
            MFForegroundPtr     *getMFInitialForegrounds(void);
@@ -174,22 +178,25 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
      const BackgroundPtr       &getInitialBackground(void) const;
            CameraPtr           &getInitialCamera  (void);
      const CameraPtr           &getInitialCamera  (void) const;
-           BackgroundPtr       &getBackgrounds    (const ::osg::UInt32 index);
+           BackgroundPtr       &getBackgrounds    (const UInt32 index);
            MFBackgroundPtr     &getBackgrounds    (void);
      const MFBackgroundPtr     &getBackgrounds    (void) const;
-           ForegroundPtr       &getForegrounds    (const ::osg::UInt32 index);
+           UIDrawingSurfacePtr &getUIDrawingSurfaces(const UInt32 index);
+           MFUIDrawingSurfacePtr &getUIDrawingSurfaces(void);
+     const MFUIDrawingSurfacePtr &getUIDrawingSurfaces(void) const;
+           ForegroundPtr       &getForegrounds    (const UInt32 index);
            MFForegroundPtr     &getForegrounds    (void);
      const MFForegroundPtr     &getForegrounds    (void) const;
-           ForegroundPtr       &getInitialForegrounds(const ::osg::UInt32 index);
+           ForegroundPtr       &getInitialForegrounds(const UInt32 index);
            MFForegroundPtr     &getInitialForegrounds(void);
      const MFForegroundPtr     &getInitialForegrounds(void) const;
-           NodePtr             &getModelNodes     (const ::osg::UInt32 index);
+           NodePtr             &getModelNodes     (const UInt32 index);
            MFNodePtr           &getModelNodes     (void);
      const MFNodePtr           &getModelNodes     (void) const;
-           NodePtr             &getInitialModelNodes(const ::osg::UInt32 index);
+           NodePtr             &getInitialModelNodes(const UInt32 index);
            MFNodePtr           &getInitialModelNodes(void);
      const MFNodePtr           &getInitialModelNodes(void) const;
-           CameraPtr           &getCameras        (const ::osg::UInt32 index);
+           CameraPtr           &getCameras        (const UInt32 index);
            MFCameraPtr         &getCameras        (void);
      const MFCameraPtr         &getCameras        (void) const;
 
@@ -212,7 +219,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual ::osg::UInt32 getBinSize (const BitVector         &whichField);
+    virtual UInt32 getBinSize (const BitVector         &whichField);
     virtual void   copyToBin  (      BinaryDataHandler &pMem,
                                const BitVector         &whichField);
     virtual void   copyFromBin(      BinaryDataHandler &pMem,
@@ -246,6 +253,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
     SFProjectPtr        _sfInternalParentProject;
     SFString            _sfName;
     MFBackgroundPtr     _mfBackgrounds;
+    MFUIDrawingSurfacePtr   _mfUIDrawingSurfaces;
     SFBackgroundPtr     _sfInitialBackground;
     MFForegroundPtr     _mfForegrounds;
     MFForegroundPtr     _mfInitialForegrounds;
@@ -327,14 +335,14 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
                                const SyncInfo          &sInfo);
 
     virtual void execBeginEdit     (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
             void execBeginEditImpl (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
-    virtual void onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect);
+    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
 #endif
 
     /*! \}                                                                 */

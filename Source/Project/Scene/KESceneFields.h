@@ -79,7 +79,7 @@ typedef FCPtr<FieldContainerPtr, Scene> ScenePtr;
 #endif
 
 KE_END_NAMESPACE
-OSG_BEGIN_NAMESPACE
+
 template <>
 struct FieldDataTraits<ke::ScenePtr> : 
     public FieldTraitsRecurseMapper<ke::ScenePtr, true>
@@ -94,7 +94,7 @@ struct FieldDataTraits<ke::ScenePtr> :
     static char     *getSName(void) { return "SFScenePtr"; }
     static char     *getMName(void) { return "MFScenePtr"; }
 };
-OSG_END_NAMESPACE
+
 KE_BEGIN_NAMESPACE
 
 #if !defined(OSG_DOC_DEV_TRAITS)

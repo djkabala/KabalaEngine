@@ -55,6 +55,7 @@
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 
 #include <OpenSG/UserInterface/OSGUIForeground.h>
+#include <OpenSG/UserInterface/OSGUIDrawingSurface.h>
 
 #include "Project/KEProject.h"
 #include "Builder/UserInterface/KEBuilderInterface.h"

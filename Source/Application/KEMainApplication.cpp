@@ -159,12 +159,9 @@ Int32 MainApplication::run(int argc, char **argv)
 	//Check for the settings file
 	if(OptionsVariableMap.count("settings-file"))
 	{
-		loadSettings(Path(OptionsVariableMap["settings-file"].as<std::string>()));
+		setSettingsLoadFile(Path(OptionsVariableMap["settings-file"].as<std::string>()));
 	}
-	else
-	{
-		loadSettings(getSettingsLoadFile());
-	}
+	loadSettings(getSettingsLoadFile());
 
     if(getSettings() == NullFC)
     {

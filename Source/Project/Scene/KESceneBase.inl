@@ -116,6 +116,13 @@ MFBackgroundPtr *SceneBase::getMFBackgrounds(void)
     return &_mfBackgrounds;
 }
 
+//! Get the Scene::_mfUIDrawingSurfaces field.
+inline
+MFUIDrawingSurfacePtr *SceneBase::getMFUIDrawingSurfaces(void)
+{
+    return &_mfUIDrawingSurfaces;
+}
+
 //! Get the Scene::_sfInitialBackground field.
 inline
 SFBackgroundPtr *SceneBase::getSFInitialBackground(void)
@@ -382,6 +389,27 @@ inline
 const MFBackgroundPtr &SceneBase::getBackgrounds(void) const
 {
     return _mfBackgrounds;
+}
+
+//! Get the value of the \a index element the Scene::_mfUIDrawingSurfaces field.
+inline
+UIDrawingSurfacePtr &SceneBase::getUIDrawingSurfaces(const OSG::UInt32 index)
+{
+    return _mfUIDrawingSurfaces[index];
+}
+
+//! Get the Scene::_mfUIDrawingSurfaces field.
+inline
+MFUIDrawingSurfacePtr &SceneBase::getUIDrawingSurfaces(void)
+{
+    return _mfUIDrawingSurfaces;
+}
+
+//! Get the Scene::_mfUIDrawingSurfaces field.
+inline
+const MFUIDrawingSurfacePtr &SceneBase::getUIDrawingSurfaces(void) const
+{
+    return _mfUIDrawingSurfaces;
 }
 
 //! Get the value of the \a index element the Scene::_mfForegrounds field.
