@@ -522,16 +522,17 @@ void SceneBackgroundsEditor::changed(BitVector whichField, ::osg::UInt32 origin)
 		endEditCP(RootNode, Node::ChildrenFieldMask);
 
 		//Update Background Viewport
-		beginEditCP(_BackgroundPreviewViewport, Viewport::CameraFieldMask | Viewport::RootFieldMask | Viewport::BackgroundFieldMask);
+		beginEditCP(_BackgroundPreviewViewport, Viewport::CameraFieldMask | Viewport::RootFieldMask | Viewport::BackgroundFieldMask | Viewport::ForegroundsFieldMask);
 			_BackgroundPreviewViewport->setCamera                  (TheCamera);
 			_BackgroundPreviewViewport->setRoot                    (RootNode);
 			_BackgroundPreviewViewport->setBackground              (getEditingBackground());
-		endEditCP(_BackgroundPreviewViewport, Viewport::CameraFieldMask | Viewport::RootFieldMask | Viewport::BackgroundFieldMask);
-		_BackgroundPreviewViewport->clearForegrounds();
-		for(UInt32 i(0) ; i<getEditingScene()->getInitialForegrounds().size(); ++i)
-		{
-			_BackgroundPreviewViewport->addForeground(getEditingScene()->getInitialForegrounds(i));
-		}
+			_BackgroundPreviewViewport->getForegrounds().clear();
+			for(UInt32 i(0) ; i<getEditingScene()->getInitialForegrounds().size(); ++i)
+			{
+				_BackgroundPreviewViewport->getForegrounds().push_back(getEditingScene()->getInitialForegrounds(i));
+			}
+		endEditCP(_BackgroundPreviewViewport, Viewport::CameraFieldMask | Viewport::RootFieldMask | Viewport::BackgroundFieldMask | Viewport::ForegroundsFieldMask);
+		
 
 		_BackgroundPreviewComponent->set(getEditingScene()->getInitialCamera()->getBeacon()->getToWorld());
 
