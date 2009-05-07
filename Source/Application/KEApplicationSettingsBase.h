@@ -56,18 +56,19 @@
 
 
 #include "KEConfig.h"
-#include "KEKabalaEngineDef.h"
+#include <KEKabalaEngineDef.h>
 
 #include <OpenSG/OSGBaseTypes.h>
 #include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGCoredNodePtr.h>
 
 #include <OpenSG/OSGFieldContainer.h> // Parent
-
 #include <OpenSG/Toolbox/OSGPathType.h> // DataDirectory type
 #include <OpenSG/Toolbox/OSGPathType.h> // LastOpenedProjectFile type
+#include <OpenSG/Toolbox/OSGPathType.h> // RecentProjectFiles type
 #include <OpenSG/OSGPnt2fFields.h> // DefaultWindowPosition type
 #include <OpenSG/OSGVec2fFields.h> // DefaultWindowSize type
+#include <OpenSG/OSGBoolFields.h> // HideAdvancedFields type
 
 #include "KEApplicationSettingsFields.h"
 
@@ -94,15 +95,19 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     {
         DataDirectoryFieldId         = Inherited::NextFieldId,
         LastOpenedProjectFileFieldId = DataDirectoryFieldId         + 1,
-        DefaultWindowPositionFieldId = LastOpenedProjectFileFieldId + 1,
+        RecentProjectFilesFieldId    = LastOpenedProjectFileFieldId + 1,
+        DefaultWindowPositionFieldId = RecentProjectFilesFieldId    + 1,
         DefaultWindowSizeFieldId     = DefaultWindowPositionFieldId + 1,
-        NextFieldId                  = DefaultWindowSizeFieldId     + 1
+        HideAdvancedFieldsFieldId    = DefaultWindowSizeFieldId     + 1,
+        NextFieldId                  = HideAdvancedFieldsFieldId    + 1
     };
 
     static const OSG::BitVector DataDirectoryFieldMask;
     static const OSG::BitVector LastOpenedProjectFileFieldMask;
+    static const OSG::BitVector RecentProjectFilesFieldMask;
     static const OSG::BitVector DefaultWindowPositionFieldMask;
     static const OSG::BitVector DefaultWindowSizeFieldMask;
+    static const OSG::BitVector HideAdvancedFieldsFieldMask;
 
 
     static const OSG::BitVector MTInfluenceMask;
@@ -112,7 +117,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     /*! \{                                                                 */
 
     static        FieldContainerType &getClassType    (void); 
-    static        ::osg::UInt32              getClassTypeId  (void); 
+    static        UInt32              getClassTypeId  (void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -122,7 +127,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     virtual       FieldContainerType &getType  (void); 
     virtual const FieldContainerType &getType  (void) const; 
 
-    virtual       ::osg::UInt32              getContainerSize(void) const;
+    virtual       UInt32              getContainerSize(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -131,8 +136,10 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
 
            SFPath              *getSFDataDirectory  (void);
            SFPath              *getSFLastOpenedProjectFile(void);
+           MFPath              *getMFRecentProjectFiles(void);
            SFPnt2f             *getSFDefaultWindowPosition(void);
            SFVec2f             *getSFDefaultWindowSize(void);
+           SFBool              *getSFHideAdvancedFields(void);
 
            Path                &getDataDirectory  (void);
      const Path                &getDataDirectory  (void) const;
@@ -142,6 +149,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
      const Pnt2f               &getDefaultWindowPosition(void) const;
            Vec2f               &getDefaultWindowSize(void);
      const Vec2f               &getDefaultWindowSize(void) const;
+           bool                &getHideAdvancedFields(void);
+     const bool                &getHideAdvancedFields(void) const;
+           Path                &getRecentProjectFiles(const UInt32 index);
+           MFPath              &getRecentProjectFiles(void);
+     const MFPath              &getRecentProjectFiles(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -152,6 +164,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
      void setLastOpenedProjectFile( const Path &value );
      void setDefaultWindowPosition( const Pnt2f &value );
      void setDefaultWindowSize( const Vec2f &value );
+     void setHideAdvancedFields( const bool &value );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -163,7 +176,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual ::osg::UInt32 getBinSize (const BitVector         &whichField);
+    virtual UInt32 getBinSize (const BitVector         &whichField);
     virtual void   copyToBin  (      BinaryDataHandler &pMem,
                                const BitVector         &whichField);
     virtual void   copyFromBin(      BinaryDataHandler &pMem,
@@ -196,8 +209,10 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
 
     SFPath              _sfDataDirectory;
     SFPath              _sfLastOpenedProjectFile;
+    MFPath              _mfRecentProjectFiles;
     SFPnt2f             _sfDefaultWindowPosition;
     SFVec2f             _sfDefaultWindowSize;
+    SFBool              _sfHideAdvancedFields;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -235,14 +250,14 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
                                const SyncInfo          &sInfo);
 
     virtual void execBeginEdit     (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
             void execBeginEditImpl (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
-    virtual void onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect);
+    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
 #endif
 
     /*! \}                                                                 */

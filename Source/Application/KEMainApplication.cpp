@@ -296,11 +296,20 @@ void MainApplication::loadProject(const Path& ProjectFile)
 
 	if(LoadedProject != NullFC)
 	{
-    setProject(LoadedProject);
+        setProject(LoadedProject);
 		
-		beginEditCP(getSettings(), ApplicationSettings::LastOpenedProjectFileFieldMask);
+		beginEditCP(getSettings(), ApplicationSettings::LastOpenedProjectFileFieldMask | ApplicationSettings::RecentProjectFilesFieldMask);
 			getSettings()->setLastOpenedProjectFile(ProjectFile);
-		endEditCP(getSettings(), ApplicationSettings::LastOpenedProjectFileFieldMask);
+            
+            //Update Recent Projects
+            MFPath::iterator SearchItor(getSettings()->getRecentProjectFiles().find(ProjectFile));
+            if(SearchItor != getSettings()->getRecentProjectFiles().end())
+            {
+                getSettings()->getRecentProjectFiles().erase(SearchItor);
+            }
+            getSettings()->getRecentProjectFiles().push_back(ProjectFile);
+		endEditCP(getSettings(), ApplicationSettings::LastOpenedProjectFileFieldMask | ApplicationSettings::RecentProjectFilesFieldMask);
+
 	}
 }
 

@@ -55,7 +55,7 @@
 
 #include <OpenSG/OSGFieldContainerPtr.h>
 #include <OpenSG/OSGNodeCoreFieldDataType.h>
-#include "KEKabalaEngineDef.h"
+#include <KEKabalaEngineDef.h>
 
 #include <OpenSG/OSGFieldContainerFields.h>
 
@@ -80,10 +80,9 @@ typedef FCPtr<FieldContainerPtr, ApplicationSettings> ApplicationSettingsPtr;
 
 KE_END_NAMESPACE
 
-OSG_BEGIN_NAMESPACE
 template <>
-struct FieldDataTraits< ::ke::ApplicationSettingsPtr> : 
-    public FieldTraitsRecurseMapper< ::ke::ApplicationSettingsPtr, true>
+struct FieldDataTraits<ke::ApplicationSettingsPtr> : 
+    public FieldTraitsRecurseMapper<ke::ApplicationSettingsPtr, true>
 {
     static DataType             _type;                       
 
@@ -95,7 +94,6 @@ struct FieldDataTraits< ::ke::ApplicationSettingsPtr> :
     static char     *getSName(void) { return "SFApplicationSettingsPtr"; }
     static char     *getMName(void) { return "MFApplicationSettingsPtr"; }
 };
-OSG_END_NAMESPACE
 
 KE_BEGIN_NAMESPACE
 

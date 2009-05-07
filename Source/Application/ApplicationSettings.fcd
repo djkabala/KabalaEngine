@@ -33,6 +33,15 @@ The Main Application.
 	>
 	</Field>
 	<Field
+		name="RecentProjectFiles"
+		type="Path"
+		cardinality="multi"
+		visibility="external"
+		header="OpenSG/Toolbox/OSGPathType.h"
+		access="public"
+	>
+	</Field>
+	<Field
 		name="DefaultWindowPosition"
 		type="Pnt2f"
 		cardinality="single"

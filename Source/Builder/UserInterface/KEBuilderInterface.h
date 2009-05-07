@@ -120,6 +120,8 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterface : public BuilderInterfaceBa
     MenuPtr _FileMenu;
     MenuItemPtr _NewProjectMenuItem;
     MenuItemPtr _OpenProjectMenuItem;
+    MenuPtr _RecentProjectsMenu;
+    std::vector<MenuItemPtr> _RecentProjectsMenuItems;
     MenuItemPtr _CloseProjectMenuItem;
 	MenuItemPtr _SaveProjectMenuItem;
 	MenuItemPtr _SaveProjectAsMenuItem;
@@ -177,6 +179,8 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterface : public BuilderInterfaceBa
 	friend class CommandManagerListener;
 
 	CommandManagerListener _CommandManagerListener;
+
+    void updateRecentProjectsMenu(void);
 
     /*==========================  PRIVATE  ================================*/
   private:

@@ -67,6 +67,7 @@
 
 #include "Project/KEProject.h"
 #include "Application/KEMainApplication.h"
+#include "Application/KEApplicationSettings.h"
 
 #include "Builder/UserInterface/Commands/KENewProjectCommand.h"
 #include "Builder/UserInterface/Commands/KEOpenProjectCommand.h"
@@ -144,6 +145,7 @@ void BuilderInterface::createInterface(ApplicationBuilderPtr TheApplicationBuild
 	//Menubar
     _NewProjectMenuItem = MenuItem::create();
     _OpenProjectMenuItem = MenuItem::create();
+    _RecentProjectsMenu = Menu::create();
     _CloseProjectMenuItem = MenuItem::create();
     _SaveProjectMenuItem = MenuItem::create();
     _SaveProjectAsMenuItem = MenuItem::create();
@@ -175,6 +177,11 @@ void BuilderInterface::createInterface(ApplicationBuilderPtr TheApplicationBuild
         _OpenProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         _OpenProjectMenuItem->setMnemonicKey(KeyEvent::KEY_O);
     endEditCP(_OpenProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+    beginEditCP(_RecentProjectsMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _RecentProjectsMenu->setText("Recent Projects");
+        _RecentProjectsMenu->setMnemonicKey(KeyEvent::KEY_R);
+    endEditCP(_RecentProjectsMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
     
     beginEditCP(_CloseProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _CloseProjectMenuItem->setText("Close Project ...");
@@ -268,6 +275,7 @@ void BuilderInterface::createInterface(ApplicationBuilderPtr TheApplicationBuild
     _FileMenu = Menu::create();
     _FileMenu->addItem(_NewProjectMenuItem);
     _FileMenu->addItem(_OpenProjectMenuItem);
+    _FileMenu->addItem(_RecentProjectsMenu);
     _FileMenu->addItem(_CloseProjectMenuItem);
     _FileMenu->addSeparator();
     _FileMenu->addItem(_SaveProjectMenuItem);
@@ -422,6 +430,22 @@ void BuilderInterface::createInterface(ApplicationBuilderPtr TheApplicationBuild
 	getDrawingSurface()->openWindow(getMainInternalWindow());
 }
 
+void BuilderInterface::updateRecentProjectsMenu(void)
+{
+    if(MainApplication::the()->getSettings()->getRecentProjectFiles().size() == 0)
+    {
+        beginEditCP(_RecentProjectsMenu, Menu::EnabledFieldMask);
+            _RecentProjectsMenu->setEnabled(false);
+        endEditCP(_RecentProjectsMenu, Menu::EnabledFieldMask);
+    }
+    else
+    {
+        beginEditCP(_RecentProjectsMenu, Menu::EnabledFieldMask);
+            _RecentProjectsMenu->setEnabled(true);
+        endEditCP(_RecentProjectsMenu, Menu::EnabledFieldMask);
+    }
+}
+
 void BuilderInterface::addToolbarTools(const std::vector<ComponentPtr>& Tools)
 {
     for(::osg::UInt32 i(0) ; i<Tools.size() ; ++i)
@@ -483,6 +507,9 @@ void BuilderInterface::connectInterface(ApplicationBuilderPtr TheApplicationBuil
 	getEditor()->connectInterface(TheApplicationBuilder);
 
 	_CommandManagerListener.setApplicationBuilder(TheApplicationBuilder);
+
+    //Recent Projects
+    updateRecentProjectsMenu();
 }
 
 void BuilderInterface::disconnectInterface(ApplicationBuilderPtr TheApplicationBuilder)

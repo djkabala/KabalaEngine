@@ -67,11 +67,17 @@ const OSG::BitVector  ApplicationSettingsBase::DataDirectoryFieldMask =
 const OSG::BitVector  ApplicationSettingsBase::LastOpenedProjectFileFieldMask = 
     (TypeTraits<BitVector>::One << ApplicationSettingsBase::LastOpenedProjectFileFieldId);
 
+const OSG::BitVector  ApplicationSettingsBase::RecentProjectFilesFieldMask = 
+    (TypeTraits<BitVector>::One << ApplicationSettingsBase::RecentProjectFilesFieldId);
+
 const OSG::BitVector  ApplicationSettingsBase::DefaultWindowPositionFieldMask = 
     (TypeTraits<BitVector>::One << ApplicationSettingsBase::DefaultWindowPositionFieldId);
 
 const OSG::BitVector  ApplicationSettingsBase::DefaultWindowSizeFieldMask = 
     (TypeTraits<BitVector>::One << ApplicationSettingsBase::DefaultWindowSizeFieldId);
+
+const OSG::BitVector  ApplicationSettingsBase::HideAdvancedFieldsFieldMask = 
+    (TypeTraits<BitVector>::One << ApplicationSettingsBase::HideAdvancedFieldsFieldId);
 
 const OSG::BitVector ApplicationSettingsBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -86,10 +92,16 @@ const OSG::BitVector ApplicationSettingsBase::MTInfluenceMask =
 /*! \var Path            ApplicationSettingsBase::_sfLastOpenedProjectFile
     
 */
+/*! \var Path            ApplicationSettingsBase::_mfRecentProjectFiles
+    
+*/
 /*! \var Pnt2f           ApplicationSettingsBase::_sfDefaultWindowPosition
     
 */
 /*! \var Vec2f           ApplicationSettingsBase::_sfDefaultWindowSize
+    
+*/
+/*! \var bool            ApplicationSettingsBase::_sfHideAdvancedFields
     
 */
 
@@ -107,6 +119,11 @@ FieldDescription *ApplicationSettingsBase::_desc[] =
                      LastOpenedProjectFileFieldId, LastOpenedProjectFileFieldMask,
                      false,
                      (FieldAccessMethod) &ApplicationSettingsBase::getSFLastOpenedProjectFile),
+    new FieldDescription(MFPath::getClassType(), 
+                     "RecentProjectFiles", 
+                     RecentProjectFilesFieldId, RecentProjectFilesFieldMask,
+                     false,
+                     (FieldAccessMethod) &ApplicationSettingsBase::getMFRecentProjectFiles),
     new FieldDescription(SFPnt2f::getClassType(), 
                      "DefaultWindowPosition", 
                      DefaultWindowPositionFieldId, DefaultWindowPositionFieldMask,
@@ -116,7 +133,12 @@ FieldDescription *ApplicationSettingsBase::_desc[] =
                      "DefaultWindowSize", 
                      DefaultWindowSizeFieldId, DefaultWindowSizeFieldMask,
                      false,
-                     (FieldAccessMethod) &ApplicationSettingsBase::getSFDefaultWindowSize)
+                     (FieldAccessMethod) &ApplicationSettingsBase::getSFDefaultWindowSize),
+    new FieldDescription(SFBool::getClassType(), 
+                     "HideAdvancedFields", 
+                     HideAdvancedFieldsFieldId, HideAdvancedFieldsFieldMask,
+                     false,
+                     (FieldAccessMethod) &ApplicationSettingsBase::getSFHideAdvancedFields)
 };
 
 
@@ -153,7 +175,7 @@ FieldContainerPtr ApplicationSettingsBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 ApplicationSettingsBase::getContainerSize(void) const 
+UInt32 ApplicationSettingsBase::getContainerSize(void) const 
 { 
     return sizeof(ApplicationSettings); 
 }
@@ -172,16 +194,17 @@ void ApplicationSettingsBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((ApplicationSettingsBase *) &other, whichField, sInfo);
 }
 void ApplicationSettingsBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void ApplicationSettingsBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void ApplicationSettingsBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
+    _mfRecentProjectFiles.terminateShare(uiAspect, this->getContainerSize());
 }
 #endif
 
@@ -190,8 +213,10 @@ void ApplicationSettingsBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 
 ApplicationSettingsBase::ApplicationSettingsBase(void) :
     _sfDataDirectory          (), 
     _sfLastOpenedProjectFile  (), 
+    _mfRecentProjectFiles     (), 
     _sfDefaultWindowPosition  (Pnt2f(0.0f,0.0f)), 
     _sfDefaultWindowSize      (Vec2f(900.0f,800.0f)), 
+    _sfHideAdvancedFields     (bool(true)), 
     Inherited() 
 {
 }
@@ -199,8 +224,10 @@ ApplicationSettingsBase::ApplicationSettingsBase(void) :
 ApplicationSettingsBase::ApplicationSettingsBase(const ApplicationSettingsBase &source) :
     _sfDataDirectory          (source._sfDataDirectory          ), 
     _sfLastOpenedProjectFile  (source._sfLastOpenedProjectFile  ), 
+    _mfRecentProjectFiles     (source._mfRecentProjectFiles     ), 
     _sfDefaultWindowPosition  (source._sfDefaultWindowPosition  ), 
     _sfDefaultWindowSize      (source._sfDefaultWindowSize      ), 
+    _sfHideAdvancedFields     (source._sfHideAdvancedFields     ), 
     Inherited                 (source)
 {
 }
@@ -213,9 +240,9 @@ ApplicationSettingsBase::~ApplicationSettingsBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 ApplicationSettingsBase::getBinSize(const BitVector &whichField)
+UInt32 ApplicationSettingsBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
     if(FieldBits::NoField != (DataDirectoryFieldMask & whichField))
     {
@@ -227,6 +254,11 @@ ApplicationSettingsBase::~ApplicationSettingsBase(void)
         returnValue += _sfLastOpenedProjectFile.getBinSize();
     }
 
+    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
+    {
+        returnValue += _mfRecentProjectFiles.getBinSize();
+    }
+
     if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
     {
         returnValue += _sfDefaultWindowPosition.getBinSize();
@@ -235,6 +267,11 @@ ApplicationSettingsBase::~ApplicationSettingsBase(void)
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
     {
         returnValue += _sfDefaultWindowSize.getBinSize();
+    }
+
+    if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
+    {
+        returnValue += _sfHideAdvancedFields.getBinSize();
     }
 
 
@@ -256,6 +293,11 @@ void ApplicationSettingsBase::copyToBin(      BinaryDataHandler &pMem,
         _sfLastOpenedProjectFile.copyToBin(pMem);
     }
 
+    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
+    {
+        _mfRecentProjectFiles.copyToBin(pMem);
+    }
+
     if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
     {
         _sfDefaultWindowPosition.copyToBin(pMem);
@@ -264,6 +306,11 @@ void ApplicationSettingsBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
     {
         _sfDefaultWindowSize.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
+    {
+        _sfHideAdvancedFields.copyToBin(pMem);
     }
 
 
@@ -284,6 +331,11 @@ void ApplicationSettingsBase::copyFromBin(      BinaryDataHandler &pMem,
         _sfLastOpenedProjectFile.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
+    {
+        _mfRecentProjectFiles.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
     {
         _sfDefaultWindowPosition.copyFromBin(pMem);
@@ -292,6 +344,11 @@ void ApplicationSettingsBase::copyFromBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
     {
         _sfDefaultWindowSize.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
+    {
+        _sfHideAdvancedFields.copyFromBin(pMem);
     }
 
 
@@ -310,11 +367,17 @@ void ApplicationSettingsBase::executeSyncImpl(      ApplicationSettingsBase *pOt
     if(FieldBits::NoField != (LastOpenedProjectFileFieldMask & whichField))
         _sfLastOpenedProjectFile.syncWith(pOther->_sfLastOpenedProjectFile);
 
+    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
+        _mfRecentProjectFiles.syncWith(pOther->_mfRecentProjectFiles);
+
     if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
         _sfDefaultWindowPosition.syncWith(pOther->_sfDefaultWindowPosition);
 
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
         _sfDefaultWindowSize.syncWith(pOther->_sfDefaultWindowSize);
+
+    if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
+        _sfHideAdvancedFields.syncWith(pOther->_sfHideAdvancedFields);
 
 
 }
@@ -338,15 +401,24 @@ void ApplicationSettingsBase::executeSyncImpl(      ApplicationSettingsBase *pOt
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
         _sfDefaultWindowSize.syncWith(pOther->_sfDefaultWindowSize);
 
+    if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
+        _sfHideAdvancedFields.syncWith(pOther->_sfHideAdvancedFields);
+
+
+    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
+        _mfRecentProjectFiles.syncWith(pOther->_mfRecentProjectFiles, sInfo);
 
 
 }
 
 void ApplicationSettingsBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
+        _mfRecentProjectFiles.beginEdit(uiAspect, uiContainerSize);
 
 }
 #endif

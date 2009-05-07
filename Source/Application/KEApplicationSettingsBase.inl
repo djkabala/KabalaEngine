@@ -61,7 +61,7 @@ OSG::FieldContainerType &ApplicationSettingsBase::getClassType(void)
 
 //! access the numerical type of the class
 inline
-::osg::UInt32 ApplicationSettingsBase::getClassTypeId(void) 
+OSG::UInt32 ApplicationSettingsBase::getClassTypeId(void) 
 {
     return _type.getId(); 
 } 
@@ -109,6 +109,13 @@ SFPath *ApplicationSettingsBase::getSFLastOpenedProjectFile(void)
     return &_sfLastOpenedProjectFile;
 }
 
+//! Get the ApplicationSettings::_mfRecentProjectFiles field.
+inline
+MFPath *ApplicationSettingsBase::getMFRecentProjectFiles(void)
+{
+    return &_mfRecentProjectFiles;
+}
+
 //! Get the ApplicationSettings::_sfDefaultWindowPosition field.
 inline
 SFPnt2f *ApplicationSettingsBase::getSFDefaultWindowPosition(void)
@@ -121,6 +128,13 @@ inline
 SFVec2f *ApplicationSettingsBase::getSFDefaultWindowSize(void)
 {
     return &_sfDefaultWindowSize;
+}
+
+//! Get the ApplicationSettings::_sfHideAdvancedFields field.
+inline
+SFBool *ApplicationSettingsBase::getSFHideAdvancedFields(void)
+{
+    return &_sfHideAdvancedFields;
 }
 
 
@@ -208,6 +222,48 @@ void ApplicationSettingsBase::setDefaultWindowSize(const Vec2f &value)
     _sfDefaultWindowSize.setValue(value);
 }
 
+//! Get the value of the ApplicationSettings::_sfHideAdvancedFields field.
+inline
+bool &ApplicationSettingsBase::getHideAdvancedFields(void)
+{
+    return _sfHideAdvancedFields.getValue();
+}
+
+//! Get the value of the ApplicationSettings::_sfHideAdvancedFields field.
+inline
+const bool &ApplicationSettingsBase::getHideAdvancedFields(void) const
+{
+    return _sfHideAdvancedFields.getValue();
+}
+
+//! Set the value of the ApplicationSettings::_sfHideAdvancedFields field.
+inline
+void ApplicationSettingsBase::setHideAdvancedFields(const bool &value)
+{
+    _sfHideAdvancedFields.setValue(value);
+}
+
+
+//! Get the value of the \a index element the ApplicationSettings::_mfRecentProjectFiles field.
+inline
+Path &ApplicationSettingsBase::getRecentProjectFiles(const OSG::UInt32 index)
+{
+    return _mfRecentProjectFiles[index];
+}
+
+//! Get the ApplicationSettings::_mfRecentProjectFiles field.
+inline
+MFPath &ApplicationSettingsBase::getRecentProjectFiles(void)
+{
+    return _mfRecentProjectFiles;
+}
+
+//! Get the ApplicationSettings::_mfRecentProjectFiles field.
+inline
+const MFPath &ApplicationSettingsBase::getRecentProjectFiles(void) const
+{
+    return _mfRecentProjectFiles;
+}
 
 KE_END_NAMESPACE
 
