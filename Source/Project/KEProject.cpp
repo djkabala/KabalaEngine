@@ -51,6 +51,8 @@ KE_USING_NAMESPACE
 #include "KEUtils.h"
 #include "Application/KEMainApplication.h"
 #include <OpenSG/OSGViewport.h>
+#include <OpenSG/OSGPerspectiveCamera.h>
+#include <OpenSG/OSGOrthographicCamera.h>
 #include "Project/Scene/KEScene.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <OpenSG/Toolbox/OSGFCFileHandler.h>
@@ -206,6 +208,20 @@ void Project::setActiveBackground(BackgroundPtr TheBackground)
 
 void Project::setActiveCamera(CameraPtr TheCamera)
 {
+	if(TheCamera->getType().isDerivedFrom(PerspectiveCamera::getClassType()))
+	{
+		Vec2f WindowSize(MainApplication::the()->getMainWindowEventProducer()->getSize());
+		beginEditCP(TheCamera, PerspectiveCamera::AspectFieldMask);
+			PerspectiveCamera::Ptr::dcast(TheCamera)->setAspect(WindowSize.x()/WindowSize.y());
+		endEditCP(TheCamera, PerspectiveCamera::AspectFieldMask);
+	}
+	if(TheCamera->getType().isDerivedFrom(OrthographicCamera::getClassType()))
+	{
+		Vec2f WindowSize(MainApplication::the()->getMainWindowEventProducer()->getSize());
+		beginEditCP(TheCamera, OrthographicCamera::AspectFieldMask);
+			OrthographicCamera::Ptr::dcast(TheCamera)->setAspect(WindowSize.x()/WindowSize.y());
+		endEditCP(TheCamera, OrthographicCamera::AspectFieldMask);
+	}
 	beginEditCP(getInternalActiveViewport(), Viewport::CameraFieldMask);
 		getInternalActiveViewport()->setCamera(TheCamera);
 	endEditCP(getInternalActiveViewport(), Viewport::CameraFieldMask);
