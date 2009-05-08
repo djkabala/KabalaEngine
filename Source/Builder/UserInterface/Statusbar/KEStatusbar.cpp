@@ -97,19 +97,20 @@ void Statusbar::createInterface(ApplicationBuilderPtr TheApplicationBuilder)
 
 
 	//Progressbar: right
-    _ProgressBarBoundedRangeModel.setMinimum(0);
-    _ProgressBarBoundedRangeModel.setMaximum(100);
-    _ProgressBarBoundedRangeModel.setValue(50);
-    _ProgressBarBoundedRangeModel.setExtent(0);
+    _ProgressBarBoundedRangeModel = DefaultBoundedRangeModel::create();
+    _ProgressBarBoundedRangeModel->setMinimum(0);
+    _ProgressBarBoundedRangeModel->setMaximum(100);
+    _ProgressBarBoundedRangeModel->setValue(50);
+    _ProgressBarBoundedRangeModel->setExtent(0);
 
     _ProgressBar = ProgressBar::create();
-    _ProgressBar->setModel(&_ProgressBarBoundedRangeModel);
-	beginEditCP(_ProgressBar, ProgressBar::EnableProgressStringFieldMask | ProgressBar::IndeterminateFieldMask | ProgressBar::OrientationFieldMask | ProgressBar::PreferredSizeFieldMask);
+	beginEditCP(_ProgressBar, ProgressBar::EnableProgressStringFieldMask | ProgressBar::IndeterminateFieldMask | ProgressBar::OrientationFieldMask | ProgressBar::PreferredSizeFieldMask | ProgressBar::RangeModelFieldMask);
         _ProgressBar->setEnableProgressString(false);
         _ProgressBar->setIndeterminate(false);
         _ProgressBar->setOrientation(ProgressBar::HORIZONTAL_ORIENTATION);
 		_ProgressBar->setPreferredSize(Vec2f(100.0f, 25.0f));
-    endEditCP(_ProgressBar, ProgressBar::EnableProgressStringFieldMask | ProgressBar::IndeterminateFieldMask | ProgressBar::OrientationFieldMask | ProgressBar::PreferredSizeFieldMask);
+        _ProgressBar->setRangeModel(_ProgressBarBoundedRangeModel);
+    endEditCP(_ProgressBar, ProgressBar::EnableProgressStringFieldMask | ProgressBar::IndeterminateFieldMask | ProgressBar::OrientationFieldMask | ProgressBar::PreferredSizeFieldMask | ProgressBar::RangeModelFieldMask);
 	
 	//Layout
 	SpringLayoutPtr StatusBarLayout = SpringLayout::create();
@@ -176,12 +177,12 @@ std::string Statusbar::getDescription(void) const
 
 void Statusbar::setProgress(const Int32& Value)
 {
-	_ProgressBarBoundedRangeModel.setValue(Value);
+	_ProgressBarBoundedRangeModel->setValue(Value);
 }
 
 Int32 Statusbar::getProgress(void) const
 {
-	return _ProgressBarBoundedRangeModel.getValue();
+	return _ProgressBarBoundedRangeModel->getValue();
 }
 
 /*-------------------------------------------------------------------------*\

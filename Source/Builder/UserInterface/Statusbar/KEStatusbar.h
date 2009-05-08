@@ -119,7 +119,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Statusbar : public StatusbarBase
 	ImageComponentPtr _IconComponent;
     LabelPtr _DiscriptorLabel;
 	ProgressBarPtr _ProgressBar;
-    DefaultBoundedRangeModel _ProgressBarBoundedRangeModel;
+    DefaultBoundedRangeModelPtr _ProgressBarBoundedRangeModel;
     /*==========================  PRIVATE  ================================*/
   private:
 
