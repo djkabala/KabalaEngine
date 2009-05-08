@@ -89,10 +89,13 @@ void ApplicationPlayer::attachApplication(void)
 	ProjectPtr TheProject(MainApplication::the()->getProject());
 	std::string MainWindowTitle(TheProject->getName());
 	MainApplication::the()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
+	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener);
 }
 
 void ApplicationPlayer::dettachApplication(void)
 {
+	MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_PlayerKeyListener);
+
 	Inherited::dettachApplication();
 }
 
@@ -126,12 +129,14 @@ void ApplicationPlayer::stop(void)
 /*----------------------- constructors & destructors ----------------------*/
 
 ApplicationPlayer::ApplicationPlayer(void) :
-    Inherited()
+    Inherited(),
+	_PlayerKeyListener(ApplicationPlayerPtr(this))
 {
 }
 
 ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
-    Inherited(source)
+    Inherited(source),
+	_PlayerKeyListener(ApplicationPlayerPtr(this))
 {
 }
 
@@ -152,3 +157,32 @@ void ApplicationPlayer::dump(      ::osg::UInt32    ,
     SLOG << "Dump ApplicationPlayer NI" << std::endl;
 }
 
+void ApplicationPlayer::PlayerKeyListener::keyTyped(const KeyEvent& e)
+{
+   if(e.getKey() == KeyEvent::KEY_Q && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
+   {
+		MainApplication::the()->exit();
+   }
+
+   switch(e.getKey())
+   {
+   case KeyEvent::KEY_TAB:
+	   {
+		   MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+		   if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
+		   {
+			   ++SearchItor;
+			   if(SearchItor == MainApplication::the()->getProject()->getScenes().end())
+			   {
+				   SearchItor = MainApplication::the()->getProject()->getScenes().begin();
+			   }
+		   }
+		   else
+		   {
+			   SearchItor = MainApplication::the()->getProject()->getScenes().begin();
+		   }
+		   MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+	   }
+	   break;
+   }
+}

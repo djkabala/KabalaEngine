@@ -41,5 +41,11 @@
 
 KE_BEGIN_NAMESPACE
 
+inline
+ScenePtr Project::getActiveScene(void) const
+{
+	return getInternalActiveScene();
+}
+
 KE_END_NAMESPACE
 

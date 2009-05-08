@@ -172,16 +172,19 @@ void Project::stop(void)
 
 void Project::setActiveScene(ScenePtr TheScene)
 {
-	if(getInternalActiveScene() != NullFC)
+	if(getInternalActiveScene() != TheScene)
 	{
-		getInternalActiveScene()->exit();
-	}
-	beginEditCP(ProjectPtr(this), InternalActiveSceneFieldMask);
-		setInternalActiveScene(TheScene);
-	endEditCP(ProjectPtr(this), InternalActiveSceneFieldMask);
-	if(getInternalActiveScene() != NullFC)
-	{
-		getInternalActiveScene()->enter();
+		if(getInternalActiveScene() != NullFC)
+		{
+			getInternalActiveScene()->exit();
+		}
+		beginEditCP(ProjectPtr(this), InternalActiveSceneFieldMask);
+			setInternalActiveScene(TheScene);
+		endEditCP(ProjectPtr(this), InternalActiveSceneFieldMask);
+		if(getInternalActiveScene() != NullFC)
+		{
+			getInternalActiveScene()->enter();
+		}
 	}
 }
 
@@ -210,16 +213,18 @@ void Project::setActiveCamera(CameraPtr TheCamera)
 {
 	if(TheCamera->getType().isDerivedFrom(PerspectiveCamera::getClassType()))
 	{
-		Vec2f WindowSize(MainApplication::the()->getMainWindowEventProducer()->getSize());
+		//Vec2f WindowSize(MainApplication::the()->getMainWindowEventProducer()->getSize());
 		beginEditCP(TheCamera, PerspectiveCamera::AspectFieldMask);
-			PerspectiveCamera::Ptr::dcast(TheCamera)->setAspect(WindowSize.x()/WindowSize.y());
+			//PerspectiveCamera::Ptr::dcast(TheCamera)->setAspect(WindowSize.y()/WindowSize.x());
+			PerspectiveCamera::Ptr::dcast(TheCamera)->setAspect(1.0);
 		endEditCP(TheCamera, PerspectiveCamera::AspectFieldMask);
 	}
 	if(TheCamera->getType().isDerivedFrom(OrthographicCamera::getClassType()))
 	{
-		Vec2f WindowSize(MainApplication::the()->getMainWindowEventProducer()->getSize());
+		//Vec2f WindowSize(MainApplication::the()->getMainWindowEventProducer()->getSize());
 		beginEditCP(TheCamera, OrthographicCamera::AspectFieldMask);
-			OrthographicCamera::Ptr::dcast(TheCamera)->setAspect(WindowSize.x()/WindowSize.y());
+			//OrthographicCamera::Ptr::dcast(TheCamera)->setAspect(WindowSize.y()/WindowSize.x());
+			OrthographicCamera::Ptr::dcast(TheCamera)->setAspect(1.0);
 		endEditCP(TheCamera, OrthographicCamera::AspectFieldMask);
 	}
 	beginEditCP(getInternalActiveViewport(), Viewport::CameraFieldMask);

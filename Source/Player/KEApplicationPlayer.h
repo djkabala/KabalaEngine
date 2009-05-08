@@ -42,6 +42,7 @@
 #include "KEConfig.h"
 
 #include "KEApplicationPlayerBase.h"
+#include <OpenSG/Input/OSGKeyAdapter.h>
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -103,6 +104,19 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
     /*! \}                                                                 */
     
+	class PlayerKeyListener : public KeyAdapter
+	{
+	public:
+		PlayerKeyListener(ApplicationPlayerPtr TheApplicationPlayer);
+
+		virtual void keyTyped(const KeyEvent& e);
+	protected :
+		ApplicationPlayerPtr _ApplicationPlayer;
+	};
+
+    friend class PlayerKeyListener;
+
+	PlayerKeyListener _PlayerKeyListener;
     /*==========================  PRIVATE  ================================*/
   private:
 

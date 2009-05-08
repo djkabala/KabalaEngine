@@ -83,16 +83,12 @@ void Scene::enter(void)
 	if(getRoot() == NullFC)
 	{
 		createDefaults();
+		initDefaults();
 	}
 
-	initDefaults();
 
 	//Set up Initial Model Nodes
 	beginEditCP(getRoot(), Node::ChildrenFieldMask);
-		while(getRoot()->getNChildren() > 0)
-		{
-			getRoot()->subChild(getRoot()->getNChildren()-1);
-		}
 		for(::osg::UInt32 i(0) ; i<getInitialModelNodes().size() ; ++i)
 		{
 			getRoot()->addChild(getInitialModelNodes()[i]);

@@ -68,6 +68,8 @@
 #include "StartScreen/KEApplicationStartScreen.h"
 #include "Builder/UserInterface/Editors/KEFieldContainerEditorFactory.h"
 
+#include <boost/filesystem.hpp>
+
 KE_USING_NAMESPACE
 
 /***************************************************************************\
@@ -302,7 +304,14 @@ void MainApplication::loadProject(const Path& ProjectFile)
 			getSettings()->setLastOpenedProjectFile(ProjectFile);
             
             //Update Recent Projects
-            MFPath::iterator SearchItor(getSettings()->getRecentProjectFiles().find(ProjectFile));
+			MFPath::iterator SearchItor(getSettings()->getRecentProjectFiles().begin());
+			for( ; SearchItor!=getSettings()->getRecentProjectFiles().end() ; ++SearchItor)
+			{
+				if(boost::filesystem::equivalent(*SearchItor,ProjectFile))
+				{
+					break;
+				}
+			}
             if(SearchItor != getSettings()->getRecentProjectFiles().end())
             {
                 getSettings()->getRecentProjectFiles().erase(SearchItor);

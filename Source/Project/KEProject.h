@@ -84,6 +84,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 	void stop(void);
 
 	void setActiveScene(ScenePtr TheScene);
+	ScenePtr getActiveScene(void) const;
 
 	void setActiveBackground(BackgroundPtr TheBackground);
 
