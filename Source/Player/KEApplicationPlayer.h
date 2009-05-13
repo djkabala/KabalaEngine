@@ -117,6 +117,10 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     friend class PlayerKeyListener;
 
 	PlayerKeyListener _PlayerKeyListener;
+
+	bool _IsDebugActive;
+    void enableDebug(bool EnableDebug);
+    void keyTyped(const KeyEvent& e);
     /*==========================  PRIVATE  ================================*/
   private:
 

@@ -106,6 +106,21 @@ const OSG::BitVector  SceneBase::CamerasFieldMask =
 const OSG::BitVector  SceneBase::InitialCameraFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::InitialCameraFieldId);
 
+const OSG::BitVector  SceneBase::AnimationsFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::AnimationsFieldId);
+
+const OSG::BitVector  SceneBase::InitialAnimationsFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::InitialAnimationsFieldId);
+
+const OSG::BitVector  SceneBase::TimeInSceneFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::TimeInSceneFieldId);
+
+const OSG::BitVector  SceneBase::ParticleSystemsFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::ParticleSystemsFieldId);
+
+const OSG::BitVector  SceneBase::InitialParticleSystemsFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::InitialParticleSystemsFieldId);
+
 const OSG::BitVector SceneBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
     (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
@@ -156,6 +171,21 @@ const OSG::BitVector SceneBase::MTInfluenceMask =
     
 */
 /*! \var CameraPtr       SceneBase::_sfInitialCamera
+    
+*/
+/*! \var AnimationPtr    SceneBase::_mfAnimations
+    
+*/
+/*! \var AnimationPtr    SceneBase::_mfInitialAnimations
+    
+*/
+/*! \var Real32          SceneBase::_sfTimeInScene
+    
+*/
+/*! \var ParticleSystemPtr SceneBase::_mfParticleSystems
+    
+*/
+/*! \var ParticleSystemPtr SceneBase::_mfInitialParticleSystems
     
 */
 
@@ -237,7 +267,32 @@ FieldDescription *SceneBase::_desc[] =
                      "InitialCamera", 
                      InitialCameraFieldId, InitialCameraFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getSFInitialCamera)
+                     (FieldAccessMethod) &SceneBase::getSFInitialCamera),
+    new FieldDescription(MFAnimationPtr::getClassType(), 
+                     "Animations", 
+                     AnimationsFieldId, AnimationsFieldMask,
+                     false,
+                     (FieldAccessMethod) &SceneBase::getMFAnimations),
+    new FieldDescription(MFAnimationPtr::getClassType(), 
+                     "InitialAnimations", 
+                     InitialAnimationsFieldId, InitialAnimationsFieldMask,
+                     false,
+                     (FieldAccessMethod) &SceneBase::getMFInitialAnimations),
+    new FieldDescription(SFReal32::getClassType(), 
+                     "TimeInScene", 
+                     TimeInSceneFieldId, TimeInSceneFieldMask,
+                     false,
+                     (FieldAccessMethod) &SceneBase::getSFTimeInScene),
+    new FieldDescription(MFParticleSystemPtr::getClassType(), 
+                     "ParticleSystems", 
+                     ParticleSystemsFieldId, ParticleSystemsFieldMask,
+                     false,
+                     (FieldAccessMethod) &SceneBase::getMFParticleSystems),
+    new FieldDescription(MFParticleSystemPtr::getClassType(), 
+                     "InitialParticleSystems", 
+                     InitialParticleSystemsFieldId, InitialParticleSystemsFieldMask,
+                     false,
+                     (FieldAccessMethod) &SceneBase::getMFInitialParticleSystems)
 };
 
 
@@ -310,6 +365,10 @@ void SceneBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
     _mfModelNodes.terminateShare(uiAspect, this->getContainerSize());
     _mfInitialModelNodes.terminateShare(uiAspect, this->getContainerSize());
     _mfCameras.terminateShare(uiAspect, this->getContainerSize());
+    _mfAnimations.terminateShare(uiAspect, this->getContainerSize());
+    _mfInitialAnimations.terminateShare(uiAspect, this->getContainerSize());
+    _mfParticleSystems.terminateShare(uiAspect, this->getContainerSize());
+    _mfInitialParticleSystems.terminateShare(uiAspect, this->getContainerSize());
 }
 #endif
 
@@ -331,6 +390,11 @@ SceneBase::SceneBase(void) :
     _sfDefaultCameraBeaconCore(TransformPtr(NullFC)), 
     _mfCameras                (), 
     _sfInitialCamera          (CameraPtr(NullFC)), 
+    _mfAnimations             (), 
+    _mfInitialAnimations      (), 
+    _sfTimeInScene            (), 
+    _mfParticleSystems        (), 
+    _mfInitialParticleSystems (), 
     Inherited() 
 {
 }
@@ -351,6 +415,11 @@ SceneBase::SceneBase(const SceneBase &source) :
     _sfDefaultCameraBeaconCore(source._sfDefaultCameraBeaconCore), 
     _mfCameras                (source._mfCameras                ), 
     _sfInitialCamera          (source._sfInitialCamera          ), 
+    _mfAnimations             (source._mfAnimations             ), 
+    _mfInitialAnimations      (source._mfInitialAnimations      ), 
+    _sfTimeInScene            (source._sfTimeInScene            ), 
+    _mfParticleSystems        (source._mfParticleSystems        ), 
+    _mfInitialParticleSystems (source._mfInitialParticleSystems ), 
     Inherited                 (source)
 {
 }
@@ -442,6 +511,31 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
         returnValue += _sfInitialCamera.getBinSize();
     }
 
+    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
+    {
+        returnValue += _mfAnimations.getBinSize();
+    }
+
+    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
+    {
+        returnValue += _mfInitialAnimations.getBinSize();
+    }
+
+    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
+    {
+        returnValue += _sfTimeInScene.getBinSize();
+    }
+
+    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
+    {
+        returnValue += _mfParticleSystems.getBinSize();
+    }
+
+    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
+    {
+        returnValue += _mfInitialParticleSystems.getBinSize();
+    }
+
 
     return returnValue;
 }
@@ -524,6 +618,31 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
     {
         _sfInitialCamera.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
+    {
+        _mfAnimations.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
+    {
+        _mfInitialAnimations.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
+    {
+        _sfTimeInScene.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
+    {
+        _mfParticleSystems.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
+    {
+        _mfInitialParticleSystems.copyToBin(pMem);
     }
 
 
@@ -609,6 +728,31 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
         _sfInitialCamera.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
+    {
+        _mfAnimations.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
+    {
+        _mfInitialAnimations.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
+    {
+        _sfTimeInScene.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
+    {
+        _mfParticleSystems.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
+    {
+        _mfInitialParticleSystems.copyFromBin(pMem);
+    }
+
 
 }
 
@@ -664,6 +808,21 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
         _sfInitialCamera.syncWith(pOther->_sfInitialCamera);
 
+    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
+        _mfAnimations.syncWith(pOther->_mfAnimations);
+
+    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
+        _mfInitialAnimations.syncWith(pOther->_mfInitialAnimations);
+
+    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
+        _sfTimeInScene.syncWith(pOther->_sfTimeInScene);
+
+    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
+        _mfParticleSystems.syncWith(pOther->_mfParticleSystems);
+
+    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
+        _mfInitialParticleSystems.syncWith(pOther->_mfInitialParticleSystems);
+
 
 }
 #else
@@ -698,6 +857,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
         _sfInitialCamera.syncWith(pOther->_sfInitialCamera);
 
+    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
+        _sfTimeInScene.syncWith(pOther->_sfTimeInScene);
+
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
         _mfBackgrounds.syncWith(pOther->_mfBackgrounds, sInfo);
@@ -719,6 +881,18 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
         _mfCameras.syncWith(pOther->_mfCameras, sInfo);
+
+    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
+        _mfAnimations.syncWith(pOther->_mfAnimations, sInfo);
+
+    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
+        _mfInitialAnimations.syncWith(pOther->_mfInitialAnimations, sInfo);
+
+    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
+        _mfParticleSystems.syncWith(pOther->_mfParticleSystems, sInfo);
+
+    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
+        _mfInitialParticleSystems.syncWith(pOther->_mfInitialParticleSystems, sInfo);
 
 
 }
@@ -749,6 +923,18 @@ void SceneBase::execBeginEditImpl (const BitVector &whichField,
 
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
         _mfCameras.beginEdit(uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
+        _mfAnimations.beginEdit(uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
+        _mfInitialAnimations.beginEdit(uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
+        _mfParticleSystems.beginEdit(uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
+        _mfInitialParticleSystems.beginEdit(uiAspect, uiContainerSize);
 
 }
 #endif

@@ -200,6 +200,41 @@ SFCameraPtr *SceneBase::getSFInitialCamera(void)
     return &_sfInitialCamera;
 }
 
+//! Get the Scene::_mfAnimations field.
+inline
+MFAnimationPtr *SceneBase::getMFAnimations(void)
+{
+    return &_mfAnimations;
+}
+
+//! Get the Scene::_mfInitialAnimations field.
+inline
+MFAnimationPtr *SceneBase::getMFInitialAnimations(void)
+{
+    return &_mfInitialAnimations;
+}
+
+//! Get the Scene::_sfTimeInScene field.
+inline
+SFReal32 *SceneBase::getSFTimeInScene(void)
+{
+    return &_sfTimeInScene;
+}
+
+//! Get the Scene::_mfParticleSystems field.
+inline
+MFParticleSystemPtr *SceneBase::getMFParticleSystems(void)
+{
+    return &_mfParticleSystems;
+}
+
+//! Get the Scene::_mfInitialParticleSystems field.
+inline
+MFParticleSystemPtr *SceneBase::getMFInitialParticleSystems(void)
+{
+    return &_mfInitialParticleSystems;
+}
+
 
 //! Get the value of the Scene::_sfInternalParentProject field.
 inline
@@ -369,6 +404,27 @@ void SceneBase::setInitialCamera(const CameraPtr &value)
     _sfInitialCamera.setValue(value);
 }
 
+//! Get the value of the Scene::_sfTimeInScene field.
+inline
+Real32 &SceneBase::getTimeInScene(void)
+{
+    return _sfTimeInScene.getValue();
+}
+
+//! Get the value of the Scene::_sfTimeInScene field.
+inline
+const Real32 &SceneBase::getTimeInScene(void) const
+{
+    return _sfTimeInScene.getValue();
+}
+
+//! Set the value of the Scene::_sfTimeInScene field.
+inline
+void SceneBase::setTimeInScene(const Real32 &value)
+{
+    _sfTimeInScene.setValue(value);
+}
+
 
 //! Get the value of the \a index element the Scene::_mfBackgrounds field.
 inline
@@ -515,6 +571,90 @@ inline
 const MFCameraPtr &SceneBase::getCameras(void) const
 {
     return _mfCameras;
+}
+
+//! Get the value of the \a index element the Scene::_mfAnimations field.
+inline
+AnimationPtr &SceneBase::getAnimations(const OSG::UInt32 index)
+{
+    return _mfAnimations[index];
+}
+
+//! Get the Scene::_mfAnimations field.
+inline
+MFAnimationPtr &SceneBase::getAnimations(void)
+{
+    return _mfAnimations;
+}
+
+//! Get the Scene::_mfAnimations field.
+inline
+const MFAnimationPtr &SceneBase::getAnimations(void) const
+{
+    return _mfAnimations;
+}
+
+//! Get the value of the \a index element the Scene::_mfInitialAnimations field.
+inline
+AnimationPtr &SceneBase::getInitialAnimations(const OSG::UInt32 index)
+{
+    return _mfInitialAnimations[index];
+}
+
+//! Get the Scene::_mfInitialAnimations field.
+inline
+MFAnimationPtr &SceneBase::getInitialAnimations(void)
+{
+    return _mfInitialAnimations;
+}
+
+//! Get the Scene::_mfInitialAnimations field.
+inline
+const MFAnimationPtr &SceneBase::getInitialAnimations(void) const
+{
+    return _mfInitialAnimations;
+}
+
+//! Get the value of the \a index element the Scene::_mfParticleSystems field.
+inline
+ParticleSystemPtr &SceneBase::getParticleSystems(const OSG::UInt32 index)
+{
+    return _mfParticleSystems[index];
+}
+
+//! Get the Scene::_mfParticleSystems field.
+inline
+MFParticleSystemPtr &SceneBase::getParticleSystems(void)
+{
+    return _mfParticleSystems;
+}
+
+//! Get the Scene::_mfParticleSystems field.
+inline
+const MFParticleSystemPtr &SceneBase::getParticleSystems(void) const
+{
+    return _mfParticleSystems;
+}
+
+//! Get the value of the \a index element the Scene::_mfInitialParticleSystems field.
+inline
+ParticleSystemPtr &SceneBase::getInitialParticleSystems(const OSG::UInt32 index)
+{
+    return _mfInitialParticleSystems[index];
+}
+
+//! Get the Scene::_mfInitialParticleSystems field.
+inline
+MFParticleSystemPtr &SceneBase::getInitialParticleSystems(void)
+{
+    return _mfInitialParticleSystems;
+}
+
+//! Get the Scene::_mfInitialParticleSystems field.
+inline
+const MFParticleSystemPtr &SceneBase::getInitialParticleSystems(void) const
+{
+    return _mfInitialParticleSystems;
 }
 
 KE_END_NAMESPACE

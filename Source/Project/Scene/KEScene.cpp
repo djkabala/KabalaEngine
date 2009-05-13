@@ -120,10 +120,37 @@ void Scene::enter(void)
 			getUIDrawingSurfaces(i)->setEventProducer(getInternalParentProject()->getEventProducer());
 		endEditCP(getUIDrawingSurfaces(i), UIDrawingSurface::EventProducerFieldMask);
 	}
+
+	//Attach the initial animations
+	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
+	{
+        getInternalParentProject()->addActiveAnimation(getInitialAnimations(i));
+    }
+
+    //Attach the initial particle systems
+	for(::osg::UInt32 i(0) ; i<getInitialParticleSystems().size() ; ++i)
+	{
+        getInternalParentProject()->addActiveParticleSystem(getInitialParticleSystems(i));
+    }
+
+
+
 }
 
 void Scene::exit(void)
 {
+	//Dettach the initial animations
+	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
+	{
+        getInternalParentProject()->removeActiveAnimation(getInitialAnimations(i));
+    }
+
+    //Dettach the initial particle systems
+	for(::osg::UInt32 i(0) ; i<getInitialParticleSystems().size() ; ++i)
+	{
+        getInternalParentProject()->removeActiveParticleSystem(getInitialParticleSystems(i));
+    }
+
 }
 
 void Scene::createDefaults(void)

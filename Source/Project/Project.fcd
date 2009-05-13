@@ -102,6 +102,14 @@ The Project.
 	>
 	</Field>
 	<Field
+		name="GlobalActiveForegrounds"
+		type="ForegroundPtr"
+		cardinality="multi"
+		visibility="internal"
+		access="public"
+	>
+	</Field>
+	<Field
 		name="ModelNodes"
 		type="NodePtr"
 		cardinality="multi"
@@ -115,6 +123,14 @@ The Project.
 		cardinality="multi"
 		visibility="internal"
 		access="protected"
+	>
+	</Field>
+	<Field
+		name="GlobalActiveModelNodes"
+		type="NodePtr"
+		cardinality="multi"
+		visibility="internal"
+		access="public"
 	>
 	</Field>
 	<Field
@@ -140,6 +156,24 @@ The Project.
 		cardinality="single"
 		visibility="internal"
 		defaultValue="NullFC"
+		access="protected"
+	>
+	</Field>
+	<Field
+		name="ActiveAnimations"
+		type="AnimationPtr"
+		cardinality="multi"
+		visibility="external"
+		header="OpenSG/Animation/OSGAnimation.h"
+		access="protected"
+	>
+	</Field>
+	<Field
+		name="ActiveParticleSystems"
+		type="ParticleSystemPtr"
+		cardinality="multi"
+		visibility="external"
+		header="OpenSG/ParticleSystem/OSGParticleSystem.h"
 		access="protected"
 	>
 	</Field>

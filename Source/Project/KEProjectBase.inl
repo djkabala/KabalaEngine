@@ -165,6 +165,13 @@ MFForegroundPtr *ProjectBase::getMFInternalActiveForegrounds(void)
     return &_mfInternalActiveForegrounds;
 }
 
+//! Get the Project::_mfGlobalActiveForegrounds field.
+inline
+MFForegroundPtr *ProjectBase::getMFGlobalActiveForegrounds(void)
+{
+    return &_mfGlobalActiveForegrounds;
+}
+
 //! Get the Project::_mfModelNodes field.
 inline
 MFNodePtr *ProjectBase::getMFModelNodes(void)
@@ -177,6 +184,13 @@ inline
 MFNodePtr *ProjectBase::getMFInternalActiveModelNodes(void)
 {
     return &_mfInternalActiveModelNodes;
+}
+
+//! Get the Project::_mfGlobalActiveModelNodes field.
+inline
+MFNodePtr *ProjectBase::getMFGlobalActiveModelNodes(void)
+{
+    return &_mfGlobalActiveModelNodes;
 }
 
 //! Get the Project::_mfCameras field.
@@ -198,6 +212,20 @@ inline
 SFViewportPtr *ProjectBase::getSFInternalActiveViewport(void)
 {
     return &_sfInternalActiveViewport;
+}
+
+//! Get the Project::_mfActiveAnimations field.
+inline
+MFAnimationPtr *ProjectBase::getMFActiveAnimations(void)
+{
+    return &_mfActiveAnimations;
+}
+
+//! Get the Project::_mfActiveParticleSystems field.
+inline
+MFParticleSystemPtr *ProjectBase::getMFActiveParticleSystems(void)
+{
+    return &_mfActiveParticleSystems;
 }
 
 
@@ -454,6 +482,27 @@ const MFForegroundPtr &ProjectBase::getInternalActiveForegrounds(void) const
     return _mfInternalActiveForegrounds;
 }
 
+//! Get the value of the \a index element the Project::_mfGlobalActiveForegrounds field.
+inline
+ForegroundPtr &ProjectBase::getGlobalActiveForegrounds(const OSG::UInt32 index)
+{
+    return _mfGlobalActiveForegrounds[index];
+}
+
+//! Get the Project::_mfGlobalActiveForegrounds field.
+inline
+MFForegroundPtr &ProjectBase::getGlobalActiveForegrounds(void)
+{
+    return _mfGlobalActiveForegrounds;
+}
+
+//! Get the Project::_mfGlobalActiveForegrounds field.
+inline
+const MFForegroundPtr &ProjectBase::getGlobalActiveForegrounds(void) const
+{
+    return _mfGlobalActiveForegrounds;
+}
+
 //! Get the value of the \a index element the Project::_mfModelNodes field.
 inline
 NodePtr &ProjectBase::getModelNodes(const OSG::UInt32 index)
@@ -496,6 +545,27 @@ const MFNodePtr &ProjectBase::getInternalActiveModelNodes(void) const
     return _mfInternalActiveModelNodes;
 }
 
+//! Get the value of the \a index element the Project::_mfGlobalActiveModelNodes field.
+inline
+NodePtr &ProjectBase::getGlobalActiveModelNodes(const OSG::UInt32 index)
+{
+    return _mfGlobalActiveModelNodes[index];
+}
+
+//! Get the Project::_mfGlobalActiveModelNodes field.
+inline
+MFNodePtr &ProjectBase::getGlobalActiveModelNodes(void)
+{
+    return _mfGlobalActiveModelNodes;
+}
+
+//! Get the Project::_mfGlobalActiveModelNodes field.
+inline
+const MFNodePtr &ProjectBase::getGlobalActiveModelNodes(void) const
+{
+    return _mfGlobalActiveModelNodes;
+}
+
 //! Get the value of the \a index element the Project::_mfCameras field.
 inline
 CameraPtr &ProjectBase::getCameras(const OSG::UInt32 index)
@@ -515,6 +585,48 @@ inline
 const MFCameraPtr &ProjectBase::getCameras(void) const
 {
     return _mfCameras;
+}
+
+//! Get the value of the \a index element the Project::_mfActiveAnimations field.
+inline
+AnimationPtr &ProjectBase::getActiveAnimations(const OSG::UInt32 index)
+{
+    return _mfActiveAnimations[index];
+}
+
+//! Get the Project::_mfActiveAnimations field.
+inline
+MFAnimationPtr &ProjectBase::getActiveAnimations(void)
+{
+    return _mfActiveAnimations;
+}
+
+//! Get the Project::_mfActiveAnimations field.
+inline
+const MFAnimationPtr &ProjectBase::getActiveAnimations(void) const
+{
+    return _mfActiveAnimations;
+}
+
+//! Get the value of the \a index element the Project::_mfActiveParticleSystems field.
+inline
+ParticleSystemPtr &ProjectBase::getActiveParticleSystems(const OSG::UInt32 index)
+{
+    return _mfActiveParticleSystems[index];
+}
+
+//! Get the Project::_mfActiveParticleSystems field.
+inline
+MFParticleSystemPtr &ProjectBase::getActiveParticleSystems(void)
+{
+    return _mfActiveParticleSystems;
+}
+
+//! Get the Project::_mfActiveParticleSystems field.
+inline
+const MFParticleSystemPtr &ProjectBase::getActiveParticleSystems(void) const
+{
+    return _mfActiveParticleSystems;
 }
 
 KE_END_NAMESPACE

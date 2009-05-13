@@ -45,6 +45,8 @@
 
 #include <OpenSG/Toolbox/OSGPathType.h>
 #include <OpenSG/Input/OSGWindowEventProducerFields.h>
+#include <OpenSG/Input/OSGUpdateListener.h>
+#include <OpenSG/Animation/OSGElapsedTimeAnimationAdvancer.h>
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -93,6 +95,11 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 	MFForegroundPtr &getActiveForegrounds(void);
 
 	void setActiveNode(NodePtr TheNode);
+    
+	void addActiveAnimation(AnimationPtr TheAnimation);
+	void removeActiveAnimation(AnimationPtr TheAnimation);
+	void addActiveParticleSystem(ParticleSystemPtr TheParticleSystem);
+	void removeActiveParticleSystem(ParticleSystemPtr TheParticleSystem);
 
 	void save(const Path& ProjectFile);
 
@@ -128,6 +135,25 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 
     /*! \}                                                                 */
     
+    
+	class ProjectUpdateListener : public UpdateListener
+	{
+	public:
+		ProjectUpdateListener(ProjectPtr TheProject);
+
+        virtual void update(const UpdateEvent& e);
+	protected :
+		ProjectPtr _Project;
+	};
+
+    friend class ProjectUpdateListener;
+
+	ProjectUpdateListener _ProjectUpdateListener;
+
+    virtual void update(const UpdateEvent& e);
+
+    ElapsedTimeAnimationAdvancerPtr _AnimationAdvancer;
+    Real32 _TimeInScene;
     /*==========================  PRIVATE  ================================*/
   private:
 

@@ -142,4 +142,48 @@ The Scene.
 		access="public"
 	>
 	</Field>
+	<Field
+		name="Animations"
+		type="AnimationPtr"
+		cardinality="multi"
+		visibility="external"
+		header="OpenSG/Animation/OSGAnimation.h"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="InitialAnimations"
+		type="AnimationPtr"
+		cardinality="multi"
+		visibility="external"
+		header="OpenSG/Animation/OSGAnimation.h"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="TimeInScene"
+		type="Real32"
+		cardinality="single"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="ParticleSystems"
+		type="ParticleSystemPtr"
+		cardinality="multi"
+		visibility="external"
+		header="OpenSG/ParticleSystem/OSGParticleSystem.h"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="InitialParticleSystems"
+		type="ParticleSystemPtr"
+		cardinality="multi"
+		visibility="external"
+		header="OpenSG/ParticleSystem/OSGParticleSystem.h"
+		access="public"
+	>
+	</Field>
 </FieldContainer>

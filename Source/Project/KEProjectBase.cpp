@@ -91,11 +91,17 @@ const OSG::BitVector  ProjectBase::ForegroundsFieldMask =
 const OSG::BitVector  ProjectBase::InternalActiveForegroundsFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::InternalActiveForegroundsFieldId);
 
+const OSG::BitVector  ProjectBase::GlobalActiveForegroundsFieldMask = 
+    (TypeTraits<BitVector>::One << ProjectBase::GlobalActiveForegroundsFieldId);
+
 const OSG::BitVector  ProjectBase::ModelNodesFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::ModelNodesFieldId);
 
 const OSG::BitVector  ProjectBase::InternalActiveModelNodesFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::InternalActiveModelNodesFieldId);
+
+const OSG::BitVector  ProjectBase::GlobalActiveModelNodesFieldMask = 
+    (TypeTraits<BitVector>::One << ProjectBase::GlobalActiveModelNodesFieldId);
 
 const OSG::BitVector  ProjectBase::CamerasFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::CamerasFieldId);
@@ -105,6 +111,12 @@ const OSG::BitVector  ProjectBase::InternalActiveCameraFieldMask =
 
 const OSG::BitVector  ProjectBase::InternalActiveViewportFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::InternalActiveViewportFieldId);
+
+const OSG::BitVector  ProjectBase::ActiveAnimationsFieldMask = 
+    (TypeTraits<BitVector>::One << ProjectBase::ActiveAnimationsFieldId);
+
+const OSG::BitVector  ProjectBase::ActiveParticleSystemsFieldMask = 
+    (TypeTraits<BitVector>::One << ProjectBase::ActiveParticleSystemsFieldId);
 
 const OSG::BitVector ProjectBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -143,10 +155,16 @@ const OSG::BitVector ProjectBase::MTInfluenceMask =
 /*! \var ForegroundPtr   ProjectBase::_mfInternalActiveForegrounds
     
 */
+/*! \var ForegroundPtr   ProjectBase::_mfGlobalActiveForegrounds
+    
+*/
 /*! \var NodePtr         ProjectBase::_mfModelNodes
     
 */
 /*! \var NodePtr         ProjectBase::_mfInternalActiveModelNodes
+    
+*/
+/*! \var NodePtr         ProjectBase::_mfGlobalActiveModelNodes
     
 */
 /*! \var CameraPtr       ProjectBase::_mfCameras
@@ -156,6 +174,12 @@ const OSG::BitVector ProjectBase::MTInfluenceMask =
     
 */
 /*! \var ViewportPtr     ProjectBase::_sfInternalActiveViewport
+    
+*/
+/*! \var AnimationPtr    ProjectBase::_mfActiveAnimations
+    
+*/
+/*! \var ParticleSystemPtr ProjectBase::_mfActiveParticleSystems
     
 */
 
@@ -213,6 +237,11 @@ FieldDescription *ProjectBase::_desc[] =
                      InternalActiveForegroundsFieldId, InternalActiveForegroundsFieldMask,
                      true,
                      (FieldAccessMethod) &ProjectBase::getMFInternalActiveForegrounds),
+    new FieldDescription(MFForegroundPtr::getClassType(), 
+                     "GlobalActiveForegrounds", 
+                     GlobalActiveForegroundsFieldId, GlobalActiveForegroundsFieldMask,
+                     true,
+                     (FieldAccessMethod) &ProjectBase::getMFGlobalActiveForegrounds),
     new FieldDescription(MFNodePtr::getClassType(), 
                      "ModelNodes", 
                      ModelNodesFieldId, ModelNodesFieldMask,
@@ -223,6 +252,11 @@ FieldDescription *ProjectBase::_desc[] =
                      InternalActiveModelNodesFieldId, InternalActiveModelNodesFieldMask,
                      true,
                      (FieldAccessMethod) &ProjectBase::getMFInternalActiveModelNodes),
+    new FieldDescription(MFNodePtr::getClassType(), 
+                     "GlobalActiveModelNodes", 
+                     GlobalActiveModelNodesFieldId, GlobalActiveModelNodesFieldMask,
+                     true,
+                     (FieldAccessMethod) &ProjectBase::getMFGlobalActiveModelNodes),
     new FieldDescription(MFCameraPtr::getClassType(), 
                      "Cameras", 
                      CamerasFieldId, CamerasFieldMask,
@@ -237,7 +271,17 @@ FieldDescription *ProjectBase::_desc[] =
                      "InternalActiveViewport", 
                      InternalActiveViewportFieldId, InternalActiveViewportFieldMask,
                      true,
-                     (FieldAccessMethod) &ProjectBase::getSFInternalActiveViewport)
+                     (FieldAccessMethod) &ProjectBase::getSFInternalActiveViewport),
+    new FieldDescription(MFAnimationPtr::getClassType(), 
+                     "ActiveAnimations", 
+                     ActiveAnimationsFieldId, ActiveAnimationsFieldMask,
+                     false,
+                     (FieldAccessMethod) &ProjectBase::getMFActiveAnimations),
+    new FieldDescription(MFParticleSystemPtr::getClassType(), 
+                     "ActiveParticleSystems", 
+                     ActiveParticleSystemsFieldId, ActiveParticleSystemsFieldMask,
+                     false,
+                     (FieldAccessMethod) &ProjectBase::getMFActiveParticleSystems)
 };
 
 
@@ -307,9 +351,13 @@ void ProjectBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
     _mfBackgrounds.terminateShare(uiAspect, this->getContainerSize());
     _mfForegrounds.terminateShare(uiAspect, this->getContainerSize());
     _mfInternalActiveForegrounds.terminateShare(uiAspect, this->getContainerSize());
+    _mfGlobalActiveForegrounds.terminateShare(uiAspect, this->getContainerSize());
     _mfModelNodes.terminateShare(uiAspect, this->getContainerSize());
     _mfInternalActiveModelNodes.terminateShare(uiAspect, this->getContainerSize());
+    _mfGlobalActiveModelNodes.terminateShare(uiAspect, this->getContainerSize());
     _mfCameras.terminateShare(uiAspect, this->getContainerSize());
+    _mfActiveAnimations.terminateShare(uiAspect, this->getContainerSize());
+    _mfActiveParticleSystems.terminateShare(uiAspect, this->getContainerSize());
 }
 #endif
 
@@ -326,11 +374,15 @@ ProjectBase::ProjectBase(void) :
     _sfInternalActiveBackground(BackgroundPtr(NullFC)), 
     _mfForegrounds            (), 
     _mfInternalActiveForegrounds(), 
+    _mfGlobalActiveForegrounds(), 
     _mfModelNodes             (), 
     _mfInternalActiveModelNodes(), 
+    _mfGlobalActiveModelNodes (), 
     _mfCameras                (), 
     _sfInternalActiveCamera   (CameraPtr(NullFC)), 
     _sfInternalActiveViewport (ViewportPtr(NullFC)), 
+    _mfActiveAnimations       (), 
+    _mfActiveParticleSystems  (), 
     Inherited() 
 {
 }
@@ -346,11 +398,15 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _sfInternalActiveBackground(source._sfInternalActiveBackground), 
     _mfForegrounds            (source._mfForegrounds            ), 
     _mfInternalActiveForegrounds(source._mfInternalActiveForegrounds), 
+    _mfGlobalActiveForegrounds(source._mfGlobalActiveForegrounds), 
     _mfModelNodes             (source._mfModelNodes             ), 
     _mfInternalActiveModelNodes(source._mfInternalActiveModelNodes), 
+    _mfGlobalActiveModelNodes (source._mfGlobalActiveModelNodes ), 
     _mfCameras                (source._mfCameras                ), 
     _sfInternalActiveCamera   (source._sfInternalActiveCamera   ), 
     _sfInternalActiveViewport (source._sfInternalActiveViewport ), 
+    _mfActiveAnimations       (source._mfActiveAnimations       ), 
+    _mfActiveParticleSystems  (source._mfActiveParticleSystems  ), 
     Inherited                 (source)
 {
 }
@@ -417,6 +473,11 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
         returnValue += _mfInternalActiveForegrounds.getBinSize();
     }
 
+    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
+    {
+        returnValue += _mfGlobalActiveForegrounds.getBinSize();
+    }
+
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         returnValue += _mfModelNodes.getBinSize();
@@ -425,6 +486,11 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
     {
         returnValue += _mfInternalActiveModelNodes.getBinSize();
+    }
+
+    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
+    {
+        returnValue += _mfGlobalActiveModelNodes.getBinSize();
     }
 
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
@@ -440,6 +506,16 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
     {
         returnValue += _sfInternalActiveViewport.getBinSize();
+    }
+
+    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
+    {
+        returnValue += _mfActiveAnimations.getBinSize();
+    }
+
+    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
+    {
+        returnValue += _mfActiveParticleSystems.getBinSize();
     }
 
 
@@ -501,6 +577,11 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
         _mfInternalActiveForegrounds.copyToBin(pMem);
     }
 
+    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
+    {
+        _mfGlobalActiveForegrounds.copyToBin(pMem);
+    }
+
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         _mfModelNodes.copyToBin(pMem);
@@ -509,6 +590,11 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
     {
         _mfInternalActiveModelNodes.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
+    {
+        _mfGlobalActiveModelNodes.copyToBin(pMem);
     }
 
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
@@ -524,6 +610,16 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
     {
         _sfInternalActiveViewport.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
+    {
+        _mfActiveAnimations.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
+    {
+        _mfActiveParticleSystems.copyToBin(pMem);
     }
 
 
@@ -584,6 +680,11 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
         _mfInternalActiveForegrounds.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
+    {
+        _mfGlobalActiveForegrounds.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         _mfModelNodes.copyFromBin(pMem);
@@ -592,6 +693,11 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
     {
         _mfInternalActiveModelNodes.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
+    {
+        _mfGlobalActiveModelNodes.copyFromBin(pMem);
     }
 
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
@@ -607,6 +713,16 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
     {
         _sfInternalActiveViewport.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
+    {
+        _mfActiveAnimations.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
+    {
+        _mfActiveParticleSystems.copyFromBin(pMem);
     }
 
 
@@ -649,11 +765,17 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
     if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
         _mfInternalActiveForegrounds.syncWith(pOther->_mfInternalActiveForegrounds);
 
+    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
+        _mfGlobalActiveForegrounds.syncWith(pOther->_mfGlobalActiveForegrounds);
+
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
         _mfModelNodes.syncWith(pOther->_mfModelNodes);
 
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
         _mfInternalActiveModelNodes.syncWith(pOther->_mfInternalActiveModelNodes);
+
+    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
+        _mfGlobalActiveModelNodes.syncWith(pOther->_mfGlobalActiveModelNodes);
 
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
         _mfCameras.syncWith(pOther->_mfCameras);
@@ -663,6 +785,12 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
         _sfInternalActiveViewport.syncWith(pOther->_sfInternalActiveViewport);
+
+    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
+        _mfActiveAnimations.syncWith(pOther->_mfActiveAnimations);
+
+    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
+        _mfActiveParticleSystems.syncWith(pOther->_mfActiveParticleSystems);
 
 
 }
@@ -711,14 +839,26 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
     if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
         _mfInternalActiveForegrounds.syncWith(pOther->_mfInternalActiveForegrounds, sInfo);
 
+    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
+        _mfGlobalActiveForegrounds.syncWith(pOther->_mfGlobalActiveForegrounds, sInfo);
+
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
         _mfModelNodes.syncWith(pOther->_mfModelNodes, sInfo);
 
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
         _mfInternalActiveModelNodes.syncWith(pOther->_mfInternalActiveModelNodes, sInfo);
 
+    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
+        _mfGlobalActiveModelNodes.syncWith(pOther->_mfGlobalActiveModelNodes, sInfo);
+
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
         _mfCameras.syncWith(pOther->_mfCameras, sInfo);
+
+    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
+        _mfActiveAnimations.syncWith(pOther->_mfActiveAnimations, sInfo);
+
+    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
+        _mfActiveParticleSystems.syncWith(pOther->_mfActiveParticleSystems, sInfo);
 
 
 }
@@ -741,14 +881,26 @@ void ProjectBase::execBeginEditImpl (const BitVector &whichField,
     if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
         _mfInternalActiveForegrounds.beginEdit(uiAspect, uiContainerSize);
 
+    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
+        _mfGlobalActiveForegrounds.beginEdit(uiAspect, uiContainerSize);
+
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
         _mfModelNodes.beginEdit(uiAspect, uiContainerSize);
 
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
         _mfInternalActiveModelNodes.beginEdit(uiAspect, uiContainerSize);
 
+    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
+        _mfGlobalActiveModelNodes.beginEdit(uiAspect, uiContainerSize);
+
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
         _mfCameras.beginEdit(uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
+        _mfActiveAnimations.beginEdit(uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
+        _mfActiveParticleSystems.beginEdit(uiAspect, uiContainerSize);
 
 }
 #endif

@@ -78,6 +78,11 @@
 #include <OpenSG/OSGTransformFields.h> // DefaultCameraBeaconCore type
 #include <OpenSG/OSGCameraFields.h> // Cameras type
 #include <OpenSG/OSGCameraFields.h> // InitialCamera type
+#include <OpenSG/Animation/OSGAnimation.h> // Animations type
+#include <OpenSG/Animation/OSGAnimation.h> // InitialAnimations type
+#include <OpenSG/OSGReal32Fields.h> // TimeInScene type
+#include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ParticleSystems type
+#include <OpenSG/ParticleSystem/OSGParticleSystem.h> // InitialParticleSystems type
 
 #include "KESceneFields.h"
 
@@ -117,7 +122,12 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
         DefaultCameraBeaconCoreFieldId = DefaultCameraBeaconFieldId     + 1,
         CamerasFieldId                 = DefaultCameraBeaconCoreFieldId + 1,
         InitialCameraFieldId           = CamerasFieldId                 + 1,
-        NextFieldId                    = InitialCameraFieldId           + 1
+        AnimationsFieldId              = InitialCameraFieldId           + 1,
+        InitialAnimationsFieldId       = AnimationsFieldId              + 1,
+        TimeInSceneFieldId             = InitialAnimationsFieldId       + 1,
+        ParticleSystemsFieldId         = TimeInSceneFieldId             + 1,
+        InitialParticleSystemsFieldId  = ParticleSystemsFieldId         + 1,
+        NextFieldId                    = InitialParticleSystemsFieldId  + 1
     };
 
     static const OSG::BitVector InternalParentProjectFieldMask;
@@ -135,6 +145,11 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
     static const OSG::BitVector DefaultCameraBeaconCoreFieldMask;
     static const OSG::BitVector CamerasFieldMask;
     static const OSG::BitVector InitialCameraFieldMask;
+    static const OSG::BitVector AnimationsFieldMask;
+    static const OSG::BitVector InitialAnimationsFieldMask;
+    static const OSG::BitVector TimeInSceneFieldMask;
+    static const OSG::BitVector ParticleSystemsFieldMask;
+    static const OSG::BitVector InitialParticleSystemsFieldMask;
 
 
     static const OSG::BitVector MTInfluenceMask;
@@ -171,6 +186,11 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
            MFNodePtr           *getMFInitialModelNodes(void);
            MFCameraPtr         *getMFCameras        (void);
            SFCameraPtr         *getSFInitialCamera  (void);
+           MFAnimationPtr      *getMFAnimations     (void);
+           MFAnimationPtr      *getMFInitialAnimations(void);
+           SFReal32            *getSFTimeInScene    (void);
+           MFParticleSystemPtr *getMFParticleSystems(void);
+           MFParticleSystemPtr *getMFInitialParticleSystems(void);
 
            std::string         &getName           (void);
      const std::string         &getName           (void) const;
@@ -178,6 +198,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
      const BackgroundPtr       &getInitialBackground(void) const;
            CameraPtr           &getInitialCamera  (void);
      const CameraPtr           &getInitialCamera  (void) const;
+           Real32              &getTimeInScene    (void);
+     const Real32              &getTimeInScene    (void) const;
            BackgroundPtr       &getBackgrounds    (const UInt32 index);
            MFBackgroundPtr     &getBackgrounds    (void);
      const MFBackgroundPtr     &getBackgrounds    (void) const;
@@ -199,6 +221,18 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
            CameraPtr           &getCameras        (const UInt32 index);
            MFCameraPtr         &getCameras        (void);
      const MFCameraPtr         &getCameras        (void) const;
+           AnimationPtr        &getAnimations     (const UInt32 index);
+           MFAnimationPtr      &getAnimations     (void);
+     const MFAnimationPtr      &getAnimations     (void) const;
+           AnimationPtr        &getInitialAnimations(const UInt32 index);
+           MFAnimationPtr      &getInitialAnimations(void);
+     const MFAnimationPtr      &getInitialAnimations(void) const;
+           ParticleSystemPtr   &getParticleSystems(const UInt32 index);
+           MFParticleSystemPtr &getParticleSystems(void);
+     const MFParticleSystemPtr &getParticleSystems(void) const;
+           ParticleSystemPtr   &getInitialParticleSystems(const UInt32 index);
+           MFParticleSystemPtr &getInitialParticleSystems(void);
+     const MFParticleSystemPtr &getInitialParticleSystems(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -208,6 +242,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
      void setName           ( const std::string &value );
      void setInitialBackground( const BackgroundPtr &value );
      void setInitialCamera  ( const CameraPtr &value );
+     void setTimeInScene    ( const Real32 &value );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -265,6 +300,11 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
     SFTransformPtr      _sfDefaultCameraBeaconCore;
     MFCameraPtr         _mfCameras;
     SFCameraPtr         _sfInitialCamera;
+    MFAnimationPtr      _mfAnimations;
+    MFAnimationPtr      _mfInitialAnimations;
+    SFReal32            _sfTimeInScene;
+    MFParticleSystemPtr   _mfParticleSystems;
+    MFParticleSystemPtr   _mfInitialParticleSystems;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

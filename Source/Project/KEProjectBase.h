@@ -73,11 +73,15 @@
 #include <OpenSG/OSGBackgroundFields.h> // InternalActiveBackground type
 #include <OpenSG/OSGForegroundFields.h> // Foregrounds type
 #include <OpenSG/OSGForegroundFields.h> // InternalActiveForegrounds type
+#include <OpenSG/OSGForegroundFields.h> // GlobalActiveForegrounds type
 #include <OpenSG/OSGNodeFields.h> // ModelNodes type
 #include <OpenSG/OSGNodeFields.h> // InternalActiveModelNodes type
+#include <OpenSG/OSGNodeFields.h> // GlobalActiveModelNodes type
 #include <OpenSG/OSGCameraFields.h> // Cameras type
 #include <OpenSG/OSGCameraFields.h> // InternalActiveCamera type
 #include <OpenSG/OSGViewportFields.h> // InternalActiveViewport type
+#include <OpenSG/Animation/OSGAnimation.h> // ActiveAnimations type
+#include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ActiveParticleSystems type
 
 #include "KEProjectFields.h"
 
@@ -112,12 +116,16 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
         InternalActiveBackgroundFieldId  = BackgroundsFieldId               + 1,
         ForegroundsFieldId               = InternalActiveBackgroundFieldId  + 1,
         InternalActiveForegroundsFieldId = ForegroundsFieldId               + 1,
-        ModelNodesFieldId                = InternalActiveForegroundsFieldId + 1,
+        GlobalActiveForegroundsFieldId   = InternalActiveForegroundsFieldId + 1,
+        ModelNodesFieldId                = GlobalActiveForegroundsFieldId   + 1,
         InternalActiveModelNodesFieldId  = ModelNodesFieldId                + 1,
-        CamerasFieldId                   = InternalActiveModelNodesFieldId  + 1,
+        GlobalActiveModelNodesFieldId    = InternalActiveModelNodesFieldId  + 1,
+        CamerasFieldId                   = GlobalActiveModelNodesFieldId    + 1,
         InternalActiveCameraFieldId      = CamerasFieldId                   + 1,
         InternalActiveViewportFieldId    = InternalActiveCameraFieldId      + 1,
-        NextFieldId                      = InternalActiveViewportFieldId    + 1
+        ActiveAnimationsFieldId          = InternalActiveViewportFieldId    + 1,
+        ActiveParticleSystemsFieldId     = ActiveAnimationsFieldId          + 1,
+        NextFieldId                      = ActiveParticleSystemsFieldId     + 1
     };
 
     static const OSG::BitVector NameFieldMask;
@@ -130,11 +138,15 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     static const OSG::BitVector InternalActiveBackgroundFieldMask;
     static const OSG::BitVector ForegroundsFieldMask;
     static const OSG::BitVector InternalActiveForegroundsFieldMask;
+    static const OSG::BitVector GlobalActiveForegroundsFieldMask;
     static const OSG::BitVector ModelNodesFieldMask;
     static const OSG::BitVector InternalActiveModelNodesFieldMask;
+    static const OSG::BitVector GlobalActiveModelNodesFieldMask;
     static const OSG::BitVector CamerasFieldMask;
     static const OSG::BitVector InternalActiveCameraFieldMask;
     static const OSG::BitVector InternalActiveViewportFieldMask;
+    static const OSG::BitVector ActiveAnimationsFieldMask;
+    static const OSG::BitVector ActiveParticleSystemsFieldMask;
 
 
     static const OSG::BitVector MTInfluenceMask;
@@ -168,7 +180,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
            SFScenePtr          *getSFInitialScene   (void);
            MFBackgroundPtr     *getMFBackgrounds    (void);
            MFForegroundPtr     *getMFForegrounds    (void);
+           MFForegroundPtr     *getMFGlobalActiveForegrounds(void);
            MFNodePtr           *getMFModelNodes     (void);
+           MFNodePtr           *getMFGlobalActiveModelNodes(void);
            MFCameraPtr         *getMFCameras        (void);
 
            std::string         &getName           (void);
@@ -188,9 +202,15 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
            ForegroundPtr       &getForegrounds    (const UInt32 index);
            MFForegroundPtr     &getForegrounds    (void);
      const MFForegroundPtr     &getForegrounds    (void) const;
+           ForegroundPtr       &getGlobalActiveForegrounds(const UInt32 index);
+           MFForegroundPtr     &getGlobalActiveForegrounds(void);
+     const MFForegroundPtr     &getGlobalActiveForegrounds(void) const;
            NodePtr             &getModelNodes     (const UInt32 index);
            MFNodePtr           &getModelNodes     (void);
      const MFNodePtr           &getModelNodes     (void) const;
+           NodePtr             &getGlobalActiveModelNodes(const UInt32 index);
+           MFNodePtr           &getGlobalActiveModelNodes(void);
+     const MFNodePtr           &getGlobalActiveModelNodes(void) const;
            CameraPtr           &getCameras        (const UInt32 index);
            MFCameraPtr         &getCameras        (void);
      const MFCameraPtr         &getCameras        (void) const;
@@ -256,11 +276,15 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     SFBackgroundPtr     _sfInternalActiveBackground;
     MFForegroundPtr     _mfForegrounds;
     MFForegroundPtr     _mfInternalActiveForegrounds;
+    MFForegroundPtr     _mfGlobalActiveForegrounds;
     MFNodePtr           _mfModelNodes;
     MFNodePtr           _mfInternalActiveModelNodes;
+    MFNodePtr           _mfGlobalActiveModelNodes;
     MFCameraPtr         _mfCameras;
     SFCameraPtr         _sfInternalActiveCamera;
     SFViewportPtr       _sfInternalActiveViewport;
+    MFAnimationPtr      _mfActiveAnimations;
+    MFParticleSystemPtr   _mfActiveParticleSystems;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -288,6 +312,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
            MFNodePtr           *getMFInternalActiveModelNodes(void);
            SFCameraPtr         *getSFInternalActiveCamera(void);
            SFViewportPtr       *getSFInternalActiveViewport(void);
+           MFAnimationPtr      *getMFActiveAnimations(void);
+           MFParticleSystemPtr *getMFActiveParticleSystems(void);
 
            ScenePtr            &getInternalActiveScene(void);
      const ScenePtr            &getInternalActiveScene(void) const;
@@ -303,6 +329,12 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
            NodePtr             &getInternalActiveModelNodes(UInt32 index);
            MFNodePtr           &getInternalActiveModelNodes(void);
      const MFNodePtr           &getInternalActiveModelNodes(void) const;
+           AnimationPtr        &getActiveAnimations(UInt32 index);
+           MFAnimationPtr      &getActiveAnimations(void);
+     const MFAnimationPtr      &getActiveAnimations(void) const;
+           ParticleSystemPtr   &getActiveParticleSystems(UInt32 index);
+           MFParticleSystemPtr &getActiveParticleSystems(void);
+     const MFParticleSystemPtr &getActiveParticleSystems(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

@@ -47,5 +47,10 @@ ScenePtr Project::getActiveScene(void) const
 	return getInternalActiveScene();
 }
 
+inline
+Project::ProjectUpdateListener::ProjectUpdateListener(ProjectPtr TheProject) : _Project(TheProject)
+{
+}
+
 KE_END_NAMESPACE
 

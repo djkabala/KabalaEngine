@@ -44,6 +44,7 @@
 
 #include "KEConfig.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
+#include <OpenSG/Input/OSGStringUtils.h>
 
 #include "KEApplicationPlayer.h"
 #include "Project/KEProject.h"
@@ -122,6 +123,86 @@ void ApplicationPlayer::stop(void)
 		MainApplication::the()->getProject()->stop();
 	}
 }
+
+void ApplicationPlayer::enableDebug(bool EnableDebug)
+{
+    _IsDebugActive = EnableDebug;
+    if(_IsDebugActive)
+    {
+        std::cout << "Debug Mode Enabled" << std::endl;
+    }
+    else
+    {
+        std::cout << "Debug Mode Disabled" << std::endl;
+    }
+}
+
+void ApplicationPlayer::keyTyped(const KeyEvent& e)
+{
+    if(e.getKey() == KeyEvent::KEY_D && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+    {
+        enableDebug(!_IsDebugActive);
+        return;
+    }
+
+    if(_IsDebugActive)
+    {
+        if(e.getKey() == KeyEvent::KEY_Q && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
+        {
+            MainApplication::the()->exit();
+        }
+
+        if(e.getKey() == KeyEvent::KEY_TAB && !(e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
+        {
+            MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+            if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
+            {
+                ++SearchItor;
+                if(SearchItor == MainApplication::the()->getProject()->getScenes().end())
+                {
+                    SearchItor = MainApplication::the()->getProject()->getScenes().begin();
+                }
+            }
+            else
+            {
+                SearchItor = MainApplication::the()->getProject()->getScenes().begin();
+            }
+            MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+        }
+        else if(e.getKey() == KeyEvent::KEY_TAB && e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+        {
+            MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+            if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
+            {
+                if(SearchItor == MainApplication::the()->getProject()->getScenes().begin())
+                {
+                    SearchItor = MainApplication::the()->getProject()->getScenes().end();
+                }
+                if(MainApplication::the()->getProject()->getScenes().size() > 1)
+                {
+                    --SearchItor;
+                }
+            }
+            else
+            {
+                SearchItor = MainApplication::the()->getProject()->getScenes().begin();
+            }
+            MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+        }
+        else if(isNumericKey(e.getKey()) && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+        {
+            //Switch To scene #
+            UInt32 SceneNumber(boost::lexical_cast<UInt32>(KeyEvent::getCharFromKey(e.getKey(),0)));
+            if(SceneNumber < MainApplication::the()->getProject()->getScenes().size())
+            {
+                MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().begin());
+                SearchItor = SearchItor + SceneNumber;
+                MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+            }
+        }
+    }
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -130,13 +211,15 @@ void ApplicationPlayer::stop(void)
 
 ApplicationPlayer::ApplicationPlayer(void) :
     Inherited(),
-	_PlayerKeyListener(ApplicationPlayerPtr(this))
+	_PlayerKeyListener(ApplicationPlayerPtr(this)),
+    _IsDebugActive(false)
 {
 }
 
 ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     Inherited(source),
-	_PlayerKeyListener(ApplicationPlayerPtr(this))
+	_PlayerKeyListener(ApplicationPlayerPtr(this)),
+    _IsDebugActive(false)
 {
 }
 
@@ -159,30 +242,5 @@ void ApplicationPlayer::dump(      ::osg::UInt32    ,
 
 void ApplicationPlayer::PlayerKeyListener::keyTyped(const KeyEvent& e)
 {
-   if(e.getKey() == KeyEvent::KEY_Q && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
-   {
-		MainApplication::the()->exit();
-   }
-
-   switch(e.getKey())
-   {
-   case KeyEvent::KEY_TAB:
-	   {
-		   MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
-		   if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
-		   {
-			   ++SearchItor;
-			   if(SearchItor == MainApplication::the()->getProject()->getScenes().end())
-			   {
-				   SearchItor = MainApplication::the()->getProject()->getScenes().begin();
-			   }
-		   }
-		   else
-		   {
-			   SearchItor = MainApplication::the()->getProject()->getScenes().begin();
-		   }
-		   MainApplication::the()->getProject()->setActiveScene(*SearchItor);
-	   }
-	   break;
-   }
+    _ApplicationPlayer->keyTyped(e);
 }

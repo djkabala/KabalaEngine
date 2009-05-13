@@ -135,6 +135,13 @@ void Project::save(const Path& ProjectFile)
 
 void Project::start(void)
 {
+    //Attach the update listener
+    MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_ProjectUpdateListener);
+    if(_AnimationAdvancer == NullFC)
+    {
+        _AnimationAdvancer = ElapsedTimeAnimationAdvancer::create();
+    }
+
 	//If needed create a default Viewport
 	if(getInternalActiveViewport() == NullFC)
 	{
@@ -168,6 +175,8 @@ void Project::stop(void)
 			MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(0);
 		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
+    //Dettach the update listener
+    MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_ProjectUpdateListener);
 }
 
 void Project::setActiveScene(ScenePtr TheScene)
@@ -185,6 +194,10 @@ void Project::setActiveScene(ScenePtr TheScene)
 		{
 			getInternalActiveScene()->enter();
 		}
+
+        //Reset Animation Advancer
+        _AnimationAdvancer->reset();
+        _TimeInScene = 0.0;
 	}
 }
 
@@ -278,6 +291,78 @@ void Project::attachNames(void)
 
 }
 
+void Project::addActiveAnimation(AnimationPtr TheAnimation)
+{
+    if(getActiveAnimations().find(TheAnimation) == getActiveAnimations().end())
+    {
+        beginEditCP(ProjectPtr(this), ActiveAnimationsFieldMask);
+            getActiveAnimations().push_back(TheAnimation);
+        endEditCP(ProjectPtr(this), ActiveAnimationsFieldMask);
+    }
+}
+
+void Project::removeActiveAnimation(AnimationPtr TheAnimation)
+{
+    if(getActiveAnimations().find(TheAnimation) != getActiveAnimations().end())
+    {
+        beginEditCP(ProjectPtr(this), ActiveAnimationsFieldMask);
+            getActiveAnimations().erase(getActiveAnimations().find(TheAnimation));
+        endEditCP(ProjectPtr(this), ActiveAnimationsFieldMask);
+    }
+}
+
+
+void Project::addActiveParticleSystem(ParticleSystemPtr TheParticleSystem)
+{
+    if(getActiveParticleSystems().find(TheParticleSystem) == getActiveParticleSystems().end())
+    {
+        beginEditCP(ProjectPtr(this), ActiveParticleSystemsFieldMask);
+            getActiveParticleSystems().push_back(TheParticleSystem);
+        endEditCP(ProjectPtr(this), ActiveParticleSystemsFieldMask);
+        TheParticleSystem->attachUpdateListener(MainApplication::the()->getMainWindowEventProducer());
+    }
+}
+
+void Project::removeActiveParticleSystem(ParticleSystemPtr TheParticleSystem)
+{
+    if(getActiveParticleSystems().find(TheParticleSystem) != getActiveParticleSystems().end())
+    {
+        beginEditCP(ProjectPtr(this), ActiveParticleSystemsFieldMask);
+            getActiveParticleSystems().erase(getActiveParticleSystems().find(TheParticleSystem));
+        endEditCP(ProjectPtr(this), ActiveParticleSystemsFieldMask);
+    }
+}
+
+void Project::update(const UpdateEvent& e)
+{
+    _AnimationAdvancer->update(e.getElapsedTime());
+
+    for(UInt32 i(0) ; i<getActiveAnimations().size() ; ++i)
+    {
+        getActiveAnimations(i)->update(_AnimationAdvancer);
+    }
+
+    _TimeInScene += e.getElapsedTime();
+    if(_TimeInScene >= getActiveScene()->getTimeInScene())
+    {
+        //GOTO next scene
+        MFScenePtr::iterator SearchItor(getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+        if(SearchItor != getScenes().end())
+        {
+            ++SearchItor;
+            if(SearchItor == getScenes().end())
+            {
+                SearchItor = getScenes().begin();
+            }
+        }
+        else
+        {
+            SearchItor = getScenes().begin();
+        }
+        setActiveScene(*SearchItor);
+    }
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -285,12 +370,14 @@ void Project::attachNames(void)
 /*----------------------- constructors & destructors ----------------------*/
 
 Project::Project(void) :
-    Inherited()
+    Inherited(),
+        _ProjectUpdateListener(ProjectPtr(this))
 {
 }
 
 Project::Project(const Project &source) :
-    Inherited(source)
+    Inherited(source),
+        _ProjectUpdateListener(ProjectPtr(this))
 {
 }
 
@@ -321,3 +408,7 @@ void Project::dump(      ::osg::UInt32    ,
     SLOG << "Dump Project NI" << std::endl;
 }
 
+void Project::ProjectUpdateListener::update(const UpdateEvent& e)
+{
+    _Project->update(e);
+}
