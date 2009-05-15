@@ -112,6 +112,10 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 	void attachNames(void);
 
 	WindowEventProducerPtr getEventProducer(void) const;
+
+    void pauseActiveUpdates(void);
+    void unpauseActiveUpdates(void);
+    void togglePauseActiveUpdates(void);
 	
     /*=========================  PROTECTED  ===============================*/
   protected:
@@ -154,6 +158,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 
     ElapsedTimeAnimationAdvancerPtr _AnimationAdvancer;
     Real32 _TimeInScene;
+    bool _PauseActiveUpdates;
     /*==========================  PRIVATE  ================================*/
   private:
 

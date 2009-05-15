@@ -142,6 +142,7 @@ void Scene::exit(void)
 	//Dettach the initial animations
 	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
 	{
+        getInitialAnimations(i)->stop();
         getInternalParentProject()->removeActiveAnimation(getInitialAnimations(i));
     }
 
@@ -243,7 +244,10 @@ void Scene::attachNames(void)
 	//ModelNodes
 	for(::osg::UInt32 i(0); i<getModelNodes().size() ; ++i)
 	{
-		attachName(getModelNodes(i));
+        if(getModelNodes(i) != NullFC)
+        {
+		    attachName(getModelNodes(i));
+        }
 	}
 
 }

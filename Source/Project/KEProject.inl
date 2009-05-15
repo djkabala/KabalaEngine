@@ -52,5 +52,20 @@ Project::ProjectUpdateListener::ProjectUpdateListener(ProjectPtr TheProject) : _
 {
 }
 
+inline
+void Project::pauseActiveUpdates(void)
+{
+    _PauseActiveUpdates = true;
+}
+inline
+void Project::unpauseActiveUpdates(void)
+{
+    _PauseActiveUpdates = false;
+}
+inline
+void Project::togglePauseActiveUpdates(void)
+{
+    _PauseActiveUpdates = !_PauseActiveUpdates;
+}
 KE_END_NAMESPACE
 

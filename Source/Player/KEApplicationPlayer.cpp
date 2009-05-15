@@ -147,11 +147,20 @@ void ApplicationPlayer::keyTyped(const KeyEvent& e)
 
     if(_IsDebugActive)
     {
+        //Force Quit
         if(e.getKey() == KeyEvent::KEY_Q && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
         {
             MainApplication::the()->exit();
         }
 
+        
+        //Pause Active Updates
+        if(e.getKey() == KeyEvent::KEY_SPACE)
+        {
+            MainApplication::the()->getProject()->togglePauseActiveUpdates();
+        }
+
+        //Scene Activation
         if(e.getKey() == KeyEvent::KEY_TAB && !(e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
         {
             MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));

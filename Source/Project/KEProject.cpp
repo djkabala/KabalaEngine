@@ -135,6 +135,9 @@ void Project::save(const Path& ProjectFile)
 
 void Project::start(void)
 {
+    //Temporarily validate all openGL Objects
+    //MainApplication::the()->getMainWindowEventProducer()->getWindow()->validateAllGLObjects();
+
     //Attach the update listener
     MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_ProjectUpdateListener);
     if(_AnimationAdvancer == NullFC)
@@ -335,31 +338,34 @@ void Project::removeActiveParticleSystem(ParticleSystemPtr TheParticleSystem)
 
 void Project::update(const UpdateEvent& e)
 {
-    _AnimationAdvancer->update(e.getElapsedTime());
-
-    for(UInt32 i(0) ; i<getActiveAnimations().size() ; ++i)
+    if(!_PauseActiveUpdates)
     {
-        getActiveAnimations(i)->update(_AnimationAdvancer);
-    }
+        _AnimationAdvancer->update(e.getElapsedTime());
 
-    _TimeInScene += e.getElapsedTime();
-    if(_TimeInScene >= getActiveScene()->getTimeInScene())
-    {
-        //GOTO next scene
-        MFScenePtr::iterator SearchItor(getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
-        if(SearchItor != getScenes().end())
+        for(UInt32 i(0) ; i<getActiveAnimations().size() ; ++i)
         {
-            ++SearchItor;
-            if(SearchItor == getScenes().end())
+            getActiveAnimations(i)->update(_AnimationAdvancer);
+        }
+
+        _TimeInScene += e.getElapsedTime();
+        if(_TimeInScene >= getActiveScene()->getTimeInScene())
+        {
+            //GOTO next scene
+            MFScenePtr::iterator SearchItor(getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+            if(SearchItor != getScenes().end())
+            {
+                ++SearchItor;
+                if(SearchItor == getScenes().end())
+                {
+                    SearchItor = getScenes().begin();
+                }
+            }
+            else
             {
                 SearchItor = getScenes().begin();
             }
+            setActiveScene(*SearchItor);
         }
-        else
-        {
-            SearchItor = getScenes().begin();
-        }
-        setActiveScene(*SearchItor);
     }
 }
 
@@ -371,13 +377,15 @@ void Project::update(const UpdateEvent& e)
 
 Project::Project(void) :
     Inherited(),
-        _ProjectUpdateListener(ProjectPtr(this))
+        _ProjectUpdateListener(ProjectPtr(this)),
+        _PauseActiveUpdates(false)
 {
 }
 
 Project::Project(const Project &source) :
     Inherited(source),
-        _ProjectUpdateListener(ProjectPtr(this))
+        _ProjectUpdateListener(ProjectPtr(this)),
+        _PauseActiveUpdates(source._PauseActiveUpdates)
 {
 }
 
