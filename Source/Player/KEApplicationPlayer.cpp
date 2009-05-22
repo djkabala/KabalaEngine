@@ -113,6 +113,8 @@ void ApplicationPlayer::start(void)
 	if(MainApplication::the()->getProject() != NullFC)
 	{
 		MainApplication::the()->getProject()->start();
+
+        enableDebug(true);
 	}
 }
 
@@ -130,10 +132,12 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
     if(_IsDebugActive)
     {
         std::cout << "Debug Mode Enabled" << std::endl;
+        MainApplication::the()->getProject()->attachFlyNavigation();
     }
     else
     {
         std::cout << "Debug Mode Disabled" << std::endl;
+        MainApplication::the()->getProject()->attachFlyNavigation();
     }
 }
 

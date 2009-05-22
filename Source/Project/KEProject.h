@@ -46,7 +46,12 @@
 #include <OpenSG/Toolbox/OSGPathType.h>
 #include <OpenSG/Input/OSGWindowEventProducerFields.h>
 #include <OpenSG/Input/OSGUpdateListener.h>
+#include <OpenSG/Input/OSGMouseAdapter.h>
+#include <OpenSG/Input/OSGMouseMotionAdapter.h>
+#include <OpenSG/Input/OSGKeyAdapter.h>
 #include <OpenSG/Animation/OSGElapsedTimeAnimationAdvancer.h>
+#include <OpenSG/OSGNavigator.h>
+
 
 OSG_USING_NAMESPACE
 KE_BEGIN_NAMESPACE
@@ -116,6 +121,10 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void pauseActiveUpdates(void);
     void unpauseActiveUpdates(void);
     void togglePauseActiveUpdates(void);
+
+    void attachFlyNavigation(void);
+    void dettachFlyNavigation(void);
+    void toggleFlyNavigation(void);
 	
     /*=========================  PROTECTED  ===============================*/
   protected:
@@ -140,12 +149,20 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     /*! \}                                                                 */
     
     
-	class ProjectUpdateListener : public UpdateListener
+	class ProjectUpdateListener : public UpdateListener,
+                                  public MouseAdapter,
+                                  public MouseMotionAdapter,
+                                  public KeyAdapter
 	{
 	public:
 		ProjectUpdateListener(ProjectPtr TheProject);
 
         virtual void update(const UpdateEvent& e);
+        virtual void mousePressed(const MouseEvent& e);
+        virtual void mouseReleased(const MouseEvent& e);
+        virtual void mouseMoved(const MouseEvent& e);
+        virtual void mouseDragged(const MouseEvent& e);
+        virtual void keyPressed(const KeyEvent& e);
 	protected :
 		ProjectPtr _Project;
 	};
@@ -154,11 +171,26 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 
 	ProjectUpdateListener _ProjectUpdateListener;
 
-    virtual void update(const UpdateEvent& e);
+    void update(const UpdateEvent& e);
+    void mousePressed(const MouseEvent& e);
+    void mouseReleased(const MouseEvent& e);
+    void mouseMoved(const MouseEvent& e);
+    void mouseDragged(const MouseEvent& e);
+    void keyPressed(const KeyEvent& e);
 
     ElapsedTimeAnimationAdvancerPtr _AnimationAdvancer;
     Real32 _TimeInScene;
     bool _PauseActiveUpdates;
+    bool _NavigatorAttached;
+    Navigator _navigator;
+    Pnt2f _MouseStartPos;
+    Vec3f _RotationYAxis, _RotationXAxis;
+    Real32 _MotionFactor;
+    Matrix _RotationStartMat;
+
+    void updateNavigatorSceneAttachment(void);
+    void setCameraBeaconMatrix(const Matrix& m);
+
     /*==========================  PRIVATE  ================================*/
   private:
 

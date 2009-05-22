@@ -51,6 +51,7 @@ KE_USING_NAMESPACE
 #include "KEUtils.h"
 #include "Application/KEMainApplication.h"
 #include <OpenSG/OSGViewport.h>
+#include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGPerspectiveCamera.h>
 #include <OpenSG/OSGOrthographicCamera.h>
 #include "Project/Scene/KEScene.h"
@@ -196,6 +197,11 @@ void Project::setActiveScene(ScenePtr TheScene)
 		if(getInternalActiveScene() != NullFC)
 		{
 			getInternalActiveScene()->enter();
+
+            if(_NavigatorAttached)
+            {
+                updateNavigatorSceneAttachment();
+            }
 		}
 
         //Reset Animation Advancer
@@ -338,6 +344,11 @@ void Project::removeActiveParticleSystem(ParticleSystemPtr TheParticleSystem)
 
 void Project::update(const UpdateEvent& e)
 {
+    //if(_NavigatorAttached)
+    //{
+    //    _navigator.idle(_mousebuttons,_lastx, _lasty);
+    //    _navigator.updateCameraTransformation();
+    //}
     if(!_PauseActiveUpdates)
     {
         _AnimationAdvancer->update(e.getElapsedTime());
@@ -369,6 +380,150 @@ void Project::update(const UpdateEvent& e)
     }
 }
 
+void Project::updateNavigatorSceneAttachment(void)
+{
+    getInternalActiveViewport()->getRoot()->updateVolume();
+
+    Vec3f min,max;
+    getInternalActiveViewport()->getRoot()->getVolume().getBounds( min, max );
+    Vec3f d = max - min;
+
+    if(d.length() < Eps) // Nothing loaded? Use a unity box
+    {
+        min.setValues(-1.f,-1.f,-1.f);
+        max.setValues( 1.f, 1.f, 1.f);
+        d = max - min;
+    }
+
+    // adjust the translation factors so that motions are sort of scaled
+    _MotionFactor = (d[0] + d[1] + d[2]) / 1000.f;
+}
+
+void Project::attachFlyNavigation(void)
+{
+    MainApplication::the()->getMainWindowEventProducer()->addMouseListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addMouseMotionListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_ProjectUpdateListener);
+
+
+    updateNavigatorSceneAttachment();
+    _NavigatorAttached = true;
+    
+
+    /*
+    _navigator.setMode(Navigator::TRACKBALL);
+    _navigator.setViewport(getInternalActiveViewport());
+
+    updateNavigatorSceneAttachment();*/
+}
+
+void Project::dettachFlyNavigation(void)
+{
+    MainApplication::the()->getMainWindowEventProducer()->removeMouseListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeMouseMotionListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_ProjectUpdateListener);
+    _NavigatorAttached = false;
+}
+
+void Project::toggleFlyNavigation(void)
+{
+    if(_NavigatorAttached)
+    {
+        dettachFlyNavigation();
+    }
+    else
+    {
+        attachFlyNavigation();
+    }
+}
+
+
+void Project::mousePressed(const MouseEvent& e)
+{
+    switch (e.getButton())
+    {
+    case MouseEvent::BUTTON1:
+        {
+            Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
+            _RotationStartMat = m;
+            _MouseStartPos = e.getLocation();
+        }
+      break;
+    }
+
+}
+
+void Project::mouseReleased(const MouseEvent& e)
+{
+    switch (e.getButton())
+    {
+    case MouseEvent::BUTTON1:
+      break;
+    }
+}
+
+void Project::keyPressed(const KeyEvent& e)
+{
+    Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
+    Vec3f Local_x(1.0,0.0,0.0),Local_z(0.0,0.0,1.0);
+    m.multMatrixVec(Local_x);
+    m.multMatrixVec(Local_z);
+
+    Vec3f Translation;
+    switch ( e.getKey() )
+    {
+    case KeyEvent::KEY_LEFT:
+        Translation = -_MotionFactor*Local_x;
+        break;
+    case KeyEvent::KEY_RIGHT:
+        Translation = _MotionFactor*Local_x;
+        break;
+    case KeyEvent::KEY_UP:
+        Translation = -_MotionFactor*Local_z;
+        break;
+    case KeyEvent::KEY_DOWN:
+        Translation = _MotionFactor*Local_z;
+        break;
+    }
+
+    Matrix t;
+    t.setTranslate(Translation);
+    m.multLeft(t);
+    setCameraBeaconMatrix(m);
+}
+
+void Project::setCameraBeaconMatrix(const Matrix& m)
+{
+    if(getInternalActiveViewport()->getCamera()->getBeacon()->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+    {
+        TransformPtr TransCore = Transform::Ptr::dcast(getInternalActiveViewport()->getCamera()->getBeacon()->getCore());
+        beginEditCP(TransCore, Transform::MatrixFieldMask);
+            TransCore->setMatrix(m);
+        endEditCP(TransCore, Transform::MatrixFieldMask);
+    }
+}
+
+void Project::mouseMoved(const MouseEvent& e)
+{
+    //_lastx = e.getLocation().x();
+    //_lasty = e.getLocation().y();
+}
+
+void Project::mouseDragged(const MouseEvent& e)
+{
+    Vec2f Difference(_MouseStartPos - e.getLocation());
+
+    Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), Difference.x() * 0.003f);
+    Matrix YRot_Mat;
+    YRot_Mat.setRotate(YRot_Quat);
+    Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0), Difference.y() * 0.003f);
+    Matrix XRot_Mat;
+    XRot_Mat.setRotate(XRot_Quat);
+    Matrix m(_RotationStartMat);
+    m.mult(YRot_Mat);
+    m.mult(XRot_Mat);
+    setCameraBeaconMatrix(m);
+}
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -378,14 +533,16 @@ void Project::update(const UpdateEvent& e)
 Project::Project(void) :
     Inherited(),
         _ProjectUpdateListener(ProjectPtr(this)),
-        _PauseActiveUpdates(false)
+        _PauseActiveUpdates(false),
+        _NavigatorAttached(false)
 {
 }
 
 Project::Project(const Project &source) :
     Inherited(source),
         _ProjectUpdateListener(ProjectPtr(this)),
-        _PauseActiveUpdates(source._PauseActiveUpdates)
+        _PauseActiveUpdates(source._PauseActiveUpdates),
+        _NavigatorAttached(false)
 {
 }
 
@@ -420,3 +577,29 @@ void Project::ProjectUpdateListener::update(const UpdateEvent& e)
 {
     _Project->update(e);
 }
+
+void Project::ProjectUpdateListener::mousePressed(const MouseEvent& e)
+{
+    _Project->mousePressed(e);
+}
+
+void Project::ProjectUpdateListener::mouseReleased(const MouseEvent& e)
+{
+    _Project->mouseReleased(e);
+}
+
+void Project::ProjectUpdateListener::mouseMoved(const MouseEvent& e)
+{
+    _Project->mouseMoved(e);
+}
+
+void Project::ProjectUpdateListener::mouseDragged(const MouseEvent& e)
+{
+    _Project->mouseDragged(e);
+}
+
+void Project::ProjectUpdateListener::keyPressed(const KeyEvent& e)
+{
+    _Project->keyPressed(e);
+}
+
