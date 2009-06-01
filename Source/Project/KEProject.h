@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -39,7 +38,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEProjectBase.h"
 
@@ -52,9 +51,7 @@
 #include <OpenSG/Animation/OSGElapsedTimeAnimationAdvancer.h>
 #include <OpenSG/OSGNavigator.h>
 
-
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief Project class. See \ref 
            PageKabalaEngineProject for a description.
@@ -74,14 +71,14 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     /*! \{                                                                 */
 
     virtual void changed(BitVector  whichField, 
-                         ::osg::UInt32     origin    );
+                         UInt32     origin    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      ::osg::UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0, 
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
@@ -125,10 +122,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void attachFlyNavigation(void);
     void dettachFlyNavigation(void);
     void toggleFlyNavigation(void);
-	
     /*=========================  PROTECTED  ===============================*/
   protected:
-	  ViewportPtr createDefaultViewport(void) const;
 
     // Variables should all be in ProjectBase.
 
@@ -190,7 +185,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 
     void updateNavigatorSceneAttachment(void);
     void setCameraBeaconMatrix(const Matrix& m);
-
+    ViewportPtr createDefaultViewport(void) const;
+    
     /*==========================  PRIVATE  ================================*/
   private:
 
@@ -206,7 +202,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 
 typedef Project *ProjectP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEProjectBase.inl"
 #include "KEProject.inl"

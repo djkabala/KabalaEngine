@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -55,7 +54,7 @@
 #endif
 
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGBaseTypes.h>
@@ -72,11 +71,10 @@
 
 #include "KEBuilderInterfaceFields.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class BuilderInterface;
-class osg::BinaryDataHandler;
+class BinaryDataHandler;
 
 //! \brief BuilderInterface Base Class.
 
@@ -117,7 +115,7 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterfaceBase : public Interface
     /*! \{                                                                 */
 
     static        FieldContainerType &getClassType    (void); 
-    static        ::osg::UInt32              getClassTypeId  (void); 
+    static        UInt32              getClassTypeId  (void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -127,32 +125,86 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterfaceBase : public Interface
     virtual       FieldContainerType &getType  (void); 
     virtual const FieldContainerType &getType  (void) const; 
 
-    virtual       ::osg::UInt32              getContainerSize(void) const;
+    virtual       UInt32              getContainerSize(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-           SFMenuBarPtr        *getSFMenuBar        (void);
-           SFToolbarPtr        *getSFToolbar        (void);
-           SFStatusbarPtr      *getSFStatusbar      (void);
-           SFEditorInterfacePtr *getSFEditor         (void);
-           SFUIDrawingSurfacePtr *getSFDrawingSurface (void);
-           SFInternalWindowPtr *getSFMainInternalWindow(void);
 
-           MenuBarPtr          &getMenuBar        (void);
+           SFMenuBarPtr        *editSFMenuBar        (void);
+     const SFMenuBarPtr        *getSFMenuBar        (void) const;
+#ifndef OSG_2_PREP
+           SFMenuBarPtr        *getSFMenuBar        (void);
+#endif
+
+           SFToolbarPtr        *editSFToolbar        (void);
+     const SFToolbarPtr        *getSFToolbar        (void) const;
+#ifndef OSG_2_PREP
+           SFToolbarPtr        *getSFToolbar        (void);
+#endif
+
+           SFStatusbarPtr      *editSFStatusbar      (void);
+     const SFStatusbarPtr      *getSFStatusbar      (void) const;
+#ifndef OSG_2_PREP
+           SFStatusbarPtr      *getSFStatusbar      (void);
+#endif
+
+           SFEditorInterfacePtr *editSFEditor         (void);
+     const SFEditorInterfacePtr *getSFEditor         (void) const;
+#ifndef OSG_2_PREP
+           SFEditorInterfacePtr *getSFEditor         (void);
+#endif
+
+           SFUIDrawingSurfacePtr *editSFDrawingSurface (void);
+     const SFUIDrawingSurfacePtr *getSFDrawingSurface (void) const;
+#ifndef OSG_2_PREP
+           SFUIDrawingSurfacePtr *getSFDrawingSurface (void);
+#endif
+
+           SFInternalWindowPtr *editSFMainInternalWindow(void);
+     const SFInternalWindowPtr *getSFMainInternalWindow(void) const;
+#ifndef OSG_2_PREP
+           SFInternalWindowPtr *getSFMainInternalWindow(void);
+#endif
+
+
+           MenuBarPtr          &editMenuBar        (void);
      const MenuBarPtr          &getMenuBar        (void) const;
-           ToolbarPtr          &getToolbar        (void);
+#ifndef OSG_2_PREP
+           MenuBarPtr          &getMenuBar        (void);
+#endif
+
+           ToolbarPtr          &editToolbar        (void);
      const ToolbarPtr          &getToolbar        (void) const;
-           StatusbarPtr        &getStatusbar      (void);
+#ifndef OSG_2_PREP
+           ToolbarPtr          &getToolbar        (void);
+#endif
+
+           StatusbarPtr        &editStatusbar      (void);
      const StatusbarPtr        &getStatusbar      (void) const;
-           EditorInterfacePtr  &getEditor         (void);
+#ifndef OSG_2_PREP
+           StatusbarPtr        &getStatusbar      (void);
+#endif
+
+           EditorInterfacePtr  &editEditor         (void);
      const EditorInterfacePtr  &getEditor         (void) const;
-           UIDrawingSurfacePtr &getDrawingSurface (void);
+#ifndef OSG_2_PREP
+           EditorInterfacePtr  &getEditor         (void);
+#endif
+
+           UIDrawingSurfacePtr &editDrawingSurface (void);
      const UIDrawingSurfacePtr &getDrawingSurface (void) const;
-           InternalWindowPtr   &getMainInternalWindow(void);
+#ifndef OSG_2_PREP
+           UIDrawingSurfacePtr &getDrawingSurface (void);
+#endif
+
+           InternalWindowPtr   &editMainInternalWindow(void);
      const InternalWindowPtr   &getMainInternalWindow(void) const;
+#ifndef OSG_2_PREP
+           InternalWindowPtr   &getMainInternalWindow(void);
+#endif
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -176,7 +228,7 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterfaceBase : public Interface
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual ::osg::UInt32 getBinSize (const BitVector         &whichField);
+    virtual UInt32 getBinSize (const BitVector         &whichField);
     virtual void   copyToBin  (      BinaryDataHandler &pMem,
                                const BitVector         &whichField);
     virtual void   copyFromBin(      BinaryDataHandler &pMem,
@@ -250,14 +302,14 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterfaceBase : public Interface
                                const SyncInfo          &sInfo);
 
     virtual void execBeginEdit     (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
             void execBeginEditImpl (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
-    virtual void onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect);
+    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
 #endif
 
     /*! \}                                                                 */
@@ -288,6 +340,6 @@ typedef osgIF<BuilderInterfaceBase::isNodeCore,
 
 typedef RefPtr<BuilderInterfacePtr> BuilderInterfaceRefPtr;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #endif /* _KEBUILDERINTERFACEBASE_H_ */

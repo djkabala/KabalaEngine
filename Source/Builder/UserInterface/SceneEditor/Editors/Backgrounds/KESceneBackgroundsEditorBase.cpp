@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneBackgroundsEditorBase.h"
 #include "KESceneBackgroundsEditor.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector  SceneBackgroundsEditorBase::EditingBackgroundFieldMask = 
     (TypeTraits<BitVector>::One << SceneBackgroundsEditorBase::EditingBackgroundFieldId);
@@ -83,7 +82,7 @@ FieldDescription *SceneBackgroundsEditorBase::_desc[] =
                      "EditingBackground", 
                      EditingBackgroundFieldId, EditingBackgroundFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBackgroundsEditorBase::getSFEditingBackground)
+                     reinterpret_cast<FieldAccessMethod>(&SceneBackgroundsEditorBase::editSFEditingBackground))
 };
 
 
@@ -91,7 +90,7 @@ FieldContainerType SceneBackgroundsEditorBase::_type(
     "SceneBackgroundsEditor",
     "SceneComponentEditor",
     NULL,
-    (PrototypeCreateF) &SceneBackgroundsEditorBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&SceneBackgroundsEditorBase::createEmpty),
     SceneBackgroundsEditor::initMethod,
     _desc,
     sizeof(_desc));
@@ -120,7 +119,7 @@ FieldContainerPtr SceneBackgroundsEditorBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 SceneBackgroundsEditorBase::getContainerSize(void) const 
+UInt32 SceneBackgroundsEditorBase::getContainerSize(void) const 
 { 
     return sizeof(SceneBackgroundsEditor); 
 }
@@ -130,7 +129,8 @@ FieldContainerPtr SceneBackgroundsEditorBase::shallowCopy(void) const
 void SceneBackgroundsEditorBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((SceneBackgroundsEditorBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<SceneBackgroundsEditorBase *>(&other),
+                          whichField);
 }
 #else
 void SceneBackgroundsEditorBase::executeSync(      FieldContainer &other,
@@ -139,13 +139,13 @@ void SceneBackgroundsEditorBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((SceneBackgroundsEditorBase *) &other, whichField, sInfo);
 }
 void SceneBackgroundsEditorBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void SceneBackgroundsEditorBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void SceneBackgroundsEditorBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -154,11 +154,19 @@ void SceneBackgroundsEditorBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 SceneBackgroundsEditorBase::SceneBackgroundsEditorBase(void) :
     _sfEditingBackground      (BackgroundPtr(NullFC)), 
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 SceneBackgroundsEditorBase::SceneBackgroundsEditorBase(const SceneBackgroundsEditorBase &source) :
     _sfEditingBackground      (source._sfEditingBackground      ), 
@@ -174,9 +182,9 @@ SceneBackgroundsEditorBase::~SceneBackgroundsEditorBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 SceneBackgroundsEditorBase::getBinSize(const BitVector &whichField)
+UInt32 SceneBackgroundsEditorBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
     if(FieldBits::NoField != (EditingBackgroundFieldMask & whichField))
     {
@@ -241,8 +249,8 @@ void SceneBackgroundsEditorBase::executeSyncImpl(      SceneBackgroundsEditorBas
 }
 
 void SceneBackgroundsEditorBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -251,18 +259,19 @@ void SceneBackgroundsEditorBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<SceneBackgroundsEditorPtr>::_type("SceneBackgroundsEditorPtr", "SceneComponentEditorPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(SceneBackgroundsEditorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(SceneBackgroundsEditorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,9 +46,9 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 
 //! access the type of the class
@@ -97,15 +96,31 @@ ApplicationBuilderPtr ApplicationBuilderBase::createEmpty(void)
 
 //! Get the ApplicationBuilder::_sfEditingProject field.
 inline
-SFProjectPtr *ApplicationBuilderBase::getSFEditingProject(void)
+const SFProjectPtr *ApplicationBuilderBase::getSFEditingProject(void) const
 {
     return &_sfEditingProject;
 }
 
+//! Get the ApplicationBuilder::_sfEditingProject field.
+inline
+SFProjectPtr *ApplicationBuilderBase::editSFEditingProject(void)
+{
+    return &_sfEditingProject;
+}
+
+#ifndef OSG_2_PREP
+//! Get the ApplicationBuilder::_sfEditingProject field.
+inline
+SFProjectPtr *ApplicationBuilderBase::getSFEditingProject(void)
+{
+    return &_sfEditingProject;
+}
+#endif
+
 
 //! Get the value of the ApplicationBuilder::_sfEditingProject field.
 inline
-ProjectPtr &ApplicationBuilderBase::getEditingProject(void)
+ProjectPtr &ApplicationBuilderBase::editEditingProject(void)
 {
     return _sfEditingProject.getValue();
 }
@@ -117,6 +132,15 @@ const ProjectPtr &ApplicationBuilderBase::getEditingProject(void) const
     return _sfEditingProject.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the ApplicationBuilder::_sfEditingProject field.
+inline
+ProjectPtr &ApplicationBuilderBase::getEditingProject(void)
+{
+    return _sfEditingProject.getValue();
+}
+#endif
+
 //! Set the value of the ApplicationBuilder::_sfEditingProject field.
 inline
 void ApplicationBuilderBase::setEditingProject(const ProjectPtr &value)
@@ -125,5 +149,5 @@ void ApplicationBuilderBase::setEditingProject(const ProjectPtr &value)
 }
 
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

@@ -32,7 +32,7 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESolidBackgroundEditor.h"
 #include <OpenSG/UserInterface/OSGFlowLayout.h>
@@ -40,7 +40,7 @@
 
 #include "Builder/UserInterface/Editors/KEFieldContainerEditorFactory.h"
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 FieldContainerEditorType SolidBackgroundEditor::_Type("SolidBackgroundEditor",
                                                             "FieldContainerEditor",
@@ -111,4 +111,4 @@ SolidBackgroundEditor::~SolidBackgroundEditor(void)
 void SolidBackgroundEditor::ColorChangeListener::stateChanged(const ChangeEvent& e)
 {
 }
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

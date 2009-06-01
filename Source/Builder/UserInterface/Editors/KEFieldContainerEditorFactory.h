@@ -40,15 +40,14 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGTypeFactory.h>
 #include "KEFieldContainerEditor.h"
 #include "KEFieldContainerEditorType.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class KE_KABALAENGINELIB_DLLMAPPING FieldContainerEditorFactory : public TypeFactory
 {
@@ -105,6 +104,6 @@ class KE_KABALAENGINELIB_DLLMAPPING FieldContainerEditorFactory : public TypeFac
 
 typedef FieldContainerEditorFactory *FieldContainerEditorFactoryP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #endif /* _KEFIELDCONTAINEREDITOR_FACTORY_H_ */

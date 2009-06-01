@@ -31,13 +31,12 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class PlayProjectCommand;
 typedef boost::intrusive_ptr<PlayProjectCommand> PlayProjectCommandPtr;
@@ -68,7 +67,7 @@ public:
 	static PlayProjectCommandPtr create(void);
 };
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEPlayProjectCommand.inl"
 

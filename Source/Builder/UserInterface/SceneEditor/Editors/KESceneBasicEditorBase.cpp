@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneBasicEditorBase.h"
 #include "KESceneBasicEditor.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector SceneBasicEditorBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -71,7 +70,7 @@ FieldContainerType SceneBasicEditorBase::_type(
     "SceneBasicEditor",
     "SceneComponentEditor",
     NULL,
-    (PrototypeCreateF) &SceneBasicEditorBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&SceneBasicEditorBase::createEmpty),
     SceneBasicEditor::initMethod,
     NULL,
     0);
@@ -100,7 +99,7 @@ FieldContainerPtr SceneBasicEditorBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 SceneBasicEditorBase::getContainerSize(void) const 
+UInt32 SceneBasicEditorBase::getContainerSize(void) const 
 { 
     return sizeof(SceneBasicEditor); 
 }
@@ -110,7 +109,8 @@ FieldContainerPtr SceneBasicEditorBase::shallowCopy(void) const
 void SceneBasicEditorBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((SceneBasicEditorBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<SceneBasicEditorBase *>(&other),
+                          whichField);
 }
 #else
 void SceneBasicEditorBase::executeSync(      FieldContainer &other,
@@ -119,13 +119,13 @@ void SceneBasicEditorBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((SceneBasicEditorBase *) &other, whichField, sInfo);
 }
 void SceneBasicEditorBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void SceneBasicEditorBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void SceneBasicEditorBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -134,10 +134,18 @@ void SceneBasicEditorBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiA
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 SceneBasicEditorBase::SceneBasicEditorBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 SceneBasicEditorBase::SceneBasicEditorBase(const SceneBasicEditorBase &source) :
     Inherited                 (source)
@@ -152,9 +160,9 @@ SceneBasicEditorBase::~SceneBasicEditorBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 SceneBasicEditorBase::getBinSize(const BitVector &whichField)
+UInt32 SceneBasicEditorBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
 
     return returnValue;
@@ -198,8 +206,8 @@ void SceneBasicEditorBase::executeSyncImpl(      SceneBasicEditorBase *pOther,
 }
 
 void SceneBasicEditorBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -208,18 +216,19 @@ void SceneBasicEditorBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<SceneBasicEditorPtr>::_type("SceneBasicEditorPtr", "SceneComponentEditorPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(SceneBasicEditorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(SceneBasicEditorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

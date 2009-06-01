@@ -32,13 +32,13 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include <iostream>
 
 #include "KEFieldContainerEditorFactory.h"
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 FieldContainerEditorFactory *FieldContainerEditorFactory::_the = NULL;
 
@@ -181,4 +181,4 @@ FieldContainerEditorFactory::~FieldContainerEditorFactory(void)
 /*-------------------------------------------------------------------------*/
 /*                             Comparison                                  */
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

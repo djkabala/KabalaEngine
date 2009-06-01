@@ -42,7 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEStatusbar.h"
 #include "Builder/KEApplicationBuilder.h"
@@ -50,7 +50,7 @@
 #include <OpenSG/UserInterface/OSGSpringLayoutConstraints.h>
 #include <OpenSG/UserInterface/OSGLayoutSpring.h>
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

@@ -42,7 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationBuilder.h"
 
@@ -62,7 +62,7 @@
 #include "Builder/UserInterface/IconManager/KEDefaultIconManager.h"
 #include "Application/KEMainApplication.h"
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

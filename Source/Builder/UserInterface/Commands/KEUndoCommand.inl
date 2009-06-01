@@ -1,6 +1,6 @@
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 UndoCommand::UndoCommand(ApplicationBuilderPtr TheApplicationBuilder) : Inherited(),
@@ -27,4 +27,4 @@ const CommandType &UndoCommand::getClassType(void)
 	return _Type;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

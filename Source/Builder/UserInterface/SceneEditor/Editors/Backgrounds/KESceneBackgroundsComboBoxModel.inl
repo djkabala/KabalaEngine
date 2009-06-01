@@ -37,10 +37,10 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include <Project/Scene/KEScene.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 BackgroundPtr SceneBackgroundsComboBoxModel::getBackground(UInt32 Index)
@@ -48,5 +48,5 @@ BackgroundPtr SceneBackgroundsComboBoxModel::getBackground(UInt32 Index)
 	return getEditingScene()->getBackgrounds()[Index];
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

@@ -42,7 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEDefaultIconManager.h"
 #include "Application/KEApplicationSettings.h"
@@ -50,7 +50,7 @@
 #include <boost/filesystem.hpp>
 #include <OpenSG/OSGImageFileHandler.h>
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

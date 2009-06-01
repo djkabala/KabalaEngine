@@ -32,11 +32,11 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEFieldContainerEditor.h"
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 void FieldContainerEditor::swapTarget(FieldContainerPtr Target)
 {
@@ -90,4 +90,4 @@ FieldContainerEditor::~FieldContainerEditor(void)
 /*-------------------------------------------------------------------------*/
 /*                             Comparison                                  */
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

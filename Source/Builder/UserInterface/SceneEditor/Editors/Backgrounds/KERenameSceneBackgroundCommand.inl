@@ -1,6 +1,6 @@
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 RenameSceneBackgroundCommand::RenameSceneBackgroundCommand(SceneBackgroundsComboBoxModelPtr TheModel,UInt32 Index, std::string NewName) : Inherited(),
@@ -24,4 +24,4 @@ const CommandType &RenameSceneBackgroundCommand::getClassType(void)
 	return _Type;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

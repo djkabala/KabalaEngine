@@ -32,7 +32,7 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEGenericFieldContainerEditor.h"
 #include <OpenSG/UserInterface/OSGLabel.h>
@@ -47,7 +47,7 @@
 #include <OpenSG/UserInterface/OSGLayers.h>
 #include "Builder/UserInterface/Editors/KEFieldContainerEditorFactory.h"
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 FieldContainerEditorType GenericFieldContainerEditor::_Type("GenericFieldContainerEditor",
                                                             "FieldContainerEditor",
@@ -259,4 +259,4 @@ GenericFieldContainerEditor::~GenericFieldContainerEditor(void)
 /*-------------------------------------------------------------------------*/
 /*                             Comparison                                  */
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

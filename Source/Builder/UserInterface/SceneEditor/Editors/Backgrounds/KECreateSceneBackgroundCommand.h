@@ -31,14 +31,13 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGUndoableCommand.h>
 #include "KESceneBackgroundsComboBoxModel.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class CreateSceneBackgroundCommand;
 typedef boost::intrusive_ptr<CreateSceneBackgroundCommand> CreateSceneBackgroundCommandPtr;
@@ -78,7 +77,7 @@ public:
 	static CreateSceneBackgroundCommandPtr create(SceneBackgroundsComboBoxModelPtr TheModel,FieldContainerType* FCType);
 };
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KECreateSceneBackgroundCommand.inl"
 

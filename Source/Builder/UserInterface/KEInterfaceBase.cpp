@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEInterfaceBase.h"
 #include "KEInterface.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector InterfaceBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -91,7 +90,7 @@ const FieldContainerType &InterfaceBase::getType(void) const
 } 
 
 
-::osg::UInt32 InterfaceBase::getContainerSize(void) const 
+UInt32 InterfaceBase::getContainerSize(void) const 
 { 
     return sizeof(Interface); 
 }
@@ -101,7 +100,8 @@ const FieldContainerType &InterfaceBase::getType(void) const
 void InterfaceBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((InterfaceBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<InterfaceBase *>(&other),
+                          whichField);
 }
 #else
 void InterfaceBase::executeSync(      FieldContainer &other,
@@ -110,13 +110,13 @@ void InterfaceBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((InterfaceBase *) &other, whichField, sInfo);
 }
 void InterfaceBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void InterfaceBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void InterfaceBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -125,10 +125,18 @@ void InterfaceBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 InterfaceBase::InterfaceBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 InterfaceBase::InterfaceBase(const InterfaceBase &source) :
     Inherited                 (source)
@@ -143,9 +151,9 @@ InterfaceBase::~InterfaceBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 InterfaceBase::getBinSize(const BitVector &whichField)
+UInt32 InterfaceBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
 
     return returnValue;
@@ -189,8 +197,8 @@ void InterfaceBase::executeSyncImpl(      InterfaceBase *pOther,
 }
 
 void InterfaceBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -199,18 +207,19 @@ void InterfaceBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<InterfacePtr>::_type("InterfacePtr", "PanelPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(InterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(InterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

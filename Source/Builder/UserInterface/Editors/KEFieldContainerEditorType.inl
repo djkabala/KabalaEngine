@@ -26,10 +26,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 UInt32 FieldContainerEditorType::getFieldContainerEditorId(void) const
@@ -37,5 +37,5 @@ UInt32 FieldContainerEditorType::getFieldContainerEditorId(void) const
     return _uiFieldContainerEditorTypeId;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

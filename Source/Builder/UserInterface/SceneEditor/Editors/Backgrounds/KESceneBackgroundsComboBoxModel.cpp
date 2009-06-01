@@ -42,13 +42,13 @@
 
 #define KE_COMPILEUSERINTERFACELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneBackgroundsComboBoxModel.h"
 #include <Project/Scene/KEScene.h>
 #include <OpenSG/OSGSimpleAttachments.h>
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

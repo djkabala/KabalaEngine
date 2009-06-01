@@ -1,6 +1,6 @@
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 DeleteSceneBackgroundCommand::DeleteSceneBackgroundCommand(SceneBackgroundsComboBoxModelPtr TheModel,UInt32 TheIndex) : Inherited(),
@@ -22,4 +22,4 @@ const CommandType &DeleteSceneBackgroundCommand::getClassType(void)
 	return _Type;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

@@ -31,13 +31,12 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class StartScreenCommand;
 typedef boost::intrusive_ptr<StartScreenCommand> StartScreenCommandPtr;
@@ -68,7 +67,7 @@ public:
 	static StartScreenCommandPtr create(void);
 };
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEStartScreenCommand.inl"
 

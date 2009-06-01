@@ -31,14 +31,13 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGUndoableCommand.h>
 #include "KESceneBackgroundsComboBoxModel.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class DeleteSceneBackgroundCommand;
 typedef boost::intrusive_ptr<DeleteSceneBackgroundCommand> DeleteSceneBackgroundCommandPtr;
@@ -78,7 +77,7 @@ public:
 	static DeleteSceneBackgroundCommandPtr create(SceneBackgroundsComboBoxModelPtr TheModel,UInt32 TheIndex);
 };
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEDeleteSceneBackgroundCommand.inl"
 

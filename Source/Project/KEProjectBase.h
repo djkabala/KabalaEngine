@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -55,14 +54,15 @@
 #endif
 
 
-#include "KEConfig.h"
-#include <KEKabalaEngineDef.h>
+#include <OpenSG/OSGConfig.h>
+#include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGBaseTypes.h>
 #include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGCoredNodePtr.h>
 
 #include <OpenSG/OSGFieldContainer.h> // Parent
+
 #include <OpenSG/OSGStringFields.h> // Name type
 #include <OpenSG/OSGStringFields.h> // MainWindowTitle type
 #include <OpenSG/Toolbox/OSGPathType.h> // FilePath type
@@ -85,11 +85,10 @@
 
 #include "KEProjectFields.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class Project;
-class osg::BinaryDataHandler;
+class BinaryDataHandler;
 
 //! \brief Project Base Class.
 
@@ -173,47 +172,161 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-           SFString            *getSFName           (void);
-           SFString            *getSFMainWindowTitle(void);
-           SFPath              *getSFFilePath       (void);
-           MFScenePtr          *getMFScenes         (void);
-           SFScenePtr          *getSFInitialScene   (void);
-           MFBackgroundPtr     *getMFBackgrounds    (void);
-           MFForegroundPtr     *getMFForegrounds    (void);
-           MFForegroundPtr     *getMFGlobalActiveForegrounds(void);
-           MFNodePtr           *getMFModelNodes     (void);
-           MFNodePtr           *getMFGlobalActiveModelNodes(void);
-           MFCameraPtr         *getMFCameras        (void);
 
-           std::string         &getName           (void);
+           SFString            *editSFName           (void);
+     const SFString            *getSFName           (void) const;
+#ifndef OSG_2_PREP
+           SFString            *getSFName           (void);
+#endif
+
+           SFString            *editSFMainWindowTitle(void);
+     const SFString            *getSFMainWindowTitle(void) const;
+#ifndef OSG_2_PREP
+           SFString            *getSFMainWindowTitle(void);
+#endif
+
+           SFPath              *editSFFilePath       (void);
+     const SFPath              *getSFFilePath       (void) const;
+#ifndef OSG_2_PREP
+           SFPath              *getSFFilePath       (void);
+#endif
+
+           MFScenePtr          *editMFScenes         (void);
+     const MFScenePtr          *getMFScenes         (void) const;
+#ifndef OSG_2_PREP
+           MFScenePtr          *getMFScenes         (void);
+#endif
+
+           SFScenePtr          *editSFInitialScene   (void);
+     const SFScenePtr          *getSFInitialScene   (void) const;
+#ifndef OSG_2_PREP
+           SFScenePtr          *getSFInitialScene   (void);
+#endif
+
+           MFBackgroundPtr     *editMFBackgrounds    (void);
+     const MFBackgroundPtr     *getMFBackgrounds    (void) const;
+#ifndef OSG_2_PREP
+           MFBackgroundPtr     *getMFBackgrounds    (void);
+#endif
+
+           MFForegroundPtr     *editMFForegrounds    (void);
+     const MFForegroundPtr     *getMFForegrounds    (void) const;
+#ifndef OSG_2_PREP
+           MFForegroundPtr     *getMFForegrounds    (void);
+#endif
+
+           MFForegroundPtr     *editMFGlobalActiveForegrounds(void);
+     const MFForegroundPtr     *getMFGlobalActiveForegrounds(void) const;
+#ifndef OSG_2_PREP
+           MFForegroundPtr     *getMFGlobalActiveForegrounds(void);
+#endif
+
+           MFNodePtr           *editMFModelNodes     (void);
+     const MFNodePtr           *getMFModelNodes     (void) const;
+#ifndef OSG_2_PREP
+           MFNodePtr           *getMFModelNodes     (void);
+#endif
+
+           MFNodePtr           *editMFGlobalActiveModelNodes(void);
+     const MFNodePtr           *getMFGlobalActiveModelNodes(void) const;
+#ifndef OSG_2_PREP
+           MFNodePtr           *getMFGlobalActiveModelNodes(void);
+#endif
+
+           MFCameraPtr         *editMFCameras        (void);
+     const MFCameraPtr         *getMFCameras        (void) const;
+#ifndef OSG_2_PREP
+           MFCameraPtr         *getMFCameras        (void);
+#endif
+
+
+           std::string         &editName           (void);
      const std::string         &getName           (void) const;
-           std::string         &getMainWindowTitle(void);
+#ifndef OSG_2_PREP
+           std::string         &getName           (void);
+#endif
+
+           std::string         &editMainWindowTitle(void);
      const std::string         &getMainWindowTitle(void) const;
-           Path                &getFilePath       (void);
+#ifndef OSG_2_PREP
+           std::string         &getMainWindowTitle(void);
+#endif
+
+           Path                &editFilePath       (void);
      const Path                &getFilePath       (void) const;
-           ScenePtr            &getInitialScene   (void);
+#ifndef OSG_2_PREP
+           Path                &getFilePath       (void);
+#endif
+
+           ScenePtr            &editInitialScene   (void);
      const ScenePtr            &getInitialScene   (void) const;
+#ifndef OSG_2_PREP
+           ScenePtr            &getInitialScene   (void);
+#endif
+
+
+
+
+
+           ScenePtr            &editScenes         (const UInt32 index);
+     const ScenePtr            &getScenes         (const UInt32 index) const;
+#ifndef OSG_2_PREP
            ScenePtr            &getScenes         (const UInt32 index);
            MFScenePtr          &getScenes         (void);
      const MFScenePtr          &getScenes         (void) const;
+#endif
+
+           BackgroundPtr       &editBackgrounds    (const UInt32 index);
+     const BackgroundPtr       &getBackgrounds    (const UInt32 index) const;
+#ifndef OSG_2_PREP
            BackgroundPtr       &getBackgrounds    (const UInt32 index);
            MFBackgroundPtr     &getBackgrounds    (void);
      const MFBackgroundPtr     &getBackgrounds    (void) const;
+#endif
+
+           ForegroundPtr       &editForegrounds    (const UInt32 index);
+     const ForegroundPtr       &getForegrounds    (const UInt32 index) const;
+#ifndef OSG_2_PREP
            ForegroundPtr       &getForegrounds    (const UInt32 index);
            MFForegroundPtr     &getForegrounds    (void);
      const MFForegroundPtr     &getForegrounds    (void) const;
+#endif
+
+
+           ForegroundPtr       &editGlobalActiveForegrounds(const UInt32 index);
+     const ForegroundPtr       &getGlobalActiveForegrounds(const UInt32 index) const;
+#ifndef OSG_2_PREP
            ForegroundPtr       &getGlobalActiveForegrounds(const UInt32 index);
            MFForegroundPtr     &getGlobalActiveForegrounds(void);
      const MFForegroundPtr     &getGlobalActiveForegrounds(void) const;
+#endif
+
+           NodePtr             &editModelNodes     (const UInt32 index);
+     const NodePtr             &getModelNodes     (const UInt32 index) const;
+#ifndef OSG_2_PREP
            NodePtr             &getModelNodes     (const UInt32 index);
            MFNodePtr           &getModelNodes     (void);
      const MFNodePtr           &getModelNodes     (void) const;
+#endif
+
+
+           NodePtr             &editGlobalActiveModelNodes(const UInt32 index);
+     const NodePtr             &getGlobalActiveModelNodes(const UInt32 index) const;
+#ifndef OSG_2_PREP
            NodePtr             &getGlobalActiveModelNodes(const UInt32 index);
            MFNodePtr           &getGlobalActiveModelNodes(void);
      const MFNodePtr           &getGlobalActiveModelNodes(void) const;
+#endif
+
+           CameraPtr           &editCameras        (const UInt32 index);
+     const CameraPtr           &getCameras        (const UInt32 index) const;
+#ifndef OSG_2_PREP
            CameraPtr           &getCameras        (const UInt32 index);
            MFCameraPtr         &getCameras        (void);
      const MFCameraPtr         &getCameras        (void) const;
+#endif
+
+
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -306,35 +419,95 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
+           SFScenePtr          *editSFInternalActiveScene(void);
+     const SFScenePtr          *getSFInternalActiveScene(void) const;
+#ifndef OSG_2_PREP
            SFScenePtr          *getSFInternalActiveScene(void);
+#endif
+           SFBackgroundPtr     *editSFInternalActiveBackground(void);
+     const SFBackgroundPtr     *getSFInternalActiveBackground(void) const;
+#ifndef OSG_2_PREP
            SFBackgroundPtr     *getSFInternalActiveBackground(void);
+#endif
+           MFForegroundPtr     *editMFInternalActiveForegrounds(void);
+     const MFForegroundPtr     *getMFInternalActiveForegrounds(void) const;
+#ifndef OSG_2_PREP
            MFForegroundPtr     *getMFInternalActiveForegrounds(void);
+#endif
+           MFNodePtr           *editMFInternalActiveModelNodes(void);
+     const MFNodePtr           *getMFInternalActiveModelNodes(void) const;
+#ifndef OSG_2_PREP
            MFNodePtr           *getMFInternalActiveModelNodes(void);
+#endif
+           SFCameraPtr         *editSFInternalActiveCamera(void);
+     const SFCameraPtr         *getSFInternalActiveCamera(void) const;
+#ifndef OSG_2_PREP
            SFCameraPtr         *getSFInternalActiveCamera(void);
+#endif
+           SFViewportPtr       *editSFInternalActiveViewport(void);
+     const SFViewportPtr       *getSFInternalActiveViewport(void) const;
+#ifndef OSG_2_PREP
            SFViewportPtr       *getSFInternalActiveViewport(void);
+#endif
+           MFAnimationPtr      *editMFActiveAnimations(void);
+     const MFAnimationPtr      *getMFActiveAnimations(void) const;
+#ifndef OSG_2_PREP
            MFAnimationPtr      *getMFActiveAnimations(void);
+#endif
+           MFParticleSystemPtr *editMFActiveParticleSystems(void);
+     const MFParticleSystemPtr *getMFActiveParticleSystems(void) const;
+#ifndef OSG_2_PREP
            MFParticleSystemPtr *getMFActiveParticleSystems(void);
+#endif
 
-           ScenePtr            &getInternalActiveScene(void);
+           ScenePtr            &editInternalActiveScene(void);
      const ScenePtr            &getInternalActiveScene(void) const;
-           BackgroundPtr       &getInternalActiveBackground(void);
+#ifndef OSG_2_PREP
+           ScenePtr            &getInternalActiveScene(void);
+#endif
+           BackgroundPtr       &editInternalActiveBackground(void);
      const BackgroundPtr       &getInternalActiveBackground(void) const;
-           CameraPtr           &getInternalActiveCamera(void);
+#ifndef OSG_2_PREP
+           BackgroundPtr       &getInternalActiveBackground(void);
+#endif
+           CameraPtr           &editInternalActiveCamera(void);
      const CameraPtr           &getInternalActiveCamera(void) const;
-           ViewportPtr         &getInternalActiveViewport(void);
+#ifndef OSG_2_PREP
+           CameraPtr           &getInternalActiveCamera(void);
+#endif
+           ViewportPtr         &editInternalActiveViewport(void);
      const ViewportPtr         &getInternalActiveViewport(void) const;
+#ifndef OSG_2_PREP
+           ViewportPtr         &getInternalActiveViewport(void);
+#endif
+           ForegroundPtr       &editInternalActiveForegrounds(UInt32 index);
+     const ForegroundPtr       &getInternalActiveForegrounds(UInt32 index) const;
+#ifndef OSG_2_PREP
            ForegroundPtr       &getInternalActiveForegrounds(UInt32 index);
            MFForegroundPtr     &getInternalActiveForegrounds(void);
      const MFForegroundPtr     &getInternalActiveForegrounds(void) const;
+#endif
+           NodePtr             &editInternalActiveModelNodes(UInt32 index);
+     const NodePtr             &getInternalActiveModelNodes(UInt32 index) const;
+#ifndef OSG_2_PREP
            NodePtr             &getInternalActiveModelNodes(UInt32 index);
            MFNodePtr           &getInternalActiveModelNodes(void);
      const MFNodePtr           &getInternalActiveModelNodes(void) const;
+#endif
+           AnimationPtr        &editActiveAnimations(UInt32 index);
+     const AnimationPtr        &getActiveAnimations(UInt32 index) const;
+#ifndef OSG_2_PREP
            AnimationPtr        &getActiveAnimations(UInt32 index);
            MFAnimationPtr      &getActiveAnimations(void);
      const MFAnimationPtr      &getActiveAnimations(void) const;
+#endif
+           ParticleSystemPtr   &editActiveParticleSystems(UInt32 index);
+     const ParticleSystemPtr   &getActiveParticleSystems(UInt32 index) const;
+#ifndef OSG_2_PREP
            ParticleSystemPtr   &getActiveParticleSystems(UInt32 index);
            MFParticleSystemPtr &getActiveParticleSystems(void);
      const MFParticleSystemPtr &getActiveParticleSystems(void) const;
+#endif
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -405,6 +578,6 @@ typedef osgIF<ProjectBase::isNodeCore,
 
 typedef RefPtr<ProjectPtr> ProjectRefPtr;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #endif /* _KEPROJECTBASE_H_ */

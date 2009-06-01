@@ -39,13 +39,12 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationPlayerBase.h"
 #include <OpenSG/Input/OSGKeyAdapter.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationPlayer class. See \ref 
            PageKabalaEngineApplicationPlayer for a description.
@@ -136,7 +135,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
 typedef ApplicationPlayer *ApplicationPlayerP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEApplicationPlayerBase.inl"
 #include "KEApplicationPlayer.inl"

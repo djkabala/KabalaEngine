@@ -39,13 +39,12 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEFieldContainerTypeComponentGeneratorBase.h"
 #include "Builder/UserInterface/IconManager/KEIconManager.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief FieldContainerTypeComponentGenerator class. See \ref 
            PageKabalaEngineFieldContainerTypeComponentGenerator for a description.
@@ -117,7 +116,7 @@ class KE_KABALAENGINELIB_DLLMAPPING FieldContainerTypeComponentGenerator : publi
 
 typedef FieldContainerTypeComponentGenerator *FieldContainerTypeComponentGeneratorP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEFieldContainerTypeComponentGeneratorBase.inl"
 #include "KEFieldContainerTypeComponentGenerator.inl"

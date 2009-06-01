@@ -42,7 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEBuilderInterface.h"
 #include <OpenSG/UserInterface/OSGInternalWindow.h>
@@ -81,7 +81,7 @@
 #include "Builder/UserInterface/Commands/KERedoCommand.h"
 #include "Builder/UserInterface/Commands/KEAboutKabalaEngineCommand.h"
 #include <OpenSG/UserInterface/OSGCommandManager.h>
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

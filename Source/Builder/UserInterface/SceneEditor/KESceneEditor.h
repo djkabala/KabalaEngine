@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneEditorBase.h"
 #include "Builder/UserInterface/IconManager/KEIconManager.h"
@@ -47,8 +47,7 @@
 #include <OpenSG/UserInterface/OSGLabelFields.h>
 #include <OpenSG/UserInterface/OSGChangeListener.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief SceneEditor class. See \ref 
            PageKabalaEngineSceneEditor for a description.
@@ -148,7 +147,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneEditor : public SceneEditorBase
 
 typedef SceneEditor *SceneEditorP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KESceneEditorBase.inl"
 #include "KESceneEditor.inl"

@@ -37,9 +37,9 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 void MainApplication::exitMainLoop(void)
@@ -149,5 +149,6 @@ const ApplicationModePtr &MainApplication::getCurrentMode(void) const
 {
     return _CurrentMode;
 }
-KE_END_NAMESPACE
+
+OSG_END_NAMESPACE
 

@@ -39,13 +39,12 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEBackgroundsListComponentGeneratorBase.h"
 #include "Builder/UserInterface/IconManager/KEIconManager.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief BackgroundsListComponentGenerator class. See \ref 
            PageKabalaEngineBackgroundsListComponentGenerator for a description.
@@ -117,7 +116,7 @@ class KE_KABALAENGINELIB_DLLMAPPING BackgroundsListComponentGenerator : public B
 
 typedef BackgroundsListComponentGenerator *BackgroundsListComponentGeneratorP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEBackgroundsListComponentGeneratorBase.inl"
 #include "KEBackgroundsListComponentGenerator.inl"

@@ -42,7 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEBackgroundsListComponentGenerator.h"
 #include <OpenSG/OSGBackground.h>
@@ -56,7 +56,7 @@
 #include <OpenSG/UserInterface/OSGLayoutSpring.h>
 #include <OpenSG/UserInterface/OSGDefaultListComponentGenerator.h>
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

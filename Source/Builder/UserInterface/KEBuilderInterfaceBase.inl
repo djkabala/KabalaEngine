@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,9 +46,9 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 
 //! access the type of the class
@@ -97,50 +96,146 @@ BuilderInterfacePtr BuilderInterfaceBase::createEmpty(void)
 
 //! Get the BuilderInterface::_sfMenuBar field.
 inline
-SFMenuBarPtr *BuilderInterfaceBase::getSFMenuBar(void)
+const SFMenuBarPtr *BuilderInterfaceBase::getSFMenuBar(void) const
 {
     return &_sfMenuBar;
 }
 
+//! Get the BuilderInterface::_sfMenuBar field.
+inline
+SFMenuBarPtr *BuilderInterfaceBase::editSFMenuBar(void)
+{
+    return &_sfMenuBar;
+}
+
+#ifndef OSG_2_PREP
+//! Get the BuilderInterface::_sfMenuBar field.
+inline
+SFMenuBarPtr *BuilderInterfaceBase::getSFMenuBar(void)
+{
+    return &_sfMenuBar;
+}
+#endif
+
+//! Get the BuilderInterface::_sfToolbar field.
+inline
+const SFToolbarPtr *BuilderInterfaceBase::getSFToolbar(void) const
+{
+    return &_sfToolbar;
+}
+
+//! Get the BuilderInterface::_sfToolbar field.
+inline
+SFToolbarPtr *BuilderInterfaceBase::editSFToolbar(void)
+{
+    return &_sfToolbar;
+}
+
+#ifndef OSG_2_PREP
 //! Get the BuilderInterface::_sfToolbar field.
 inline
 SFToolbarPtr *BuilderInterfaceBase::getSFToolbar(void)
 {
     return &_sfToolbar;
 }
+#endif
 
+//! Get the BuilderInterface::_sfStatusbar field.
+inline
+const SFStatusbarPtr *BuilderInterfaceBase::getSFStatusbar(void) const
+{
+    return &_sfStatusbar;
+}
+
+//! Get the BuilderInterface::_sfStatusbar field.
+inline
+SFStatusbarPtr *BuilderInterfaceBase::editSFStatusbar(void)
+{
+    return &_sfStatusbar;
+}
+
+#ifndef OSG_2_PREP
 //! Get the BuilderInterface::_sfStatusbar field.
 inline
 SFStatusbarPtr *BuilderInterfaceBase::getSFStatusbar(void)
 {
     return &_sfStatusbar;
 }
+#endif
 
+//! Get the BuilderInterface::_sfEditor field.
+inline
+const SFEditorInterfacePtr *BuilderInterfaceBase::getSFEditor(void) const
+{
+    return &_sfEditor;
+}
+
+//! Get the BuilderInterface::_sfEditor field.
+inline
+SFEditorInterfacePtr *BuilderInterfaceBase::editSFEditor(void)
+{
+    return &_sfEditor;
+}
+
+#ifndef OSG_2_PREP
 //! Get the BuilderInterface::_sfEditor field.
 inline
 SFEditorInterfacePtr *BuilderInterfaceBase::getSFEditor(void)
 {
     return &_sfEditor;
 }
+#endif
 
+//! Get the BuilderInterface::_sfDrawingSurface field.
+inline
+const SFUIDrawingSurfacePtr *BuilderInterfaceBase::getSFDrawingSurface(void) const
+{
+    return &_sfDrawingSurface;
+}
+
+//! Get the BuilderInterface::_sfDrawingSurface field.
+inline
+SFUIDrawingSurfacePtr *BuilderInterfaceBase::editSFDrawingSurface(void)
+{
+    return &_sfDrawingSurface;
+}
+
+#ifndef OSG_2_PREP
 //! Get the BuilderInterface::_sfDrawingSurface field.
 inline
 SFUIDrawingSurfacePtr *BuilderInterfaceBase::getSFDrawingSurface(void)
 {
     return &_sfDrawingSurface;
 }
+#endif
 
+//! Get the BuilderInterface::_sfMainInternalWindow field.
+inline
+const SFInternalWindowPtr *BuilderInterfaceBase::getSFMainInternalWindow(void) const
+{
+    return &_sfMainInternalWindow;
+}
+
+//! Get the BuilderInterface::_sfMainInternalWindow field.
+inline
+SFInternalWindowPtr *BuilderInterfaceBase::editSFMainInternalWindow(void)
+{
+    return &_sfMainInternalWindow;
+}
+
+#ifndef OSG_2_PREP
 //! Get the BuilderInterface::_sfMainInternalWindow field.
 inline
 SFInternalWindowPtr *BuilderInterfaceBase::getSFMainInternalWindow(void)
 {
     return &_sfMainInternalWindow;
 }
+#endif
 
 
 //! Get the value of the BuilderInterface::_sfMenuBar field.
 inline
-MenuBarPtr &BuilderInterfaceBase::getMenuBar(void)
+MenuBarPtr &BuilderInterfaceBase::editMenuBar(void)
 {
     return _sfMenuBar.getValue();
 }
@@ -152,6 +247,15 @@ const MenuBarPtr &BuilderInterfaceBase::getMenuBar(void) const
     return _sfMenuBar.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the BuilderInterface::_sfMenuBar field.
+inline
+MenuBarPtr &BuilderInterfaceBase::getMenuBar(void)
+{
+    return _sfMenuBar.getValue();
+}
+#endif
+
 //! Set the value of the BuilderInterface::_sfMenuBar field.
 inline
 void BuilderInterfaceBase::setMenuBar(const MenuBarPtr &value)
@@ -161,7 +265,7 @@ void BuilderInterfaceBase::setMenuBar(const MenuBarPtr &value)
 
 //! Get the value of the BuilderInterface::_sfToolbar field.
 inline
-ToolbarPtr &BuilderInterfaceBase::getToolbar(void)
+ToolbarPtr &BuilderInterfaceBase::editToolbar(void)
 {
     return _sfToolbar.getValue();
 }
@@ -173,6 +277,15 @@ const ToolbarPtr &BuilderInterfaceBase::getToolbar(void) const
     return _sfToolbar.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the BuilderInterface::_sfToolbar field.
+inline
+ToolbarPtr &BuilderInterfaceBase::getToolbar(void)
+{
+    return _sfToolbar.getValue();
+}
+#endif
+
 //! Set the value of the BuilderInterface::_sfToolbar field.
 inline
 void BuilderInterfaceBase::setToolbar(const ToolbarPtr &value)
@@ -182,7 +295,7 @@ void BuilderInterfaceBase::setToolbar(const ToolbarPtr &value)
 
 //! Get the value of the BuilderInterface::_sfStatusbar field.
 inline
-StatusbarPtr &BuilderInterfaceBase::getStatusbar(void)
+StatusbarPtr &BuilderInterfaceBase::editStatusbar(void)
 {
     return _sfStatusbar.getValue();
 }
@@ -194,6 +307,15 @@ const StatusbarPtr &BuilderInterfaceBase::getStatusbar(void) const
     return _sfStatusbar.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the BuilderInterface::_sfStatusbar field.
+inline
+StatusbarPtr &BuilderInterfaceBase::getStatusbar(void)
+{
+    return _sfStatusbar.getValue();
+}
+#endif
+
 //! Set the value of the BuilderInterface::_sfStatusbar field.
 inline
 void BuilderInterfaceBase::setStatusbar(const StatusbarPtr &value)
@@ -203,7 +325,7 @@ void BuilderInterfaceBase::setStatusbar(const StatusbarPtr &value)
 
 //! Get the value of the BuilderInterface::_sfEditor field.
 inline
-EditorInterfacePtr &BuilderInterfaceBase::getEditor(void)
+EditorInterfacePtr &BuilderInterfaceBase::editEditor(void)
 {
     return _sfEditor.getValue();
 }
@@ -215,6 +337,15 @@ const EditorInterfacePtr &BuilderInterfaceBase::getEditor(void) const
     return _sfEditor.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the BuilderInterface::_sfEditor field.
+inline
+EditorInterfacePtr &BuilderInterfaceBase::getEditor(void)
+{
+    return _sfEditor.getValue();
+}
+#endif
+
 //! Set the value of the BuilderInterface::_sfEditor field.
 inline
 void BuilderInterfaceBase::setEditor(const EditorInterfacePtr &value)
@@ -224,7 +355,7 @@ void BuilderInterfaceBase::setEditor(const EditorInterfacePtr &value)
 
 //! Get the value of the BuilderInterface::_sfDrawingSurface field.
 inline
-UIDrawingSurfacePtr &BuilderInterfaceBase::getDrawingSurface(void)
+UIDrawingSurfacePtr &BuilderInterfaceBase::editDrawingSurface(void)
 {
     return _sfDrawingSurface.getValue();
 }
@@ -236,6 +367,15 @@ const UIDrawingSurfacePtr &BuilderInterfaceBase::getDrawingSurface(void) const
     return _sfDrawingSurface.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the BuilderInterface::_sfDrawingSurface field.
+inline
+UIDrawingSurfacePtr &BuilderInterfaceBase::getDrawingSurface(void)
+{
+    return _sfDrawingSurface.getValue();
+}
+#endif
+
 //! Set the value of the BuilderInterface::_sfDrawingSurface field.
 inline
 void BuilderInterfaceBase::setDrawingSurface(const UIDrawingSurfacePtr &value)
@@ -245,7 +385,7 @@ void BuilderInterfaceBase::setDrawingSurface(const UIDrawingSurfacePtr &value)
 
 //! Get the value of the BuilderInterface::_sfMainInternalWindow field.
 inline
-InternalWindowPtr &BuilderInterfaceBase::getMainInternalWindow(void)
+InternalWindowPtr &BuilderInterfaceBase::editMainInternalWindow(void)
 {
     return _sfMainInternalWindow.getValue();
 }
@@ -257,6 +397,15 @@ const InternalWindowPtr &BuilderInterfaceBase::getMainInternalWindow(void) const
     return _sfMainInternalWindow.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the BuilderInterface::_sfMainInternalWindow field.
+inline
+InternalWindowPtr &BuilderInterfaceBase::getMainInternalWindow(void)
+{
+    return _sfMainInternalWindow.getValue();
+}
+#endif
+
 //! Set the value of the BuilderInterface::_sfMainInternalWindow field.
 inline
 void BuilderInterfaceBase::setMainInternalWindow(const InternalWindowPtr &value)
@@ -265,5 +414,5 @@ void BuilderInterfaceBase::setMainInternalWindow(const InternalWindowPtr &value)
 }
 
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

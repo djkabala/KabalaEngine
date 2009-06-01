@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationBuilderBase.h"
 #include <OpenSG/OSGForegroundFields.h>
@@ -49,8 +49,7 @@
 #include <OpenSG/UserInterface/OSGUndoManager.h>
 #include "Builder/UserInterface/KEBuilderInterfaceFields.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationBuilder class. See \ref 
            PageKabalaEngineApplicationBuilder for a description.
@@ -139,7 +138,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationBuilder : public ApplicationBuild
 
 typedef ApplicationBuilder *ApplicationBuilderP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEApplicationBuilderBase.inl"
 #include "KEApplicationBuilder.inl"

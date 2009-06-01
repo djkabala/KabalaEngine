@@ -37,9 +37,9 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 IconManagerPtr ApplicationBuilder::getIconManager(void) const
@@ -65,5 +65,5 @@ BuilderInterfacePtr ApplicationBuilder::getInterface(void) const
 	return _TheBuilderInterface;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

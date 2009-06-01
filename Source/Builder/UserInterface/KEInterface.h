@@ -39,13 +39,12 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEInterfaceBase.h"
 #include "Builder/KEApplicationBuilderFields.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief Interface class. See \ref 
            PageKabalaEngineInterface for a description.
@@ -118,7 +117,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Interface : public InterfaceBase
 
 typedef Interface *InterfaceP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEInterfaceBase.inl"
 #include "KEInterface.inl"

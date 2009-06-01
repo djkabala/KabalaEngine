@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneBackgroundsComboBoxModelBase.h"
 #include "KESceneBackgroundsComboBoxModel.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector  SceneBackgroundsComboBoxModelBase::EditingSceneFieldMask = 
     (TypeTraits<BitVector>::One << SceneBackgroundsComboBoxModelBase::EditingSceneFieldId);
@@ -83,7 +82,7 @@ FieldDescription *SceneBackgroundsComboBoxModelBase::_desc[] =
                      "EditingScene", 
                      EditingSceneFieldId, EditingSceneFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBackgroundsComboBoxModelBase::getSFEditingScene)
+                     reinterpret_cast<FieldAccessMethod>(&SceneBackgroundsComboBoxModelBase::editSFEditingScene))
 };
 
 
@@ -91,7 +90,7 @@ FieldContainerType SceneBackgroundsComboBoxModelBase::_type(
     "SceneBackgroundsComboBoxModel",
     "AbstractComboBoxModel",
     NULL,
-    (PrototypeCreateF) &SceneBackgroundsComboBoxModelBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&SceneBackgroundsComboBoxModelBase::createEmpty),
     SceneBackgroundsComboBoxModel::initMethod,
     _desc,
     sizeof(_desc));
@@ -120,7 +119,7 @@ FieldContainerPtr SceneBackgroundsComboBoxModelBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 SceneBackgroundsComboBoxModelBase::getContainerSize(void) const 
+UInt32 SceneBackgroundsComboBoxModelBase::getContainerSize(void) const 
 { 
     return sizeof(SceneBackgroundsComboBoxModel); 
 }
@@ -130,7 +129,8 @@ FieldContainerPtr SceneBackgroundsComboBoxModelBase::shallowCopy(void) const
 void SceneBackgroundsComboBoxModelBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((SceneBackgroundsComboBoxModelBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<SceneBackgroundsComboBoxModelBase *>(&other),
+                          whichField);
 }
 #else
 void SceneBackgroundsComboBoxModelBase::executeSync(      FieldContainer &other,
@@ -139,13 +139,13 @@ void SceneBackgroundsComboBoxModelBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((SceneBackgroundsComboBoxModelBase *) &other, whichField, sInfo);
 }
 void SceneBackgroundsComboBoxModelBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void SceneBackgroundsComboBoxModelBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void SceneBackgroundsComboBoxModelBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -154,11 +154,19 @@ void SceneBackgroundsComboBoxModelBase::onDestroyAspect(::osg::UInt32 uiId, ::os
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 SceneBackgroundsComboBoxModelBase::SceneBackgroundsComboBoxModelBase(void) :
     _sfEditingScene           (ScenePtr(NullFC)), 
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 SceneBackgroundsComboBoxModelBase::SceneBackgroundsComboBoxModelBase(const SceneBackgroundsComboBoxModelBase &source) :
     _sfEditingScene           (source._sfEditingScene           ), 
@@ -174,9 +182,9 @@ SceneBackgroundsComboBoxModelBase::~SceneBackgroundsComboBoxModelBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 SceneBackgroundsComboBoxModelBase::getBinSize(const BitVector &whichField)
+UInt32 SceneBackgroundsComboBoxModelBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
     if(FieldBits::NoField != (EditingSceneFieldMask & whichField))
     {
@@ -241,8 +249,8 @@ void SceneBackgroundsComboBoxModelBase::executeSyncImpl(      SceneBackgroundsCo
 }
 
 void SceneBackgroundsComboBoxModelBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -251,18 +259,19 @@ void SceneBackgroundsComboBoxModelBase::execBeginEditImpl (const BitVector &whic
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<SceneBackgroundsComboBoxModelPtr>::_type("SceneBackgroundsComboBoxModelPtr", "AbstractComboBoxModelPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(SceneBackgroundsComboBoxModelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(SceneBackgroundsComboBoxModelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

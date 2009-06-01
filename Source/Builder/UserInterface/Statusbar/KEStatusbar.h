@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEStatusbarBase.h"
 #include <OpenSG/UserInterface/OSGProgressBar.h>
@@ -47,8 +47,7 @@
 #include <OpenSG/UserInterface/OSGImageComponent.h>
 #include <OpenSG/UserInterface/OSGDefaultBoundedRangeModel.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief Statusbar class. See \ref 
            PageKabalaEngineStatusbar for a description.
@@ -135,7 +134,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Statusbar : public StatusbarBase
 
 typedef Statusbar *StatusbarP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEStatusbarBase.inl"
 #include "KEStatusbar.inl"

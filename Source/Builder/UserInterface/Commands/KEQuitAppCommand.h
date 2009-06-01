@@ -31,13 +31,12 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class QuitAppCommand;
 typedef boost::intrusive_ptr<QuitAppCommand> QuitAppCommandPtr;
@@ -68,7 +67,7 @@ public:
 	static QuitAppCommandPtr create(void);
 };
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEQuitAppCommand.inl"
 

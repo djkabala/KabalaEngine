@@ -1,6 +1,6 @@
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 PlayProjectCommand::PlayProjectCommand(void) : Inherited()
@@ -18,4 +18,4 @@ const CommandType &PlayProjectCommand::getClassType(void)
 	return _Type;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

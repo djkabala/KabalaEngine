@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,9 +46,9 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 
 //! access the type of the class
@@ -97,15 +96,31 @@ BackgroundsListComponentGeneratorPtr BackgroundsListComponentGeneratorBase::crea
 
 //! Get the BackgroundsListComponentGenerator::_sfIconSize field.
 inline
-SFVec2f *BackgroundsListComponentGeneratorBase::getSFIconSize(void)
+const SFVec2f *BackgroundsListComponentGeneratorBase::getSFIconSize(void) const
 {
     return &_sfIconSize;
 }
 
+//! Get the BackgroundsListComponentGenerator::_sfIconSize field.
+inline
+SFVec2f *BackgroundsListComponentGeneratorBase::editSFIconSize(void)
+{
+    return &_sfIconSize;
+}
+
+#ifndef OSG_2_PREP
+//! Get the BackgroundsListComponentGenerator::_sfIconSize field.
+inline
+SFVec2f *BackgroundsListComponentGeneratorBase::getSFIconSize(void)
+{
+    return &_sfIconSize;
+}
+#endif
+
 
 //! Get the value of the BackgroundsListComponentGenerator::_sfIconSize field.
 inline
-Vec2f &BackgroundsListComponentGeneratorBase::getIconSize(void)
+Vec2f &BackgroundsListComponentGeneratorBase::editIconSize(void)
 {
     return _sfIconSize.getValue();
 }
@@ -117,6 +132,15 @@ const Vec2f &BackgroundsListComponentGeneratorBase::getIconSize(void) const
     return _sfIconSize.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the BackgroundsListComponentGenerator::_sfIconSize field.
+inline
+Vec2f &BackgroundsListComponentGeneratorBase::getIconSize(void)
+{
+    return _sfIconSize.getValue();
+}
+#endif
+
 //! Set the value of the BackgroundsListComponentGenerator::_sfIconSize field.
 inline
 void BackgroundsListComponentGeneratorBase::setIconSize(const Vec2f &value)
@@ -125,5 +149,5 @@ void BackgroundsListComponentGeneratorBase::setIconSize(const Vec2f &value)
 }
 
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

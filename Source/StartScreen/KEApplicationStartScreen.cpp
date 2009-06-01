@@ -42,6 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
+#include <OpenSG/OSGConfig.h>
 #include "KEConfig.h"
 
 #include "KEApplicationStartScreen.h"
@@ -84,7 +85,7 @@
 
 #include <boost/filesystem/operations.hpp>
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

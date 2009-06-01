@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGTypeBase.h>
@@ -47,8 +47,7 @@
 #include <boost/function.hpp>
 #include "KEFieldContainerEditor.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class KE_KABALAENGINELIB_DLLMAPPING FieldContainerEditorType : public TypeBase
 {
@@ -98,7 +97,7 @@ class KE_KABALAENGINELIB_DLLMAPPING FieldContainerEditorType : public TypeBase
 
 typedef FieldContainerEditorType *FieldContainerEditorTypeP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
         
 #include "KEFieldContainerEditorType.inl"
 

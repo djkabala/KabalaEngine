@@ -39,12 +39,11 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneForegroundsEditorBase.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief SceneForegroundsEditor class. See \ref 
            PageKabalaEngineSceneForegroundsEditor for a description.
@@ -122,7 +121,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneForegroundsEditor : public SceneForegro
 
 typedef SceneForegroundsEditor *SceneForegroundsEditorP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KESceneForegroundsEditorBase.inl"
 #include "KESceneForegroundsEditor.inl"

@@ -31,15 +31,14 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
 #include <OpenSG/UserInterface/OSGCommandManager.h>
 #include <OpenSG/UserInterface/OSGActionListener.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class KE_KABALAENGINELIB_DLLMAPPING CommandActionListener : public ActionListener
 {
@@ -61,7 +60,7 @@ public:
 	void operator =(const CommandActionListener& source);
 };
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KECommandActionListener.inl"
 

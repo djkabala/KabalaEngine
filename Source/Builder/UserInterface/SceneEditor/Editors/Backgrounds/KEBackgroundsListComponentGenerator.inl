@@ -37,9 +37,9 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 void BackgroundsListComponentGenerator::setIconManager(IconManagerPtr TheIconManager)
@@ -53,5 +53,5 @@ IconManagerPtr BackgroundsListComponentGenerator::getIconManager(void) const
 	return _IconManager;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

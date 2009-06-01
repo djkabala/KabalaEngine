@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationPlayerBase.h"
 #include "KEApplicationPlayer.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector ApplicationPlayerBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -71,7 +70,7 @@ FieldContainerType ApplicationPlayerBase::_type(
     "ApplicationPlayer",
     "ApplicationMode",
     NULL,
-    (PrototypeCreateF) &ApplicationPlayerBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&ApplicationPlayerBase::createEmpty),
     ApplicationPlayer::initMethod,
     NULL,
     0);
@@ -100,7 +99,7 @@ FieldContainerPtr ApplicationPlayerBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 ApplicationPlayerBase::getContainerSize(void) const 
+UInt32 ApplicationPlayerBase::getContainerSize(void) const 
 { 
     return sizeof(ApplicationPlayer); 
 }
@@ -110,7 +109,8 @@ FieldContainerPtr ApplicationPlayerBase::shallowCopy(void) const
 void ApplicationPlayerBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((ApplicationPlayerBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<ApplicationPlayerBase *>(&other),
+                          whichField);
 }
 #else
 void ApplicationPlayerBase::executeSync(      FieldContainer &other,
@@ -119,13 +119,13 @@ void ApplicationPlayerBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((ApplicationPlayerBase *) &other, whichField, sInfo);
 }
 void ApplicationPlayerBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void ApplicationPlayerBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void ApplicationPlayerBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -134,10 +134,18 @@ void ApplicationPlayerBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 ui
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 ApplicationPlayerBase::ApplicationPlayerBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 ApplicationPlayerBase::ApplicationPlayerBase(const ApplicationPlayerBase &source) :
     Inherited                 (source)
@@ -152,9 +160,9 @@ ApplicationPlayerBase::~ApplicationPlayerBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 ApplicationPlayerBase::getBinSize(const BitVector &whichField)
+UInt32 ApplicationPlayerBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
 
     return returnValue;
@@ -198,8 +206,8 @@ void ApplicationPlayerBase::executeSyncImpl(      ApplicationPlayerBase *pOther,
 }
 
 void ApplicationPlayerBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -208,18 +216,19 @@ void ApplicationPlayerBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<ApplicationPlayerPtr>::_type("ApplicationPlayerPtr", "ApplicationModePtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(ApplicationPlayerPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(ApplicationPlayerPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

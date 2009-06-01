@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,9 +46,9 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 
 //! access the type of the class
@@ -97,148 +96,468 @@ ScenePtr SceneBase::createEmpty(void)
 
 //! Get the Scene::_sfInternalParentProject field.
 inline
-SFProjectPtr *SceneBase::getSFInternalParentProject(void)
+const SFProjectPtr *SceneBase::getSFInternalParentProject(void) const
 {
     return &_sfInternalParentProject;
 }
 
+//! Get the Scene::_sfInternalParentProject field.
+inline
+SFProjectPtr *SceneBase::editSFInternalParentProject(void)
+{
+    return &_sfInternalParentProject;
+}
+
+#ifndef OSG_2_PREP
+//! Get the Scene::_sfInternalParentProject field.
+inline
+SFProjectPtr *SceneBase::getSFInternalParentProject(void)
+{
+    return &_sfInternalParentProject;
+}
+#endif
+
+//! Get the Scene::_sfName field.
+inline
+const SFString *SceneBase::getSFName(void) const
+{
+    return &_sfName;
+}
+
+//! Get the Scene::_sfName field.
+inline
+SFString *SceneBase::editSFName(void)
+{
+    return &_sfName;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_sfName field.
 inline
 SFString *SceneBase::getSFName(void)
 {
     return &_sfName;
 }
+#endif
 
+//! Get the Scene::_mfBackgrounds field.
+inline
+const MFBackgroundPtr *SceneBase::getMFBackgrounds(void) const
+{
+    return &_mfBackgrounds;
+}
+
+//! Get the Scene::_mfBackgrounds field.
+inline
+MFBackgroundPtr *SceneBase::editMFBackgrounds(void)
+{
+    return &_mfBackgrounds;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfBackgrounds field.
 inline
 MFBackgroundPtr *SceneBase::getMFBackgrounds(void)
 {
     return &_mfBackgrounds;
 }
+#endif
 
+//! Get the Scene::_mfUIDrawingSurfaces field.
+inline
+const MFUIDrawingSurfacePtr *SceneBase::getMFUIDrawingSurfaces(void) const
+{
+    return &_mfUIDrawingSurfaces;
+}
+
+//! Get the Scene::_mfUIDrawingSurfaces field.
+inline
+MFUIDrawingSurfacePtr *SceneBase::editMFUIDrawingSurfaces(void)
+{
+    return &_mfUIDrawingSurfaces;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfUIDrawingSurfaces field.
 inline
 MFUIDrawingSurfacePtr *SceneBase::getMFUIDrawingSurfaces(void)
 {
     return &_mfUIDrawingSurfaces;
 }
+#endif
 
+//! Get the Scene::_sfInitialBackground field.
+inline
+const SFBackgroundPtr *SceneBase::getSFInitialBackground(void) const
+{
+    return &_sfInitialBackground;
+}
+
+//! Get the Scene::_sfInitialBackground field.
+inline
+SFBackgroundPtr *SceneBase::editSFInitialBackground(void)
+{
+    return &_sfInitialBackground;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_sfInitialBackground field.
 inline
 SFBackgroundPtr *SceneBase::getSFInitialBackground(void)
 {
     return &_sfInitialBackground;
 }
+#endif
 
+//! Get the Scene::_mfForegrounds field.
+inline
+const MFForegroundPtr *SceneBase::getMFForegrounds(void) const
+{
+    return &_mfForegrounds;
+}
+
+//! Get the Scene::_mfForegrounds field.
+inline
+MFForegroundPtr *SceneBase::editMFForegrounds(void)
+{
+    return &_mfForegrounds;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfForegrounds field.
 inline
 MFForegroundPtr *SceneBase::getMFForegrounds(void)
 {
     return &_mfForegrounds;
 }
+#endif
 
+//! Get the Scene::_mfInitialForegrounds field.
+inline
+const MFForegroundPtr *SceneBase::getMFInitialForegrounds(void) const
+{
+    return &_mfInitialForegrounds;
+}
+
+//! Get the Scene::_mfInitialForegrounds field.
+inline
+MFForegroundPtr *SceneBase::editMFInitialForegrounds(void)
+{
+    return &_mfInitialForegrounds;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfInitialForegrounds field.
 inline
 MFForegroundPtr *SceneBase::getMFInitialForegrounds(void)
 {
     return &_mfInitialForegrounds;
 }
+#endif
 
+//! Get the Scene::_mfModelNodes field.
+inline
+const MFNodePtr *SceneBase::getMFModelNodes(void) const
+{
+    return &_mfModelNodes;
+}
+
+//! Get the Scene::_mfModelNodes field.
+inline
+MFNodePtr *SceneBase::editMFModelNodes(void)
+{
+    return &_mfModelNodes;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfModelNodes field.
 inline
 MFNodePtr *SceneBase::getMFModelNodes(void)
 {
     return &_mfModelNodes;
 }
+#endif
 
+//! Get the Scene::_mfInitialModelNodes field.
+inline
+const MFNodePtr *SceneBase::getMFInitialModelNodes(void) const
+{
+    return &_mfInitialModelNodes;
+}
+
+//! Get the Scene::_mfInitialModelNodes field.
+inline
+MFNodePtr *SceneBase::editMFInitialModelNodes(void)
+{
+    return &_mfInitialModelNodes;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfInitialModelNodes field.
 inline
 MFNodePtr *SceneBase::getMFInitialModelNodes(void)
 {
     return &_mfInitialModelNodes;
 }
+#endif
 
+//! Get the Scene::_sfRoot field.
+inline
+const SFNodePtr *SceneBase::getSFRoot(void) const
+{
+    return &_sfRoot;
+}
+
+//! Get the Scene::_sfRoot field.
+inline
+SFNodePtr *SceneBase::editSFRoot(void)
+{
+    return &_sfRoot;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_sfRoot field.
 inline
 SFNodePtr *SceneBase::getSFRoot(void)
 {
     return &_sfRoot;
 }
+#endif
 
+//! Get the Scene::_sfRootCore field.
+inline
+const SFTransformPtr *SceneBase::getSFRootCore(void) const
+{
+    return &_sfRootCore;
+}
+
+//! Get the Scene::_sfRootCore field.
+inline
+SFTransformPtr *SceneBase::editSFRootCore(void)
+{
+    return &_sfRootCore;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_sfRootCore field.
 inline
 SFTransformPtr *SceneBase::getSFRootCore(void)
 {
     return &_sfRootCore;
 }
+#endif
 
+//! Get the Scene::_sfDefaultCameraBeacon field.
+inline
+const SFNodePtr *SceneBase::getSFDefaultCameraBeacon(void) const
+{
+    return &_sfDefaultCameraBeacon;
+}
+
+//! Get the Scene::_sfDefaultCameraBeacon field.
+inline
+SFNodePtr *SceneBase::editSFDefaultCameraBeacon(void)
+{
+    return &_sfDefaultCameraBeacon;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_sfDefaultCameraBeacon field.
 inline
 SFNodePtr *SceneBase::getSFDefaultCameraBeacon(void)
 {
     return &_sfDefaultCameraBeacon;
 }
+#endif
 
+//! Get the Scene::_sfDefaultCameraBeaconCore field.
+inline
+const SFTransformPtr *SceneBase::getSFDefaultCameraBeaconCore(void) const
+{
+    return &_sfDefaultCameraBeaconCore;
+}
+
+//! Get the Scene::_sfDefaultCameraBeaconCore field.
+inline
+SFTransformPtr *SceneBase::editSFDefaultCameraBeaconCore(void)
+{
+    return &_sfDefaultCameraBeaconCore;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_sfDefaultCameraBeaconCore field.
 inline
 SFTransformPtr *SceneBase::getSFDefaultCameraBeaconCore(void)
 {
     return &_sfDefaultCameraBeaconCore;
 }
+#endif
 
+//! Get the Scene::_mfCameras field.
+inline
+const MFCameraPtr *SceneBase::getMFCameras(void) const
+{
+    return &_mfCameras;
+}
+
+//! Get the Scene::_mfCameras field.
+inline
+MFCameraPtr *SceneBase::editMFCameras(void)
+{
+    return &_mfCameras;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfCameras field.
 inline
 MFCameraPtr *SceneBase::getMFCameras(void)
 {
     return &_mfCameras;
 }
+#endif
 
+//! Get the Scene::_sfInitialCamera field.
+inline
+const SFCameraPtr *SceneBase::getSFInitialCamera(void) const
+{
+    return &_sfInitialCamera;
+}
+
+//! Get the Scene::_sfInitialCamera field.
+inline
+SFCameraPtr *SceneBase::editSFInitialCamera(void)
+{
+    return &_sfInitialCamera;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_sfInitialCamera field.
 inline
 SFCameraPtr *SceneBase::getSFInitialCamera(void)
 {
     return &_sfInitialCamera;
 }
+#endif
 
+//! Get the Scene::_mfAnimations field.
+inline
+const MFAnimationPtr *SceneBase::getMFAnimations(void) const
+{
+    return &_mfAnimations;
+}
+
+//! Get the Scene::_mfAnimations field.
+inline
+MFAnimationPtr *SceneBase::editMFAnimations(void)
+{
+    return &_mfAnimations;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfAnimations field.
 inline
 MFAnimationPtr *SceneBase::getMFAnimations(void)
 {
     return &_mfAnimations;
 }
+#endif
 
+//! Get the Scene::_mfInitialAnimations field.
+inline
+const MFAnimationPtr *SceneBase::getMFInitialAnimations(void) const
+{
+    return &_mfInitialAnimations;
+}
+
+//! Get the Scene::_mfInitialAnimations field.
+inline
+MFAnimationPtr *SceneBase::editMFInitialAnimations(void)
+{
+    return &_mfInitialAnimations;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfInitialAnimations field.
 inline
 MFAnimationPtr *SceneBase::getMFInitialAnimations(void)
 {
     return &_mfInitialAnimations;
 }
+#endif
 
+//! Get the Scene::_sfTimeInScene field.
+inline
+const SFReal32 *SceneBase::getSFTimeInScene(void) const
+{
+    return &_sfTimeInScene;
+}
+
+//! Get the Scene::_sfTimeInScene field.
+inline
+SFReal32 *SceneBase::editSFTimeInScene(void)
+{
+    return &_sfTimeInScene;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_sfTimeInScene field.
 inline
 SFReal32 *SceneBase::getSFTimeInScene(void)
 {
     return &_sfTimeInScene;
 }
+#endif
 
+//! Get the Scene::_mfParticleSystems field.
+inline
+const MFParticleSystemPtr *SceneBase::getMFParticleSystems(void) const
+{
+    return &_mfParticleSystems;
+}
+
+//! Get the Scene::_mfParticleSystems field.
+inline
+MFParticleSystemPtr *SceneBase::editMFParticleSystems(void)
+{
+    return &_mfParticleSystems;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfParticleSystems field.
 inline
 MFParticleSystemPtr *SceneBase::getMFParticleSystems(void)
 {
     return &_mfParticleSystems;
 }
+#endif
 
+//! Get the Scene::_mfInitialParticleSystems field.
+inline
+const MFParticleSystemPtr *SceneBase::getMFInitialParticleSystems(void) const
+{
+    return &_mfInitialParticleSystems;
+}
+
+//! Get the Scene::_mfInitialParticleSystems field.
+inline
+MFParticleSystemPtr *SceneBase::editMFInitialParticleSystems(void)
+{
+    return &_mfInitialParticleSystems;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Scene::_mfInitialParticleSystems field.
 inline
 MFParticleSystemPtr *SceneBase::getMFInitialParticleSystems(void)
 {
     return &_mfInitialParticleSystems;
 }
+#endif
 
 
 //! Get the value of the Scene::_sfInternalParentProject field.
 inline
-ProjectPtr &SceneBase::getInternalParentProject(void)
+ProjectPtr &SceneBase::editInternalParentProject(void)
 {
     return _sfInternalParentProject.getValue();
 }
@@ -250,6 +569,15 @@ const ProjectPtr &SceneBase::getInternalParentProject(void) const
     return _sfInternalParentProject.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfInternalParentProject field.
+inline
+ProjectPtr &SceneBase::getInternalParentProject(void)
+{
+    return _sfInternalParentProject.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfInternalParentProject field.
 inline
 void SceneBase::setInternalParentProject(const ProjectPtr &value)
@@ -259,7 +587,7 @@ void SceneBase::setInternalParentProject(const ProjectPtr &value)
 
 //! Get the value of the Scene::_sfName field.
 inline
-std::string &SceneBase::getName(void)
+std::string &SceneBase::editName(void)
 {
     return _sfName.getValue();
 }
@@ -271,6 +599,15 @@ const std::string &SceneBase::getName(void) const
     return _sfName.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfName field.
+inline
+std::string &SceneBase::getName(void)
+{
+    return _sfName.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfName field.
 inline
 void SceneBase::setName(const std::string &value)
@@ -280,7 +617,7 @@ void SceneBase::setName(const std::string &value)
 
 //! Get the value of the Scene::_sfInitialBackground field.
 inline
-BackgroundPtr &SceneBase::getInitialBackground(void)
+BackgroundPtr &SceneBase::editInitialBackground(void)
 {
     return _sfInitialBackground.getValue();
 }
@@ -292,6 +629,15 @@ const BackgroundPtr &SceneBase::getInitialBackground(void) const
     return _sfInitialBackground.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfInitialBackground field.
+inline
+BackgroundPtr &SceneBase::getInitialBackground(void)
+{
+    return _sfInitialBackground.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfInitialBackground field.
 inline
 void SceneBase::setInitialBackground(const BackgroundPtr &value)
@@ -301,7 +647,7 @@ void SceneBase::setInitialBackground(const BackgroundPtr &value)
 
 //! Get the value of the Scene::_sfRoot field.
 inline
-NodePtr &SceneBase::getRoot(void)
+NodePtr &SceneBase::editRoot(void)
 {
     return _sfRoot.getValue();
 }
@@ -313,6 +659,15 @@ const NodePtr &SceneBase::getRoot(void) const
     return _sfRoot.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfRoot field.
+inline
+NodePtr &SceneBase::getRoot(void)
+{
+    return _sfRoot.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfRoot field.
 inline
 void SceneBase::setRoot(const NodePtr &value)
@@ -322,7 +677,7 @@ void SceneBase::setRoot(const NodePtr &value)
 
 //! Get the value of the Scene::_sfRootCore field.
 inline
-TransformPtr &SceneBase::getRootCore(void)
+TransformPtr &SceneBase::editRootCore(void)
 {
     return _sfRootCore.getValue();
 }
@@ -334,6 +689,15 @@ const TransformPtr &SceneBase::getRootCore(void) const
     return _sfRootCore.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfRootCore field.
+inline
+TransformPtr &SceneBase::getRootCore(void)
+{
+    return _sfRootCore.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfRootCore field.
 inline
 void SceneBase::setRootCore(const TransformPtr &value)
@@ -343,7 +707,7 @@ void SceneBase::setRootCore(const TransformPtr &value)
 
 //! Get the value of the Scene::_sfDefaultCameraBeacon field.
 inline
-NodePtr &SceneBase::getDefaultCameraBeacon(void)
+NodePtr &SceneBase::editDefaultCameraBeacon(void)
 {
     return _sfDefaultCameraBeacon.getValue();
 }
@@ -355,6 +719,15 @@ const NodePtr &SceneBase::getDefaultCameraBeacon(void) const
     return _sfDefaultCameraBeacon.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfDefaultCameraBeacon field.
+inline
+NodePtr &SceneBase::getDefaultCameraBeacon(void)
+{
+    return _sfDefaultCameraBeacon.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfDefaultCameraBeacon field.
 inline
 void SceneBase::setDefaultCameraBeacon(const NodePtr &value)
@@ -364,7 +737,7 @@ void SceneBase::setDefaultCameraBeacon(const NodePtr &value)
 
 //! Get the value of the Scene::_sfDefaultCameraBeaconCore field.
 inline
-TransformPtr &SceneBase::getDefaultCameraBeaconCore(void)
+TransformPtr &SceneBase::editDefaultCameraBeaconCore(void)
 {
     return _sfDefaultCameraBeaconCore.getValue();
 }
@@ -376,6 +749,15 @@ const TransformPtr &SceneBase::getDefaultCameraBeaconCore(void) const
     return _sfDefaultCameraBeaconCore.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfDefaultCameraBeaconCore field.
+inline
+TransformPtr &SceneBase::getDefaultCameraBeaconCore(void)
+{
+    return _sfDefaultCameraBeaconCore.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfDefaultCameraBeaconCore field.
 inline
 void SceneBase::setDefaultCameraBeaconCore(const TransformPtr &value)
@@ -385,7 +767,7 @@ void SceneBase::setDefaultCameraBeaconCore(const TransformPtr &value)
 
 //! Get the value of the Scene::_sfInitialCamera field.
 inline
-CameraPtr &SceneBase::getInitialCamera(void)
+CameraPtr &SceneBase::editInitialCamera(void)
 {
     return _sfInitialCamera.getValue();
 }
@@ -397,6 +779,15 @@ const CameraPtr &SceneBase::getInitialCamera(void) const
     return _sfInitialCamera.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfInitialCamera field.
+inline
+CameraPtr &SceneBase::getInitialCamera(void)
+{
+    return _sfInitialCamera.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfInitialCamera field.
 inline
 void SceneBase::setInitialCamera(const CameraPtr &value)
@@ -406,7 +797,7 @@ void SceneBase::setInitialCamera(const CameraPtr &value)
 
 //! Get the value of the Scene::_sfTimeInScene field.
 inline
-Real32 &SceneBase::getTimeInScene(void)
+Real32 &SceneBase::editTimeInScene(void)
 {
     return _sfTimeInScene.getValue();
 }
@@ -418,6 +809,15 @@ const Real32 &SceneBase::getTimeInScene(void) const
     return _sfTimeInScene.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Scene::_sfTimeInScene field.
+inline
+Real32 &SceneBase::getTimeInScene(void)
+{
+    return _sfTimeInScene.getValue();
+}
+#endif
+
 //! Set the value of the Scene::_sfTimeInScene field.
 inline
 void SceneBase::setTimeInScene(const Real32 &value)
@@ -428,7 +828,22 @@ void SceneBase::setTimeInScene(const Real32 &value)
 
 //! Get the value of the \a index element the Scene::_mfBackgrounds field.
 inline
-BackgroundPtr &SceneBase::getBackgrounds(const OSG::UInt32 index)
+BackgroundPtr &SceneBase::editBackgrounds(const UInt32 index)
+{
+    return _mfBackgrounds[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfBackgrounds field.
+inline
+const BackgroundPtr &SceneBase::getBackgrounds(const UInt32 index) const
+{
+    return _mfBackgrounds[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfBackgrounds field.
+inline
+BackgroundPtr &SceneBase::getBackgrounds(const UInt32 index)
 {
     return _mfBackgrounds[index];
 }
@@ -447,9 +862,26 @@ const MFBackgroundPtr &SceneBase::getBackgrounds(void) const
     return _mfBackgrounds;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfUIDrawingSurfaces field.
 inline
-UIDrawingSurfacePtr &SceneBase::getUIDrawingSurfaces(const OSG::UInt32 index)
+UIDrawingSurfacePtr &SceneBase::editUIDrawingSurfaces(const UInt32 index)
+{
+    return _mfUIDrawingSurfaces[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfUIDrawingSurfaces field.
+inline
+const UIDrawingSurfacePtr &SceneBase::getUIDrawingSurfaces(const UInt32 index) const
+{
+    return _mfUIDrawingSurfaces[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfUIDrawingSurfaces field.
+inline
+UIDrawingSurfacePtr &SceneBase::getUIDrawingSurfaces(const UInt32 index)
 {
     return _mfUIDrawingSurfaces[index];
 }
@@ -468,9 +900,26 @@ const MFUIDrawingSurfacePtr &SceneBase::getUIDrawingSurfaces(void) const
     return _mfUIDrawingSurfaces;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfForegrounds field.
 inline
-ForegroundPtr &SceneBase::getForegrounds(const OSG::UInt32 index)
+ForegroundPtr &SceneBase::editForegrounds(const UInt32 index)
+{
+    return _mfForegrounds[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfForegrounds field.
+inline
+const ForegroundPtr &SceneBase::getForegrounds(const UInt32 index) const
+{
+    return _mfForegrounds[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfForegrounds field.
+inline
+ForegroundPtr &SceneBase::getForegrounds(const UInt32 index)
 {
     return _mfForegrounds[index];
 }
@@ -489,9 +938,26 @@ const MFForegroundPtr &SceneBase::getForegrounds(void) const
     return _mfForegrounds;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfInitialForegrounds field.
 inline
-ForegroundPtr &SceneBase::getInitialForegrounds(const OSG::UInt32 index)
+ForegroundPtr &SceneBase::editInitialForegrounds(const UInt32 index)
+{
+    return _mfInitialForegrounds[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfInitialForegrounds field.
+inline
+const ForegroundPtr &SceneBase::getInitialForegrounds(const UInt32 index) const
+{
+    return _mfInitialForegrounds[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfInitialForegrounds field.
+inline
+ForegroundPtr &SceneBase::getInitialForegrounds(const UInt32 index)
 {
     return _mfInitialForegrounds[index];
 }
@@ -510,9 +976,26 @@ const MFForegroundPtr &SceneBase::getInitialForegrounds(void) const
     return _mfInitialForegrounds;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfModelNodes field.
 inline
-NodePtr &SceneBase::getModelNodes(const OSG::UInt32 index)
+NodePtr &SceneBase::editModelNodes(const UInt32 index)
+{
+    return _mfModelNodes[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfModelNodes field.
+inline
+const NodePtr &SceneBase::getModelNodes(const UInt32 index) const
+{
+    return _mfModelNodes[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfModelNodes field.
+inline
+NodePtr &SceneBase::getModelNodes(const UInt32 index)
 {
     return _mfModelNodes[index];
 }
@@ -531,9 +1014,26 @@ const MFNodePtr &SceneBase::getModelNodes(void) const
     return _mfModelNodes;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfInitialModelNodes field.
 inline
-NodePtr &SceneBase::getInitialModelNodes(const OSG::UInt32 index)
+NodePtr &SceneBase::editInitialModelNodes(const UInt32 index)
+{
+    return _mfInitialModelNodes[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfInitialModelNodes field.
+inline
+const NodePtr &SceneBase::getInitialModelNodes(const UInt32 index) const
+{
+    return _mfInitialModelNodes[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfInitialModelNodes field.
+inline
+NodePtr &SceneBase::getInitialModelNodes(const UInt32 index)
 {
     return _mfInitialModelNodes[index];
 }
@@ -552,9 +1052,26 @@ const MFNodePtr &SceneBase::getInitialModelNodes(void) const
     return _mfInitialModelNodes;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfCameras field.
 inline
-CameraPtr &SceneBase::getCameras(const OSG::UInt32 index)
+CameraPtr &SceneBase::editCameras(const UInt32 index)
+{
+    return _mfCameras[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfCameras field.
+inline
+const CameraPtr &SceneBase::getCameras(const UInt32 index) const
+{
+    return _mfCameras[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfCameras field.
+inline
+CameraPtr &SceneBase::getCameras(const UInt32 index)
 {
     return _mfCameras[index];
 }
@@ -573,9 +1090,26 @@ const MFCameraPtr &SceneBase::getCameras(void) const
     return _mfCameras;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfAnimations field.
 inline
-AnimationPtr &SceneBase::getAnimations(const OSG::UInt32 index)
+AnimationPtr &SceneBase::editAnimations(const UInt32 index)
+{
+    return _mfAnimations[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfAnimations field.
+inline
+const AnimationPtr &SceneBase::getAnimations(const UInt32 index) const
+{
+    return _mfAnimations[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfAnimations field.
+inline
+AnimationPtr &SceneBase::getAnimations(const UInt32 index)
 {
     return _mfAnimations[index];
 }
@@ -594,9 +1128,26 @@ const MFAnimationPtr &SceneBase::getAnimations(void) const
     return _mfAnimations;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfInitialAnimations field.
 inline
-AnimationPtr &SceneBase::getInitialAnimations(const OSG::UInt32 index)
+AnimationPtr &SceneBase::editInitialAnimations(const UInt32 index)
+{
+    return _mfInitialAnimations[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfInitialAnimations field.
+inline
+const AnimationPtr &SceneBase::getInitialAnimations(const UInt32 index) const
+{
+    return _mfInitialAnimations[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfInitialAnimations field.
+inline
+AnimationPtr &SceneBase::getInitialAnimations(const UInt32 index)
 {
     return _mfInitialAnimations[index];
 }
@@ -615,9 +1166,26 @@ const MFAnimationPtr &SceneBase::getInitialAnimations(void) const
     return _mfInitialAnimations;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfParticleSystems field.
 inline
-ParticleSystemPtr &SceneBase::getParticleSystems(const OSG::UInt32 index)
+ParticleSystemPtr &SceneBase::editParticleSystems(const UInt32 index)
+{
+    return _mfParticleSystems[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfParticleSystems field.
+inline
+const ParticleSystemPtr &SceneBase::getParticleSystems(const UInt32 index) const
+{
+    return _mfParticleSystems[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfParticleSystems field.
+inline
+ParticleSystemPtr &SceneBase::getParticleSystems(const UInt32 index)
 {
     return _mfParticleSystems[index];
 }
@@ -636,9 +1204,26 @@ const MFParticleSystemPtr &SceneBase::getParticleSystems(void) const
     return _mfParticleSystems;
 }
 
+#endif
+
 //! Get the value of the \a index element the Scene::_mfInitialParticleSystems field.
 inline
-ParticleSystemPtr &SceneBase::getInitialParticleSystems(const OSG::UInt32 index)
+ParticleSystemPtr &SceneBase::editInitialParticleSystems(const UInt32 index)
+{
+    return _mfInitialParticleSystems[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfInitialParticleSystems field.
+inline
+const ParticleSystemPtr &SceneBase::getInitialParticleSystems(const UInt32 index) const
+{
+    return _mfInitialParticleSystems[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Scene::_mfInitialParticleSystems field.
+inline
+ParticleSystemPtr &SceneBase::getInitialParticleSystems(const UInt32 index)
 {
     return _mfInitialParticleSystems[index];
 }
@@ -657,5 +1242,7 @@ const MFParticleSystemPtr &SceneBase::getInitialParticleSystems(void) const
     return _mfInitialParticleSystems;
 }
 
-KE_END_NAMESPACE
+#endif
+
+OSG_END_NAMESPACE
 

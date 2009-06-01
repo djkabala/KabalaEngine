@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationStartScreenBase.h"
 #include "KEApplicationStartScreen.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector ApplicationStartScreenBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -71,7 +70,7 @@ FieldContainerType ApplicationStartScreenBase::_type(
     "ApplicationStartScreen",
     "ApplicationMode",
     NULL,
-    (PrototypeCreateF) &ApplicationStartScreenBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&ApplicationStartScreenBase::createEmpty),
     ApplicationStartScreen::initMethod,
     NULL,
     0);
@@ -100,7 +99,7 @@ FieldContainerPtr ApplicationStartScreenBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 ApplicationStartScreenBase::getContainerSize(void) const 
+UInt32 ApplicationStartScreenBase::getContainerSize(void) const 
 { 
     return sizeof(ApplicationStartScreen); 
 }
@@ -110,7 +109,8 @@ FieldContainerPtr ApplicationStartScreenBase::shallowCopy(void) const
 void ApplicationStartScreenBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((ApplicationStartScreenBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<ApplicationStartScreenBase *>(&other),
+                          whichField);
 }
 #else
 void ApplicationStartScreenBase::executeSync(      FieldContainer &other,
@@ -119,13 +119,13 @@ void ApplicationStartScreenBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((ApplicationStartScreenBase *) &other, whichField, sInfo);
 }
 void ApplicationStartScreenBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void ApplicationStartScreenBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void ApplicationStartScreenBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -134,10 +134,18 @@ void ApplicationStartScreenBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 ApplicationStartScreenBase::ApplicationStartScreenBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 ApplicationStartScreenBase::ApplicationStartScreenBase(const ApplicationStartScreenBase &source) :
     Inherited                 (source)
@@ -152,9 +160,9 @@ ApplicationStartScreenBase::~ApplicationStartScreenBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 ApplicationStartScreenBase::getBinSize(const BitVector &whichField)
+UInt32 ApplicationStartScreenBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
 
     return returnValue;
@@ -198,8 +206,8 @@ void ApplicationStartScreenBase::executeSyncImpl(      ApplicationStartScreenBas
 }
 
 void ApplicationStartScreenBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -208,18 +216,19 @@ void ApplicationStartScreenBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<ApplicationStartScreenPtr>::_type("ApplicationStartScreenPtr", "ApplicationModePtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(ApplicationStartScreenPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(ApplicationStartScreenPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

@@ -39,14 +39,13 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneBasicEditorBase.h"
 #include <OpenSG/UserInterface/OSGLabel.h>
 #include <OpenSG/UserInterface/OSGTextField.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief SceneBasicEditor class. See \ref 
            PageKabalaEngineSceneBasicEditor for a description.
@@ -129,7 +128,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBasicEditor : public SceneBasicEditorBa
 
 typedef SceneBasicEditor *SceneBasicEditorP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KESceneBasicEditorBase.inl"
 #include "KESceneBasicEditor.inl"

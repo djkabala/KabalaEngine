@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -55,7 +54,7 @@
 #endif
 
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGBaseTypes.h>
@@ -67,11 +66,10 @@
 
 #include "KEFieldContainerTypeComponentGeneratorFields.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class FieldContainerTypeComponentGenerator;
-class osg::BinaryDataHandler;
+class BinaryDataHandler;
 
 //! \brief FieldContainerTypeComponentGenerator Base Class.
 
@@ -119,10 +117,19 @@ class KE_KABALAENGINELIB_DLLMAPPING FieldContainerTypeComponentGeneratorBase : p
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-           SFVec2f             *getSFIconSize       (void);
 
-           Vec2f               &getIconSize       (void);
+           SFVec2f             *editSFIconSize       (void);
+     const SFVec2f             *getSFIconSize       (void) const;
+#ifndef OSG_2_PREP
+           SFVec2f             *getSFIconSize       (void);
+#endif
+
+
+           Vec2f               &editIconSize       (void);
      const Vec2f               &getIconSize       (void) const;
+#ifndef OSG_2_PREP
+           Vec2f               &getIconSize       (void);
+#endif
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -248,6 +255,6 @@ typedef osgIF<FieldContainerTypeComponentGeneratorBase::isNodeCore,
 
 typedef RefPtr<FieldContainerTypeComponentGeneratorPtr> FieldContainerTypeComponentGeneratorRefPtr;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #endif /* _KEFIELDCONTAINERTYPECOMPONENTGENERATORBASE_H_ */

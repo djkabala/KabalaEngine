@@ -1,7 +1,7 @@
 #ifndef NODEVIEWCTL_H
 #define NODEVIEWCTL_H
 
-//#include "uic_FieldContainerView.h"
+#include "uic_FieldContainerView.h"
 #include "FieldContainer.h"
 
 class Field;

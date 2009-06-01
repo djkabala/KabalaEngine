@@ -36,13 +36,12 @@
 #ifndef _KE_FIELD_COLOR_SELECTION_MODEL_H_
 #define _KE_FIELD_COLOR_SELECTION_MODEL_H_
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGAbstractColorSelectionModel.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class KE_KABALAENGINELIB_DLLMAPPING FieldColorSelectionModel : public AbstractColorSelectionModel
 {
@@ -69,7 +68,7 @@ class KE_KABALAENGINELIB_DLLMAPPING FieldColorSelectionModel : public AbstractCo
 
 typedef FieldColorSelectionModel *FieldColorSelectionModelPtr;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEFieldColorSelectionModel.inl"
 

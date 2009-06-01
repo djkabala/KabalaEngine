@@ -42,6 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
+#include <OpenSG/OSGConfig.h>
 #include "KEConfig.h"
 
 #include "KEAboutKEWindow.h"
@@ -54,7 +55,7 @@
 #include <OpenSG/UserInterface/OSGGridBagLayoutConstraints.h>
 #include <OpenSG/OSGGL.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *
@@ -323,7 +324,7 @@ InternalWindowPtr createAboutKabalaEngineWindow(void)
 	return AboutWindow;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #ifdef OSG_SGI_CC
 #pragma set woff 1174

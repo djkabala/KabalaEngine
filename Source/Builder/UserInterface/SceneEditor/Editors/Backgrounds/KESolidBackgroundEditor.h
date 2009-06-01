@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGFieldContainerPtr.h>
@@ -54,8 +54,7 @@
 #include <OpenSG/UserInterface/OSGChangeListener.h>
 #include "Builder/KEApplicationBuilder.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class SolidBackgroundEditor;
 
@@ -107,7 +106,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SolidBackgroundEditor : public FieldContaine
 };
 
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KESolidBackgroundEditor.inl"
 

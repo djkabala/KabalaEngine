@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include <OpenSG/OSGWindowFields.h>
 #include <OpenSG/Input/OSGWindowAdapter.h>

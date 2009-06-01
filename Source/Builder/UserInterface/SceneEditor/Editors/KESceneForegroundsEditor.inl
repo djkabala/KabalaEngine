@@ -37,9 +37,9 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

@@ -32,14 +32,14 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include <iostream>
 
 #include "KEFieldContainerEditorType.h"
 #include "KEFieldContainerEditorFactory.h"
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 FieldContainerEditorPtr FieldContainerEditorType::create(void) const
 {
@@ -108,4 +108,4 @@ bool FieldContainerEditorType::operator !=(const FieldContainerEditorType &other
     return ! (*this == other);
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

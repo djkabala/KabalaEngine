@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEFieldContainerTypeComponentGeneratorBase.h"
 #include "KEFieldContainerTypeComponentGenerator.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector  FieldContainerTypeComponentGeneratorBase::IconSizeFieldMask = 
     (TypeTraits<BitVector>::One << FieldContainerTypeComponentGeneratorBase::IconSizeFieldId);
@@ -83,7 +82,7 @@ FieldDescription *FieldContainerTypeComponentGeneratorBase::_desc[] =
                      "IconSize", 
                      IconSizeFieldId, IconSizeFieldMask,
                      false,
-                     (FieldAccessMethod) &FieldContainerTypeComponentGeneratorBase::getSFIconSize)
+                     reinterpret_cast<FieldAccessMethod>(&FieldContainerTypeComponentGeneratorBase::editSFIconSize))
 };
 
 
@@ -91,7 +90,7 @@ FieldContainerType FieldContainerTypeComponentGeneratorBase::_type(
     "FieldContainerTypeComponentGenerator",
     "ListComponentGenerator",
     NULL,
-    (PrototypeCreateF) &FieldContainerTypeComponentGeneratorBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&FieldContainerTypeComponentGeneratorBase::createEmpty),
     FieldContainerTypeComponentGenerator::initMethod,
     _desc,
     sizeof(_desc));
@@ -130,7 +129,8 @@ UInt32 FieldContainerTypeComponentGeneratorBase::getContainerSize(void) const
 void FieldContainerTypeComponentGeneratorBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((FieldContainerTypeComponentGeneratorBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<FieldContainerTypeComponentGeneratorBase *>(&other),
+                          whichField);
 }
 #else
 void FieldContainerTypeComponentGeneratorBase::executeSync(      FieldContainer &other,
@@ -154,11 +154,19 @@ void FieldContainerTypeComponentGeneratorBase::onDestroyAspect(UInt32 uiId, UInt
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 FieldContainerTypeComponentGeneratorBase::FieldContainerTypeComponentGeneratorBase(void) :
     _sfIconSize               (Vec2f(30.0,30.0)), 
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 FieldContainerTypeComponentGeneratorBase::FieldContainerTypeComponentGeneratorBase(const FieldContainerTypeComponentGeneratorBase &source) :
     _sfIconSize               (source._sfIconSize               ), 
@@ -251,18 +259,19 @@ void FieldContainerTypeComponentGeneratorBase::execBeginEditImpl (const BitVecto
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<FieldContainerTypeComponentGeneratorPtr>::_type("FieldContainerTypeComponentGeneratorPtr", "ListComponentGeneratorPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(FieldContainerTypeComponentGeneratorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(FieldContainerTypeComponentGeneratorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

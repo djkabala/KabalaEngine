@@ -31,14 +31,13 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
 #include "Builder/KEApplicationBuilder.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class SaveProjectAsCommand;
 typedef boost::intrusive_ptr<SaveProjectAsCommand> SaveProjectAsCommandPtr;
@@ -73,7 +72,7 @@ public:
 	static SaveProjectAsCommandPtr create(ApplicationBuilderPtr TheApplicationBuilder);
 };
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KESaveProjectAsCommand.inl"
 

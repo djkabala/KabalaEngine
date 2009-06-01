@@ -42,14 +42,14 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KECreateSceneBackgroundCommand.h"
 
 #include <OpenSG/OSGBackground.h>
 #include <OpenSG/OSGSimpleAttachments.h>
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include <OpenSG/UserInterface/OSGMenuFields.h>
 #include <OpenSG/UserInterface/OSGMenuItemFields.h>
@@ -48,8 +48,7 @@
 #include "KEBuilderInterfaceBase.h"
 #include "Builder/UserInterface/Commands/KECommandActionListener.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief BuilderInterface class. See \ref 
            PageKabalaEngineBuilderInterface for a description.
@@ -197,7 +196,7 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterface : public BuilderInterfaceBa
 
 typedef BuilderInterface *BuilderInterfaceP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEBuilderInterfaceBase.inl"
 #include "KEBuilderInterface.inl"

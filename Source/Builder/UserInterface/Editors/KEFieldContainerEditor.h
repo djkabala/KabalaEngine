@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGFieldContainerPtr.h>
@@ -48,8 +48,7 @@
 #include <boost/shared_ptr.hpp>
 #include <OpenSG/UserInterface/OSGComponentFields.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class FieldContainerEditorType;
 
@@ -76,7 +75,7 @@ class KE_KABALAENGINELIB_DLLMAPPING FieldContainerEditor
 
 typedef boost::shared_ptr<FieldContainerEditor> FieldContainerEditorPtr;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEFieldContainerEditor.inl"
 

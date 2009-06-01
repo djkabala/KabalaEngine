@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -51,7 +50,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include <OpenSG/OSGFieldContainerPtr.h>
 #include <OpenSG/OSGNodeCoreFieldDataType.h>
@@ -59,8 +58,7 @@
 
 #include "Application/KEApplicationModeFields.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class ApplicationStartScreen;
 
@@ -78,26 +76,20 @@ typedef FCPtr<ApplicationModePtr, ApplicationStartScreen> ApplicationStartScreen
 /*! \hideinhierarchy */
 #endif
 
-KE_END_NAMESPACE
-
-OSG_BEGIN_NAMESPACE
 template <>
-struct FieldDataTraits<ke::ApplicationStartScreenPtr> : 
-    public FieldTraitsRecurseMapper<ke::ApplicationStartScreenPtr, true>
+struct FieldDataTraits<ApplicationStartScreenPtr> : 
+    public FieldTraitsRecurseMapper<ApplicationStartScreenPtr, true>
 {
     static DataType             _type;                       
 
     enum                        { StringConvertable = 0x00 };
     enum                        { bHasParent        = 0x01 };
 
-    static DataType &getType (void) { return _type;        }
+    static DataType   &getType (void) { return _type;        }
 
-    static char     *getSName(void) { return "SFApplicationStartScreenPtr"; }
-    static char     *getMName(void) { return "MFApplicationStartScreenPtr"; }
+    static const char *getSName(void) { return "SFApplicationStartScreenPtr"; }
+    static const char *getMName(void) { return "MFApplicationStartScreenPtr"; }
 };
-OSG_END_NAMESPACE
-
-KE_BEGIN_NAMESPACE
 
 #if !defined(OSG_DOC_DEV_TRAITS)
 /*! \class  FieldTraitsRecurseMapper<ApplicationStartScreenPtr, true>
@@ -128,6 +120,6 @@ typedef MField<ApplicationStartScreenPtr> MFApplicationStartScreenPtr;
 OSG_DLLEXPORT_DECL1(MField, ApplicationStartScreenPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
 #endif
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #endif /* _KEAPPLICATIONSTARTSCREENFIELDS_H_ */

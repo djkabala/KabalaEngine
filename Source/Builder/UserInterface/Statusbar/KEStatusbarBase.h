@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -55,7 +54,7 @@
 #endif
 
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGBaseTypes.h>
@@ -66,11 +65,10 @@
 
 #include "KEStatusbarFields.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class Statusbar;
-class osg::BinaryDataHandler;
+class BinaryDataHandler;
 
 //! \brief Statusbar Base Class.
 
@@ -93,7 +91,7 @@ class KE_KABALAENGINELIB_DLLMAPPING StatusbarBase : public Interface
     /*! \{                                                                 */
 
     static        FieldContainerType &getClassType    (void); 
-    static        ::osg::UInt32              getClassTypeId  (void); 
+    static        UInt32              getClassTypeId  (void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -103,7 +101,7 @@ class KE_KABALAENGINELIB_DLLMAPPING StatusbarBase : public Interface
     virtual       FieldContainerType &getType  (void); 
     virtual const FieldContainerType &getType  (void) const; 
 
-    virtual       ::osg::UInt32              getContainerSize(void) const;
+    virtual       UInt32              getContainerSize(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -115,7 +113,7 @@ class KE_KABALAENGINELIB_DLLMAPPING StatusbarBase : public Interface
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual ::osg::UInt32 getBinSize (const BitVector         &whichField);
+    virtual UInt32 getBinSize (const BitVector         &whichField);
     virtual void   copyToBin  (      BinaryDataHandler &pMem,
                                const BitVector         &whichField);
     virtual void   copyFromBin(      BinaryDataHandler &pMem,
@@ -177,14 +175,14 @@ class KE_KABALAENGINELIB_DLLMAPPING StatusbarBase : public Interface
                                const SyncInfo          &sInfo);
 
     virtual void execBeginEdit     (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
             void execBeginEditImpl (const BitVector &whichField,
-                                          ::osg::UInt32     uiAspect,
-                                          ::osg::UInt32     uiContainerSize);
+                                          UInt32     uiAspect,
+                                          UInt32     uiContainerSize);
 
-    virtual void onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect);
+    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
 #endif
 
     /*! \}                                                                 */
@@ -214,6 +212,6 @@ typedef osgIF<StatusbarBase::isNodeCore,
 
 typedef RefPtr<StatusbarPtr> StatusbarRefPtr;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #endif /* _KESTATUSBARBASE_H_ */

@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEStatusbarBase.h"
 #include "KEStatusbar.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector StatusbarBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -71,7 +70,7 @@ FieldContainerType StatusbarBase::_type(
     "Statusbar",
     "Interface",
     NULL,
-    (PrototypeCreateF) &StatusbarBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&StatusbarBase::createEmpty),
     Statusbar::initMethod,
     NULL,
     0);
@@ -100,7 +99,7 @@ FieldContainerPtr StatusbarBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 StatusbarBase::getContainerSize(void) const 
+UInt32 StatusbarBase::getContainerSize(void) const 
 { 
     return sizeof(Statusbar); 
 }
@@ -110,7 +109,8 @@ FieldContainerPtr StatusbarBase::shallowCopy(void) const
 void StatusbarBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((StatusbarBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<StatusbarBase *>(&other),
+                          whichField);
 }
 #else
 void StatusbarBase::executeSync(      FieldContainer &other,
@@ -119,13 +119,13 @@ void StatusbarBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((StatusbarBase *) &other, whichField, sInfo);
 }
 void StatusbarBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void StatusbarBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void StatusbarBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -134,10 +134,18 @@ void StatusbarBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 StatusbarBase::StatusbarBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 StatusbarBase::StatusbarBase(const StatusbarBase &source) :
     Inherited                 (source)
@@ -152,9 +160,9 @@ StatusbarBase::~StatusbarBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 StatusbarBase::getBinSize(const BitVector &whichField)
+UInt32 StatusbarBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
 
     return returnValue;
@@ -198,8 +206,8 @@ void StatusbarBase::executeSyncImpl(      StatusbarBase *pOther,
 }
 
 void StatusbarBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -208,18 +216,19 @@ void StatusbarBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<StatusbarPtr>::_type("StatusbarPtr", "InterfacePtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(StatusbarPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(StatusbarPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

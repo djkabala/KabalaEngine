@@ -40,7 +40,7 @@
 #pragma once
 #endif
  
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 #include <OpenSG/OSGAttachmentContainer.h>
 #include <OpenSG/OSGSimpleAttachments.h>

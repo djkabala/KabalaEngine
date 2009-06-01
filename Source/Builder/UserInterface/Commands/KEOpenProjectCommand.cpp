@@ -42,13 +42,13 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEOpenProjectCommand.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include "Application/KEMainApplication.h"
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

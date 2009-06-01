@@ -1,6 +1,6 @@
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 CreateSceneBackgroundCommand::CreateSceneBackgroundCommand(SceneBackgroundsComboBoxModelPtr TheModel,FieldContainerType* FCType) : Inherited(),
@@ -22,4 +22,4 @@ const CommandType &CreateSceneBackgroundCommand::getClassType(void)
 	return _Type;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

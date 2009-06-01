@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -42,10 +41,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
-
-
-KE_USING_NAMESPACE
+#include <OpenSG/OSGConfig.h>
 
 #include "KEProject.h"
 #include "KEUtils.h"
@@ -59,6 +55,9 @@ KE_USING_NAMESPACE
 #include <OpenSG/Toolbox/OSGFCFileHandler.h>
 #include "Application/KEMainApplication.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
+
+OSG_BEGIN_NAMESPACE
+
 /***************************************************************************\
  *                            Description                                  *
 \***************************************************************************/
@@ -271,7 +270,7 @@ void Project::attachNames(void)
 	//Backgrounds
 	for(::osg::UInt32 i(0); i<getBackgrounds().size() ; ++i)
 	{
-		::ke::attachName(getBackgrounds(i));
+		attachName(getBackgrounds(i));
 	}
 
 	//Foregrounds
@@ -552,7 +551,7 @@ Project::~Project(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void Project::changed(BitVector whichField, ::osg::UInt32 origin)
+void Project::changed(BitVector whichField, UInt32 origin)
 {
     Inherited::changed(whichField, origin);
 
@@ -567,7 +566,7 @@ void Project::changed(BitVector whichField, ::osg::UInt32 origin)
 	}
 }
 
-void Project::dump(      ::osg::UInt32    , 
+void Project::dump(      UInt32    , 
                          const BitVector ) const
 {
     SLOG << "Dump Project NI" << std::endl;
@@ -602,4 +601,7 @@ void Project::ProjectUpdateListener::keyPressed(const KeyEvent& e)
 {
     _Project->keyPressed(e);
 }
+
+
+OSG_END_NAMESPACE
 

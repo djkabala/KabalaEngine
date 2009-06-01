@@ -31,14 +31,13 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGCommand.h>
 #include "Builder/KEApplicationBuilder.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class UndoCommand;
 typedef boost::intrusive_ptr<UndoCommand> UndoCommandPtr;
@@ -73,7 +72,7 @@ public:
 	static UndoCommandPtr create(ApplicationBuilderPtr TheApplicationBuilder);
 };
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEUndoCommand.inl"
 

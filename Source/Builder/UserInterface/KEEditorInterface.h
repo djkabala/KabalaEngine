@@ -39,12 +39,11 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEEditorInterfaceBase.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief EditorInterface class. See \ref 
            PageKabalaEngineEditorInterface for a description.
@@ -115,7 +114,7 @@ class KE_KABALAENGINELIB_DLLMAPPING EditorInterface : public EditorInterfaceBase
 
 typedef EditorInterface *EditorInterfaceP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEEditorInterfaceBase.inl"
 #include "KEEditorInterface.inl"

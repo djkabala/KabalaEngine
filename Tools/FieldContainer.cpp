@@ -6,7 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include <OpenSG/OSGXmlpp.h>
+#include "OpenSG/OSGXmlpp.h"
 
 using namespace std;
 using namespace xmlpp;
@@ -647,13 +647,16 @@ bool FieldContainer::readDesc (const char *fn)
 
 char *escapeQuot(char *c)
 {
+    char *n;
+
     if (!c)
     {
-        return new char [1];
+        // return a empty string.
+        n = new char [1];
+        n[0] = 0;
+        return n;
     }
-    
-    char *n;
-    
+
     n = new char [strlen(c) + 1];
     memcpy(n, c, strlen(c) + 1);
     
@@ -664,6 +667,28 @@ char *escapeQuot(char *c)
         memcpy(n2, n, r - n);
         n2[r-n] = 0;
         strcat(n2, "&quot;");
+        strcat(n2, r+1);
+        delete [] n;
+        n = n2;
+    }
+
+    while(r = strchr(n, '<'))
+    {
+        char * n2 = new char [strlen(n) + 4];
+        memcpy(n2, n, r - n);
+        n2[r-n] = 0;
+        strcat(n2, "&lt;");
+        strcat(n2, r+1);
+        delete [] n;
+        n = n2;
+    }
+
+    while(r = strchr(n, '>'))
+    {
+        char * n2 = new char [strlen(n) + 4];
+        memcpy(n2, n, r - n);
+        n2[r-n] = 0;
+        strcat(n2, "&gt;");
         strcat(n2, r+1);
         delete [] n;
         n = n2;
@@ -1190,6 +1215,7 @@ bool FieldContainer::writeTempl(
                     "hasDefaultHeader", "SystemComponent",
                     "isDecoratable", "Decorator", "Library",
                     "useLocalIncludes",
+                    "parentsystemcomponent",
                     NULL };
                 
                 char *key = s + strcspn( s, " \t");
@@ -1325,6 +1351,11 @@ bool FieldContainer::writeTempl(
                            
                 case 16:    // UseLocalIncludes
                             if ( !_useLocalIncludes )
+                                skipIf = 1;
+                            break;
+                           
+                case 17:    // parentsystemcomponent
+                            if ( !_parentSystemComponent )
                                 skipIf = 1;
                             break;
                            

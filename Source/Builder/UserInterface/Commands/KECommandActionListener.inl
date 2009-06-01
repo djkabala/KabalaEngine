@@ -1,6 +1,6 @@
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 CommandActionListener::CommandActionListener(CommandPtr TheCommand, CommandManagerPtr TheCommandManager) : Inherited(),
@@ -24,4 +24,4 @@ void CommandActionListener::operator =(const CommandActionListener& source)
 	_TheCommandManager = source._TheCommandManager;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

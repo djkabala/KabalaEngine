@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationStartScreenBase.h"
 #include <OpenSG/OSGForegroundFields.h>
@@ -50,8 +50,7 @@
 #include <OpenSG/Animation/OSGFieldAnimation.h>
 #include <OpenSG/Input/OSGUpdateListener.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationStartScreen class. See \ref 
            PageKabalaEngineApplicationStartScreen for a description.
@@ -202,7 +201,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationS
 
 typedef ApplicationStartScreen *ApplicationStartScreenP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEApplicationStartScreenBase.inl"
 #include "KEApplicationStartScreen.inl"

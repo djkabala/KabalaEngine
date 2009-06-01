@@ -31,7 +31,7 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/Toolbox/OSGIntrusivePtrImplBase.h>
@@ -43,8 +43,7 @@
 #include <map>
 #include <string>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class IconManager;
 typedef boost::intrusive_ptr<IconManager> IconManagerPtr;
@@ -90,7 +89,7 @@ public:
 };
 
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEIconManager.inl"
 

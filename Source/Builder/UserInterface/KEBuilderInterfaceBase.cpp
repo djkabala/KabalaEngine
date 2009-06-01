@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEBuilderInterfaceBase.h"
 #include "KEBuilderInterface.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector  BuilderInterfaceBase::MenuBarFieldMask = 
     (TypeTraits<BitVector>::One << BuilderInterfaceBase::MenuBarFieldId);
@@ -113,32 +112,32 @@ FieldDescription *BuilderInterfaceBase::_desc[] =
                      "MenuBar", 
                      MenuBarFieldId, MenuBarFieldMask,
                      false,
-                     (FieldAccessMethod) &BuilderInterfaceBase::getSFMenuBar),
+                     reinterpret_cast<FieldAccessMethod>(&BuilderInterfaceBase::editSFMenuBar)),
     new FieldDescription(SFToolbarPtr::getClassType(), 
                      "Toolbar", 
                      ToolbarFieldId, ToolbarFieldMask,
                      false,
-                     (FieldAccessMethod) &BuilderInterfaceBase::getSFToolbar),
+                     reinterpret_cast<FieldAccessMethod>(&BuilderInterfaceBase::editSFToolbar)),
     new FieldDescription(SFStatusbarPtr::getClassType(), 
                      "Statusbar", 
                      StatusbarFieldId, StatusbarFieldMask,
                      false,
-                     (FieldAccessMethod) &BuilderInterfaceBase::getSFStatusbar),
+                     reinterpret_cast<FieldAccessMethod>(&BuilderInterfaceBase::editSFStatusbar)),
     new FieldDescription(SFEditorInterfacePtr::getClassType(), 
                      "Editor", 
                      EditorFieldId, EditorFieldMask,
                      false,
-                     (FieldAccessMethod) &BuilderInterfaceBase::getSFEditor),
+                     reinterpret_cast<FieldAccessMethod>(&BuilderInterfaceBase::editSFEditor)),
     new FieldDescription(SFUIDrawingSurfacePtr::getClassType(), 
                      "DrawingSurface", 
                      DrawingSurfaceFieldId, DrawingSurfaceFieldMask,
                      false,
-                     (FieldAccessMethod) &BuilderInterfaceBase::getSFDrawingSurface),
+                     reinterpret_cast<FieldAccessMethod>(&BuilderInterfaceBase::editSFDrawingSurface)),
     new FieldDescription(SFInternalWindowPtr::getClassType(), 
                      "MainInternalWindow", 
                      MainInternalWindowFieldId, MainInternalWindowFieldMask,
                      false,
-                     (FieldAccessMethod) &BuilderInterfaceBase::getSFMainInternalWindow)
+                     reinterpret_cast<FieldAccessMethod>(&BuilderInterfaceBase::editSFMainInternalWindow))
 };
 
 
@@ -146,7 +145,7 @@ FieldContainerType BuilderInterfaceBase::_type(
     "BuilderInterface",
     "Interface",
     NULL,
-    (PrototypeCreateF) &BuilderInterfaceBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&BuilderInterfaceBase::createEmpty),
     BuilderInterface::initMethod,
     _desc,
     sizeof(_desc));
@@ -175,7 +174,7 @@ FieldContainerPtr BuilderInterfaceBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 BuilderInterfaceBase::getContainerSize(void) const 
+UInt32 BuilderInterfaceBase::getContainerSize(void) const 
 { 
     return sizeof(BuilderInterface); 
 }
@@ -185,7 +184,8 @@ FieldContainerPtr BuilderInterfaceBase::shallowCopy(void) const
 void BuilderInterfaceBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((BuilderInterfaceBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<BuilderInterfaceBase *>(&other),
+                          whichField);
 }
 #else
 void BuilderInterfaceBase::executeSync(      FieldContainer &other,
@@ -194,13 +194,13 @@ void BuilderInterfaceBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((BuilderInterfaceBase *) &other, whichField, sInfo);
 }
 void BuilderInterfaceBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void BuilderInterfaceBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void BuilderInterfaceBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -208,6 +208,10 @@ void BuilderInterfaceBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiA
 #endif
 
 /*------------------------- constructors ----------------------------------*/
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
 
 BuilderInterfaceBase::BuilderInterfaceBase(void) :
     _sfMenuBar                (MenuBarPtr(NullFC)), 
@@ -219,6 +223,10 @@ BuilderInterfaceBase::BuilderInterfaceBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 BuilderInterfaceBase::BuilderInterfaceBase(const BuilderInterfaceBase &source) :
     _sfMenuBar                (source._sfMenuBar                ), 
@@ -239,9 +247,9 @@ BuilderInterfaceBase::~BuilderInterfaceBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 BuilderInterfaceBase::getBinSize(const BitVector &whichField)
+UInt32 BuilderInterfaceBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
     if(FieldBits::NoField != (MenuBarFieldMask & whichField))
     {
@@ -411,8 +419,8 @@ void BuilderInterfaceBase::executeSyncImpl(      BuilderInterfaceBase *pOther,
 }
 
 void BuilderInterfaceBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -421,18 +429,19 @@ void BuilderInterfaceBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<BuilderInterfacePtr>::_type("BuilderInterfacePtr", "InterfacePtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(BuilderInterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(BuilderInterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

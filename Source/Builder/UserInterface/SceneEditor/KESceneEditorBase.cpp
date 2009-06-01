@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneEditorBase.h"
 #include "KESceneEditor.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector  SceneEditorBase::EditorsFieldMask = 
     (TypeTraits<BitVector>::One << SceneEditorBase::EditorsFieldId);
@@ -89,12 +88,12 @@ FieldDescription *SceneEditorBase::_desc[] =
                      "Editors", 
                      EditorsFieldId, EditorsFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneEditorBase::getMFEditors),
+                     reinterpret_cast<FieldAccessMethod>(&SceneEditorBase::editMFEditors)),
     new FieldDescription(SFScenePtr::getClassType(), 
                      "EditingScene", 
                      EditingSceneFieldId, EditingSceneFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneEditorBase::getSFEditingScene)
+                     reinterpret_cast<FieldAccessMethod>(&SceneEditorBase::editSFEditingScene))
 };
 
 
@@ -102,7 +101,7 @@ FieldContainerType SceneEditorBase::_type(
     "SceneEditor",
     "EditorInterface",
     NULL,
-    (PrototypeCreateF) &SceneEditorBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&SceneEditorBase::createEmpty),
     SceneEditor::initMethod,
     _desc,
     sizeof(_desc));
@@ -131,7 +130,7 @@ FieldContainerPtr SceneEditorBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 SceneEditorBase::getContainerSize(void) const 
+UInt32 SceneEditorBase::getContainerSize(void) const 
 { 
     return sizeof(SceneEditor); 
 }
@@ -141,7 +140,8 @@ FieldContainerPtr SceneEditorBase::shallowCopy(void) const
 void SceneEditorBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((SceneEditorBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<SceneEditorBase *>(&other),
+                          whichField);
 }
 #else
 void SceneEditorBase::executeSync(      FieldContainer &other,
@@ -150,13 +150,13 @@ void SceneEditorBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((SceneEditorBase *) &other, whichField, sInfo);
 }
 void SceneEditorBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void SceneEditorBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void SceneEditorBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -166,12 +166,20 @@ void SceneEditorBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 SceneEditorBase::SceneEditorBase(void) :
     _mfEditors                (), 
     _sfEditingScene           (ScenePtr(NullFC)), 
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 SceneEditorBase::SceneEditorBase(const SceneEditorBase &source) :
     _mfEditors                (source._mfEditors                ), 
@@ -188,9 +196,9 @@ SceneEditorBase::~SceneEditorBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 SceneEditorBase::getBinSize(const BitVector &whichField)
+UInt32 SceneEditorBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
     if(FieldBits::NoField != (EditorsFieldMask & whichField))
     {
@@ -276,8 +284,8 @@ void SceneEditorBase::executeSyncImpl(      SceneEditorBase *pOther,
 }
 
 void SceneEditorBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -289,18 +297,19 @@ void SceneEditorBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<SceneEditorPtr>::_type("SceneEditorPtr", "EditorInterfacePtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(SceneEditorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(SceneEditorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

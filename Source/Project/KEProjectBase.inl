@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,9 +46,9 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 
 //! access the type of the class
@@ -97,141 +96,445 @@ ProjectPtr ProjectBase::createEmpty(void)
 
 //! Get the Project::_sfName field.
 inline
-SFString *ProjectBase::getSFName(void)
+const SFString *ProjectBase::getSFName(void) const
 {
     return &_sfName;
 }
 
+//! Get the Project::_sfName field.
+inline
+SFString *ProjectBase::editSFName(void)
+{
+    return &_sfName;
+}
+
+#ifndef OSG_2_PREP
+//! Get the Project::_sfName field.
+inline
+SFString *ProjectBase::getSFName(void)
+{
+    return &_sfName;
+}
+#endif
+
+//! Get the Project::_sfMainWindowTitle field.
+inline
+const SFString *ProjectBase::getSFMainWindowTitle(void) const
+{
+    return &_sfMainWindowTitle;
+}
+
+//! Get the Project::_sfMainWindowTitle field.
+inline
+SFString *ProjectBase::editSFMainWindowTitle(void)
+{
+    return &_sfMainWindowTitle;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_sfMainWindowTitle field.
 inline
 SFString *ProjectBase::getSFMainWindowTitle(void)
 {
     return &_sfMainWindowTitle;
 }
+#endif
 
+//! Get the Project::_sfFilePath field.
+inline
+const SFPath *ProjectBase::getSFFilePath(void) const
+{
+    return &_sfFilePath;
+}
+
+//! Get the Project::_sfFilePath field.
+inline
+SFPath *ProjectBase::editSFFilePath(void)
+{
+    return &_sfFilePath;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_sfFilePath field.
 inline
 SFPath *ProjectBase::getSFFilePath(void)
 {
     return &_sfFilePath;
 }
+#endif
 
+//! Get the Project::_mfScenes field.
+inline
+const MFScenePtr *ProjectBase::getMFScenes(void) const
+{
+    return &_mfScenes;
+}
+
+//! Get the Project::_mfScenes field.
+inline
+MFScenePtr *ProjectBase::editMFScenes(void)
+{
+    return &_mfScenes;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfScenes field.
 inline
 MFScenePtr *ProjectBase::getMFScenes(void)
 {
     return &_mfScenes;
 }
+#endif
 
+//! Get the Project::_sfInitialScene field.
+inline
+const SFScenePtr *ProjectBase::getSFInitialScene(void) const
+{
+    return &_sfInitialScene;
+}
+
+//! Get the Project::_sfInitialScene field.
+inline
+SFScenePtr *ProjectBase::editSFInitialScene(void)
+{
+    return &_sfInitialScene;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_sfInitialScene field.
 inline
 SFScenePtr *ProjectBase::getSFInitialScene(void)
 {
     return &_sfInitialScene;
 }
+#endif
 
+//! Get the Project::_sfInternalActiveScene field.
+inline
+const SFScenePtr *ProjectBase::getSFInternalActiveScene(void) const
+{
+    return &_sfInternalActiveScene;
+}
+
+//! Get the Project::_sfInternalActiveScene field.
+inline
+SFScenePtr *ProjectBase::editSFInternalActiveScene(void)
+{
+    return &_sfInternalActiveScene;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_sfInternalActiveScene field.
 inline
 SFScenePtr *ProjectBase::getSFInternalActiveScene(void)
 {
     return &_sfInternalActiveScene;
 }
+#endif
 
+//! Get the Project::_mfBackgrounds field.
+inline
+const MFBackgroundPtr *ProjectBase::getMFBackgrounds(void) const
+{
+    return &_mfBackgrounds;
+}
+
+//! Get the Project::_mfBackgrounds field.
+inline
+MFBackgroundPtr *ProjectBase::editMFBackgrounds(void)
+{
+    return &_mfBackgrounds;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfBackgrounds field.
 inline
 MFBackgroundPtr *ProjectBase::getMFBackgrounds(void)
 {
     return &_mfBackgrounds;
 }
+#endif
 
+//! Get the Project::_sfInternalActiveBackground field.
+inline
+const SFBackgroundPtr *ProjectBase::getSFInternalActiveBackground(void) const
+{
+    return &_sfInternalActiveBackground;
+}
+
+//! Get the Project::_sfInternalActiveBackground field.
+inline
+SFBackgroundPtr *ProjectBase::editSFInternalActiveBackground(void)
+{
+    return &_sfInternalActiveBackground;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_sfInternalActiveBackground field.
 inline
 SFBackgroundPtr *ProjectBase::getSFInternalActiveBackground(void)
 {
     return &_sfInternalActiveBackground;
 }
+#endif
 
+//! Get the Project::_mfForegrounds field.
+inline
+const MFForegroundPtr *ProjectBase::getMFForegrounds(void) const
+{
+    return &_mfForegrounds;
+}
+
+//! Get the Project::_mfForegrounds field.
+inline
+MFForegroundPtr *ProjectBase::editMFForegrounds(void)
+{
+    return &_mfForegrounds;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfForegrounds field.
 inline
 MFForegroundPtr *ProjectBase::getMFForegrounds(void)
 {
     return &_mfForegrounds;
 }
+#endif
 
+//! Get the Project::_mfInternalActiveForegrounds field.
+inline
+const MFForegroundPtr *ProjectBase::getMFInternalActiveForegrounds(void) const
+{
+    return &_mfInternalActiveForegrounds;
+}
+
+//! Get the Project::_mfInternalActiveForegrounds field.
+inline
+MFForegroundPtr *ProjectBase::editMFInternalActiveForegrounds(void)
+{
+    return &_mfInternalActiveForegrounds;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfInternalActiveForegrounds field.
 inline
 MFForegroundPtr *ProjectBase::getMFInternalActiveForegrounds(void)
 {
     return &_mfInternalActiveForegrounds;
 }
+#endif
 
+//! Get the Project::_mfGlobalActiveForegrounds field.
+inline
+const MFForegroundPtr *ProjectBase::getMFGlobalActiveForegrounds(void) const
+{
+    return &_mfGlobalActiveForegrounds;
+}
+
+//! Get the Project::_mfGlobalActiveForegrounds field.
+inline
+MFForegroundPtr *ProjectBase::editMFGlobalActiveForegrounds(void)
+{
+    return &_mfGlobalActiveForegrounds;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfGlobalActiveForegrounds field.
 inline
 MFForegroundPtr *ProjectBase::getMFGlobalActiveForegrounds(void)
 {
     return &_mfGlobalActiveForegrounds;
 }
+#endif
 
+//! Get the Project::_mfModelNodes field.
+inline
+const MFNodePtr *ProjectBase::getMFModelNodes(void) const
+{
+    return &_mfModelNodes;
+}
+
+//! Get the Project::_mfModelNodes field.
+inline
+MFNodePtr *ProjectBase::editMFModelNodes(void)
+{
+    return &_mfModelNodes;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfModelNodes field.
 inline
 MFNodePtr *ProjectBase::getMFModelNodes(void)
 {
     return &_mfModelNodes;
 }
+#endif
 
+//! Get the Project::_mfInternalActiveModelNodes field.
+inline
+const MFNodePtr *ProjectBase::getMFInternalActiveModelNodes(void) const
+{
+    return &_mfInternalActiveModelNodes;
+}
+
+//! Get the Project::_mfInternalActiveModelNodes field.
+inline
+MFNodePtr *ProjectBase::editMFInternalActiveModelNodes(void)
+{
+    return &_mfInternalActiveModelNodes;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfInternalActiveModelNodes field.
 inline
 MFNodePtr *ProjectBase::getMFInternalActiveModelNodes(void)
 {
     return &_mfInternalActiveModelNodes;
 }
+#endif
 
+//! Get the Project::_mfGlobalActiveModelNodes field.
+inline
+const MFNodePtr *ProjectBase::getMFGlobalActiveModelNodes(void) const
+{
+    return &_mfGlobalActiveModelNodes;
+}
+
+//! Get the Project::_mfGlobalActiveModelNodes field.
+inline
+MFNodePtr *ProjectBase::editMFGlobalActiveModelNodes(void)
+{
+    return &_mfGlobalActiveModelNodes;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfGlobalActiveModelNodes field.
 inline
 MFNodePtr *ProjectBase::getMFGlobalActiveModelNodes(void)
 {
     return &_mfGlobalActiveModelNodes;
 }
+#endif
 
+//! Get the Project::_mfCameras field.
+inline
+const MFCameraPtr *ProjectBase::getMFCameras(void) const
+{
+    return &_mfCameras;
+}
+
+//! Get the Project::_mfCameras field.
+inline
+MFCameraPtr *ProjectBase::editMFCameras(void)
+{
+    return &_mfCameras;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfCameras field.
 inline
 MFCameraPtr *ProjectBase::getMFCameras(void)
 {
     return &_mfCameras;
 }
+#endif
 
+//! Get the Project::_sfInternalActiveCamera field.
+inline
+const SFCameraPtr *ProjectBase::getSFInternalActiveCamera(void) const
+{
+    return &_sfInternalActiveCamera;
+}
+
+//! Get the Project::_sfInternalActiveCamera field.
+inline
+SFCameraPtr *ProjectBase::editSFInternalActiveCamera(void)
+{
+    return &_sfInternalActiveCamera;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_sfInternalActiveCamera field.
 inline
 SFCameraPtr *ProjectBase::getSFInternalActiveCamera(void)
 {
     return &_sfInternalActiveCamera;
 }
+#endif
 
+//! Get the Project::_sfInternalActiveViewport field.
+inline
+const SFViewportPtr *ProjectBase::getSFInternalActiveViewport(void) const
+{
+    return &_sfInternalActiveViewport;
+}
+
+//! Get the Project::_sfInternalActiveViewport field.
+inline
+SFViewportPtr *ProjectBase::editSFInternalActiveViewport(void)
+{
+    return &_sfInternalActiveViewport;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_sfInternalActiveViewport field.
 inline
 SFViewportPtr *ProjectBase::getSFInternalActiveViewport(void)
 {
     return &_sfInternalActiveViewport;
 }
+#endif
 
+//! Get the Project::_mfActiveAnimations field.
+inline
+const MFAnimationPtr *ProjectBase::getMFActiveAnimations(void) const
+{
+    return &_mfActiveAnimations;
+}
+
+//! Get the Project::_mfActiveAnimations field.
+inline
+MFAnimationPtr *ProjectBase::editMFActiveAnimations(void)
+{
+    return &_mfActiveAnimations;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfActiveAnimations field.
 inline
 MFAnimationPtr *ProjectBase::getMFActiveAnimations(void)
 {
     return &_mfActiveAnimations;
 }
+#endif
 
+//! Get the Project::_mfActiveParticleSystems field.
+inline
+const MFParticleSystemPtr *ProjectBase::getMFActiveParticleSystems(void) const
+{
+    return &_mfActiveParticleSystems;
+}
+
+//! Get the Project::_mfActiveParticleSystems field.
+inline
+MFParticleSystemPtr *ProjectBase::editMFActiveParticleSystems(void)
+{
+    return &_mfActiveParticleSystems;
+}
+
+#ifndef OSG_2_PREP
 //! Get the Project::_mfActiveParticleSystems field.
 inline
 MFParticleSystemPtr *ProjectBase::getMFActiveParticleSystems(void)
 {
     return &_mfActiveParticleSystems;
 }
+#endif
 
 
 //! Get the value of the Project::_sfName field.
 inline
-std::string &ProjectBase::getName(void)
+std::string &ProjectBase::editName(void)
 {
     return _sfName.getValue();
 }
@@ -243,6 +546,15 @@ const std::string &ProjectBase::getName(void) const
     return _sfName.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfName field.
+inline
+std::string &ProjectBase::getName(void)
+{
+    return _sfName.getValue();
+}
+#endif
+
 //! Set the value of the Project::_sfName field.
 inline
 void ProjectBase::setName(const std::string &value)
@@ -252,7 +564,7 @@ void ProjectBase::setName(const std::string &value)
 
 //! Get the value of the Project::_sfMainWindowTitle field.
 inline
-std::string &ProjectBase::getMainWindowTitle(void)
+std::string &ProjectBase::editMainWindowTitle(void)
 {
     return _sfMainWindowTitle.getValue();
 }
@@ -264,6 +576,15 @@ const std::string &ProjectBase::getMainWindowTitle(void) const
     return _sfMainWindowTitle.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfMainWindowTitle field.
+inline
+std::string &ProjectBase::getMainWindowTitle(void)
+{
+    return _sfMainWindowTitle.getValue();
+}
+#endif
+
 //! Set the value of the Project::_sfMainWindowTitle field.
 inline
 void ProjectBase::setMainWindowTitle(const std::string &value)
@@ -273,7 +594,7 @@ void ProjectBase::setMainWindowTitle(const std::string &value)
 
 //! Get the value of the Project::_sfFilePath field.
 inline
-Path &ProjectBase::getFilePath(void)
+Path &ProjectBase::editFilePath(void)
 {
     return _sfFilePath.getValue();
 }
@@ -285,6 +606,15 @@ const Path &ProjectBase::getFilePath(void) const
     return _sfFilePath.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfFilePath field.
+inline
+Path &ProjectBase::getFilePath(void)
+{
+    return _sfFilePath.getValue();
+}
+#endif
+
 //! Set the value of the Project::_sfFilePath field.
 inline
 void ProjectBase::setFilePath(const Path &value)
@@ -294,7 +624,7 @@ void ProjectBase::setFilePath(const Path &value)
 
 //! Get the value of the Project::_sfInitialScene field.
 inline
-ScenePtr &ProjectBase::getInitialScene(void)
+ScenePtr &ProjectBase::editInitialScene(void)
 {
     return _sfInitialScene.getValue();
 }
@@ -306,6 +636,15 @@ const ScenePtr &ProjectBase::getInitialScene(void) const
     return _sfInitialScene.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfInitialScene field.
+inline
+ScenePtr &ProjectBase::getInitialScene(void)
+{
+    return _sfInitialScene.getValue();
+}
+#endif
+
 //! Set the value of the Project::_sfInitialScene field.
 inline
 void ProjectBase::setInitialScene(const ScenePtr &value)
@@ -315,7 +654,7 @@ void ProjectBase::setInitialScene(const ScenePtr &value)
 
 //! Get the value of the Project::_sfInternalActiveScene field.
 inline
-ScenePtr &ProjectBase::getInternalActiveScene(void)
+ScenePtr &ProjectBase::editInternalActiveScene(void)
 {
     return _sfInternalActiveScene.getValue();
 }
@@ -327,6 +666,15 @@ const ScenePtr &ProjectBase::getInternalActiveScene(void) const
     return _sfInternalActiveScene.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfInternalActiveScene field.
+inline
+ScenePtr &ProjectBase::getInternalActiveScene(void)
+{
+    return _sfInternalActiveScene.getValue();
+}
+#endif
+
 //! Set the value of the Project::_sfInternalActiveScene field.
 inline
 void ProjectBase::setInternalActiveScene(const ScenePtr &value)
@@ -336,7 +684,7 @@ void ProjectBase::setInternalActiveScene(const ScenePtr &value)
 
 //! Get the value of the Project::_sfInternalActiveBackground field.
 inline
-BackgroundPtr &ProjectBase::getInternalActiveBackground(void)
+BackgroundPtr &ProjectBase::editInternalActiveBackground(void)
 {
     return _sfInternalActiveBackground.getValue();
 }
@@ -348,6 +696,15 @@ const BackgroundPtr &ProjectBase::getInternalActiveBackground(void) const
     return _sfInternalActiveBackground.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfInternalActiveBackground field.
+inline
+BackgroundPtr &ProjectBase::getInternalActiveBackground(void)
+{
+    return _sfInternalActiveBackground.getValue();
+}
+#endif
+
 //! Set the value of the Project::_sfInternalActiveBackground field.
 inline
 void ProjectBase::setInternalActiveBackground(const BackgroundPtr &value)
@@ -357,7 +714,7 @@ void ProjectBase::setInternalActiveBackground(const BackgroundPtr &value)
 
 //! Get the value of the Project::_sfInternalActiveCamera field.
 inline
-CameraPtr &ProjectBase::getInternalActiveCamera(void)
+CameraPtr &ProjectBase::editInternalActiveCamera(void)
 {
     return _sfInternalActiveCamera.getValue();
 }
@@ -369,6 +726,15 @@ const CameraPtr &ProjectBase::getInternalActiveCamera(void) const
     return _sfInternalActiveCamera.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfInternalActiveCamera field.
+inline
+CameraPtr &ProjectBase::getInternalActiveCamera(void)
+{
+    return _sfInternalActiveCamera.getValue();
+}
+#endif
+
 //! Set the value of the Project::_sfInternalActiveCamera field.
 inline
 void ProjectBase::setInternalActiveCamera(const CameraPtr &value)
@@ -378,7 +744,7 @@ void ProjectBase::setInternalActiveCamera(const CameraPtr &value)
 
 //! Get the value of the Project::_sfInternalActiveViewport field.
 inline
-ViewportPtr &ProjectBase::getInternalActiveViewport(void)
+ViewportPtr &ProjectBase::editInternalActiveViewport(void)
 {
     return _sfInternalActiveViewport.getValue();
 }
@@ -390,6 +756,15 @@ const ViewportPtr &ProjectBase::getInternalActiveViewport(void) const
     return _sfInternalActiveViewport.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfInternalActiveViewport field.
+inline
+ViewportPtr &ProjectBase::getInternalActiveViewport(void)
+{
+    return _sfInternalActiveViewport.getValue();
+}
+#endif
+
 //! Set the value of the Project::_sfInternalActiveViewport field.
 inline
 void ProjectBase::setInternalActiveViewport(const ViewportPtr &value)
@@ -400,7 +775,22 @@ void ProjectBase::setInternalActiveViewport(const ViewportPtr &value)
 
 //! Get the value of the \a index element the Project::_mfScenes field.
 inline
-ScenePtr &ProjectBase::getScenes(const OSG::UInt32 index)
+ScenePtr &ProjectBase::editScenes(const UInt32 index)
+{
+    return _mfScenes[index];
+}
+
+//! Get the value of the \a index element the Project::_mfScenes field.
+inline
+const ScenePtr &ProjectBase::getScenes(const UInt32 index) const
+{
+    return _mfScenes[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfScenes field.
+inline
+ScenePtr &ProjectBase::getScenes(const UInt32 index)
 {
     return _mfScenes[index];
 }
@@ -419,9 +809,26 @@ const MFScenePtr &ProjectBase::getScenes(void) const
     return _mfScenes;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfBackgrounds field.
 inline
-BackgroundPtr &ProjectBase::getBackgrounds(const OSG::UInt32 index)
+BackgroundPtr &ProjectBase::editBackgrounds(const UInt32 index)
+{
+    return _mfBackgrounds[index];
+}
+
+//! Get the value of the \a index element the Project::_mfBackgrounds field.
+inline
+const BackgroundPtr &ProjectBase::getBackgrounds(const UInt32 index) const
+{
+    return _mfBackgrounds[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfBackgrounds field.
+inline
+BackgroundPtr &ProjectBase::getBackgrounds(const UInt32 index)
 {
     return _mfBackgrounds[index];
 }
@@ -440,9 +847,26 @@ const MFBackgroundPtr &ProjectBase::getBackgrounds(void) const
     return _mfBackgrounds;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfForegrounds field.
 inline
-ForegroundPtr &ProjectBase::getForegrounds(const OSG::UInt32 index)
+ForegroundPtr &ProjectBase::editForegrounds(const UInt32 index)
+{
+    return _mfForegrounds[index];
+}
+
+//! Get the value of the \a index element the Project::_mfForegrounds field.
+inline
+const ForegroundPtr &ProjectBase::getForegrounds(const UInt32 index) const
+{
+    return _mfForegrounds[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfForegrounds field.
+inline
+ForegroundPtr &ProjectBase::getForegrounds(const UInt32 index)
 {
     return _mfForegrounds[index];
 }
@@ -461,9 +885,26 @@ const MFForegroundPtr &ProjectBase::getForegrounds(void) const
     return _mfForegrounds;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfInternalActiveForegrounds field.
 inline
-ForegroundPtr &ProjectBase::getInternalActiveForegrounds(const OSG::UInt32 index)
+ForegroundPtr &ProjectBase::editInternalActiveForegrounds(const UInt32 index)
+{
+    return _mfInternalActiveForegrounds[index];
+}
+
+//! Get the value of the \a index element the Project::_mfInternalActiveForegrounds field.
+inline
+const ForegroundPtr &ProjectBase::getInternalActiveForegrounds(const UInt32 index) const
+{
+    return _mfInternalActiveForegrounds[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfInternalActiveForegrounds field.
+inline
+ForegroundPtr &ProjectBase::getInternalActiveForegrounds(const UInt32 index)
 {
     return _mfInternalActiveForegrounds[index];
 }
@@ -482,9 +923,26 @@ const MFForegroundPtr &ProjectBase::getInternalActiveForegrounds(void) const
     return _mfInternalActiveForegrounds;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfGlobalActiveForegrounds field.
 inline
-ForegroundPtr &ProjectBase::getGlobalActiveForegrounds(const OSG::UInt32 index)
+ForegroundPtr &ProjectBase::editGlobalActiveForegrounds(const UInt32 index)
+{
+    return _mfGlobalActiveForegrounds[index];
+}
+
+//! Get the value of the \a index element the Project::_mfGlobalActiveForegrounds field.
+inline
+const ForegroundPtr &ProjectBase::getGlobalActiveForegrounds(const UInt32 index) const
+{
+    return _mfGlobalActiveForegrounds[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfGlobalActiveForegrounds field.
+inline
+ForegroundPtr &ProjectBase::getGlobalActiveForegrounds(const UInt32 index)
 {
     return _mfGlobalActiveForegrounds[index];
 }
@@ -503,9 +961,26 @@ const MFForegroundPtr &ProjectBase::getGlobalActiveForegrounds(void) const
     return _mfGlobalActiveForegrounds;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfModelNodes field.
 inline
-NodePtr &ProjectBase::getModelNodes(const OSG::UInt32 index)
+NodePtr &ProjectBase::editModelNodes(const UInt32 index)
+{
+    return _mfModelNodes[index];
+}
+
+//! Get the value of the \a index element the Project::_mfModelNodes field.
+inline
+const NodePtr &ProjectBase::getModelNodes(const UInt32 index) const
+{
+    return _mfModelNodes[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfModelNodes field.
+inline
+NodePtr &ProjectBase::getModelNodes(const UInt32 index)
 {
     return _mfModelNodes[index];
 }
@@ -524,9 +999,26 @@ const MFNodePtr &ProjectBase::getModelNodes(void) const
     return _mfModelNodes;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfInternalActiveModelNodes field.
 inline
-NodePtr &ProjectBase::getInternalActiveModelNodes(const OSG::UInt32 index)
+NodePtr &ProjectBase::editInternalActiveModelNodes(const UInt32 index)
+{
+    return _mfInternalActiveModelNodes[index];
+}
+
+//! Get the value of the \a index element the Project::_mfInternalActiveModelNodes field.
+inline
+const NodePtr &ProjectBase::getInternalActiveModelNodes(const UInt32 index) const
+{
+    return _mfInternalActiveModelNodes[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfInternalActiveModelNodes field.
+inline
+NodePtr &ProjectBase::getInternalActiveModelNodes(const UInt32 index)
 {
     return _mfInternalActiveModelNodes[index];
 }
@@ -545,9 +1037,26 @@ const MFNodePtr &ProjectBase::getInternalActiveModelNodes(void) const
     return _mfInternalActiveModelNodes;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfGlobalActiveModelNodes field.
 inline
-NodePtr &ProjectBase::getGlobalActiveModelNodes(const OSG::UInt32 index)
+NodePtr &ProjectBase::editGlobalActiveModelNodes(const UInt32 index)
+{
+    return _mfGlobalActiveModelNodes[index];
+}
+
+//! Get the value of the \a index element the Project::_mfGlobalActiveModelNodes field.
+inline
+const NodePtr &ProjectBase::getGlobalActiveModelNodes(const UInt32 index) const
+{
+    return _mfGlobalActiveModelNodes[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfGlobalActiveModelNodes field.
+inline
+NodePtr &ProjectBase::getGlobalActiveModelNodes(const UInt32 index)
 {
     return _mfGlobalActiveModelNodes[index];
 }
@@ -566,9 +1075,26 @@ const MFNodePtr &ProjectBase::getGlobalActiveModelNodes(void) const
     return _mfGlobalActiveModelNodes;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfCameras field.
 inline
-CameraPtr &ProjectBase::getCameras(const OSG::UInt32 index)
+CameraPtr &ProjectBase::editCameras(const UInt32 index)
+{
+    return _mfCameras[index];
+}
+
+//! Get the value of the \a index element the Project::_mfCameras field.
+inline
+const CameraPtr &ProjectBase::getCameras(const UInt32 index) const
+{
+    return _mfCameras[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfCameras field.
+inline
+CameraPtr &ProjectBase::getCameras(const UInt32 index)
 {
     return _mfCameras[index];
 }
@@ -587,9 +1113,26 @@ const MFCameraPtr &ProjectBase::getCameras(void) const
     return _mfCameras;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfActiveAnimations field.
 inline
-AnimationPtr &ProjectBase::getActiveAnimations(const OSG::UInt32 index)
+AnimationPtr &ProjectBase::editActiveAnimations(const UInt32 index)
+{
+    return _mfActiveAnimations[index];
+}
+
+//! Get the value of the \a index element the Project::_mfActiveAnimations field.
+inline
+const AnimationPtr &ProjectBase::getActiveAnimations(const UInt32 index) const
+{
+    return _mfActiveAnimations[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfActiveAnimations field.
+inline
+AnimationPtr &ProjectBase::getActiveAnimations(const UInt32 index)
 {
     return _mfActiveAnimations[index];
 }
@@ -608,9 +1151,26 @@ const MFAnimationPtr &ProjectBase::getActiveAnimations(void) const
     return _mfActiveAnimations;
 }
 
+#endif
+
 //! Get the value of the \a index element the Project::_mfActiveParticleSystems field.
 inline
-ParticleSystemPtr &ProjectBase::getActiveParticleSystems(const OSG::UInt32 index)
+ParticleSystemPtr &ProjectBase::editActiveParticleSystems(const UInt32 index)
+{
+    return _mfActiveParticleSystems[index];
+}
+
+//! Get the value of the \a index element the Project::_mfActiveParticleSystems field.
+inline
+const ParticleSystemPtr &ProjectBase::getActiveParticleSystems(const UInt32 index) const
+{
+    return _mfActiveParticleSystems[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the Project::_mfActiveParticleSystems field.
+inline
+ParticleSystemPtr &ProjectBase::getActiveParticleSystems(const UInt32 index)
 {
     return _mfActiveParticleSystems[index];
 }
@@ -629,5 +1189,7 @@ const MFParticleSystemPtr &ProjectBase::getActiveParticleSystems(void) const
     return _mfActiveParticleSystems;
 }
 
-KE_END_NAMESPACE
+#endif
+
+OSG_END_NAMESPACE
 

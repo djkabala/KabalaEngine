@@ -39,14 +39,13 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include "KESceneBackgroundsComboBoxModelBase.h"
 #include <OpenSG/OSGBackground.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief SceneBackgroundsComboBoxModel class. See \ref 
            PageUserInterfaceSceneBackgroundsComboBoxModel for a description.
@@ -135,7 +134,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBackgroundsComboBoxModel : public Scene
 
 typedef SceneBackgroundsComboBoxModel *SceneBackgroundsComboBoxModelP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KESceneBackgroundsComboBoxModelBase.inl"
 #include "KESceneBackgroundsComboBoxModel.inl"

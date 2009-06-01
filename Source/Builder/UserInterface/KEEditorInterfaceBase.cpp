@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEEditorInterfaceBase.h"
 #include "KEEditorInterface.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector EditorInterfaceBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -91,7 +90,7 @@ const FieldContainerType &EditorInterfaceBase::getType(void) const
 } 
 
 
-::osg::UInt32 EditorInterfaceBase::getContainerSize(void) const 
+UInt32 EditorInterfaceBase::getContainerSize(void) const 
 { 
     return sizeof(EditorInterface); 
 }
@@ -101,7 +100,8 @@ const FieldContainerType &EditorInterfaceBase::getType(void) const
 void EditorInterfaceBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((EditorInterfaceBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<EditorInterfaceBase *>(&other),
+                          whichField);
 }
 #else
 void EditorInterfaceBase::executeSync(      FieldContainer &other,
@@ -110,13 +110,13 @@ void EditorInterfaceBase::executeSync(      FieldContainer &other,
     this->executeSyncImpl((EditorInterfaceBase *) &other, whichField, sInfo);
 }
 void EditorInterfaceBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void EditorInterfaceBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void EditorInterfaceBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -125,10 +125,18 @@ void EditorInterfaceBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAs
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 EditorInterfaceBase::EditorInterfaceBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 EditorInterfaceBase::EditorInterfaceBase(const EditorInterfaceBase &source) :
     Inherited                 (source)
@@ -143,9 +151,9 @@ EditorInterfaceBase::~EditorInterfaceBase(void)
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 EditorInterfaceBase::getBinSize(const BitVector &whichField)
+UInt32 EditorInterfaceBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
 
     return returnValue;
@@ -189,8 +197,8 @@ void EditorInterfaceBase::executeSyncImpl(      EditorInterfaceBase *pOther,
 }
 
 void EditorInterfaceBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -199,18 +207,19 @@ void EditorInterfaceBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<EditorInterfacePtr>::_type("EditorInterfacePtr", "InterfacePtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(EditorInterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(EditorInterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

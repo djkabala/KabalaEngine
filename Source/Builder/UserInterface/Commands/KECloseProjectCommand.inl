@@ -1,6 +1,6 @@
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 CloseProjectCommand::CloseProjectCommand(ApplicationBuilderPtr TheApplicationBuilder) : Inherited(),
@@ -27,4 +27,4 @@ const CommandType &CloseProjectCommand::getClassType(void)
 	return _Type;
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

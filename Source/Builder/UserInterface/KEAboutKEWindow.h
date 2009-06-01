@@ -31,19 +31,18 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/UserInterface/OSGInternalWindowFields.h>
 #include <OpenSG/UserInterface/OSGUIDrawingSurfaceFields.h>
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 InternalWindowPtr KE_KABALAENGINELIB_DLLMAPPING createAboutKabalaEngineWindow(void);
 
 InternalWindowPtr KE_KABALAENGINELIB_DLLMAPPING openAboutKabalaEngineWindow(UIDrawingSurfacePtr TheDrawingSurface);
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #endif /* _KEABOUTKEWINDOW_H_ */

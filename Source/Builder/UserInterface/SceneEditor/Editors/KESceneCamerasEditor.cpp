@@ -42,7 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneCamerasEditor.h"
 
@@ -90,7 +90,7 @@
 #include "Project/Scene/KEScene.h"
 #include <OpenSG/OSGSolidBackground.h>
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 std::map<std::string, CameraPtr> cameraMap;
 TextFieldPtr nameTextField;

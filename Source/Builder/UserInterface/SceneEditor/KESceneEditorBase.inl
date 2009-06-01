@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,9 +46,9 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 
 //! access the type of the class
@@ -97,22 +96,54 @@ SceneEditorPtr SceneEditorBase::createEmpty(void)
 
 //! Get the SceneEditor::_mfEditors field.
 inline
-MFSceneComponentEditorPtr *SceneEditorBase::getMFEditors(void)
+const MFSceneComponentEditorPtr *SceneEditorBase::getMFEditors(void) const
 {
     return &_mfEditors;
 }
 
+//! Get the SceneEditor::_mfEditors field.
+inline
+MFSceneComponentEditorPtr *SceneEditorBase::editMFEditors(void)
+{
+    return &_mfEditors;
+}
+
+#ifndef OSG_2_PREP
+//! Get the SceneEditor::_mfEditors field.
+inline
+MFSceneComponentEditorPtr *SceneEditorBase::getMFEditors(void)
+{
+    return &_mfEditors;
+}
+#endif
+
+//! Get the SceneEditor::_sfEditingScene field.
+inline
+const SFScenePtr *SceneEditorBase::getSFEditingScene(void) const
+{
+    return &_sfEditingScene;
+}
+
+//! Get the SceneEditor::_sfEditingScene field.
+inline
+SFScenePtr *SceneEditorBase::editSFEditingScene(void)
+{
+    return &_sfEditingScene;
+}
+
+#ifndef OSG_2_PREP
 //! Get the SceneEditor::_sfEditingScene field.
 inline
 SFScenePtr *SceneEditorBase::getSFEditingScene(void)
 {
     return &_sfEditingScene;
 }
+#endif
 
 
 //! Get the value of the SceneEditor::_sfEditingScene field.
 inline
-ScenePtr &SceneEditorBase::getEditingScene(void)
+ScenePtr &SceneEditorBase::editEditingScene(void)
 {
     return _sfEditingScene.getValue();
 }
@@ -124,6 +155,15 @@ const ScenePtr &SceneEditorBase::getEditingScene(void) const
     return _sfEditingScene.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the SceneEditor::_sfEditingScene field.
+inline
+ScenePtr &SceneEditorBase::getEditingScene(void)
+{
+    return _sfEditingScene.getValue();
+}
+#endif
+
 //! Set the value of the SceneEditor::_sfEditingScene field.
 inline
 void SceneEditorBase::setEditingScene(const ScenePtr &value)
@@ -134,7 +174,22 @@ void SceneEditorBase::setEditingScene(const ScenePtr &value)
 
 //! Get the value of the \a index element the SceneEditor::_mfEditors field.
 inline
-SceneComponentEditorPtr &SceneEditorBase::getEditors(const OSG::UInt32 index)
+SceneComponentEditorPtr &SceneEditorBase::editEditors(const UInt32 index)
+{
+    return _mfEditors[index];
+}
+
+//! Get the value of the \a index element the SceneEditor::_mfEditors field.
+inline
+const SceneComponentEditorPtr &SceneEditorBase::getEditors(const UInt32 index) const
+{
+    return _mfEditors[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the SceneEditor::_mfEditors field.
+inline
+SceneComponentEditorPtr &SceneEditorBase::getEditors(const UInt32 index)
 {
     return _mfEditors[index];
 }
@@ -153,5 +208,7 @@ const MFSceneComponentEditorPtr &SceneEditorBase::getEditors(void) const
     return _mfEditors;
 }
 
-KE_END_NAMESPACE
+#endif
+
+OSG_END_NAMESPACE
 

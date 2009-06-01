@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEBackgroundsListComponentGeneratorBase.h"
 #include "KEBackgroundsListComponentGenerator.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector  BackgroundsListComponentGeneratorBase::IconSizeFieldMask = 
     (TypeTraits<BitVector>::One << BackgroundsListComponentGeneratorBase::IconSizeFieldId);
@@ -83,7 +82,7 @@ FieldDescription *BackgroundsListComponentGeneratorBase::_desc[] =
                      "IconSize", 
                      IconSizeFieldId, IconSizeFieldMask,
                      false,
-                     (FieldAccessMethod) &BackgroundsListComponentGeneratorBase::getSFIconSize)
+                     reinterpret_cast<FieldAccessMethod>(&BackgroundsListComponentGeneratorBase::editSFIconSize))
 };
 
 
@@ -91,7 +90,7 @@ FieldContainerType BackgroundsListComponentGeneratorBase::_type(
     "BackgroundsListComponentGenerator",
     "ListComponentGenerator",
     NULL,
-    (PrototypeCreateF) &BackgroundsListComponentGeneratorBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&BackgroundsListComponentGeneratorBase::createEmpty),
     BackgroundsListComponentGenerator::initMethod,
     _desc,
     sizeof(_desc));
@@ -120,7 +119,7 @@ FieldContainerPtr BackgroundsListComponentGeneratorBase::shallowCopy(void) const
     return returnValue; 
 }
 
-::osg::UInt32 BackgroundsListComponentGeneratorBase::getContainerSize(void) const 
+UInt32 BackgroundsListComponentGeneratorBase::getContainerSize(void) const 
 { 
     return sizeof(BackgroundsListComponentGenerator); 
 }
@@ -130,7 +129,8 @@ FieldContainerPtr BackgroundsListComponentGeneratorBase::shallowCopy(void) const
 void BackgroundsListComponentGeneratorBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((BackgroundsListComponentGeneratorBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<BackgroundsListComponentGeneratorBase *>(&other),
+                          whichField);
 }
 #else
 void BackgroundsListComponentGeneratorBase::executeSync(      FieldContainer &other,
@@ -139,13 +139,13 @@ void BackgroundsListComponentGeneratorBase::executeSync(      FieldContainer &ot
     this->executeSyncImpl((BackgroundsListComponentGeneratorBase *) &other, whichField, sInfo);
 }
 void BackgroundsListComponentGeneratorBase::execBeginEdit(const BitVector &whichField, 
-                                            ::osg::UInt32     uiAspect,
-                                            ::osg::UInt32     uiContainerSize) 
+                                            UInt32     uiAspect,
+                                            UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void BackgroundsListComponentGeneratorBase::onDestroyAspect(::osg::UInt32 uiId, ::osg::UInt32 uiAspect)
+void BackgroundsListComponentGeneratorBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
@@ -154,11 +154,19 @@ void BackgroundsListComponentGeneratorBase::onDestroyAspect(::osg::UInt32 uiId, 
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 BackgroundsListComponentGeneratorBase::BackgroundsListComponentGeneratorBase(void) :
     _sfIconSize               (Vec2f(30.0,30.0)), 
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 BackgroundsListComponentGeneratorBase::BackgroundsListComponentGeneratorBase(const BackgroundsListComponentGeneratorBase &source) :
     _sfIconSize               (source._sfIconSize               ), 
@@ -174,9 +182,9 @@ BackgroundsListComponentGeneratorBase::~BackgroundsListComponentGeneratorBase(vo
 
 /*------------------------------ access -----------------------------------*/
 
-::osg::UInt32 BackgroundsListComponentGeneratorBase::getBinSize(const BitVector &whichField)
+UInt32 BackgroundsListComponentGeneratorBase::getBinSize(const BitVector &whichField)
 {
-    ::osg::UInt32 returnValue = Inherited::getBinSize(whichField);
+    UInt32 returnValue = Inherited::getBinSize(whichField);
 
     if(FieldBits::NoField != (IconSizeFieldMask & whichField))
     {
@@ -241,8 +249,8 @@ void BackgroundsListComponentGeneratorBase::executeSyncImpl(      BackgroundsLis
 }
 
 void BackgroundsListComponentGeneratorBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 ::osg::UInt32     uiAspect,
-                                                 ::osg::UInt32     uiContainerSize)
+                                                 UInt32     uiAspect,
+                                                 UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
@@ -251,18 +259,19 @@ void BackgroundsListComponentGeneratorBase::execBeginEditImpl (const BitVector &
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<BackgroundsListComponentGeneratorPtr>::_type("BackgroundsListComponentGeneratorPtr", "ListComponentGeneratorPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(BackgroundsListComponentGeneratorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(BackgroundsListComponentGeneratorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

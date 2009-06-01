@@ -1,6 +1,6 @@
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 inline
 DefaultIconManager::DefaultIconManager(void) : Inherited()
@@ -18,4 +18,4 @@ void DefaultIconManager::operator =(const DefaultIconManager& source)
 	Inherited::operator=(source);
 }
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE

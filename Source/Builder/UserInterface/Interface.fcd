@@ -7,9 +7,9 @@
 	pointerfieldtypes="both"
 	structure="abstract"
 	systemcomponent="false"
-	parentsystemcomponent="false"
+	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="false"
+	useLocalIncludes="true"
 >
 The Interface.
 </FieldContainer>

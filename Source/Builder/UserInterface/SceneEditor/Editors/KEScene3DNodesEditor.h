@@ -39,12 +39,11 @@
 #pragma once
 #endif
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEScene3DNodesEditorBase.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief Scene3DNodesEditor class. See \ref 
            PageKabalaEngineScene3DNodesEditor for a description.
@@ -122,7 +121,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene3DNodesEditor : public Scene3DNodesEdit
 
 typedef Scene3DNodesEditor *Scene3DNodesEditorP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEScene3DNodesEditorBase.inl"
 #include "KEScene3DNodesEditor.inl"

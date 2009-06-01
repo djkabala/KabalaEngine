@@ -42,7 +42,7 @@
 
 #define KE_COMPILEKABALAENGINELIB
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneBackgroundsEditor.h"
 #include <OpenSG/UserInterface/OSGFlowLayout.h>
@@ -71,7 +71,7 @@
 
 #include "Project/Scene/KEScene.h"
 
-KE_USING_NAMESPACE
+OSG_USING_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *

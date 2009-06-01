@@ -37,7 +37,7 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEFieldColorSelectionModel.h"
 #include <OpenSG/OSGFieldDescription.h>
@@ -45,7 +45,7 @@
 #include <OpenSG/OSGSFBaseTypes.h>
 #include <OpenSG/OSGField.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /***************************************************************************\
  *                            Description                                  *
@@ -157,5 +157,5 @@ FieldColorSelectionModel::FieldColorSelectionModel(void) : _IsValueAdjusting(fal
 }
 
 /*----------------------------- class specific ----------------------------*/
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

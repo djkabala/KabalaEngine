@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,9 +46,9 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 
 //! access the type of the class
@@ -97,15 +96,31 @@ SceneBackgroundsComboBoxModelPtr SceneBackgroundsComboBoxModelBase::createEmpty(
 
 //! Get the SceneBackgroundsComboBoxModel::_sfEditingScene field.
 inline
-SFScenePtr *SceneBackgroundsComboBoxModelBase::getSFEditingScene(void)
+const SFScenePtr *SceneBackgroundsComboBoxModelBase::getSFEditingScene(void) const
 {
     return &_sfEditingScene;
 }
 
+//! Get the SceneBackgroundsComboBoxModel::_sfEditingScene field.
+inline
+SFScenePtr *SceneBackgroundsComboBoxModelBase::editSFEditingScene(void)
+{
+    return &_sfEditingScene;
+}
+
+#ifndef OSG_2_PREP
+//! Get the SceneBackgroundsComboBoxModel::_sfEditingScene field.
+inline
+SFScenePtr *SceneBackgroundsComboBoxModelBase::getSFEditingScene(void)
+{
+    return &_sfEditingScene;
+}
+#endif
+
 
 //! Get the value of the SceneBackgroundsComboBoxModel::_sfEditingScene field.
 inline
-ScenePtr &SceneBackgroundsComboBoxModelBase::getEditingScene(void)
+ScenePtr &SceneBackgroundsComboBoxModelBase::editEditingScene(void)
 {
     return _sfEditingScene.getValue();
 }
@@ -117,6 +132,15 @@ const ScenePtr &SceneBackgroundsComboBoxModelBase::getEditingScene(void) const
     return _sfEditingScene.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the SceneBackgroundsComboBoxModel::_sfEditingScene field.
+inline
+ScenePtr &SceneBackgroundsComboBoxModelBase::getEditingScene(void)
+{
+    return _sfEditingScene.getValue();
+}
+#endif
+
 //! Set the value of the SceneBackgroundsComboBoxModel::_sfEditingScene field.
 inline
 void SceneBackgroundsComboBoxModelBase::setEditingScene(const ScenePtr &value)
@@ -125,5 +149,5 @@ void SceneBackgroundsComboBoxModelBase::setEditingScene(const ScenePtr &value)
 }
 
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 

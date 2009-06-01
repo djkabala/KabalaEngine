@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KESceneBase.h"
 #include "KEScene.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector  SceneBase::InternalParentProjectFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::InternalParentProjectFieldId);
@@ -197,102 +196,102 @@ FieldDescription *SceneBase::_desc[] =
                      "InternalParentProject", 
                      InternalParentProjectFieldId, InternalParentProjectFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getSFInternalParentProject),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFInternalParentProject)),
     new FieldDescription(SFString::getClassType(), 
                      "Name", 
                      NameFieldId, NameFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getSFName),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFName)),
     new FieldDescription(MFBackgroundPtr::getClassType(), 
                      "Backgrounds", 
                      BackgroundsFieldId, BackgroundsFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFBackgrounds),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFBackgrounds)),
     new FieldDescription(MFUIDrawingSurfacePtr::getClassType(), 
                      "UIDrawingSurfaces", 
                      UIDrawingSurfacesFieldId, UIDrawingSurfacesFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFUIDrawingSurfaces),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFUIDrawingSurfaces)),
     new FieldDescription(SFBackgroundPtr::getClassType(), 
                      "InitialBackground", 
                      InitialBackgroundFieldId, InitialBackgroundFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getSFInitialBackground),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFInitialBackground)),
     new FieldDescription(MFForegroundPtr::getClassType(), 
                      "Foregrounds", 
                      ForegroundsFieldId, ForegroundsFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFForegrounds),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFForegrounds)),
     new FieldDescription(MFForegroundPtr::getClassType(), 
                      "InitialForegrounds", 
                      InitialForegroundsFieldId, InitialForegroundsFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFInitialForegrounds),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialForegrounds)),
     new FieldDescription(MFNodePtr::getClassType(), 
                      "ModelNodes", 
                      ModelNodesFieldId, ModelNodesFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFModelNodes),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFModelNodes)),
     new FieldDescription(MFNodePtr::getClassType(), 
                      "InitialModelNodes", 
                      InitialModelNodesFieldId, InitialModelNodesFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFInitialModelNodes),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialModelNodes)),
     new FieldDescription(SFNodePtr::getClassType(), 
                      "Root", 
                      RootFieldId, RootFieldMask,
                      true,
-                     (FieldAccessMethod) &SceneBase::getSFRoot),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFRoot)),
     new FieldDescription(SFTransformPtr::getClassType(), 
                      "RootCore", 
                      RootCoreFieldId, RootCoreFieldMask,
                      true,
-                     (FieldAccessMethod) &SceneBase::getSFRootCore),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFRootCore)),
     new FieldDescription(SFNodePtr::getClassType(), 
                      "DefaultCameraBeacon", 
                      DefaultCameraBeaconFieldId, DefaultCameraBeaconFieldMask,
                      true,
-                     (FieldAccessMethod) &SceneBase::getSFDefaultCameraBeacon),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFDefaultCameraBeacon)),
     new FieldDescription(SFTransformPtr::getClassType(), 
                      "DefaultCameraBeaconCore", 
                      DefaultCameraBeaconCoreFieldId, DefaultCameraBeaconCoreFieldMask,
                      true,
-                     (FieldAccessMethod) &SceneBase::getSFDefaultCameraBeaconCore),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFDefaultCameraBeaconCore)),
     new FieldDescription(MFCameraPtr::getClassType(), 
                      "Cameras", 
                      CamerasFieldId, CamerasFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFCameras),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFCameras)),
     new FieldDescription(SFCameraPtr::getClassType(), 
                      "InitialCamera", 
                      InitialCameraFieldId, InitialCameraFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getSFInitialCamera),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFInitialCamera)),
     new FieldDescription(MFAnimationPtr::getClassType(), 
                      "Animations", 
                      AnimationsFieldId, AnimationsFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFAnimations),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFAnimations)),
     new FieldDescription(MFAnimationPtr::getClassType(), 
                      "InitialAnimations", 
                      InitialAnimationsFieldId, InitialAnimationsFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFInitialAnimations),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialAnimations)),
     new FieldDescription(SFReal32::getClassType(), 
                      "TimeInScene", 
                      TimeInSceneFieldId, TimeInSceneFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getSFTimeInScene),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFTimeInScene)),
     new FieldDescription(MFParticleSystemPtr::getClassType(), 
                      "ParticleSystems", 
                      ParticleSystemsFieldId, ParticleSystemsFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFParticleSystems),
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFParticleSystems)),
     new FieldDescription(MFParticleSystemPtr::getClassType(), 
                      "InitialParticleSystems", 
                      InitialParticleSystemsFieldId, InitialParticleSystemsFieldMask,
                      false,
-                     (FieldAccessMethod) &SceneBase::getMFInitialParticleSystems)
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialParticleSystems))
 };
 
 
@@ -300,7 +299,7 @@ FieldContainerType SceneBase::_type(
     "Scene",
     "FieldContainer",
     NULL,
-    (PrototypeCreateF) &SceneBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&SceneBase::createEmpty),
     Scene::initMethod,
     _desc,
     sizeof(_desc));
@@ -339,7 +338,8 @@ UInt32 SceneBase::getContainerSize(void) const
 void SceneBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((SceneBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<SceneBase *>(&other),
+                          whichField);
 }
 #else
 void SceneBase::executeSync(      FieldContainer &other,
@@ -374,6 +374,10 @@ void SceneBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 SceneBase::SceneBase(void) :
     _sfInternalParentProject  (ProjectPtr(NullFC)), 
     _sfName                   (), 
@@ -398,6 +402,10 @@ SceneBase::SceneBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 SceneBase::SceneBase(const SceneBase &source) :
     _sfInternalParentProject  (source._sfInternalParentProject  ), 
@@ -941,18 +949,19 @@ void SceneBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<ScenePtr>::_type("ScenePtr", "FieldContainerPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 
