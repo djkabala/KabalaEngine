@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationModeBase.h"
 #include "KEApplicationMode.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector ApplicationModeBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
@@ -101,7 +100,8 @@ UInt32 ApplicationModeBase::getContainerSize(void) const
 void ApplicationModeBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((ApplicationModeBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<ApplicationModeBase *>(&other),
+                          whichField);
 }
 #else
 void ApplicationModeBase::executeSync(      FieldContainer &other,
@@ -125,10 +125,18 @@ void ApplicationModeBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 ApplicationModeBase::ApplicationModeBase(void) :
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 ApplicationModeBase::ApplicationModeBase(const ApplicationModeBase &source) :
     Inherited                 (source)
@@ -199,18 +207,19 @@ void ApplicationModeBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<ApplicationModePtr>::_type("ApplicationModePtr", "FieldContainerPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(ApplicationModePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(ApplicationModePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,9 +46,9 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 
 //! access the type of the class
@@ -97,50 +96,169 @@ ApplicationSettingsPtr ApplicationSettingsBase::createEmpty(void)
 
 //! Get the ApplicationSettings::_sfDataDirectory field.
 inline
-SFPath *ApplicationSettingsBase::getSFDataDirectory(void)
+const SFPath *ApplicationSettingsBase::getSFDataDirectory(void) const
 {
     return &_sfDataDirectory;
 }
 
+//! Get the ApplicationSettings::_sfDataDirectory field.
+inline
+SFPath *ApplicationSettingsBase::editSFDataDirectory(void)
+{
+    return &_sfDataDirectory;
+}
+
+#ifndef OSG_2_PREP
+//! Get the ApplicationSettings::_sfDataDirectory field.
+inline
+SFPath *ApplicationSettingsBase::getSFDataDirectory(void)
+{
+    return &_sfDataDirectory;
+}
+#endif
+
+//! Get the ApplicationSettings::_sfLastOpenedProjectFile field.
+inline
+const SFPath *ApplicationSettingsBase::getSFLastOpenedProjectFile(void) const
+{
+    return &_sfLastOpenedProjectFile;
+}
+
+//! Get the ApplicationSettings::_sfLastOpenedProjectFile field.
+inline
+SFPath *ApplicationSettingsBase::editSFLastOpenedProjectFile(void)
+{
+    return &_sfLastOpenedProjectFile;
+}
+
+#ifndef OSG_2_PREP
 //! Get the ApplicationSettings::_sfLastOpenedProjectFile field.
 inline
 SFPath *ApplicationSettingsBase::getSFLastOpenedProjectFile(void)
 {
     return &_sfLastOpenedProjectFile;
 }
+#endif
 
+//! Get the ApplicationSettings::_mfRecentProjectFiles field.
+inline
+const MFPath *ApplicationSettingsBase::getMFRecentProjectFiles(void) const
+{
+    return &_mfRecentProjectFiles;
+}
+
+//! Get the ApplicationSettings::_mfRecentProjectFiles field.
+inline
+MFPath *ApplicationSettingsBase::editMFRecentProjectFiles(void)
+{
+    return &_mfRecentProjectFiles;
+}
+
+#ifndef OSG_2_PREP
 //! Get the ApplicationSettings::_mfRecentProjectFiles field.
 inline
 MFPath *ApplicationSettingsBase::getMFRecentProjectFiles(void)
 {
     return &_mfRecentProjectFiles;
 }
+#endif
 
+//! Get the ApplicationSettings::_sfDefaultWindowPosition field.
+inline
+const SFPnt2f *ApplicationSettingsBase::getSFDefaultWindowPosition(void) const
+{
+    return &_sfDefaultWindowPosition;
+}
+
+//! Get the ApplicationSettings::_sfDefaultWindowPosition field.
+inline
+SFPnt2f *ApplicationSettingsBase::editSFDefaultWindowPosition(void)
+{
+    return &_sfDefaultWindowPosition;
+}
+
+#ifndef OSG_2_PREP
 //! Get the ApplicationSettings::_sfDefaultWindowPosition field.
 inline
 SFPnt2f *ApplicationSettingsBase::getSFDefaultWindowPosition(void)
 {
     return &_sfDefaultWindowPosition;
 }
+#endif
 
+//! Get the ApplicationSettings::_sfDefaultWindowSize field.
+inline
+const SFVec2f *ApplicationSettingsBase::getSFDefaultWindowSize(void) const
+{
+    return &_sfDefaultWindowSize;
+}
+
+//! Get the ApplicationSettings::_sfDefaultWindowSize field.
+inline
+SFVec2f *ApplicationSettingsBase::editSFDefaultWindowSize(void)
+{
+    return &_sfDefaultWindowSize;
+}
+
+#ifndef OSG_2_PREP
 //! Get the ApplicationSettings::_sfDefaultWindowSize field.
 inline
 SFVec2f *ApplicationSettingsBase::getSFDefaultWindowSize(void)
 {
     return &_sfDefaultWindowSize;
 }
+#endif
 
+//! Get the ApplicationSettings::_sfFullscreen field.
+inline
+const SFBool *ApplicationSettingsBase::getSFFullscreen(void) const
+{
+    return &_sfFullscreen;
+}
+
+//! Get the ApplicationSettings::_sfFullscreen field.
+inline
+SFBool *ApplicationSettingsBase::editSFFullscreen(void)
+{
+    return &_sfFullscreen;
+}
+
+#ifndef OSG_2_PREP
+//! Get the ApplicationSettings::_sfFullscreen field.
+inline
+SFBool *ApplicationSettingsBase::getSFFullscreen(void)
+{
+    return &_sfFullscreen;
+}
+#endif
+
+//! Get the ApplicationSettings::_sfHideAdvancedFields field.
+inline
+const SFBool *ApplicationSettingsBase::getSFHideAdvancedFields(void) const
+{
+    return &_sfHideAdvancedFields;
+}
+
+//! Get the ApplicationSettings::_sfHideAdvancedFields field.
+inline
+SFBool *ApplicationSettingsBase::editSFHideAdvancedFields(void)
+{
+    return &_sfHideAdvancedFields;
+}
+
+#ifndef OSG_2_PREP
 //! Get the ApplicationSettings::_sfHideAdvancedFields field.
 inline
 SFBool *ApplicationSettingsBase::getSFHideAdvancedFields(void)
 {
     return &_sfHideAdvancedFields;
 }
+#endif
 
 
 //! Get the value of the ApplicationSettings::_sfDataDirectory field.
 inline
-Path &ApplicationSettingsBase::getDataDirectory(void)
+Path &ApplicationSettingsBase::editDataDirectory(void)
 {
     return _sfDataDirectory.getValue();
 }
@@ -152,6 +270,15 @@ const Path &ApplicationSettingsBase::getDataDirectory(void) const
     return _sfDataDirectory.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the ApplicationSettings::_sfDataDirectory field.
+inline
+Path &ApplicationSettingsBase::getDataDirectory(void)
+{
+    return _sfDataDirectory.getValue();
+}
+#endif
+
 //! Set the value of the ApplicationSettings::_sfDataDirectory field.
 inline
 void ApplicationSettingsBase::setDataDirectory(const Path &value)
@@ -161,7 +288,7 @@ void ApplicationSettingsBase::setDataDirectory(const Path &value)
 
 //! Get the value of the ApplicationSettings::_sfLastOpenedProjectFile field.
 inline
-Path &ApplicationSettingsBase::getLastOpenedProjectFile(void)
+Path &ApplicationSettingsBase::editLastOpenedProjectFile(void)
 {
     return _sfLastOpenedProjectFile.getValue();
 }
@@ -173,6 +300,15 @@ const Path &ApplicationSettingsBase::getLastOpenedProjectFile(void) const
     return _sfLastOpenedProjectFile.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the ApplicationSettings::_sfLastOpenedProjectFile field.
+inline
+Path &ApplicationSettingsBase::getLastOpenedProjectFile(void)
+{
+    return _sfLastOpenedProjectFile.getValue();
+}
+#endif
+
 //! Set the value of the ApplicationSettings::_sfLastOpenedProjectFile field.
 inline
 void ApplicationSettingsBase::setLastOpenedProjectFile(const Path &value)
@@ -182,7 +318,7 @@ void ApplicationSettingsBase::setLastOpenedProjectFile(const Path &value)
 
 //! Get the value of the ApplicationSettings::_sfDefaultWindowPosition field.
 inline
-Pnt2f &ApplicationSettingsBase::getDefaultWindowPosition(void)
+Pnt2f &ApplicationSettingsBase::editDefaultWindowPosition(void)
 {
     return _sfDefaultWindowPosition.getValue();
 }
@@ -194,6 +330,15 @@ const Pnt2f &ApplicationSettingsBase::getDefaultWindowPosition(void) const
     return _sfDefaultWindowPosition.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the ApplicationSettings::_sfDefaultWindowPosition field.
+inline
+Pnt2f &ApplicationSettingsBase::getDefaultWindowPosition(void)
+{
+    return _sfDefaultWindowPosition.getValue();
+}
+#endif
+
 //! Set the value of the ApplicationSettings::_sfDefaultWindowPosition field.
 inline
 void ApplicationSettingsBase::setDefaultWindowPosition(const Pnt2f &value)
@@ -203,7 +348,7 @@ void ApplicationSettingsBase::setDefaultWindowPosition(const Pnt2f &value)
 
 //! Get the value of the ApplicationSettings::_sfDefaultWindowSize field.
 inline
-Vec2f &ApplicationSettingsBase::getDefaultWindowSize(void)
+Vec2f &ApplicationSettingsBase::editDefaultWindowSize(void)
 {
     return _sfDefaultWindowSize.getValue();
 }
@@ -215,6 +360,15 @@ const Vec2f &ApplicationSettingsBase::getDefaultWindowSize(void) const
     return _sfDefaultWindowSize.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the ApplicationSettings::_sfDefaultWindowSize field.
+inline
+Vec2f &ApplicationSettingsBase::getDefaultWindowSize(void)
+{
+    return _sfDefaultWindowSize.getValue();
+}
+#endif
+
 //! Set the value of the ApplicationSettings::_sfDefaultWindowSize field.
 inline
 void ApplicationSettingsBase::setDefaultWindowSize(const Vec2f &value)
@@ -222,9 +376,39 @@ void ApplicationSettingsBase::setDefaultWindowSize(const Vec2f &value)
     _sfDefaultWindowSize.setValue(value);
 }
 
+//! Get the value of the ApplicationSettings::_sfFullscreen field.
+inline
+bool &ApplicationSettingsBase::editFullscreen(void)
+{
+    return _sfFullscreen.getValue();
+}
+
+//! Get the value of the ApplicationSettings::_sfFullscreen field.
+inline
+const bool &ApplicationSettingsBase::getFullscreen(void) const
+{
+    return _sfFullscreen.getValue();
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the ApplicationSettings::_sfFullscreen field.
+inline
+bool &ApplicationSettingsBase::getFullscreen(void)
+{
+    return _sfFullscreen.getValue();
+}
+#endif
+
+//! Set the value of the ApplicationSettings::_sfFullscreen field.
+inline
+void ApplicationSettingsBase::setFullscreen(const bool &value)
+{
+    _sfFullscreen.setValue(value);
+}
+
 //! Get the value of the ApplicationSettings::_sfHideAdvancedFields field.
 inline
-bool &ApplicationSettingsBase::getHideAdvancedFields(void)
+bool &ApplicationSettingsBase::editHideAdvancedFields(void)
 {
     return _sfHideAdvancedFields.getValue();
 }
@@ -236,6 +420,15 @@ const bool &ApplicationSettingsBase::getHideAdvancedFields(void) const
     return _sfHideAdvancedFields.getValue();
 }
 
+#ifndef OSG_2_PREP
+//! Get the value of the ApplicationSettings::_sfHideAdvancedFields field.
+inline
+bool &ApplicationSettingsBase::getHideAdvancedFields(void)
+{
+    return _sfHideAdvancedFields.getValue();
+}
+#endif
+
 //! Set the value of the ApplicationSettings::_sfHideAdvancedFields field.
 inline
 void ApplicationSettingsBase::setHideAdvancedFields(const bool &value)
@@ -246,7 +439,22 @@ void ApplicationSettingsBase::setHideAdvancedFields(const bool &value)
 
 //! Get the value of the \a index element the ApplicationSettings::_mfRecentProjectFiles field.
 inline
-Path &ApplicationSettingsBase::getRecentProjectFiles(const OSG::UInt32 index)
+Path &ApplicationSettingsBase::editRecentProjectFiles(const UInt32 index)
+{
+    return _mfRecentProjectFiles[index];
+}
+
+//! Get the value of the \a index element the ApplicationSettings::_mfRecentProjectFiles field.
+inline
+const Path &ApplicationSettingsBase::getRecentProjectFiles(const UInt32 index) const
+{
+    return _mfRecentProjectFiles[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the \a index element the ApplicationSettings::_mfRecentProjectFiles field.
+inline
+Path &ApplicationSettingsBase::getRecentProjectFiles(const UInt32 index)
 {
     return _mfRecentProjectFiles[index];
 }
@@ -265,5 +473,7 @@ const MFPath &ApplicationSettingsBase::getRecentProjectFiles(void) const
     return _mfRecentProjectFiles;
 }
 
-KE_END_NAMESPACE
+#endif
+
+OSG_END_NAMESPACE
 

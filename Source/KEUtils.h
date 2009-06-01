@@ -50,11 +50,8 @@
 #include <string>
 
 OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
 
 bool KE_KABALAENGINELIB_DLLMAPPING attachName (AttachmentContainerPtr AttContainer);
-	 
-KE_END_NAMESPACE
 
 #endif /* _KE_DEFINES_H_ */
 

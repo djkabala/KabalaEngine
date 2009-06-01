@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -55,28 +54,29 @@
 #endif
 
 
-#include "KEConfig.h"
-#include <KEKabalaEngineDef.h>
+#include <OpenSG/OSGConfig.h>
+#include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGBaseTypes.h>
 #include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGCoredNodePtr.h>
 
 #include <OpenSG/OSGFieldContainer.h> // Parent
+
 #include <OpenSG/Toolbox/OSGPathType.h> // DataDirectory type
 #include <OpenSG/Toolbox/OSGPathType.h> // LastOpenedProjectFile type
 #include <OpenSG/Toolbox/OSGPathType.h> // RecentProjectFiles type
 #include <OpenSG/OSGPnt2fFields.h> // DefaultWindowPosition type
 #include <OpenSG/OSGVec2fFields.h> // DefaultWindowSize type
+#include <OpenSG/OSGBoolFields.h> // Fullscreen type
 #include <OpenSG/OSGBoolFields.h> // HideAdvancedFields type
 
 #include "KEApplicationSettingsFields.h"
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 class ApplicationSettings;
-class osg::BinaryDataHandler;
+class BinaryDataHandler;
 
 //! \brief ApplicationSettings Base Class.
 
@@ -98,7 +98,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
         RecentProjectFilesFieldId    = LastOpenedProjectFileFieldId + 1,
         DefaultWindowPositionFieldId = RecentProjectFilesFieldId    + 1,
         DefaultWindowSizeFieldId     = DefaultWindowPositionFieldId + 1,
-        HideAdvancedFieldsFieldId    = DefaultWindowSizeFieldId     + 1,
+        FullscreenFieldId            = DefaultWindowSizeFieldId     + 1,
+        HideAdvancedFieldsFieldId    = FullscreenFieldId            + 1,
         NextFieldId                  = HideAdvancedFieldsFieldId    + 1
     };
 
@@ -107,6 +108,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     static const OSG::BitVector RecentProjectFilesFieldMask;
     static const OSG::BitVector DefaultWindowPositionFieldMask;
     static const OSG::BitVector DefaultWindowSizeFieldMask;
+    static const OSG::BitVector FullscreenFieldMask;
     static const OSG::BitVector HideAdvancedFieldsFieldMask;
 
 
@@ -134,26 +136,93 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-           SFPath              *getSFDataDirectory  (void);
-           SFPath              *getSFLastOpenedProjectFile(void);
-           MFPath              *getMFRecentProjectFiles(void);
-           SFPnt2f             *getSFDefaultWindowPosition(void);
-           SFVec2f             *getSFDefaultWindowSize(void);
-           SFBool              *getSFHideAdvancedFields(void);
 
-           Path                &getDataDirectory  (void);
+           SFPath              *editSFDataDirectory  (void);
+     const SFPath              *getSFDataDirectory  (void) const;
+#ifndef OSG_2_PREP
+           SFPath              *getSFDataDirectory  (void);
+#endif
+
+           SFPath              *editSFLastOpenedProjectFile(void);
+     const SFPath              *getSFLastOpenedProjectFile(void) const;
+#ifndef OSG_2_PREP
+           SFPath              *getSFLastOpenedProjectFile(void);
+#endif
+
+           MFPath              *editMFRecentProjectFiles(void);
+     const MFPath              *getMFRecentProjectFiles(void) const;
+#ifndef OSG_2_PREP
+           MFPath              *getMFRecentProjectFiles(void);
+#endif
+
+           SFPnt2f             *editSFDefaultWindowPosition(void);
+     const SFPnt2f             *getSFDefaultWindowPosition(void) const;
+#ifndef OSG_2_PREP
+           SFPnt2f             *getSFDefaultWindowPosition(void);
+#endif
+
+           SFVec2f             *editSFDefaultWindowSize(void);
+     const SFVec2f             *getSFDefaultWindowSize(void) const;
+#ifndef OSG_2_PREP
+           SFVec2f             *getSFDefaultWindowSize(void);
+#endif
+
+           SFBool              *editSFFullscreen     (void);
+     const SFBool              *getSFFullscreen     (void) const;
+#ifndef OSG_2_PREP
+           SFBool              *getSFFullscreen     (void);
+#endif
+
+           SFBool              *editSFHideAdvancedFields(void);
+     const SFBool              *getSFHideAdvancedFields(void) const;
+#ifndef OSG_2_PREP
+           SFBool              *getSFHideAdvancedFields(void);
+#endif
+
+
+           Path                &editDataDirectory  (void);
      const Path                &getDataDirectory  (void) const;
-           Path                &getLastOpenedProjectFile(void);
+#ifndef OSG_2_PREP
+           Path                &getDataDirectory  (void);
+#endif
+
+           Path                &editLastOpenedProjectFile(void);
      const Path                &getLastOpenedProjectFile(void) const;
-           Pnt2f               &getDefaultWindowPosition(void);
+#ifndef OSG_2_PREP
+           Path                &getLastOpenedProjectFile(void);
+#endif
+
+           Pnt2f               &editDefaultWindowPosition(void);
      const Pnt2f               &getDefaultWindowPosition(void) const;
-           Vec2f               &getDefaultWindowSize(void);
+#ifndef OSG_2_PREP
+           Pnt2f               &getDefaultWindowPosition(void);
+#endif
+
+           Vec2f               &editDefaultWindowSize(void);
      const Vec2f               &getDefaultWindowSize(void) const;
-           bool                &getHideAdvancedFields(void);
+#ifndef OSG_2_PREP
+           Vec2f               &getDefaultWindowSize(void);
+#endif
+
+           bool                &editFullscreen     (void);
+     const bool                &getFullscreen     (void) const;
+#ifndef OSG_2_PREP
+           bool                &getFullscreen     (void);
+#endif
+
+           bool                &editHideAdvancedFields(void);
      const bool                &getHideAdvancedFields(void) const;
+#ifndef OSG_2_PREP
+           bool                &getHideAdvancedFields(void);
+#endif
+
+           Path                &editRecentProjectFiles(const UInt32 index);
+     const Path                &getRecentProjectFiles(const UInt32 index) const;
+#ifndef OSG_2_PREP
            Path                &getRecentProjectFiles(const UInt32 index);
            MFPath              &getRecentProjectFiles(void);
      const MFPath              &getRecentProjectFiles(void) const;
+#endif
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -164,6 +233,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
      void setLastOpenedProjectFile( const Path &value );
      void setDefaultWindowPosition( const Pnt2f &value );
      void setDefaultWindowSize( const Vec2f &value );
+     void setFullscreen     ( const bool &value );
      void setHideAdvancedFields( const bool &value );
 
     /*! \}                                                                 */
@@ -212,6 +282,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     MFPath              _mfRecentProjectFiles;
     SFPnt2f             _sfDefaultWindowPosition;
     SFVec2f             _sfDefaultWindowSize;
+    SFBool              _sfFullscreen;
     SFBool              _sfHideAdvancedFields;
 
     /*! \}                                                                 */
@@ -288,6 +359,6 @@ typedef osgIF<ApplicationSettingsBase::isNodeCore,
 
 typedef RefPtr<ApplicationSettingsPtr> ApplicationSettingsRefPtr;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #endif /* _KEAPPLICATIONSETTINGSBASE_H_ */

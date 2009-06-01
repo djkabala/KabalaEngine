@@ -172,8 +172,10 @@ Int32 MainApplication::run(int argc, char **argv)
 
     // Set up Window
     setMainWindowEventProducer(createDefaultWindowEventProducer());
-
+   
     ::osg::WindowPtr MainWindow = getMainWindowEventProducer()->initWindow();
+
+    getMainWindowEventProducer()->setFullscreen(getSettings()->getFullscreen());
 
 	getMainWindowEventProducer()->addWindowListener(&_MainWindowListener);
 

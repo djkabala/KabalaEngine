@@ -87,48 +87,6 @@ const osg::UInt16 KE_BUILDER_RELEASE_VERSION(1);
 const std::string KE_AUTHORS("David Kabala");
 const std::string KE_BUILDER_AUTHORS("David Kabala");
 
-#if 1
-//defined(KE_HAS_NAMESPACE)
-
-/*! @name Namespace Defines
- */
-
-/*@{*/
-
-/** \brief ke namespace, use to reference a object within the namespace, like
-*/
-
-# define KE ke
-
-/** \brief Begin the ke namespace
- *  \ingroup GrpBaseDefines
- */
-
-# define KE_BEGIN_NAMESPACE namespace KE {
-
-/** \brief End the ke namespace
- *  \ingroup GrpBaseDefines
- */
-
-# define KE_END_NAMESPACE }
-
-/** \brief Use the ke namespace throughout the following code.
- *  \ingroup GrpBaseDefines
- */
-
-# define KE_USING_NAMESPACE namespace KE {} using namespace KE;
-
-/*@}*/
-
-# else /* KE_HAS_NAMESPACE */
-
-# define KE 
-# define KE_BEGIN_NAMESPACE 
-# define KE_END_NAMESPACE 
-# define KE_USING_NAMESPACE
-
-#endif /*  */
-
 #define BOOST_SMART_PTR_HPP
 
 #endif /* _KECONFIG_H_ */

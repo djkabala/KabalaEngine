@@ -51,8 +51,7 @@
 #include <Application/KEApplicationModeFields.h> 
 
 
-OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 /*! \brief MainApplication class. See \ref 
            PageKabalaEngineMainApplication for a description.
@@ -175,7 +174,7 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication
 
 typedef MainApplication *MainApplicationP;
 
-KE_END_NAMESPACE
+OSG_END_NAMESPACE
 
 #include "KEMainApplication.inl"
 

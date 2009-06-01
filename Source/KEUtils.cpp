@@ -3,7 +3,6 @@
 
 
 OSG_USING_NAMESPACE
-KE_BEGIN_NAMESPACE
 
 bool attachName (AttachmentContainerPtr AttContainer)
 {
@@ -28,5 +27,3 @@ bool attachName (AttachmentContainerPtr AttContainer)
 		return false;
 	}
 }
-
-KE_END_NAMESPACE

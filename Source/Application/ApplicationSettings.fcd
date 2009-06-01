@@ -9,9 +9,9 @@
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="false"
+	useLocalIncludes="true"
 >
-The Main Application.
+The Main Application Settings.
 	<Field
 		name="DataDirectory"
 		type="Path"
@@ -56,6 +56,15 @@ The Main Application.
 		cardinality="single"
 		visibility="external"
 		defaultValue="900.0f,800.0f"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="Fullscreen"
+		type="bool"
+		cardinality="single"
+		visibility="external"
+		defaultValue="false"
 		access="public"
 	>
 	</Field>

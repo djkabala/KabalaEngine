@@ -1,16 +1,15 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   contact: djkabala@gmail.com                                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +17,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -53,13 +52,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "KEConfig.h"
+#include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationSettingsBase.h"
 #include "KEApplicationSettings.h"
 
 
-KE_USING_NAMESPACE
+OSG_BEGIN_NAMESPACE
 
 const OSG::BitVector  ApplicationSettingsBase::DataDirectoryFieldMask = 
     (TypeTraits<BitVector>::One << ApplicationSettingsBase::DataDirectoryFieldId);
@@ -75,6 +74,9 @@ const OSG::BitVector  ApplicationSettingsBase::DefaultWindowPositionFieldMask =
 
 const OSG::BitVector  ApplicationSettingsBase::DefaultWindowSizeFieldMask = 
     (TypeTraits<BitVector>::One << ApplicationSettingsBase::DefaultWindowSizeFieldId);
+
+const OSG::BitVector  ApplicationSettingsBase::FullscreenFieldMask = 
+    (TypeTraits<BitVector>::One << ApplicationSettingsBase::FullscreenFieldId);
 
 const OSG::BitVector  ApplicationSettingsBase::HideAdvancedFieldsFieldMask = 
     (TypeTraits<BitVector>::One << ApplicationSettingsBase::HideAdvancedFieldsFieldId);
@@ -101,6 +103,9 @@ const OSG::BitVector ApplicationSettingsBase::MTInfluenceMask =
 /*! \var Vec2f           ApplicationSettingsBase::_sfDefaultWindowSize
     
 */
+/*! \var bool            ApplicationSettingsBase::_sfFullscreen
+    
+*/
 /*! \var bool            ApplicationSettingsBase::_sfHideAdvancedFields
     
 */
@@ -113,32 +118,37 @@ FieldDescription *ApplicationSettingsBase::_desc[] =
                      "DataDirectory", 
                      DataDirectoryFieldId, DataDirectoryFieldMask,
                      false,
-                     (FieldAccessMethod) &ApplicationSettingsBase::getSFDataDirectory),
+                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFDataDirectory)),
     new FieldDescription(SFPath::getClassType(), 
                      "LastOpenedProjectFile", 
                      LastOpenedProjectFileFieldId, LastOpenedProjectFileFieldMask,
                      false,
-                     (FieldAccessMethod) &ApplicationSettingsBase::getSFLastOpenedProjectFile),
+                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFLastOpenedProjectFile)),
     new FieldDescription(MFPath::getClassType(), 
                      "RecentProjectFiles", 
                      RecentProjectFilesFieldId, RecentProjectFilesFieldMask,
                      false,
-                     (FieldAccessMethod) &ApplicationSettingsBase::getMFRecentProjectFiles),
+                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editMFRecentProjectFiles)),
     new FieldDescription(SFPnt2f::getClassType(), 
                      "DefaultWindowPosition", 
                      DefaultWindowPositionFieldId, DefaultWindowPositionFieldMask,
                      false,
-                     (FieldAccessMethod) &ApplicationSettingsBase::getSFDefaultWindowPosition),
+                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFDefaultWindowPosition)),
     new FieldDescription(SFVec2f::getClassType(), 
                      "DefaultWindowSize", 
                      DefaultWindowSizeFieldId, DefaultWindowSizeFieldMask,
                      false,
-                     (FieldAccessMethod) &ApplicationSettingsBase::getSFDefaultWindowSize),
+                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFDefaultWindowSize)),
+    new FieldDescription(SFBool::getClassType(), 
+                     "Fullscreen", 
+                     FullscreenFieldId, FullscreenFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFFullscreen)),
     new FieldDescription(SFBool::getClassType(), 
                      "HideAdvancedFields", 
                      HideAdvancedFieldsFieldId, HideAdvancedFieldsFieldMask,
                      false,
-                     (FieldAccessMethod) &ApplicationSettingsBase::getSFHideAdvancedFields)
+                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFHideAdvancedFields))
 };
 
 
@@ -146,7 +156,7 @@ FieldContainerType ApplicationSettingsBase::_type(
     "ApplicationSettings",
     "FieldContainer",
     NULL,
-    (PrototypeCreateF) &ApplicationSettingsBase::createEmpty,
+    reinterpret_cast<PrototypeCreateF>(&ApplicationSettingsBase::createEmpty),
     ApplicationSettings::initMethod,
     _desc,
     sizeof(_desc));
@@ -185,7 +195,8 @@ UInt32 ApplicationSettingsBase::getContainerSize(void) const
 void ApplicationSettingsBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl((ApplicationSettingsBase *) &other, whichField);
+    this->executeSyncImpl(static_cast<ApplicationSettingsBase *>(&other),
+                          whichField);
 }
 #else
 void ApplicationSettingsBase::executeSync(      FieldContainer &other,
@@ -210,16 +221,25 @@ void ApplicationSettingsBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 
 /*------------------------- constructors ----------------------------------*/
 
+#ifdef OSG_WIN32_ICL
+#pragma warning (disable : 383)
+#endif
+
 ApplicationSettingsBase::ApplicationSettingsBase(void) :
     _sfDataDirectory          (), 
     _sfLastOpenedProjectFile  (), 
     _mfRecentProjectFiles     (), 
     _sfDefaultWindowPosition  (Pnt2f(0.0f,0.0f)), 
     _sfDefaultWindowSize      (Vec2f(900.0f,800.0f)), 
+    _sfFullscreen             (bool(false)), 
     _sfHideAdvancedFields     (bool(true)), 
     Inherited() 
 {
 }
+
+#ifdef OSG_WIN32_ICL
+#pragma warning (default : 383)
+#endif
 
 ApplicationSettingsBase::ApplicationSettingsBase(const ApplicationSettingsBase &source) :
     _sfDataDirectory          (source._sfDataDirectory          ), 
@@ -227,6 +247,7 @@ ApplicationSettingsBase::ApplicationSettingsBase(const ApplicationSettingsBase &
     _mfRecentProjectFiles     (source._mfRecentProjectFiles     ), 
     _sfDefaultWindowPosition  (source._sfDefaultWindowPosition  ), 
     _sfDefaultWindowSize      (source._sfDefaultWindowSize      ), 
+    _sfFullscreen             (source._sfFullscreen             ), 
     _sfHideAdvancedFields     (source._sfHideAdvancedFields     ), 
     Inherited                 (source)
 {
@@ -269,6 +290,11 @@ UInt32 ApplicationSettingsBase::getBinSize(const BitVector &whichField)
         returnValue += _sfDefaultWindowSize.getBinSize();
     }
 
+    if(FieldBits::NoField != (FullscreenFieldMask & whichField))
+    {
+        returnValue += _sfFullscreen.getBinSize();
+    }
+
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
     {
         returnValue += _sfHideAdvancedFields.getBinSize();
@@ -306,6 +332,11 @@ void ApplicationSettingsBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
     {
         _sfDefaultWindowSize.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (FullscreenFieldMask & whichField))
+    {
+        _sfFullscreen.copyToBin(pMem);
     }
 
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
@@ -346,6 +377,11 @@ void ApplicationSettingsBase::copyFromBin(      BinaryDataHandler &pMem,
         _sfDefaultWindowSize.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (FullscreenFieldMask & whichField))
+    {
+        _sfFullscreen.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
     {
         _sfHideAdvancedFields.copyFromBin(pMem);
@@ -376,6 +412,9 @@ void ApplicationSettingsBase::executeSyncImpl(      ApplicationSettingsBase *pOt
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
         _sfDefaultWindowSize.syncWith(pOther->_sfDefaultWindowSize);
 
+    if(FieldBits::NoField != (FullscreenFieldMask & whichField))
+        _sfFullscreen.syncWith(pOther->_sfFullscreen);
+
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
         _sfHideAdvancedFields.syncWith(pOther->_sfHideAdvancedFields);
 
@@ -401,6 +440,9 @@ void ApplicationSettingsBase::executeSyncImpl(      ApplicationSettingsBase *pOt
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
         _sfDefaultWindowSize.syncWith(pOther->_sfDefaultWindowSize);
 
+    if(FieldBits::NoField != (FullscreenFieldMask & whichField))
+        _sfFullscreen.syncWith(pOther->_sfFullscreen);
+
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
         _sfHideAdvancedFields.syncWith(pOther->_sfHideAdvancedFields);
 
@@ -425,18 +467,19 @@ void ApplicationSettingsBase::execBeginEditImpl (const BitVector &whichField,
 
 
 
+OSG_END_NAMESPACE
+
 #include <OpenSG/OSGSFieldTypeDef.inl>
 #include <OpenSG/OSGMFieldTypeDef.inl>
+
+OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
 DataType FieldDataTraits<ApplicationSettingsPtr>::_type("ApplicationSettingsPtr", "FieldContainerPtr");
 #endif
 
-KE_BEGIN_NAMESPACE
-
 OSG_DLLEXPORT_SFIELD_DEF1(ApplicationSettingsPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(ApplicationSettingsPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
-KE_END_NAMESPACE
-
+OSG_END_NAMESPACE
 

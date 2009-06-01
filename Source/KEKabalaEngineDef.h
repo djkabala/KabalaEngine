@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------
 
 #if defined(WIN32) && defined(KE_BUILD_DLL)
-#   ifdef KE_COMPILEKABALAENGINEELIB
+#   ifdef KE_COMPILEKABALAENGINELIB
 #       define KE_KABALAENGINELIB_DLLMAPPING     __declspec(dllexport)
 #       define KE_KABALAENGINELIB_DLLTMPLMAPPING __declspec(dllexport)
 #   else
