@@ -81,8 +81,8 @@
 
 #include <OpenSG/OSGCamera.h>
 #include <OpenSG/OSGMatrixCamera.h>
-#include <OpenSG/OSGViewPort.h>
-#include <OpenSG/UserInterface/OSGGLViewPort.h>
+#include <OpenSG/OSGViewport.h>
+#include <OpenSG/UserInterface/OSGGLViewport.h>
 #include <OpenSG/OSGPerspectiveCamera.h>
 
 #include <OpenSG/UserInterface/OSGSpinner.h>

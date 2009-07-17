@@ -259,23 +259,14 @@ def main():
    #   if os.path.exists( os.path.join(File,"Builds/Windows.Build") ) and os.path.exists( os.path.join(File,"Configure/Definitions") ):
    #      print "Makeing Plugin", os.path.split(File)[1] ,"Windows Build ..."
    #      makeVCPROJFiles(os.path.join(File,"Builds/Windows.Build"), "../../src", IgnoreDirs, [], "../../Configure/Definitions")
-         
-   print "Making Linux Build ..."
-   #makeLinuxMakefile("../Linux.Build","../Configure/Definitions","../src")
+
+   FilesDir = os.path.split(sys.argv[0])[0]      
    
-   FilesDir = os.path.join(os.path.split(sys.argv[0])[0], "..")
-   FileList = listFiles([FilesDir],"*",[".svn"])
-   for File in FileList:
-      if os.path.exists( os.path.join(File,"Builds") ) and os.path.exists( os.path.join(File,"src") ):
-         print "Makeing Library", os.path.split(File)[1] ,"Linux Build ..."
-         makeLinuxMakefile(os.path.join(File,os.path.join("Builds","Linux")),"../../src")
+   print "Making Linux Build ..."
+   makeLinuxMakefile(os.path.join(FilesDir,"Linux"),"../../Source")
 
-   print "Making Apple Build ..."
-   for File in FileList:
-      if os.path.exists( os.path.join(File,"Builds") ) and os.path.exists( os.path.join(File,"src") ):
-         print "Makeing Library", os.path.split(File)[1] ,"Apple Build ..."
-         makeLinuxMakefile(os.path.join(File,os.path.join("Builds","Apple")),"../../src")
-
+   #print "Making Apple Build ..."
+   #makeLinuxMakefile("Apple","../Source")
    print "Done"
    #raw_input("Type ENTER to close.")
 

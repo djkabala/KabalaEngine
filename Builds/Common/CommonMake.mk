@@ -16,6 +16,10 @@ OSGPOOL ?= ..
 
 OSGINSTALLPREFIX := notset
 
+OPENSG_BASE_DIR ?= /usr
+
+OSGINSTALLPREFIX := $(OPENSG_BASE_DIR)
+
 #PREFIXSUFFIX := $(shell $(OSGPOOL)/CommonConf/config.guess)
 #-include .prefix.$(PREFIXSUFFIX)
 
@@ -77,15 +81,12 @@ ifeq ($(SYSTEM),IRIX64)
         CCOUT := -o 
         LDOUT := -o 
 	LINK  := 
-	SHARED_LIB_EXT := so
-	SHARED_LINK := -shared
 endif
 ifeq ($(SYSTEM),Linux)
         CCOUT := -o 
         LDOUT := -o 
-	LINK  := 
-	SHARED_LIB_EXT := so
-	SHARED_LINK := -shared
+        LINK i := 
+        WINDOW_SYSTEM := X
 endif
 ifeq ($(findstring WIN,$(SYSTEM)),WIN)
         OS := WIN32
@@ -98,46 +99,35 @@ ifeq ($(SYSTEM),HP-UX)
         CCOUT := -o 
         LDOUT := -o 
 	LINK  := 
-	SHARED_LIB_EXT := so
-	SHARED_LINK := -shared
 endif
 ifeq ($(SYSTEM),Darwin)
         CCOUT := -o 
-        LDOUT := -o 
-	LINK  :=
-	SHARED_LIB_EXT := dylib
-	SHARED_LINK := -dynamiclib
+        LDOUT := -oi
+        WINDOW_SYSTEM := Carbon
+        LINK  :=
 endif
 
 # Var settings
 
 CC = `$(OSGCONFIG) --compiler`
 
-CCFLAGS = `$(OSGCONFIG) --cflags --$(LIBTYPE) Base System`
+CCFLAGS = `$(OSGCONFIG) --cflags --$(LIBTYPE) Base System $(WINDOW_SYSTEM)`
 
-LDFLAGS = $(LINK) `$(OSGCONFIG) --libs --$(LIBTYPE) Base System`
+LDFLAGS = $(LINK) `$(OSGCONFIG) --libs --$(LIBTYPE) Base System $(WINDOW_SYSTEM)`
 
 ifeq ($(LIBTYPE),dbg)
 	DGB_OPT_EXT := D
 endif
-SHARED_LIB_NAME=lib$(LIB_NAME)$(DGB_OPT_EXT).$(SHARED_LIB_EXT)
 
-STATIC_LIB_NAME=lib$(LIB_NAME)$(DGB_OPT_EXT).a
-
-build:	$(SHARED_LIB_NAME) \
-	$(STATIC_LIB_NAME)
+build:	$(APP_NAME)
         
 default:	build
         
-build:	$(SHARED_LIB_NAME) \
-	$(STATIC_LIB_NAME)
+build:	$(APP_NAME)
 
-$(SHARED_LIB_NAME): $(OBJECTS)
-	$(CC) $(SHARED_LINK) $(LDOUT) $(SHARED_LIB_NAME) $(OBJECTS) $(LDFLAGS) $(EXTRA_LDFLAGS)
+$(APP_NAME): $(OBJECTS)
+	$(CC) $(LDOUT) $(APP_NAME) $(OBJECTS) $(LDFLAGS) $(EXTRA_LDFLAGS)
         
-$(STATIC_LIB_NAME): $(OBJECTS)
-	ar -ruv $(STATIC_LIB_NAME) $(OBJECTS)
-
 %.o: %.cpp
 	$(CC) -c $(CCFLAGS) $(EXTRA_CCFLAGS) $<
 
@@ -145,30 +135,11 @@ $(STATIC_LIB_NAME): $(OBJECTS)
 	$(CC) $(LDOUT)$@ $< $(LDFLAGS)
 
 install:	build
-	@if [ ! -w $(installdir) ]; then                               \
-		mkdir $(installdir);                                   \
-		fi;
-	@if [ ! -w $(installdir)/include ]; then                               \
-		mkdir $(installdir)/include;                                   \
-		fi;
-	@if [ ! -w $(installdir)/include/OpenSG ]; then                               \
-		mkdir $(installdir)/include/OpenSG;                                   \
-		fi;
-	@if [ ! -w $(installdir)/include/OpenSG/$(LIB_INCLUDE_DIR_NAME) ]; then                               \
-		mkdir $(installdir)/include/OpenSG/$(LIB_INCLUDE_DIR_NAME);                                   \
-		fi;
-	@if [ ! -w $(installdir)/lib ]; then                               \
-		mkdir $(installdir)/lib;                                   \
-		fi;
-	@if [ ! -w $(installdir)/bin ]; then                               \
-		mkdir $(installdir)/bin;                                   \
-		fi;
-	$(commondir)/CopyIncludes.sh $(commondir) $(srcdir) $(installdir)/include/OpenSG/$(LIB_INCLUDE_DIR_NAME);
-	cp $(SHARED_LIB_NAME) $(installdir)/lib
-	cp $(STATIC_LIB_NAME) $(installdir)/lib
+	cp $(APP_NAME) $(installdir)/bin
 # -----------------------------------------------------------------------------
 # Clean-up.
 # -----------------------------------------------------------------------------
 clean:
-	rm -f $(SHARED_LIB_NAME) $(STATIC_LIB_NAME) $(OBJECTS) *core     \
+	rm -f $(APP_NAME) $(OBJECTS) *core     \
           so_locations *.?db
+

@@ -66,7 +66,7 @@ FieldContainerEditorPtr FieldContainerEditorFactory::createDefaultEditor(FieldCo
 FieldContainerEditorPtr FieldContainerEditorFactory::createEditor(const TypeBase* TheType)
 {
     if(TheType != NULL &&
-       dynamic_cast<const FieldContainerEditorType const*>(TheType) != NULL)
+       dynamic_cast<const FieldContainerEditorType*>(TheType) != NULL)
     {
         return dynamic_cast<const FieldContainerEditorType&>(*TheType).create();
     }
@@ -88,12 +88,12 @@ FieldContainerEditorPtr FieldContainerEditorFactory::createEditor(const UInt32 T
     
 const FieldContainerEditorType* FieldContainerEditorFactory::findEditor(const std::string& TypeName)
 {
-    return dynamic_cast<const FieldContainerEditorType const*>(TypeFactory::findType(TypeName.c_str()));
+    return dynamic_cast<const FieldContainerEditorType*>(TypeFactory::findType(TypeName.c_str()));
 }
 
 const FieldContainerEditorType* FieldContainerEditorFactory::findEditor(const UInt32 TypeID)
 {
-    return dynamic_cast<const FieldContainerEditorType const*>(findType(TypeID));
+    return dynamic_cast<const FieldContainerEditorType*>(findType(TypeID));
 }
 
 void FieldContainerEditorFactory::setDefaultEditor(FieldContainerType* FCType, FieldContainerEditorType* EditorType)
