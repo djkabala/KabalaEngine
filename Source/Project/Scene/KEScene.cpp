@@ -141,7 +141,7 @@ void Scene::exit(void)
 	//Dettach the initial animations
 	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
 	{
-        getInitialAnimations(i)->stop();
+        //getInitialAnimations(i)->stop();
         getInternalParentProject()->removeActiveAnimation(getInitialAnimations(i));
     }
 
