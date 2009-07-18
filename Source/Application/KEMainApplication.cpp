@@ -118,9 +118,10 @@ ApplicationSettingsPtr MainApplication::createDefaultSettings(void)
 {
     ApplicationSettingsPtr DefaultSettings = ApplicationSettings::create();
     beginEditCP(DefaultSettings);
-        DefaultSettings->setDataDirectory(Path("./Data"));
+        DefaultSettings->setDataDirectory(Path("./share/Data"));
         DefaultSettings->setDefaultWindowPosition(Pnt2f(0.0f,0.0f));
         DefaultSettings->setDefaultWindowSize(Vec2f(1280.0f,1024.0f));
+		  DefaultSettings->setFullscreen(false);
     endEditCP(DefaultSettings);
     return DefaultSettings;
 }

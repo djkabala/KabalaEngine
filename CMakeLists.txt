@@ -2,7 +2,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
 PROJECT("Kabala Engine")
 
-SET (CMAKE_VERBOSE_MAKEFILE TRUE)
+#SET (CMAKE_VERBOSE_MAKEFILE TRUE)
 
 ######### Revision number
 FIND_PACKAGE(Subversion)
@@ -51,7 +51,6 @@ SET(OPENSG_LIB_DIR ${OPENSG_BASE_DIR}/lib)
 
 IF (UNIX)
    FIND_PROGRAM(OSG_CONFIG osg-config ${OPENSG_BASE_DIR}/bin)
-   #IF (${OSG_CONFIG})
      IF(APPLE)
        EXECUTE_PROCESS(COMMAND ${OSG_CONFIG} --dbg --cflags Base System OUTPUT_VARIABLE OPENSG_CXX_FLAGS_DBG)
        STRING(STRIP ${OPENSG_CXX_FLAGS_DBG}  OPENSG_CXX_FLAGS_DBG)
@@ -81,9 +80,6 @@ IF (UNIX)
        EXECUTE_PROCESS(COMMAND ${OSG_CONFIG} --dbg --libs Base System X OUTPUT_VARIABLE OPENSG_LIBS_DBG)
        STRING(STRIP ${OPENSG_LIBS_DBG}  OPENSG_LIBS_DBG)
      ENDIF(APPLE)
-     ELSE(${OSG_CONFIG})
-        MESSAGE("osg-config not found")
-     ENDIF (${OSG_CONFIG})
 ENDIF(UNIX)
 
 IF(WIN32)
@@ -179,9 +175,9 @@ TARGET_LINK_LIBRARIES(KabalaEngine
 	optimized OSGDynamics
 	optimized OSGParticleSystem
 	optimized OSGUserInterface
-	optimized OSGGame
-	optimized OSGSound
-	optimized OSGPhysics
+#	optimized OSGGame
+#	optimized OSGSound
+#	optimized OSGPhysics
 	optimized OSGAnimation
 	
 	debug OSGToolboxD  
@@ -189,9 +185,9 @@ TARGET_LINK_LIBRARIES(KabalaEngine
 	debug OSGDynamicsD
 	debug OSGParticleSystemD
 	debug OSGUserInterfaceD
-	debug OSGGameD
-	debug OSGSoundD
-	debug OSGPhysicsD
+#	debug OSGGameD
+#	debug OSGSoundD
+#	debug OSGPhysicsD
 	debug OSGAnimationD
    ${Boost_LIBRARIES} ${FMOD_LIBRARIES} ${ODE_LIBRARIES})
 
@@ -205,4 +201,58 @@ SET_TARGET_PROPERTIES(KabalaEngine PROPERTIES LINK_FLAGS_DEBUG "${OPENSG_LIBS_DB
 SET_TARGET_PROPERTIES(KabalaEngine PROPERTIES LINK_FLAGS ${OPENSG_LIBS_OPT})
 SET_TARGET_PROPERTIES(KabalaEngine PROPERTIES LINK_FLAGS_MINSIZEREL "${OPENSG_LIBS_OPT}")
 SET_TARGET_PROPERTIES(KabalaEngine PROPERTIES LINK_FLAGS_RELWITHDEBINFO "${OPENSG_LIBS_OPT}")
+
+
+#Install the libraries
+INSTALL(TARGETS KabalaEngine
+        EXPORT  KabalaEngineExport
+        RUNTIME DESTINATION . 
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        COMPONENT Application)
+
+######## KabalaEngine Icons and Data
+OPTION(BUILD_ICONS "Build the Icon set for the Kabala Engine" ON)
+OPTION(INCLUDE_APP_DATA "Include the data used by the Kabala Engine" ON)
+
+IF(BUILD_ICONS)
+	FIND_PROGRAM(INKSCAPE_EXECUTABLE inkscape)
+   FILE(GLOB_RECURSE ICON_SVG_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Data/Images/Source/Icons/*.svg)
+
+	SET(BUILD_ICON_DIMENSION 64 CACHE STRING "The vertical and horizontal dimenstions to use to create the icons.")
+
+   FOREACH(ICON_SVG_SOURCE_FILE ${ICON_SVG_SOURCE_FILES})
+	   FILE(RELATIVE_PATH ICON_SVG_NAME  ${CMAKE_SOURCE_DIR}/Data/Images/Source/Icons ${ICON_SVG_SOURCE_FILE})
+   
+	   #Extract a short name for the icon svg file
+      STRING(REGEX MATCH "(.*)[.]svg" ICON_SVG_NAME ${ICON_SVG_NAME})
+      SET(ICON_SVG_NAME ${CMAKE_MATCH_1})
+
+	   FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME})
+	
+      ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME}Normal.png
+	    	                COMMAND ${INKSCAPE_EXECUTABLE} ${ICON_SVG_SOURCE_FILE} -w ${BUILD_ICON_DIMENSION} -h ${BUILD_ICON_DIMENSION} --export-png=${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME}Normal.png
+		   					 DEPENDS ${ICON_SVG_SOURCE_FILE})
+      LIST(APPEND ICON_PNG_TARGETS ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME}Normal.png)
+
+   ENDFOREACH(ICON_SVG_SOURCE_FILE ${ICON_SVG_SOURCE_FILES})
+
+   ADD_CUSTOM_TARGET(Icons ALL COMMENT "Building the Icons"
+	                  DEPENDS ${ICON_PNG_TARGETS})
+   
+	IF(INCLUDE_APP_DATA)
+	   #Installing the Icon Set
+      INSTALL(DIRECTORY ${CMAKE_BINARY_DIR}/Data/Images/Icons
+                 DESTINATION share/KabalaEngine/Data/Images
+                 COMPONENT Data)
+	ENDIF(INCLUDE_APP_DATA)
+ENDIF(BUILD_ICONS)
+
+IF(INCLUDE_APP_DATA)
+   #Installing the Model Set
+   INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/Data/Models
+              DESTINATION share/KabalaEngine/Data
+				  COMPONENT Data
+              PATTERN ".svn" EXCLUDE)
+ENDIF(INCLUDE_APP_DATA)
 
