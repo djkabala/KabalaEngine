@@ -49,43 +49,73 @@
 
 /*! @name Version Defines
  */
+#ifndef WIN32
 
-/*!{*/
+#include <KEVersion.h>
 
-/*! The printable Version string. Includes the full version with specifiers,
-    e.g. "1.3.0pre1"
- */
+#else
 
-const std::string KE_VERSION_STRING("0.0.1");
-const std::string KE_BUILDER_VERSION_STRING("0.0.1");
+inline
+::osg::UInt32 getKabalaEngineMajorVersion(void)
+{
+	return 0;
+}
 
-/*! The numeric full version, with two digits per major/minor/release, e.g.
-    010300
- */
+inline
+::osg::UInt32 getKabalaEngineMinorVersion(void)
+{
+	return 1;
+}
 
-const ::osg::UInt32 KE_VERSION(0x000001);
-const ::osg::UInt32 KE_BUILDER_VERSION(0x000001);
+inline
+::osg::UInt32 getKabalaEnginePatchVersion(void)
+{
+	return 0;
+}
 
-/*! The numeric major version number, e.g. 1
- */
+inline
+std::string getKabalaEngineVersion(void)
+{
+	return "0.1.0";
+}
 
-const osg::UInt16 KE_MAJOR_VERSION(0);
-const osg::UInt16 KE_BUILDER_MAJOR_VERSION(0);
+inline
+::osg::UInt32 getKabalaEngineBuilderMajorVersion(void)
+{
+	return 0;
+}
 
-/*! The numeric minor version number, e.g. 4
- */
+inline
+::osg::UInt32 getKabalaEngineBuilderMinorVersion(void)
+{
+	return 1;
+}
 
-const osg::UInt16 KE_MINOR_VERSION(0);
-const osg::UInt16 KE_BUILDER_MINOR_VERSION(0);
+inline
+::osg::UInt32 getKabalaEngineBuilderPatchVersion(void)
+{
+	return 0;
+}
 
-/*! The numeric release version number, e.g. 0
- */
+inline
+std::string getKabalaEngineBuilderVersion(void)
+{
+	return "0.1.0";
+}
 
-const osg::UInt16 KE_RELEASE_VERSION(1);
-const osg::UInt16 KE_BUILDER_RELEASE_VERSION(1);
+#endif
 
-const std::string KE_AUTHORS("David Kabala");
-const std::string KE_BUILDER_AUTHORS("David Kabala");
+inline
+std::string getKabalaEngineAuthors()
+{
+	return "David Kabala";
+}
+
+inline
+std::string getKabalaEngineBuilderAuthors()
+{
+	return "David Kabala";
+}
 
 #define BOOST_SMART_PTR_HPP
 

@@ -1,0 +1,59 @@
+//Version definisions for Kabala Engine
+
+#ifndef _KEVERSION_H_
+#define _KEVERSION_H_
+
+#include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGBaseTypes.h>
+#include <string>
+
+inline
+::osg::UInt32 getKabalaEngineMajorVersion(void)
+{
+	return @KABALA_ENGINE_MAJOR_VERSION@;
+}
+
+inline
+::osg::UInt32 getKabalaEngineMinorVersion(void)
+{
+	return @KABALA_ENGINE_MINOR_VERSION@;
+}
+
+inline
+::osg::UInt32 getKabalaEnginePatchVersion(void)
+{
+	return @KABALA_ENGINE_PATCH_VERSION@;
+}
+
+inline
+std::string getKabalaEngineVersion(void)
+{
+	return "@KABALA_ENGINE_VERSION@";
+}
+
+inline
+::osg::UInt32 getKabalaEngineBuilderMajorVersion(void)
+{
+	return @KABALA_ENGINE_MAJOR_VERSION@;
+}
+
+inline
+::osg::UInt32 getKabalaEngineBuilderMinorVersion(void)
+{
+	return @KABALA_ENGINE_MINOR_VERSION@;
+}
+
+inline
+::osg::UInt32 getKabalaEngineBuilderPatchVersion(void)
+{
+	return @KABALA_ENGINE_PATCH_VERSION@;
+}
+
+inline
+std::string getKabalaEngineBuilderVersion(void)
+{
+	return "@KABALA_ENGINE_VERSION@";
+}
+
+#endif
+

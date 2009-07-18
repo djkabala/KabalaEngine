@@ -99,7 +99,7 @@ InternalWindowPtr createAboutKabalaEngineWindow(void)
 
     LabelPtr AuthorsValueLabel = osg::Label::create();
     beginEditCP(AuthorsValueLabel, Label::TextFieldMask | Label::ConstraintsFieldMask);
-		AuthorsValueLabel->setText(KE_AUTHORS);
+		AuthorsValueLabel->setText(getKabalaEngineAuthors());
 		AuthorsValueLabel->setConstraints(AuthorsValueLabelConstraints);
     endEditCP(AuthorsValueLabel, Label::TextFieldMask | Label::ConstraintsFieldMask);
 	
@@ -125,7 +125,7 @@ InternalWindowPtr createAboutKabalaEngineWindow(void)
 
     LabelPtr EngineVersionValueLabel = osg::Label::create();
     beginEditCP(EngineVersionValueLabel, Label::TextFieldMask | Label::ConstraintsFieldMask);
-		EngineVersionValueLabel->setText(KE_VERSION_STRING);
+		EngineVersionValueLabel->setText(getKabalaEngineVersion());
 		EngineVersionValueLabel->setConstraints(EngineVersionValueLabelConstraints);
     endEditCP(EngineVersionValueLabel, Label::TextFieldMask | Label::ConstraintsFieldMask);
 
@@ -151,7 +151,7 @@ InternalWindowPtr createAboutKabalaEngineWindow(void)
 
     LabelPtr BuilderVersionValueLabel = osg::Label::create();
     beginEditCP(BuilderVersionValueLabel, Label::TextFieldMask | Label::ConstraintsFieldMask);
-		BuilderVersionValueLabel->setText(KE_BUILDER_VERSION_STRING);
+		BuilderVersionValueLabel->setText(getKabalaEngineBuilderVersion());
 		BuilderVersionValueLabel->setConstraints(BuilderVersionValueLabelConstraints);
     endEditCP(BuilderVersionValueLabel, Label::TextFieldMask | Label::ConstraintsFieldMask);
 	
