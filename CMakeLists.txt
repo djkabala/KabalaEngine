@@ -2,7 +2,39 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
 PROJECT("Kabala Engine")
 
-#SET (CMAKE_VERBOSE_MAKEFILE TRUE)
+SET (CMAKE_VERBOSE_MAKEFILE TRUE)
+
+####### Declaration of functions
+FUNCTION(RECURSIVE_DIRECTORY_FIND DIR IGNORE_DIRS_MATCHING STRIP_PATH)
+   #Get the source files
+   FILE(GLOB HEADERS ${DIR}/[^~]*.h)
+   FILE(GLOB SOURCES ${DIR}/[^~]*.cpp)
+   FILE(GLOB INLINES ${DIR}/[^~]*.inl)
+            
+	#Strip the path down to a relative one
+	FILE(RELATIVE_PATH THE_SOURCE_GROUP ${STRIP_PATH} ${DIR})
+	IF(THE_SOURCE_GROUP)
+	   STRING(REPLACE "/" "\\" THE_SOURCE_GROUP ${THE_SOURCE_GROUP})
+	ELSE(THE_SOURCE_GROUP)
+		SET(THE_SOURCE_GROUP "\\")
+	ENDIF(THE_SOURCE_GROUP)
+
+
+	SOURCE_GROUP(${THE_SOURCE_GROUP} FILES ${HEADERS} ${SOURCES} ${INLINES})
+   
+	FILE(GLOB THE_DIRS_AND_FILES ${DIR}/*)
+   
+	FOREACH(THE_PATH ${THE_DIRS_AND_FILES})
+	   IF(IS_DIRECTORY ${THE_PATH})
+		   IF(${THE_PATH} MATCHES "${IGNORE_DIRS_MATCHING}")
+		   ELSE(${THE_PATH} MATCHES "${IGNORE_DIRS_MATCHING}")
+				#Call this function on all directories within this one
+				RECURSIVE_DIRECTORY_FIND(${THE_PATH} ${IGNORE_DIRS_MATCHING} ${STRIP_PATH})
+				
+		   ENDIF(${THE_PATH} MATCHES "${IGNORE_DIRS_MATCHING}")
+	   ENDIF(IS_DIRECTORY ${THE_PATH})
+   ENDFOREACH(THE_PATH in ${THE_DIRS_AND_FILES})
+ENDFUNCTION(RECURSIVE_DIRECTORY_FIND DIR IGNOR_DIRS_MATCHING)
 
 ######### Revision number
 FIND_PACKAGE(Subversion)
@@ -161,11 +193,16 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${OPENSGTOOLBOX_LIB_DIR} ${FMOD_LIB_DIR} 
 #Configure the version and config headers
 CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/Source/KEVersion.h.in ${CMAKE_SOURCE_DIR}/Source/KEVersion.h)
 
+#Make the Source groups for these files
+RECURSIVE_DIRECTORY_FIND(${CMAKE_SOURCE_DIR}/Source "/.svn" ${CMAKE_SOURCE_DIR}/Source)
+
 
 #Get a listing of the Header, source, and inline files
 FILE(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/Source/[^~]*.h)
 FILE(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/Source/[^~]*.cpp)
 FILE(GLOB_RECURSE INLINES ${CMAKE_SOURCE_DIR}/Source/[^~]*.inl)
+
+
 
 SET(CMAKE_DEBUG_POSTFIX "D")
 
@@ -220,9 +257,13 @@ OPTION(INCLUDE_APP_DATA "Include the data used by the Kabala Engine" ON)
 
 IF(BUILD_ICONS)
 	FIND_PROGRAM(INKSCAPE_EXECUTABLE inkscape)
+	FIND_PROGRAM(CONVERT_EXECUTABLE convert)
+
    FILE(GLOB_RECURSE ICON_SVG_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Data/Images/Source/Icons/*.svg)
 
-	SET(BUILD_ICON_DIMENSION 64 CACHE STRING "The vertical and horizontal dimenstions to use to create the icons.")
+	SET(BUILD_ICON_DIMENSION 64 CACHE STRING "Advanced: The vertical and horizontal dimenstions to use to create the icons.")
+	SET(DISABLED_ICON_CONVERT_ARG_1 "-modulate" CACHE STRING "Advanced: The 1 argument to send to the convert command to generate the Disabled Icons.")
+	SET(DISABLED_ICON_CONVERT_ARG_2 "100,0" CACHE STRING "Advanced: The 2 argument to send to the convert command to generate the Disabled Icons.")
 
    FOREACH(ICON_SVG_SOURCE_FILE ${ICON_SVG_SOURCE_FILES})
 	   FILE(RELATIVE_PATH ICON_SVG_NAME  ${CMAKE_SOURCE_DIR}/Data/Images/Source/Icons ${ICON_SVG_SOURCE_FILE})
@@ -231,12 +272,25 @@ IF(BUILD_ICONS)
       STRING(REGEX MATCH "(.*)[.]svg" ICON_SVG_NAME ${ICON_SVG_NAME})
       SET(ICON_SVG_NAME ${CMAKE_MATCH_1})
 
-	   FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME})
+		SET(BASIC_IMG_PATH ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME})
+	   
+		FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME})
 	
-      ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME}Normal.png
-	    	                COMMAND ${INKSCAPE_EXECUTABLE} ${ICON_SVG_SOURCE_FILE} -w ${BUILD_ICON_DIMENSION} -h ${BUILD_ICON_DIMENSION} --export-png=${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME}Normal.png
+		#Command for making the Normal Icons
+		ADD_CUSTOM_COMMAND(OUTPUT ${BASIC_IMG_PATH}Normal.png
+	    	                COMMAND ${INKSCAPE_EXECUTABLE} ${ICON_SVG_SOURCE_FILE} -w ${BUILD_ICON_DIMENSION} -h ${BUILD_ICON_DIMENSION} --export-png=${BASIC_IMG_PATH}Normal.png
 		   					 DEPENDS ${ICON_SVG_SOURCE_FILE})
-      LIST(APPEND ICON_PNG_TARGETS ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME}Normal.png)
+	   #Add this icon as a target
+      LIST(APPEND ICON_PNG_TARGETS ${BASIC_IMG_PATH}Normal.png)
+
+		IF(CONVERT_EXECUTABLE)
+			#Command for making he disabled Icons
+		   ADD_CUSTOM_COMMAND(OUTPUT ${BASIC_IMG_PATH}Disabled.png
+	    	                   COMMAND ${CONVERT_EXECUTABLE}  ${BASIC_IMG_PATH}Normal.png ${DISABLED_ICON_CONVERT_ARG_1} ${DISABLED_ICON_CONVERT_ARG_2} ${BASIC_IMG_PATH}Disabled.png
+		   	   				 DEPENDS ${BASIC_IMG_PATH}Normal.png)
+	      #Add this icon as a target
+         LIST(APPEND ICON_PNG_TARGETS ${BASIC_IMG_PATH}Disabled.png)
+		ENDIF(CONVERT_EXECUTABLE)
 
    ENDFOREACH(ICON_SVG_SOURCE_FILE ${ICON_SVG_SOURCE_FILES})
 
