@@ -43,6 +43,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGDrawable.h>
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <OpenSG/Input/OSGStringUtils.h>
 
@@ -91,6 +92,7 @@ void ApplicationPlayer::attachApplication(void)
 	std::string MainWindowTitle(TheProject->getName());
 	MainApplication::the()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
 	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener);
+
 }
 
 void ApplicationPlayer::dettachApplication(void)
@@ -213,7 +215,152 @@ void ApplicationPlayer::keyTyped(const KeyEvent& e)
                 MainApplication::the()->getProject()->setActiveScene(*SearchItor);
             }
         }
+        //Statistic Foregrounds
+        else if(e.getKey() == KeyEvent::KEY_B && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        {
+            toggleStatForeground(_DebugBasicStatForeground);
+        }
+        else if(e.getKey() == KeyEvent::KEY_R && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        {
+            toggleStatForeground(_DebugRenderStatForeground);
+        }
+        else if(e.getKey() == KeyEvent::KEY_Y && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        {
+            toggleStatForeground(_DebugPhysicsStatForeground);
+        }
+        else if(e.getKey() == KeyEvent::KEY_P && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        {
+            toggleStatForeground(_DebugParticleSystemStatForeground);
+        }
+        else if(e.getKey() == KeyEvent::KEY_A && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        {
+            toggleStatForeground(_DebugAnimationStatForeground);
+        }
     }
+}
+
+void ApplicationPlayer::toggleStatForeground(StatisticsForegroundPtr TheForeground)
+{
+    MFForegroundPtr::iterator SearchItor(MainApplication::the()->getProject()->getActiveForegrounds().find(TheForeground));
+    if( SearchItor != MainApplication::the()->getProject()->getActiveForegrounds().end())
+    {
+        //If the Stat foreground is present then switch it off
+        beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+    }
+    else
+    {
+        //If not present then switch all other stat foregrounds off
+        hideAllStatForegrounds();
+        //and switch it on
+        beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+            MainApplication::the()->getProject()->getActiveForegrounds().push_back(TheForeground);
+        endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+        MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->setStatistics(&TheForeground->getCollector());
+    }
+}
+
+void ApplicationPlayer::hideAllStatForegrounds(void)
+{
+    
+    MFForegroundPtr::iterator SearchItor;
+
+    beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+        //Hide Basic Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugBasicStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        }
+        //Hide Render Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugRenderStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        }
+        //Hide Physics Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugPhysicsStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        }
+        //Hide Particle System Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugParticleSystemStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        }
+        //Hide Animation Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugAnimationStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        }
+    endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+}
+
+void ApplicationPlayer::initDebugStatForegrounds(void)
+{
+    //Basic Statistics
+    _DebugBasicStatForeground = SimpleStatisticsForeground::create();
+    beginEditCP(_DebugBasicStatForeground);
+        _DebugBasicStatForeground->setSize(25);
+        _DebugBasicStatForeground->setColor(Color4f(0,1,0,0.7));
+        _DebugBasicStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+        _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+        _DebugBasicStatForeground->addElement(Drawable::statNTriangles, "%d triangles drawn");
+    endEditCP(_DebugBasicStatForeground);
+    addRefCP(_DebugBasicStatForeground);
+    
+    //Rendering Statistics
+    _DebugRenderStatForeground = SimpleStatisticsForeground::create();
+    beginEditCP(_DebugRenderStatForeground);
+        _DebugRenderStatForeground->setSize(25);
+        _DebugRenderStatForeground->setColor(Color4f(0,1,0,0.7));
+
+        _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+        _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+        _DebugRenderStatForeground->addElement(DrawActionBase::statTravTime, "TravTime: %.3f s");
+        _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "DrawTime: %.3f s");
+        _DebugRenderStatForeground->addElement(DrawActionBase::statCullTestedNodes, "%d Nodes culltested");
+        _DebugRenderStatForeground->addElement(DrawActionBase::statCulledNodes, "%d Nodes culled");
+        _DebugRenderStatForeground->addElement(RenderAction::statNMaterials, "%d material changes");
+        _DebugRenderStatForeground->addElement(RenderAction::statNMatrices, "%d matrix changes");
+        _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+        _DebugRenderStatForeground->addElement(RenderAction::statNTransGeometries, "%d transparent Nodes drawn");
+        _DebugRenderStatForeground->addElement(Drawable::statNTriangles, "%d triangles drawn");
+        _DebugRenderStatForeground->addElement(Drawable::statNLines, "%d lines drawn");
+        _DebugRenderStatForeground->addElement(Drawable::statNPoints, "%d points drawn");
+        _DebugRenderStatForeground->addElement(Drawable::statNPrimitives,"%d primitive groups drawn");
+        _DebugRenderStatForeground->addElement(Drawable::statNVertices, "%d vertices transformed");
+        _DebugRenderStatForeground->addElement(Drawable::statNGeoBytes, "%d bytes of geometry used");
+        _DebugRenderStatForeground->addElement(RenderAction::statNTextures, "%d textures used");
+        _DebugRenderStatForeground->addElement(RenderAction::statNTexBytes, "%d bytes of texture used");
+    endEditCP(_DebugRenderStatForeground);
+    addRefCP(_DebugRenderStatForeground);
+    
+    //Physics Statistics
+    _DebugPhysicsStatForeground = SimpleStatisticsForeground::create();
+    beginEditCP(_DebugPhysicsStatForeground);
+        _DebugPhysicsStatForeground->setSize(25);
+        _DebugPhysicsStatForeground->setColor(Color4f(0,1,0,0.7));
+        _DebugPhysicsStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    endEditCP(_DebugPhysicsStatForeground);
+    addRefCP(_DebugPhysicsStatForeground);
+    
+    //Particle System Statistics
+    _DebugParticleSystemStatForeground = SimpleStatisticsForeground::create();
+    beginEditCP(_DebugParticleSystemStatForeground);
+        _DebugParticleSystemStatForeground->setSize(25);
+        _DebugParticleSystemStatForeground->setColor(Color4f(0,1,0,0.7));
+        _DebugParticleSystemStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    endEditCP(_DebugParticleSystemStatForeground);
+    addRefCP(_DebugParticleSystemStatForeground);
+    
+    //Animation Statistics
+    _DebugAnimationStatForeground = SimpleStatisticsForeground::create();
+    beginEditCP(_DebugAnimationStatForeground);
+        _DebugAnimationStatForeground->setSize(25);
+        _DebugAnimationStatForeground->setColor(Color4f(0,1,0,0.7));
+        _DebugAnimationStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    endEditCP(_DebugAnimationStatForeground);
+    addRefCP(_DebugAnimationStatForeground);
 }
 
 /*-------------------------------------------------------------------------*\
@@ -227,12 +374,18 @@ ApplicationPlayer::ApplicationPlayer(void) :
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
     _IsDebugActive(false)
 {
+    initDebugStatForegrounds();
 }
 
 ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     Inherited(source),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
-    _IsDebugActive(false)
+    _IsDebugActive(false),
+    _DebugBasicStatForeground(source._DebugBasicStatForeground),
+    _DebugRenderStatForeground(source._DebugRenderStatForeground),
+    _DebugPhysicsStatForeground(source._DebugPhysicsStatForeground),
+    _DebugParticleSystemStatForeground(source._DebugParticleSystemStatForeground),
+    _DebugAnimationStatForeground(source._DebugAnimationStatForeground)
 {
 }
 

@@ -43,6 +43,7 @@
 
 #include "KEApplicationPlayerBase.h"
 #include <OpenSG/Input/OSGKeyAdapter.h>
+#include <OpenSG/OSGSimpleStatisticsForeground.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -120,6 +121,16 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	bool _IsDebugActive;
     void enableDebug(bool EnableDebug);
     void keyTyped(const KeyEvent& e);
+
+    SimpleStatisticsForegroundPtr _DebugBasicStatForeground;
+    SimpleStatisticsForegroundPtr _DebugRenderStatForeground;
+    SimpleStatisticsForegroundPtr _DebugPhysicsStatForeground;
+    SimpleStatisticsForegroundPtr _DebugParticleSystemStatForeground;
+    SimpleStatisticsForegroundPtr _DebugAnimationStatForeground;
+
+    void initDebugStatForegrounds(void);
+    void hideAllStatForegrounds(void);
+    void toggleStatForeground(StatisticsForegroundPtr TheForeground);
     /*==========================  PRIVATE  ================================*/
   private:
 
