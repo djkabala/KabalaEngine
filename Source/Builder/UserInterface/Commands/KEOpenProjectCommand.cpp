@@ -79,8 +79,8 @@ OpenProjectCommandPtr OpenProjectCommand::create(ApplicationBuilderPtr TheApplic
 void OpenProjectCommand::execute(void)
 {
 	std::vector<WindowEventProducer::FileDialogFilter> KEProjectFileFilters;
-	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("Project File","*.xml"));
-	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("All Files","*.*"));
+	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("Project File","xml"));
+	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("All Files","*"));
 
 	std::vector<Path> Paths;
 	Paths = MainApplication::the()->getMainWindowEventProducer()->openFileDialog("Open Project ...",KEProjectFileFilters,Path("."), false);

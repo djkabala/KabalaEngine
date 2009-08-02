@@ -82,8 +82,8 @@ SaveProjectAsCommandPtr SaveProjectAsCommand::create(ApplicationBuilderPtr TheAp
 void SaveProjectAsCommand::execute(void)
 {
 	std::vector<WindowEventProducer::FileDialogFilter> KEProjectFileFilters;
-	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("Project File","*.xml"));
-	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("All Files","*.*"));
+	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("Project File","xml"));
+	KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("All Files","*"));
 
 
 	//Project File
@@ -94,7 +94,7 @@ void SaveProjectAsCommand::execute(void)
 	}
 
 	Path ProjectFilePath;
-	ProjectFilePath = MainApplication::the()->getMainWindowEventProducer()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath,InitialProjectFilePath.parent_path(), true);
+    ProjectFilePath = MainApplication::the()->getMainWindowEventProducer()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath.filename(),InitialProjectFilePath.parent_path(), true);
 
 	MainApplication::the()->saveProject(ProjectFilePath);
 }

@@ -69,7 +69,6 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication
     /*! \}                                                                 */
 
 	Int32 run(int argc, char **argv);
-	void exitMainLoop(void);
 	void exit(void);
 
 	void printCommandLineHelp(void) const;
@@ -158,7 +157,6 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication
 	};
 
 	MainWindowListener _MainWindowListener;
-	bool _ExitMainLoop;
 
 	static boost::program_options::options_description _OptionsDescription;
 	static boost::program_options::positional_options_description _PositionalOptions;

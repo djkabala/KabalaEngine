@@ -42,12 +42,6 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-void MainApplication::exitMainLoop(void)
-{
-	_ExitMainLoop = true;
-}
-
-inline
 MainApplication::MainWindowListener::MainWindowListener(MainApplication* TheMainApplication) :
         _MainApplication(TheMainApplication)
 {

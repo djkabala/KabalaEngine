@@ -48,6 +48,7 @@
 
 #include <OpenSG/OSGBackground.h>
 #include <OpenSG/OSGSimpleAttachments.h>
+#include "boost/lexical_cast.hpp"
 
 OSG_USING_NAMESPACE
 
@@ -85,7 +86,9 @@ void CreateSceneBackgroundCommand::execute(void)
        !_FCType->isAbstract())
     {
         BackgroundPtr NewBackground = Background::Ptr::dcast(_FCType->createFieldContainer());
-        setName(NewBackground,_FCType->getCName());
+        std::string BackgroundName("Background ");
+        BackgroundName += boost::lexical_cast<std::string>(_TheModel->getSize());
+        setName(NewBackground, BackgroundName.c_str() );
         _CreatedIndex = _TheModel->addBackground(NewBackground);
     }
 }

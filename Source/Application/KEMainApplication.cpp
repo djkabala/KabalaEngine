@@ -55,6 +55,7 @@
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGPerspectiveCamera.h>
+#include <OpenSG/OSGSimpleAttachments.h>
 
 #include "KEApplicationSettings.h"
 #include "Project/KEProject.h"
@@ -119,8 +120,8 @@ ApplicationSettingsPtr MainApplication::createDefaultSettings(void)
     ApplicationSettingsPtr DefaultSettings = ApplicationSettings::create();
     beginEditCP(DefaultSettings);
         DefaultSettings->setDataDirectory(Path("./share/Data"));
-        DefaultSettings->setDefaultWindowPosition(Pnt2f(0.0f,0.0f));
-        DefaultSettings->setDefaultWindowSize(Vec2f(1280.0f,1024.0f));
+        DefaultSettings->setDefaultWindowPosition(Pnt2f(-1.0f,-1.0f));
+        DefaultSettings->setDefaultWindowSize(Vec2f(0.85f,0.85f));
 		  DefaultSettings->setFullscreen(false);
     endEditCP(DefaultSettings);
     return DefaultSettings;
@@ -180,10 +181,6 @@ Int32 MainApplication::run(int argc, char **argv)
 
 	getMainWindowEventProducer()->addWindowListener(&_MainWindowListener);
 
-	getMainWindowEventProducer()->openWindow(getSettings()->getDefaultWindowPosition(),
-                                        getSettings()->getDefaultWindowSize(),
-                                        "Kabala Engine");
-										
     // Initialize the LookAndFeelManager to enable default settings
     LookAndFeelManager::the()->getLookAndFeel()->init();
 
@@ -220,21 +217,36 @@ Int32 MainApplication::run(int argc, char **argv)
 		attachStartScreen();
 	}
 
-	_ExitMainLoop = false;
-    while(!_ExitMainLoop)
+    //Open Window
+    Vec2f WindowSize(getSettings()->getDefaultWindowSize());
+    if(getSettings()->getDefaultWindowSize().x() <= 1.0f )
     {
-        if(getMainWindowEventProducer()->getVisible() && !getMainWindowEventProducer()->getIconify())
-        {
-            getMainWindowEventProducer()->update();
-            getMainWindowEventProducer()->draw();
-        }
-        else
-        {
-            osgsleep(10);
-        }
+        WindowSize[0] = getMainWindowEventProducer()->getDesktopSize().x() * getSettings()->getDefaultWindowSize().x();
     }
+    if(getSettings()->getDefaultWindowSize().y() <= 1.0f )
+    {
+        WindowSize[1] = getMainWindowEventProducer()->getDesktopSize().y() * getSettings()->getDefaultWindowSize().y();
+    }
+    Pnt2f WindowPos(getSettings()->getDefaultWindowPosition());
+    if(getSettings()->getDefaultWindowPosition().x() < 0.0f )
+    {
+        WindowPos[0] = (getMainWindowEventProducer()->getDesktopSize().x() - WindowSize.x()) * 0.5f;
+    }
+    if(getSettings()->getDefaultWindowPosition().y() < 0.0f )
+    {
+        WindowPos[1] = (getMainWindowEventProducer()->getDesktopSize().y() - WindowSize.y()) * 0.5f;
+    }
+    
+	getMainWindowEventProducer()->openWindow(WindowPos,
+                                        WindowSize,
+                                        "Kabala Engine");
+										
+    //Main Loop
+    getMainWindowEventProducer()->mainLoop();
 
-	saveSettings(getSettingsLoadFile());
+	//Exited Main Loop
+    //Save Settings
+    saveSettings(getSettingsLoadFile());
 
 	return 0;
 }
@@ -387,20 +399,24 @@ ProjectPtr MainApplication::createDefaultProject(void)
 	endEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
 
 	NodePtr CameraBeaconNode = Node::create();
+    setName(CameraBeaconNode, "Camera Beacon" );
 	beginEditCP(CameraBeaconNode, Node::CoreFieldMask);
 		CameraBeaconNode->setCore(CameraBeaconTransform);
 	endEditCP(CameraBeaconNode, Node::CoreFieldMask);
 
     // Make Torus Node (creates Torus in background of scene)
     NodePtr TorusGeometryNode = makeTorus(.5, 2, 64, 64);
+    setName(TorusGeometryNode, "Torus" );
     
 	NodePtr SceneTransformNode = Node::create();
+    setName(SceneTransformNode, "Torus Transform" );
     beginEditCP(SceneTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
 		SceneTransformNode->setCore(Transform::create());
         SceneTransformNode->addChild(TorusGeometryNode);
 	endEditCP(SceneTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
 
 	NodePtr DefaultSceneNode = Node::create();
+    setName(DefaultSceneNode, "Scene Root" );
     beginEditCP(DefaultSceneNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
         DefaultSceneNode->setCore(osg::Group::create());
         DefaultSceneNode->addChild(CameraBeaconNode);
@@ -409,6 +425,7 @@ ProjectPtr MainApplication::createDefaultProject(void)
 
     //Camera
     PerspectiveCameraPtr DefaultSceneCamera = PerspectiveCamera::create();
+    setName(DefaultSceneCamera, "Camera" );
     beginEditCP(DefaultSceneCamera, PerspectiveCamera::FovFieldMask | PerspectiveCamera::NearFieldMask | PerspectiveCamera::FarFieldMask | PerspectiveCamera::BeaconFieldMask);
         DefaultSceneCamera->setFov(60.f);
         DefaultSceneCamera->setNear(0.1f);
@@ -418,6 +435,7 @@ ProjectPtr MainApplication::createDefaultProject(void)
 
     //Background
     SolidBackgroundPtr DefaultSceneBackground = SolidBackground::create();
+    setName(DefaultSceneBackground, "Background" );
     beginEditCP(DefaultSceneBackground, SolidBackground::ColorFieldMask);
         DefaultSceneBackground->setColor(Color3f(0.0f,1.0f,0.0f));
     endEditCP(DefaultSceneBackground, SolidBackground::ColorFieldMask);
@@ -596,10 +614,9 @@ MainApplication::~MainApplication(void)
 
 void MainApplication::MainWindowListener::windowClosing(const WindowEvent& e)
 {
-	_MainApplication->exitMainLoop();
 }
 
 void MainApplication::MainWindowListener::windowClosed(const WindowEvent& e)
 {
-	_MainApplication->exitMainLoop();
 }
+
