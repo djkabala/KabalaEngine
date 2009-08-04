@@ -297,7 +297,7 @@ FieldDescription *SceneBase::_desc[] =
 
 FieldContainerType SceneBase::_type(
     "Scene",
-    "FieldContainer",
+    "AttachmentContainer",
     NULL,
     reinterpret_cast<PrototypeCreateF>(&SceneBase::createEmpty),
     Scene::initMethod,
@@ -957,7 +957,7 @@ OSG_END_NAMESPACE
 OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ScenePtr>::_type("ScenePtr", "FieldContainerPtr");
+DataType FieldDataTraits<ScenePtr>::_type("ScenePtr", "AttachmentContainerPtr");
 #endif
 
 OSG_DLLEXPORT_SFIELD_DEF1(ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);

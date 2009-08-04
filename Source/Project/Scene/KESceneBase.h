@@ -61,8 +61,7 @@
 #include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGCoredNodePtr.h>
 
-#include <OpenSG/OSGFieldContainer.h> // Parent
-
+#include <OpenSG/OSGAttachmentContainer.h> // Parent
 #include <Project/KEProjectFields.h> // InternalParentProject type
 #include <OpenSG/OSGStringFields.h> // Name type
 #include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
@@ -93,11 +92,11 @@ class BinaryDataHandler;
 
 //! \brief Scene Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public FieldContainer
+class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 {
   private:
 
-    typedef FieldContainer    Inherited;
+    typedef AttachmentContainer    Inherited;
 
     /*==========================  PUBLIC  =================================*/
   public:

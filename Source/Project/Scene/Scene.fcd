@@ -2,7 +2,7 @@
 
 <FieldContainer
 	name="Scene"
-	parent="FieldContainer"
+	parent="AttachmentContainer"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
 	structure="concrete"

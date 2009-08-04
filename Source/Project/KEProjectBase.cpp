@@ -286,7 +286,7 @@ FieldDescription *ProjectBase::_desc[] =
 
 FieldContainerType ProjectBase::_type(
     "Project",
-    "FieldContainer",
+    "AttachmentContainer",
     NULL,
     reinterpret_cast<PrototypeCreateF>(&ProjectBase::createEmpty),
     Project::initMethod,
@@ -923,7 +923,7 @@ OSG_END_NAMESPACE
 OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ProjectPtr>::_type("ProjectPtr", "FieldContainerPtr");
+DataType FieldDataTraits<ProjectPtr>::_type("ProjectPtr", "AttachmentContainerPtr");
 #endif
 
 OSG_DLLEXPORT_SFIELD_DEF1(ProjectPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);

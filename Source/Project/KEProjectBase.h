@@ -61,8 +61,7 @@
 #include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGCoredNodePtr.h>
 
-#include <OpenSG/OSGFieldContainer.h> // Parent
-
+#include <OpenSG/OSGAttachmentContainer.h> // Parent
 #include <OpenSG/OSGStringFields.h> // Name type
 #include <OpenSG/OSGStringFields.h> // MainWindowTitle type
 #include <OpenSG/Toolbox/OSGPathType.h> // FilePath type
@@ -92,11 +91,11 @@ class BinaryDataHandler;
 
 //! \brief Project Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public FieldContainer
+class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 {
   private:
 
-    typedef FieldContainer    Inherited;
+    typedef AttachmentContainer    Inherited;
 
     /*==========================  PUBLIC  =================================*/
   public:
