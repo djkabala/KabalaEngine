@@ -119,10 +119,10 @@ ApplicationSettingsPtr MainApplication::createDefaultSettings(void)
 {
     ApplicationSettingsPtr DefaultSettings = ApplicationSettings::create();
     beginEditCP(DefaultSettings);
-        DefaultSettings->setDataDirectory(Path("./share/Data"));
+        DefaultSettings->setDataDirectory(Path("./share/KabalaEngine/Data"));
         DefaultSettings->setDefaultWindowPosition(Pnt2f(-1.0f,-1.0f));
         DefaultSettings->setDefaultWindowSize(Vec2f(0.85f,0.85f));
-		  DefaultSettings->setFullscreen(false);
+        DefaultSettings->setFullscreen(false);
     endEditCP(DefaultSettings);
     return DefaultSettings;
 }

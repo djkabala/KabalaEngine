@@ -133,6 +133,7 @@ void ApplicationStartScreen::attachApplication(void)
     // Make Torus Node (creates Torus in background of scene)
     NodePtr TorusGeometryNode = NullFC;
     Path TorusKnotFile(MainApplication::the()->getSettings()->getDataDirectory() / std::string("Models") / std::string("TorusKnot.osb"));
+    std::cout << TorusKnotFile.string() << std::endl;
     if(boost::filesystem::exists(TorusKnotFile))
     {
         TorusGeometryNode = SceneFileHandler::the().read(TorusKnotFile.native_file_string().c_str());
@@ -438,6 +439,7 @@ ForegroundPtr ApplicationStartScreen::createInterface(void)
 
 void ApplicationStartScreen::start(void)
 {
+    _AnimationAdvancer->start();
 }
 
 void ApplicationStartScreen::stop(void)
