@@ -167,6 +167,11 @@ void Project::start(void)
 			MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(getInternalActiveViewport());
 		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
+
+    //Hide and dettach Cursor
+    MainApplication::the()->getMainWindowEventProducer()->setShowCursor(false);
+    MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
+    setDefaults();
 }
 
 void Project::stop(void)
@@ -439,26 +444,11 @@ void Project::toggleFlyNavigation(void)
 
 void Project::mousePressed(const MouseEvent& e)
 {
-    switch (e.getButton())
-    {
-    case MouseEvent::BUTTON1:
-        {
-            Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-            _RotationStartMat = m;
-            _MouseStartPos = e.getLocation();
-        }
-      break;
-    }
 
 }
 
 void Project::mouseReleased(const MouseEvent& e)
 {
-    switch (e.getButton())
-    {
-    case MouseEvent::BUTTON1:
-      break;
-    }
 }
 
 void Project::keyPressed(const KeyEvent& e)
@@ -469,19 +459,33 @@ void Project::keyPressed(const KeyEvent& e)
     m.multMatrixVec(Local_z);
 
     Vec3f Translation;
+    float TranlateSpeed;
+    if(e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+    {
+        TranlateSpeed = _MotionFactor * _FastMotionFactor;
+    }
+    else
+    {
+        TranlateSpeed = _MotionFactor;
+    }
     switch ( e.getKey() )
     {
+    //Translation Keys
     case KeyEvent::KEY_LEFT:
-        Translation = -_MotionFactor*Local_x;
+    case KeyEvent::KEY_A:
+        Translation = -TranlateSpeed*Local_x;  //Tranlate left
         break;
     case KeyEvent::KEY_RIGHT:
-        Translation = _MotionFactor*Local_x;
+    case KeyEvent::KEY_D:
+        Translation = TranlateSpeed*Local_x;  //Tranlate right
         break;
     case KeyEvent::KEY_UP:
-        Translation = -_MotionFactor*Local_z;
+    case KeyEvent::KEY_W:
+        Translation = -TranlateSpeed*Local_z;  //Tranlate forward
         break;
     case KeyEvent::KEY_DOWN:
-        Translation = _MotionFactor*Local_z;
+    case KeyEvent::KEY_S:
+        Translation = TranlateSpeed*Local_z;  //Tranlate backward
         break;
     }
 
@@ -504,24 +508,33 @@ void Project::setCameraBeaconMatrix(const Matrix& m)
 
 void Project::mouseMoved(const MouseEvent& e)
 {
-    //_lastx = e.getLocation().x();
-    //_lasty = e.getLocation().y();
+    Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
+    Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
+    m.multMatrixVec(Local_x);
+    m.multMatrixVec(Local_y);
+
+    Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e.getDelta().x() * _YRotMotionFactor);
+    Matrix YRot_Mat;
+    YRot_Mat.setRotate(YRot_Quat);
+    Quaternion XRot_Quat(Local_x,-e.getDelta().y() * _XRotMotionFactor);
+    Matrix XRot_Mat;
+    XRot_Mat.setRotate(XRot_Quat);
+
+    m.mult(YRot_Mat);
+    m.mult(XRot_Mat);
+    setCameraBeaconMatrix(m);
 }
 
 void Project::mouseDragged(const MouseEvent& e)
 {
-    Vec2f Difference(_MouseStartPos - e.getLocation());
+}
 
-    Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), Difference.x() * 0.003f);
-    Matrix YRot_Mat;
-    YRot_Mat.setRotate(YRot_Quat);
-    Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0), Difference.y() * 0.003f);
-    Matrix XRot_Mat;
-    XRot_Mat.setRotate(XRot_Quat);
-    Matrix m(_RotationStartMat);
-    m.mult(YRot_Mat);
-    m.mult(XRot_Mat);
-    setCameraBeaconMatrix(m);
+void Project::setDefaults(void)
+{
+    _YRotMotionFactor = 0.003f;
+    _XRotMotionFactor = 0.003f;
+
+    _FastMotionFactor = 5.0f;
 }
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -

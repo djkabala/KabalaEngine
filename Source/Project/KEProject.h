@@ -178,10 +178,11 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     bool _PauseActiveUpdates;
     bool _NavigatorAttached;
     Navigator _navigator;
-    Pnt2f _MouseStartPos;
-    Vec3f _RotationYAxis, _RotationXAxis;
     Real32 _MotionFactor;
-    Matrix _RotationStartMat;
+    Real32 _FastMotionFactor;
+    Real32 _FastRotMotionFactor;
+    Real32 _YRotMotionFactor;
+    Real32 _XRotMotionFactor;
 
     void updateNavigatorSceneAttachment(void);
     void setCameraBeaconMatrix(const Matrix& m);
@@ -189,6 +190,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     
     /*==========================  PRIVATE  ================================*/
   private:
+    void setDefaults(void);
 
     friend class FieldContainer;
     friend class ProjectBase;

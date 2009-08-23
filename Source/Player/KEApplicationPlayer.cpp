@@ -169,6 +169,7 @@ void ApplicationPlayer::keyTyped(const KeyEvent& e)
         //Scene Activation
         if(e.getKey() == KeyEvent::KEY_TAB && !(e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
         {
+            //Move to next scene
             MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
             if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
             {
@@ -186,6 +187,7 @@ void ApplicationPlayer::keyTyped(const KeyEvent& e)
         }
         else if(e.getKey() == KeyEvent::KEY_TAB && e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
         {
+            //Move to previous scene
             MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
             if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
             {
