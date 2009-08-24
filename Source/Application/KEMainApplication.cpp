@@ -188,6 +188,30 @@ Int32 MainApplication::run(int argc, char **argv)
     FieldContainerEditorFactory::the()->init();
 	
 
+    //Open Window
+    Vec2f WindowSize(getSettings()->getDefaultWindowSize());
+    if(getSettings()->getDefaultWindowSize().x() <= 1.0f )
+    {
+        WindowSize[0] = getMainWindowEventProducer()->getDesktopSize().x() * getSettings()->getDefaultWindowSize().x();
+    }
+    if(getSettings()->getDefaultWindowSize().y() <= 1.0f )
+    {
+        WindowSize[1] = getMainWindowEventProducer()->getDesktopSize().y() * getSettings()->getDefaultWindowSize().y();
+    }
+    Pnt2f WindowPos(getSettings()->getDefaultWindowPosition());
+    if(getSettings()->getDefaultWindowPosition().x() < 0.0f )
+    {
+        WindowPos[0] = (getMainWindowEventProducer()->getDesktopSize().x() - WindowSize.x()) * 0.5f;
+    }
+    if(getSettings()->getDefaultWindowPosition().y() < 0.0f )
+    {
+        WindowPos[1] = (getMainWindowEventProducer()->getDesktopSize().y() - WindowSize.y()) * 0.5f;
+    }
+    
+	getMainWindowEventProducer()->openWindow(WindowPos,
+                                        WindowSize,
+                                        "Kabala Engine");
+
 	//Load the Project file, if given
 	if(OptionsVariableMap.count("project-file"))
 	{
@@ -216,30 +240,6 @@ Int32 MainApplication::run(int argc, char **argv)
 	{
 		attachStartScreen();
 	}
-
-    //Open Window
-    Vec2f WindowSize(getSettings()->getDefaultWindowSize());
-    if(getSettings()->getDefaultWindowSize().x() <= 1.0f )
-    {
-        WindowSize[0] = getMainWindowEventProducer()->getDesktopSize().x() * getSettings()->getDefaultWindowSize().x();
-    }
-    if(getSettings()->getDefaultWindowSize().y() <= 1.0f )
-    {
-        WindowSize[1] = getMainWindowEventProducer()->getDesktopSize().y() * getSettings()->getDefaultWindowSize().y();
-    }
-    Pnt2f WindowPos(getSettings()->getDefaultWindowPosition());
-    if(getSettings()->getDefaultWindowPosition().x() < 0.0f )
-    {
-        WindowPos[0] = (getMainWindowEventProducer()->getDesktopSize().x() - WindowSize.x()) * 0.5f;
-    }
-    if(getSettings()->getDefaultWindowPosition().y() < 0.0f )
-    {
-        WindowPos[1] = (getMainWindowEventProducer()->getDesktopSize().y() - WindowSize.y()) * 0.5f;
-    }
-    
-	getMainWindowEventProducer()->openWindow(WindowPos,
-                                        WindowSize,
-                                        "Kabala Engine");
 										
     //Main Loop
     getMainWindowEventProducer()->mainLoop();

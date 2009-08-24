@@ -382,6 +382,49 @@ void Project::update(const UpdateEvent& e)
             setActiveScene(*SearchItor);
         }
     }
+
+    //Translation
+    Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
+    Vec3f Local_x(1.0,0.0,0.0),Local_z(0.0,0.0,1.0);
+    m.multMatrixVec(Local_x);
+    m.multMatrixVec(Local_z);
+
+    Vec3f Direction(0.0,0.0,0.0);
+    float TranlateSpeed;
+    if(_IsShiftKeyDown)
+    {
+        TranlateSpeed = _ScaledMotionFactor * _FastMotionFactor;
+    }
+    else
+    {
+        TranlateSpeed = _ScaledMotionFactor * _MotionFactor;
+    }
+
+    if(_IsAKeyDown)
+    {
+        Direction -= Local_x;
+    }
+    if(_IsDKeyDown)
+    {
+        Direction += Local_x;
+    }
+    if(_IsSKeyDown)
+    {
+        Direction += Local_z;
+    }
+    if(_IsWKeyDown)
+    {
+        Direction -= Local_z;
+    }
+
+    if(Direction != Vec2f(0.0,0.0,0.0))
+    {
+        Direction.normalize();
+        Matrix t;
+        t.setTranslate(TranlateSpeed*Direction*e.getElapsedTime());
+        m.multLeft(t);
+        setCameraBeaconMatrix(m);
+    }
 }
 
 void Project::updateNavigatorSceneAttachment(void)
@@ -400,7 +443,7 @@ void Project::updateNavigatorSceneAttachment(void)
     }
 
     // adjust the translation factors so that motions are sort of scaled
-    _MotionFactor = (d[0] + d[1] + d[2]) / 1000.f;
+    _ScaledMotionFactor = (d[0] + d[1] + d[2]) / 1000.f;
 }
 
 void Project::attachFlyNavigation(void)
@@ -453,46 +496,50 @@ void Project::mouseReleased(const MouseEvent& e)
 
 void Project::keyPressed(const KeyEvent& e)
 {
-    Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-    Vec3f Local_x(1.0,0.0,0.0),Local_z(0.0,0.0,1.0);
-    m.multMatrixVec(Local_x);
-    m.multMatrixVec(Local_z);
+   switch(e.getKey())
+   {
+   case KeyEvent::KEY_A:
+       _IsAKeyDown = true;
+	   break;
+   case KeyEvent::KEY_S:
+       _IsSKeyDown = true;
+	   break;
+   case KeyEvent::KEY_D:
+       _IsDKeyDown = true;
+	   break;
+   case KeyEvent::KEY_W:
+       _IsWKeyDown = true;
+	   break;
+   case KeyEvent::KEY_SHIFT:
+       _IsShiftKeyDown = true;
+	   break;
+   default:
+	   break;
+   }
+}
 
-    Vec3f Translation;
-    float TranlateSpeed;
-    if(e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
-    {
-        TranlateSpeed = _MotionFactor * _FastMotionFactor;
-    }
-    else
-    {
-        TranlateSpeed = _MotionFactor;
-    }
-    switch ( e.getKey() )
-    {
-    //Translation Keys
-    case KeyEvent::KEY_LEFT:
-    case KeyEvent::KEY_A:
-        Translation = -TranlateSpeed*Local_x;  //Tranlate left
-        break;
-    case KeyEvent::KEY_RIGHT:
-    case KeyEvent::KEY_D:
-        Translation = TranlateSpeed*Local_x;  //Tranlate right
-        break;
-    case KeyEvent::KEY_UP:
-    case KeyEvent::KEY_W:
-        Translation = -TranlateSpeed*Local_z;  //Tranlate forward
-        break;
-    case KeyEvent::KEY_DOWN:
-    case KeyEvent::KEY_S:
-        Translation = TranlateSpeed*Local_z;  //Tranlate backward
-        break;
-    }
-
-    Matrix t;
-    t.setTranslate(Translation);
-    m.multLeft(t);
-    setCameraBeaconMatrix(m);
+void Project::keyReleased(const KeyEvent& e)
+{
+   switch(e.getKey())
+   {
+   case KeyEvent::KEY_A:
+       _IsAKeyDown = false;
+	   break;
+   case KeyEvent::KEY_S:
+       _IsSKeyDown = false;
+	   break;
+   case KeyEvent::KEY_D:
+       _IsDKeyDown = false;
+	   break;
+   case KeyEvent::KEY_W:
+       _IsWKeyDown = false;
+	   break;
+   case KeyEvent::KEY_SHIFT:
+       _IsShiftKeyDown = false;
+	   break;
+   default:
+	   break;
+   }
 }
 
 void Project::setCameraBeaconMatrix(const Matrix& m)
@@ -509,14 +556,14 @@ void Project::setCameraBeaconMatrix(const Matrix& m)
 void Project::mouseMoved(const MouseEvent& e)
 {
     Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-    Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
-    m.multMatrixVec(Local_x);
-    m.multMatrixVec(Local_y);
+    //Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
+    //m.multMatrixVec(Local_x);
+    //m.multMatrixVec(Local_y);
 
     Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e.getDelta().x() * _YRotMotionFactor);
     Matrix YRot_Mat;
     YRot_Mat.setRotate(YRot_Quat);
-    Quaternion XRot_Quat(Local_x,-e.getDelta().y() * _XRotMotionFactor);
+    Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0),-e.getDelta().y() * _XRotMotionFactor);
     Matrix XRot_Mat;
     XRot_Mat.setRotate(XRot_Quat);
 
@@ -534,7 +581,8 @@ void Project::setDefaults(void)
     _YRotMotionFactor = 0.003f;
     _XRotMotionFactor = 0.003f;
 
-    _FastMotionFactor = 5.0f;
+    _FastMotionFactor = 200.0f;
+    _MotionFactor = 50.0f;
 }
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -546,7 +594,12 @@ Project::Project(void) :
     Inherited(),
         _ProjectUpdateListener(ProjectPtr(this)),
         _PauseActiveUpdates(false),
-        _NavigatorAttached(false)
+        _NavigatorAttached(false),
+        _IsAKeyDown(false),
+        _IsSKeyDown(false),
+        _IsDKeyDown(false),
+        _IsWKeyDown(false),
+        _IsShiftKeyDown(false)
 {
 }
 
@@ -554,7 +607,12 @@ Project::Project(const Project &source) :
     Inherited(source),
         _ProjectUpdateListener(ProjectPtr(this)),
         _PauseActiveUpdates(source._PauseActiveUpdates),
-        _NavigatorAttached(false)
+        _NavigatorAttached(false),
+        _IsAKeyDown(false),
+        _IsSKeyDown(false),
+        _IsDKeyDown(false),
+        _IsWKeyDown(false),
+        _IsShiftKeyDown(false)
 {
 }
 
@@ -613,6 +671,11 @@ void Project::ProjectUpdateListener::mouseDragged(const MouseEvent& e)
 void Project::ProjectUpdateListener::keyPressed(const KeyEvent& e)
 {
     _Project->keyPressed(e);
+}
+
+void Project::ProjectUpdateListener::keyReleased(const KeyEvent& e)
+{
+    _Project->keyReleased(e);
 }
 
 

@@ -158,6 +158,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
         virtual void mouseMoved(const MouseEvent& e);
         virtual void mouseDragged(const MouseEvent& e);
         virtual void keyPressed(const KeyEvent& e);
+        virtual void keyReleased(const KeyEvent& e);
 	protected :
 		ProjectPtr _Project;
 	};
@@ -172,17 +173,25 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void mouseMoved(const MouseEvent& e);
     void mouseDragged(const MouseEvent& e);
     void keyPressed(const KeyEvent& e);
+    void keyReleased(const KeyEvent& e);
 
     ElapsedTimeAnimationAdvancerPtr _AnimationAdvancer;
     Real32 _TimeInScene;
     bool _PauseActiveUpdates;
     bool _NavigatorAttached;
     Navigator _navigator;
+    Real32 _ScaledMotionFactor;
     Real32 _MotionFactor;
     Real32 _FastMotionFactor;
     Real32 _FastRotMotionFactor;
     Real32 _YRotMotionFactor;
     Real32 _XRotMotionFactor;
+    
+    bool _IsAKeyDown;
+    bool _IsSKeyDown;
+    bool _IsDKeyDown;
+    bool _IsWKeyDown;
+    bool _IsShiftKeyDown;
 
     void updateNavigatorSceneAttachment(void);
     void setCameraBeaconMatrix(const Matrix& m);
