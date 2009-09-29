@@ -169,8 +169,8 @@ void Project::start(void)
 	}
 
     //Hide and dettach Cursor
-    MainApplication::the()->getMainWindowEventProducer()->setShowCursor(false);
-    MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
+    //MainApplication::the()->getMainWindowEventProducer()->setShowCursor(false);
+    //MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
     setDefaults();
 }
 
