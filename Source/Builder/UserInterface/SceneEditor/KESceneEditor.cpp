@@ -349,7 +349,7 @@ void SceneEditor::dump(      ::osg::UInt32    ,
     SLOG << "Dump SceneEditor NI" << std::endl;
 }
 
-void SceneEditor::EditorsTabPanelListener::stateChanged(const ChangeEvent& e)
+void SceneEditor::EditorsTabPanelListener::stateChanged(const ChangeEventPtr e)
 {
 	//getEditors()[_SceneEditorsTabPanel->getActiveTab()]->disconnectInterface(TheApplicationBuilder);
     _SceneEditor->getEditors()[_SceneEditor->_SceneEditorsTabPanel->getSelectedIndex()]->connectInterface(NullFC);

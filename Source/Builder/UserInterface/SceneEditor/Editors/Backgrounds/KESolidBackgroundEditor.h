@@ -92,7 +92,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SolidBackgroundEditor : public FieldContaine
 	  public:
 		ColorChangeListener(SolidBackgroundEditorPtr TheSolidBackgroundEditor);
 
-		virtual void stateChanged(const ChangeEvent& e);
+		virtual void stateChanged(const ChangeEventPtr e);
 	  protected :
 		SolidBackgroundEditorPtr _SolidBackgroundEditor;
 	};

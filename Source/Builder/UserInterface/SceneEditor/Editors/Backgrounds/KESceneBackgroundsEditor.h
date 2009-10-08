@@ -165,7 +165,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBackgroundsEditor : public SceneBackgro
 	  public:
 		BackgroundsListListener(SceneBackgroundsEditorPtr TheSceneBackgroundsEditor);
 
-		virtual void selectionChanged(const ListSelectionEvent& e);
+		virtual void selectionChanged(const ListSelectionEventPtr e);
 	  protected :
 		SceneBackgroundsEditorPtr _SceneBackgroundsEditor;
 	};
@@ -179,7 +179,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBackgroundsEditor : public SceneBackgro
 	  public:
 		BackgroundCreateMenuButtonListener(SceneBackgroundsEditorPtr TheSceneBackgroundsEditor);
 
-        virtual void actionPerformed(const ActionEvent& e);
+        virtual void actionPerformed(const ActionEventPtr e);
 
         void setApplicationBuilder(ApplicationBuilderPtr TheApplicationBuilder);
 	  protected :
@@ -195,7 +195,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBackgroundsEditor : public SceneBackgro
 	  public:
 		BackgroundDeleteActionListener(SceneBackgroundsEditorPtr TheSceneBackgroundsEditor);
 
-        virtual void actionPerformed(const ActionEvent& e);
+        virtual void actionPerformed(const ActionEventPtr e);
 
         void setApplicationBuilder(ApplicationBuilderPtr TheApplicationBuilder);
 	  protected :
@@ -212,7 +212,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBackgroundsEditor : public SceneBackgro
 	  public:
 		BackgroundNameTextListener(SceneBackgroundsEditorPtr TheSceneBackgroundsEditor);
 
-        virtual void textValueChanged(const TextEvent& e);
+        virtual void textValueChanged(const TextEventPtr e);
 
         void setApplicationBuilder(ApplicationBuilderPtr TheApplicationBuilder);
 	  protected :

@@ -152,13 +152,13 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 	public:
 		ProjectUpdateListener(ProjectPtr TheProject);
 
-        virtual void update(const UpdateEvent& e);
-        virtual void mousePressed(const MouseEvent& e);
-        virtual void mouseReleased(const MouseEvent& e);
-        virtual void mouseMoved(const MouseEvent& e);
-        virtual void mouseDragged(const MouseEvent& e);
-        virtual void keyPressed(const KeyEvent& e);
-        virtual void keyReleased(const KeyEvent& e);
+        virtual void update(const UpdateEventPtr e);
+        virtual void mousePressed(const MouseEventPtr e);
+        virtual void mouseReleased(const MouseEventPtr e);
+        virtual void mouseMoved(const MouseEventPtr e);
+        virtual void mouseDragged(const MouseEventPtr e);
+        virtual void keyPressed(const KeyEventPtr e);
+        virtual void keyReleased(const KeyEventPtr e);
 	protected :
 		ProjectPtr _Project;
 	};
@@ -167,13 +167,13 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 
 	ProjectUpdateListener _ProjectUpdateListener;
 
-    void update(const UpdateEvent& e);
-    void mousePressed(const MouseEvent& e);
-    void mouseReleased(const MouseEvent& e);
-    void mouseMoved(const MouseEvent& e);
-    void mouseDragged(const MouseEvent& e);
-    void keyPressed(const KeyEvent& e);
-    void keyReleased(const KeyEvent& e);
+    void update(const UpdateEventPtr e);
+    void mousePressed(const MouseEventPtr e);
+    void mouseReleased(const MouseEventPtr e);
+    void mouseMoved(const MouseEventPtr e);
+    void mouseDragged(const MouseEventPtr e);
+    void keyPressed(const KeyEventPtr e);
+    void keyReleased(const KeyEventPtr e);
 
     ElapsedTimeAnimationAdvancerPtr _AnimationAdvancer;
     Real32 _TimeInScene;

@@ -113,7 +113,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationS
 	public:
 		StartScreenKeyListener(ApplicationStartScreenPtr TheApplicationStartScreen);
 
-		virtual void keyTyped(const KeyEvent& e);
+		virtual void keyTyped(const KeyEventPtr e);
 	protected :
 		ApplicationStartScreenPtr _ApplicationStartScreen;
 	};
@@ -128,7 +128,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationS
 	public:
 		BuilderButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen);
 
-		virtual void actionPerformed(const ActionEvent& e);
+		virtual void actionPerformed(const ActionEventPtr e);
 	protected :
 		ApplicationStartScreenPtr _ApplicationStartScreen;
 	};
@@ -143,7 +143,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationS
 	public:
 		PlayerButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen);
 
-		virtual void actionPerformed(const ActionEvent& e);
+		virtual void actionPerformed(const ActionEventPtr e);
 	protected :
 		ApplicationStartScreenPtr _ApplicationStartScreen;
 	};
@@ -158,7 +158,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationS
 	public:
 		ExitButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen);
 
-		virtual void actionPerformed(const ActionEvent& e);
+		virtual void actionPerformed(const ActionEventPtr e);
 	protected :
 		ApplicationStartScreenPtr _ApplicationStartScreen;
 	};
@@ -171,7 +171,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationS
 	{
 	public:
 		ScreenUpdateListener(ApplicationStartScreenPtr TheApplicationStartScreen);
-        virtual void update(const UpdateEvent& e);
+        virtual void update(const UpdateEventPtr e);
 	private:
 		ApplicationStartScreenPtr _ApplicationStartScreen;
 	};

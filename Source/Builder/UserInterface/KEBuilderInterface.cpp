@@ -620,7 +620,7 @@ void BuilderInterface::dump(      ::osg::UInt32    ,
     SLOG << "Dump BuilderInterface NI" << std::endl;
 }
 
-void BuilderInterface::CommandManagerListener::stateChanged(const ChangeEvent& e)
+void BuilderInterface::CommandManagerListener::stateChanged(const ChangeEventPtr e)
 {
 	_BuilderInterface->updateUndoRedoInterfaces(_ApplicationBuilder->getUndoManager());
 }

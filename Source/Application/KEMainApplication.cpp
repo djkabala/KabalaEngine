@@ -612,11 +612,11 @@ MainApplication::~MainApplication(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void MainApplication::MainWindowListener::windowClosing(const WindowEvent& e)
+void MainApplication::MainWindowListener::windowClosing(const WindowEventPtr e)
 {
 }
 
-void MainApplication::MainWindowListener::windowClosed(const WindowEvent& e)
+void MainApplication::MainWindowListener::windowClosed(const WindowEventPtr e)
 {
 }
 

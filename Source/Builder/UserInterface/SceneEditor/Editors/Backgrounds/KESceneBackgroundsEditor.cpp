@@ -607,7 +607,7 @@ void SceneBackgroundsEditor::dump(      ::osg::UInt32    ,
 }
 
 
-void SceneBackgroundsEditor::BackgroundsListListener::selectionChanged(const ListSelectionEvent& e)
+void SceneBackgroundsEditor::BackgroundsListListener::selectionChanged(const ListSelectionEventPtr e)
 {
 	beginEditCP(_SceneBackgroundsEditor, EditingBackgroundFieldMask);
 
@@ -632,7 +632,7 @@ void SceneBackgroundsEditor::BackgroundsListListener::selectionChanged(const Lis
 	endEditCP(_SceneBackgroundsEditor, EditingBackgroundFieldMask);
 }
 
-void SceneBackgroundsEditor::BackgroundCreateMenuButtonListener::actionPerformed(const ActionEvent& e)
+void SceneBackgroundsEditor::BackgroundCreateMenuButtonListener::actionPerformed(const ActionEventPtr e)
 {
     try
     {
@@ -646,7 +646,7 @@ void SceneBackgroundsEditor::BackgroundCreateMenuButtonListener::actionPerformed
     }
 }
 
-void SceneBackgroundsEditor::BackgroundDeleteActionListener::actionPerformed(const ActionEvent& e)
+void SceneBackgroundsEditor::BackgroundDeleteActionListener::actionPerformed(const ActionEventPtr e)
 {
     Int32 SelectedIndex = _SceneBackgroundsEditor->_ListSelectionModel->getMinSelectionIndex();
     if(SelectedIndex >= 0)
@@ -657,7 +657,7 @@ void SceneBackgroundsEditor::BackgroundDeleteActionListener::actionPerformed(con
 }
 
 
-void SceneBackgroundsEditor::BackgroundNameTextListener::textValueChanged(const TextEvent& e)
+void SceneBackgroundsEditor::BackgroundNameTextListener::textValueChanged(const TextEventPtr e)
 {
 
     Int32 SelectedIndex = _SceneBackgroundsEditor->_ListSelectionModel->getMinSelectionIndex();
@@ -665,6 +665,6 @@ void SceneBackgroundsEditor::BackgroundNameTextListener::textValueChanged(const 
     {
         CommandPtr RenameBackground = RenameSceneBackgroundCommand::create(_SceneBackgroundsEditor->_ListModel, SelectedIndex, _SceneBackgroundsEditor->_BackgroundNameTextField->getText());
         _ApplicationBuilder->getCommandManager()->executeCommand(RenameBackground);
-        Component::Ptr::dcast(e.getSource())->takeFocus();
+        Component::Ptr::dcast(e->getSource())->takeFocus();
     }
 }

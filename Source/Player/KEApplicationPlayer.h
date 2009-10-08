@@ -109,7 +109,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	public:
 		PlayerKeyListener(ApplicationPlayerPtr TheApplicationPlayer);
 
-		virtual void keyTyped(const KeyEvent& e);
+		virtual void keyTyped(const KeyEventPtr e);
 	protected :
 		ApplicationPlayerPtr _ApplicationPlayer;
 	};
@@ -120,7 +120,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
 	bool _IsDebugActive;
     void enableDebug(bool EnableDebug);
-    void keyTyped(const KeyEvent& e);
+    void keyTyped(const KeyEventPtr e);
 
     SimpleStatisticsForegroundPtr _DebugBasicStatForeground;
     SimpleStatisticsForegroundPtr _DebugRenderStatForeground;

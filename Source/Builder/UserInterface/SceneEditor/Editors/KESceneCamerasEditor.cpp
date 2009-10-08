@@ -116,7 +116,7 @@ class CameraAddButtonListener: public ActionListener
 	  public:
 
 		  CameraAddButtonListener(){}
-		  void actionPerformed(const ActionEvent& e){	
+		  void actionPerformed(const ActionEventPtr e){	
 			  int i = cameraMenuButton->getSelectionIndex();
 			  if (!i){ //matrix
 					static int i = 0;
@@ -141,7 +141,7 @@ class CameraDeleteButtonListener: public ActionListener
 	  public:
 
 		  CameraDeleteButtonListener(){}
-		  void actionPerformed(const ActionEvent& e){	
+		  void actionPerformed(const ActionEventPtr e){	
 			int i = cameraList->getSelectionModel()->getMinSelectionIndex();
 			if (i < 0) return;
 			std::string name = boost::any_cast<std::string>(cameraListModel->getElementAt(i));
@@ -158,7 +158,7 @@ class CameraListListener: public ListSelectionListener
 			  
 		  }
 
-		  virtual void selectionChanged(const ListSelectionEvent& e){
+		  virtual void selectionChanged(const ListSelectionEventPtr e){
 			  int i = cameraList->getSelectionModel()->getMinSelectionIndex();
 			  if (i < 0) return;
 			  std::string name = boost::any_cast<std::string>(cameraListModel->getElementAt(i));

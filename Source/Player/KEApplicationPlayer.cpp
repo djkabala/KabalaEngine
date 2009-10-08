@@ -143,9 +143,9 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
     }
 }
 
-void ApplicationPlayer::keyTyped(const KeyEvent& e)
+void ApplicationPlayer::keyTyped(const KeyEventPtr e)
 {
-    if(e.getKey() == KeyEvent::KEY_D && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+    if(e->getKey() == KeyEvent::KEY_D && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
     {
         enableDebug(!_IsDebugActive);
         return;
@@ -154,20 +154,20 @@ void ApplicationPlayer::keyTyped(const KeyEvent& e)
     if(_IsDebugActive)
     {
         //Force Quit
-        if(e.getKey() == KeyEvent::KEY_Q && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
+        if(e->getKey() == KeyEvent::KEY_Q && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
         {
             MainApplication::the()->exit();
         }
 
         
         //Pause Active Updates
-        if(e.getKey() == KeyEvent::KEY_SPACE)
+        if(e->getKey() == KeyEvent::KEY_SPACE)
         {
             MainApplication::the()->getProject()->togglePauseActiveUpdates();
         }
 
         //Scene Activation
-        if(e.getKey() == KeyEvent::KEY_TAB && !(e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
+        if(e->getKey() == KeyEvent::KEY_TAB && !(e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
         {
             //Move to next scene
             MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
@@ -185,7 +185,7 @@ void ApplicationPlayer::keyTyped(const KeyEvent& e)
             }
             MainApplication::the()->getProject()->setActiveScene(*SearchItor);
         }
-        else if(e.getKey() == KeyEvent::KEY_TAB && e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+        else if(e->getKey() == KeyEvent::KEY_TAB && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
         {
             //Move to previous scene
             MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
@@ -206,10 +206,10 @@ void ApplicationPlayer::keyTyped(const KeyEvent& e)
             }
             MainApplication::the()->getProject()->setActiveScene(*SearchItor);
         }
-        else if(isNumericKey(e.getKey()) && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e.getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+        else if(isNumericKey(static_cast<KeyEvent::Key>(e->getKey())) && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
         {
             //Switch To scene #
-            UInt32 SceneNumber(boost::lexical_cast<UInt32>(KeyEvent::getCharFromKey(e.getKey(),0)));
+            UInt32 SceneNumber(boost::lexical_cast<UInt32>(KeyEvent::getCharFromKey(e->getKey(),0)));
             if(SceneNumber < MainApplication::the()->getProject()->getScenes().size())
             {
                 MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().begin());
@@ -218,23 +218,23 @@ void ApplicationPlayer::keyTyped(const KeyEvent& e)
             }
         }
         //Statistic Foregrounds
-        else if(e.getKey() == KeyEvent::KEY_B && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_B && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
         {
             toggleStatForeground(_DebugBasicStatForeground);
         }
-        else if(e.getKey() == KeyEvent::KEY_R && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_R && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
         {
             toggleStatForeground(_DebugRenderStatForeground);
         }
-        else if(e.getKey() == KeyEvent::KEY_Y && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_Y && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
         {
             toggleStatForeground(_DebugPhysicsStatForeground);
         }
-        else if(e.getKey() == KeyEvent::KEY_P && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_P && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
         {
             toggleStatForeground(_DebugParticleSystemStatForeground);
         }
-        else if(e.getKey() == KeyEvent::KEY_A && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_A && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
         {
             toggleStatForeground(_DebugAnimationStatForeground);
         }
@@ -408,7 +408,7 @@ void ApplicationPlayer::dump(      ::osg::UInt32    ,
     SLOG << "Dump ApplicationPlayer NI" << std::endl;
 }
 
-void ApplicationPlayer::PlayerKeyListener::keyTyped(const KeyEvent& e)
+void ApplicationPlayer::PlayerKeyListener::keyTyped(const KeyEventPtr e)
 {
     _ApplicationPlayer->keyTyped(e);
 }

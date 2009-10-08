@@ -69,7 +69,7 @@ A CommandActionListener.
 \***************************************************************************/
 
 
-void CommandActionListener::actionPerformed(const ActionEvent& e)
+void CommandActionListener::actionPerformed(const ActionEventPtr e)
 {
 	_TheCommandManager->executeCommand(_TheCommand);
 }

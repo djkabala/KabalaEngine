@@ -117,6 +117,29 @@ SFString *ProjectBase::getSFName(void)
 }
 #endif
 
+//! Get the Project::_sfVersion field.
+inline
+const SFString *ProjectBase::getSFVersion(void) const
+{
+    return &_sfVersion;
+}
+
+//! Get the Project::_sfVersion field.
+inline
+SFString *ProjectBase::editSFVersion(void)
+{
+    return &_sfVersion;
+}
+
+#ifndef OSG_2_PREP
+//! Get the Project::_sfVersion field.
+inline
+SFString *ProjectBase::getSFVersion(void)
+{
+    return &_sfVersion;
+}
+#endif
+
 //! Get the Project::_sfMainWindowTitle field.
 inline
 const SFString *ProjectBase::getSFMainWindowTitle(void) const
@@ -560,6 +583,36 @@ inline
 void ProjectBase::setName(const std::string &value)
 {
     _sfName.setValue(value);
+}
+
+//! Get the value of the Project::_sfVersion field.
+inline
+std::string &ProjectBase::editVersion(void)
+{
+    return _sfVersion.getValue();
+}
+
+//! Get the value of the Project::_sfVersion field.
+inline
+const std::string &ProjectBase::getVersion(void) const
+{
+    return _sfVersion.getValue();
+}
+
+#ifndef OSG_2_PREP
+//! Get the value of the Project::_sfVersion field.
+inline
+std::string &ProjectBase::getVersion(void)
+{
+    return _sfVersion.getValue();
+}
+#endif
+
+//! Set the value of the Project::_sfVersion field.
+inline
+void ProjectBase::setVersion(const std::string &value)
+{
+    _sfVersion.setValue(value);
 }
 
 //! Get the value of the Project::_sfMainWindowTitle field.

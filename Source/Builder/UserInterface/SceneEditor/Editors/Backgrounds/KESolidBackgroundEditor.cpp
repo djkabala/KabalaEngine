@@ -108,7 +108,7 @@ SolidBackgroundEditor::~SolidBackgroundEditor(void)
 
 
 //Other
-void SolidBackgroundEditor::ColorChangeListener::stateChanged(const ChangeEvent& e)
+void SolidBackgroundEditor::ColorChangeListener::stateChanged(const ChangeEventPtr e)
 {
 }
 OSG_END_NAMESPACE

@@ -149,9 +149,9 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication
 	{
 	public :
 		MainWindowListener(MainApplication* TheMainApplication);
-		virtual void windowClosing(const WindowEvent& e);
+		virtual void windowClosing(const WindowEventPtr e);
 
-		virtual void windowClosed(const WindowEvent& e);
+		virtual void windowClosed(const WindowEventPtr e);
 	protected :
 		MainApplication* _MainApplication;
 	};

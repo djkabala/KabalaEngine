@@ -63,6 +63,9 @@ OSG_BEGIN_NAMESPACE
 const OSG::BitVector  ProjectBase::NameFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::NameFieldId);
 
+const OSG::BitVector  ProjectBase::VersionFieldMask = 
+    (TypeTraits<BitVector>::One << ProjectBase::VersionFieldId);
+
 const OSG::BitVector  ProjectBase::MainWindowTitleFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::MainWindowTitleFieldId);
 
@@ -125,6 +128,9 @@ const OSG::BitVector ProjectBase::MTInfluenceMask =
 // Field descriptions
 
 /*! \var std::string     ProjectBase::_sfName
+    
+*/
+/*! \var std::string     ProjectBase::_sfVersion
     
 */
 /*! \var std::string     ProjectBase::_sfMainWindowTitle
@@ -191,6 +197,11 @@ FieldDescription *ProjectBase::_desc[] =
                      NameFieldId, NameFieldMask,
                      false,
                      reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFName)),
+    new FieldDescription(SFString::getClassType(), 
+                     "Version", 
+                     VersionFieldId, VersionFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFVersion)),
     new FieldDescription(SFString::getClassType(), 
                      "MainWindowTitle", 
                      MainWindowTitleFieldId, MainWindowTitleFieldMask,
@@ -369,6 +380,7 @@ void ProjectBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 
 ProjectBase::ProjectBase(void) :
     _sfName                   (), 
+    _sfVersion                (), 
     _sfMainWindowTitle        (), 
     _sfFilePath               (), 
     _mfScenes                 (), 
@@ -397,6 +409,7 @@ ProjectBase::ProjectBase(void) :
 
 ProjectBase::ProjectBase(const ProjectBase &source) :
     _sfName                   (source._sfName                   ), 
+    _sfVersion                (source._sfVersion                ), 
     _sfMainWindowTitle        (source._sfMainWindowTitle        ), 
     _sfFilePath               (source._sfFilePath               ), 
     _mfScenes                 (source._mfScenes                 ), 
@@ -434,6 +447,11 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
     if(FieldBits::NoField != (NameFieldMask & whichField))
     {
         returnValue += _sfName.getBinSize();
+    }
+
+    if(FieldBits::NoField != (VersionFieldMask & whichField))
+    {
+        returnValue += _sfVersion.getBinSize();
     }
 
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
@@ -540,6 +558,11 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
         _sfName.copyToBin(pMem);
     }
 
+    if(FieldBits::NoField != (VersionFieldMask & whichField))
+    {
+        _sfVersion.copyToBin(pMem);
+    }
+
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
     {
         _sfMainWindowTitle.copyToBin(pMem);
@@ -641,6 +664,11 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (NameFieldMask & whichField))
     {
         _sfName.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (VersionFieldMask & whichField))
+    {
+        _sfVersion.copyFromBin(pMem);
     }
 
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
@@ -746,6 +774,9 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
     if(FieldBits::NoField != (NameFieldMask & whichField))
         _sfName.syncWith(pOther->_sfName);
 
+    if(FieldBits::NoField != (VersionFieldMask & whichField))
+        _sfVersion.syncWith(pOther->_sfVersion);
+
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
         _sfMainWindowTitle.syncWith(pOther->_sfMainWindowTitle);
 
@@ -812,6 +843,9 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 
     if(FieldBits::NoField != (NameFieldMask & whichField))
         _sfName.syncWith(pOther->_sfName);
+
+    if(FieldBits::NoField != (VersionFieldMask & whichField))
+        _sfVersion.syncWith(pOther->_sfVersion);
 
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
         _sfMainWindowTitle.syncWith(pOther->_sfMainWindowTitle);

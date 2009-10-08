@@ -120,7 +120,7 @@ void FieldColorSelectionModel::setSelectedColor(const Color4f& Value, bool isVal
         {
             dynamic_cast<SFColor4ub*>(_Target->getField(_ColorFieldID))->setValue( Color4ub(Value.red(),Value.green(),Value.blue(), Value.alpha()) );
         }
-		produceStateChanged(ChangeEvent(NullFC, getSystemTime(), ChangeEvent::STATE_CHANGED));
+        produceStateChanged(ChangeEvent::create(NullFC, getSystemTime()));
     }
 }
 
@@ -143,7 +143,7 @@ void FieldColorSelectionModel::attachColorField(FieldContainerPtr Target, UInt32
             _ColorFieldID = FieldId;
         }
     }
-    produceStateChanged(ChangeEvent(NullFC, getSystemTime(), ChangeEvent::STATE_CHANGED));
+    produceStateChanged(ChangeEvent::create(NullFC, getSystemTime()));
 }
 
 /*-------------------------------------------------------------------------*\

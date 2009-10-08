@@ -167,7 +167,7 @@ class KE_KABALAENGINELIB_DLLMAPPING BuilderInterface : public BuilderInterfaceBa
 	  public:
 		CommandManagerListener(BuilderInterfacePtr BuilderInterface);
 
-		virtual void stateChanged(const ChangeEvent& e);
+		virtual void stateChanged(const ChangeEventPtr e);
 
         void setApplicationBuilder(ApplicationBuilderPtr TheApplicationBuilder);
 	  protected :

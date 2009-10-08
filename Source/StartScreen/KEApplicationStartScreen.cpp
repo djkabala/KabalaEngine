@@ -496,30 +496,30 @@ void ApplicationStartScreen::dump(      ::osg::UInt32    ,
 }
 
 
-void ApplicationStartScreen::StartScreenKeyListener::keyTyped(const KeyEvent& e)
+void ApplicationStartScreen::StartScreenKeyListener::keyTyped(const KeyEventPtr e)
 {
-   if(e.getKey() == KeyEvent::KEY_Q && e.getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
+   if(e->getKey() == KeyEvent::KEY_Q && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
    {
 		MainApplication::the()->exit();
    }
 }
 
-void ApplicationStartScreen::BuilderButtonActionListener::actionPerformed(const ActionEvent& e)
+void ApplicationStartScreen::BuilderButtonActionListener::actionPerformed(const ActionEventPtr e)
 {
 	MainApplication::the()->attachBuilder();
 }
 
-void ApplicationStartScreen::PlayerButtonActionListener::actionPerformed(const ActionEvent& e)
+void ApplicationStartScreen::PlayerButtonActionListener::actionPerformed(const ActionEventPtr e)
 {
 	MainApplication::the()->attachPlayer();
 }
 
-void ApplicationStartScreen::ExitButtonActionListener::actionPerformed(const ActionEvent& e)
+void ApplicationStartScreen::ExitButtonActionListener::actionPerformed(const ActionEventPtr e)
 {
 	MainApplication::the()->exit();
 }
 
-void ApplicationStartScreen::ScreenUpdateListener::update(const UpdateEvent& e)
+void ApplicationStartScreen::ScreenUpdateListener::update(const UpdateEventPtr e)
 {
-    _ApplicationStartScreen->updateAnimation(e.getElapsedTime());
+    _ApplicationStartScreen->updateAnimation(e->getElapsedTime());
 }

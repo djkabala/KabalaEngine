@@ -124,7 +124,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneEditor : public SceneEditorBase
 	public :
 		EditorsTabPanelListener(SceneEditorPtr TheSceneEditor);
 		
-        virtual void stateChanged(const ChangeEvent& e);
+        virtual void stateChanged(const ChangeEventPtr e);
 	protected :
 		SceneEditorPtr _SceneEditor;
 	};

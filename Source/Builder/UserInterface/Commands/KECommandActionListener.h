@@ -49,7 +49,7 @@ protected:
 	CommandManagerPtr _TheCommandManager;
 public:
 
-	virtual void actionPerformed(const ActionEvent& e);
+	virtual void actionPerformed(const ActionEventPtr e);
 
 	virtual ~CommandActionListener(void);
 

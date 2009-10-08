@@ -63,6 +63,7 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 #include <OpenSG/OSGStringFields.h> // Name type
+#include <OpenSG/OSGStringFields.h> // Version type
 #include <OpenSG/OSGStringFields.h> // MainWindowTitle type
 #include <OpenSG/Toolbox/OSGPathType.h> // FilePath type
 #include <Project/Scene/KESceneFields.h> // Scenes type
@@ -105,7 +106,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     enum
     {
         NameFieldId                      = Inherited::NextFieldId,
-        MainWindowTitleFieldId           = NameFieldId                      + 1,
+        VersionFieldId                   = NameFieldId                      + 1,
+        MainWindowTitleFieldId           = VersionFieldId                   + 1,
         FilePathFieldId                  = MainWindowTitleFieldId           + 1,
         ScenesFieldId                    = FilePathFieldId                  + 1,
         InitialSceneFieldId              = ScenesFieldId                    + 1,
@@ -127,6 +129,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     };
 
     static const OSG::BitVector NameFieldMask;
+    static const OSG::BitVector VersionFieldMask;
     static const OSG::BitVector MainWindowTitleFieldMask;
     static const OSG::BitVector FilePathFieldMask;
     static const OSG::BitVector ScenesFieldMask;
@@ -176,6 +179,12 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
      const SFString            *getSFName           (void) const;
 #ifndef OSG_2_PREP
            SFString            *getSFName           (void);
+#endif
+
+           SFString            *editSFVersion        (void);
+     const SFString            *getSFVersion        (void) const;
+#ifndef OSG_2_PREP
+           SFString            *getSFVersion        (void);
 #endif
 
            SFString            *editSFMainWindowTitle(void);
@@ -243,6 +252,12 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
      const std::string         &getName           (void) const;
 #ifndef OSG_2_PREP
            std::string         &getName           (void);
+#endif
+
+           std::string         &editVersion        (void);
+     const std::string         &getVersion        (void) const;
+#ifndef OSG_2_PREP
+           std::string         &getVersion        (void);
 #endif
 
            std::string         &editMainWindowTitle(void);
@@ -333,6 +348,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \{                                                                 */
 
      void setName           ( const std::string &value );
+     void setVersion        ( const std::string &value );
      void setMainWindowTitle( const std::string &value );
      void setFilePath       ( const Path &value );
      void setInitialScene   ( const ScenePtr &value );
@@ -379,6 +395,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \{                                                                 */
 
     SFString            _sfName;
+    SFString            _sfVersion;
     SFString            _sfMainWindowTitle;
     SFPath              _sfFilePath;
     MFScenePtr          _mfScenes;

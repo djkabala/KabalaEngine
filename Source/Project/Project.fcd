@@ -22,6 +22,15 @@ The Project.
 	>
 	</Field>
 	<Field
+		name="Version"
+		type="std::string"
+		cardinality="single"
+		visibility="external"
+		defaultValue=""
+		access="public"
+	>
+	</Field>
+	<Field
 		name="MainWindowTitle"
 		type="std::string"
 		cardinality="single"
