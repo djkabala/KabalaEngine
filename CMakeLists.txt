@@ -222,8 +222,9 @@ TARGET_LINK_LIBRARIES(KabalaEngine
 	optimized OSGDynamics
 	optimized OSGParticleSystem
 	optimized OSGUserInterface
-#	optimized OSGGame
-#	optimized OSGSound
+    optimized OSGLua
+    optimized OSGGame
+    optimized OSGSound
 #	optimized OSGPhysics
 	optimized OSGAnimation
 	
@@ -232,8 +233,9 @@ TARGET_LINK_LIBRARIES(KabalaEngine
 	debug OSGDynamicsD
 	debug OSGParticleSystemD
 	debug OSGUserInterfaceD
-#	debug OSGGameD
-#	debug OSGSoundD
+    debug OSGLuaD
+    debug OSGGameD
+    debug OSGSoundD
 #	debug OSGPhysicsD
 	debug OSGAnimationD
    ${Boost_LIBRARIES} ${FMOD_LIBRARIES} ${ODE_LIBRARIES})
