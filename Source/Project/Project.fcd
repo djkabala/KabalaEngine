@@ -186,4 +186,9 @@ The Project.
 		access="protected"
 	>
 	</Field>
+	<ProducedMethod
+		name="SceneChanged"
+		producedEventType="ProjectEventPtr"
+	>
+	</ProducedMethod>
 </FieldContainer>

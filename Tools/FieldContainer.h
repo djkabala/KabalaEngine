@@ -14,10 +14,16 @@
 
 #include "ActionType.h"
 #include "Field.h"
+#include "ProducedMethod.h"
+#include "OSGXmlpp.h"
+
+using namespace std;
+using namespace xmlpp;
 
 class FieldContainer {
 
     friend class Field;
+    friend class ProducedMethod;
 
 private:
 
@@ -28,6 +34,8 @@ private:
     { 
         NAME_FIELD, 
         PARENT_FIELD, 
+        PARENT_HEADER_FIELD, 
+        PARENT_PRODUCER_FIELD, 
         LIBRARY_FIELD, 
         STRUCTURE_FIELD, 
         POINTERFIELDTYPES_FIELD, 
@@ -42,16 +50,34 @@ private:
         PARENTSYSTEMCOMPONENT_FIELD,
         DECORATABLE_FIELD,
         USELOCALINCLUDES_FIELD,
+        PUBLIC_READ_FIELD,
+        PRODUCED_EVENT_TYPE_FIELD,
         UNKNOWN_FIELD
     };
 
     struct KeyDic {
         FieldKey  key;
-        char      *name;
+        const char      *name;
     };
 
     ///
     static KeyDic _keyDic[];
+
+    enum NodeTokenKey 
+    { 
+        FIELD_CONTAINER_NODE_TOKEN, 
+        FIELD_NODE_TOKEN, 
+        PRODUCED_METHOD_NODE_TOKEN, 
+        UNKNOWN_NODE_TOKEN
+    };
+
+    struct NodeTokenKeyDic {
+        NodeTokenKey       key;
+        const char      *name;
+    };
+
+    ///
+    static NodeTokenKeyDic _nodeTokenKeyDic[];
 
     ///
     static const char _filePrefix[];
@@ -82,6 +108,12 @@ private:
 
   /// 
   char* _parentFieldContainer;
+  
+  /// 
+  char* _parentFieldContainerHeader;
+
+  /// 
+  char* _parentProducer;
 
   /// 
   char* _description;
@@ -112,8 +144,14 @@ private:
   ///
     std::list<Field> _fieldList;
 
+  ///
+    std::list<ProducedMethod> _producedMethodList;
+
     ///
     FieldKey findFieldKey (const char *key);
+
+    ///
+    NodeTokenKey findNodeTokenKey  ( const char *key);
     
     ///
     void putField ( std::ofstream &out, const char *prefix,
@@ -155,6 +193,21 @@ public:
 
   /// set method for attribute parentFieldContainer
   virtual void setParentFieldContainer (const char* parentFieldContainer);
+
+  /// get method for attribute parentFieldContainerHeader
+  virtual char* parentFieldContainerHeader (void) { return _parentFieldContainerHeader; }
+
+  /// set method for attribute parentFieldContainerHeader
+  virtual void setParentFieldContainerHeader (const char* parentFieldContainerHeader);
+
+  virtual bool isRootProducer(void) const {
+return (_parentProducer==0) && (_producedMethodList.size()>0);}
+
+  /// get method for attribute parentFieldContainerHeader
+  virtual char* parentProducer (void) { return _parentProducer; }
+
+  /// set method for attribute parentFieldContainerHeader
+  void setParentProducer (const char* parentProducer );
 
   /// get method for attribute description
   virtual char* description (void) { return _description; }
@@ -232,16 +285,25 @@ public:
   ///
   std::list<Field> &fieldList(void) { return _fieldList; }
 
+  ///
+  std::list<ProducedMethod> &producedMethodList(void) { return _producedMethodList; }
+
     ///
     Field *getField(unsigned index);
 
-  /// 
-  virtual bool readDesc (const char *fileName = 0);
+    /// 
+    virtual bool readDesc (const char *fileName = 0);
+
+    /// 
+    virtual bool readFieldDesc (xmlnodelist::const_iterator nI, list<Field>::iterator &npI);
+    
+    ///
+    virtual bool readProducedMethodDesc (xmlnodelist::const_iterator nI, list<ProducedMethod>::iterator &pmI);
 
     ///
     virtual bool writeTempl ( std::ofstream & out, char *fcname, 
-                                char *parentname, bool decorator,
-                                char ** templ  );
+                                char *parentname, char *parentheader, bool decorator,
+                                const char ** templ  );
 
     ///
     virtual bool writeDesc (const char *fileName = 0);

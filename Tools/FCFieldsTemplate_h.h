@@ -7,7 +7,7 @@
  * s|$|",|
  */
 
-char *FCPtrTemplate_h[]={
+const char *FCPtrTemplate_h[]={
 "/*---------------------------------------------------------------------------*\\",
 " *                             Kabala Engine                                 *",
 " *                                                                           *",
@@ -72,11 +72,23 @@ char *FCPtrTemplate_h[]={
 "@@endif",
 "@@endif",
 "",
-"@@if parentsystemcomponent",
+#if 0
+"@@if useLocalIncludes",
+"#include \"@!ParentHeaderPrefix!@OSG@!Parent!@Fields.h\"",
+"@@else",
 "#include <@!ParentHeaderPrefix!@OSG@!Parent!@Fields.h>",
+"@@endif",
+#else
+"@@if hasParentHeader",
+"#include <@!ParentHeader!@Fields.h>",
+"@@else",
+"@@if parentsystemcomponent",
+"#include \<@!ParentHeaderPrefix!@OSG@!Parent!@Fields.h\>",
 "@@else",
 "#include \"@!ParentHeaderPrefix!@KE@!Parent!@Fields.h\"",
 "@@endif",
+"@@endif",
+#endif
 "", 
 "OSG_BEGIN_NAMESPACE",
 "",

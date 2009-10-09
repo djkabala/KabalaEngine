@@ -71,6 +71,10 @@
 
 #include <boost/filesystem.hpp>
 
+#include <OpenSG/Sound/OSGSound.h>
+#include <OpenSG/Game/OSGInventory.h>
+#include <OpenSG/Lua/OSGLuaManager.h>
+
 OSG_USING_NAMESPACE
 
 /***************************************************************************\
@@ -138,6 +142,25 @@ void MainApplication::printCommandLineHelp(void) const
 
 Int32 MainApplication::run(int argc, char **argv)
 {
+    //Make Dummy Values to link in external libs
+    //Sound
+    if(Sound::getClassType().getId() == 0)
+    {
+        return -1;
+    }
+    
+    //Game
+    if(Inventory::getClassType().getId() == 0)
+    {
+        return -1;
+    }
+
+    //Lua
+    if(LuaManager::the() == NULL)
+    {
+        return -1;
+    }
+
 	//Parse the Program arguments
 	boost::program_options::variables_map OptionsVariableMap;
 	try

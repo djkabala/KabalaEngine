@@ -186,4 +186,29 @@ The Scene.
 		access="public"
 	>
 	</Field>
+	<ProducedMethod
+		name="SceneEntered"
+		producedEventType="SceneEventPtr"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="SceneExited"
+		producedEventType="SceneEventPtr"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="SceneStarted"
+		producedEventType="SceneEventPtr"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="SceneEnded"
+		producedEventType="SceneEventPtr"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="SceneReset"
+		producedEventType="SceneEventPtr"
+	>
+	</ProducedMethod>
 </FieldContainer>

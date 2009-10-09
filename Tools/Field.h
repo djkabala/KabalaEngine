@@ -34,6 +34,7 @@ class Field
     char *_description;
     char *_header;
     int   _access;
+    bool   _publicRead;
 
   protected:
 
@@ -132,6 +133,13 @@ class Field
 
   /// set method for attribute header
   virtual void setHeader ( const char* header);
+
+  /// get method for attribute public read
+  virtual bool publicRead (void) const { return _publicRead; }
+
+  /// set method for attribute publicRead
+  virtual void setPublicRead ( bool publicRead){_publicRead = publicRead; }
+  virtual void setPublicRead (const char* str );
 
   /// get method for attribute access
   virtual int access (void) const { return _access; }

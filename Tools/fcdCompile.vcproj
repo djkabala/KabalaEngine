@@ -2,10 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="FCDcompile"
-	ProjectGUID="{77623743-1948-4AC4-8227-7FF6072BD16F}"
-	RootNamespace="FCDcompile"
-	Keyword="Win32Proj"
+	Name="fcdCompile"
+	ProjectGUID="{34322B68-F53E-4390-A497-45AC61ABAFD1}"
+	RootNamespace="fcdcompile"
 	>
 	<Platforms>
 		<Platform
@@ -17,11 +16,12 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Windows/Debug"
-			IntermediateDirectory="Windows/Debug"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -37,48 +37,48 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/fcdEdit.tlb"
+				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="&quot;$(OPENSG)\..\include&quot;;."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;WINVER=0x0400;_WIN32_WINDOWS=0x0410;_WIN32_WINNT=0x0400;_OSG_HAVE_CONFIGURED_H_;OSG_BUILD_DLL;OSG_DEBUG;OSG_WITH_GLUT;OSG_WITH_GIF;OSG_WITH_TIF;OSG_WITH_JPG;FCD_TERM"
-				StringPooling="true"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;XMLPP_NOEXPORTS;FCD_TERM"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				BufferSecurityCheck="false"
-				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="$(OutDir)/"
+				PrecompiledHeaderFile=".\Debug/fcdEdit.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
-				DisableSpecificWarnings="4244;4251;4275;4290;4231;4267;4996"
-				ForcedIncludeFiles="WinSock2.h;windows.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OSGBaseD.lib OSGSystemD.lib"
-				OutputFile="$(ProjectName)D.exe"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OPENSG)&quot;"
+				OutputFile="fcdCompileD.exe"
+				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName)D.pdb"
+				ProgramDatabaseFile=".\Debug/fcdEdit.pdb"
 				SubSystem="1"
-				ImportLibrary="$(OutDir)/$(ProjectName)D.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -92,6 +92,8 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
+				OutputFile=".\Debug/fcdEdit.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -108,11 +110,12 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Windows\Release"
-			IntermediateDirectory="Windows\Release"
+			OutputDirectory=".\Release"
+			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -128,49 +131,47 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/fcdEdit.tlb"
+				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(OPENSG)\..\include&quot;;."
-				PreprocessorDefinitions="_OPT;NDEBUG;WIN32;_WINDOWS;WINVER=0x0400;_WIN32_WINDOWS=0x0410;_WIN32_WINNT=0x0400;_OSG_HAVE_CONFIGURED_H_;OSG_BUILD_DLL;OSG_WITH_GLUT;OSG_WITH_GIF;OSG_WITH_TIF;OSG_WITH_JPG;FCD_TERM"
+				AdditionalIncludeDirectories="&quot;$(OPENSG)\..\include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;FCD_TERM"
 				StringPooling="true"
-				MinimalRebuild="true"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="false"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="$(IntDir)/"
+				PrecompiledHeaderFile=".\Release/fcdEdit.pch"
+				AssemblerListingLocation=".\Release/"
+				ObjectFile=".\Release/"
+				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
-				DisableSpecificWarnings="4244;4251;4275;4290;4231;4267;4996"
-				ForcedIncludeFiles="WinSock2.h;windows.h"
+				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OSGBase.lib OSGSystem.lib"
-				OutputFile="$(ProjectName).exe"
+				OutputFile="Windows/fcdCompile.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OPENSG)&quot;"
-				IgnoreAllDefaultLibraries="false"
-				GenerateDebugInformation="false"
-				ProgramDatabaseFile=""
+				ProgramDatabaseFile=".\Release/fcdEdit.pdb"
 				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="lib/$(ProjectName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -184,6 +185,8 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
+				OutputFile=".\Release/fcdEdit.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -204,7 +207,7 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;h;hpp;hxx;hm;inl"
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
 				RelativePath=".\ActionType.h"
@@ -259,6 +262,38 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OSGShared_ptr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OSGXmlconfig.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OSGXmlparser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OSGXmlparser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OSGXmlpp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OSGXmlpp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OSGXmltokenizer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OSGXmltokenizer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ParseComandLine.cpp"
 				>
 			</File>
@@ -266,6 +301,20 @@
 				RelativePath=".\ParseComandLine.h"
 				>
 			</File>
+			<File
+				RelativePath=".\ProducedMethod.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl"
+			>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 		</Filter>
 	</Files>
 	<Globals>

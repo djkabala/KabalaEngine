@@ -45,6 +45,7 @@ const char *Field::_defaultTypeName[] =
     "ImagePtr",
     "FieldContainerPtr",
     "NodePtr"
+    "void*"
 };
 
 const char *Field::_cardinalityName[] = 
@@ -91,7 +92,8 @@ Field::Field(void) :
     _defaultHeader(NULL), 
     _description  (NULL), 
     _header       (NULL), 
-    _access       (   0)
+    _access       (   0),
+    _publicRead   (false)
 {
     
     return;
@@ -380,6 +382,19 @@ void Field::setDescription ( const char* description )
     }
     else
         _description = 0;
+}
+
+void Field::setPublicRead (const char* str )
+{
+    if ( ! strcasecmp(str, "true" ) )
+        _publicRead = true;
+    else if ( ! strcasecmp(str, "false" ) )
+        _publicRead = false;
+    else
+    {
+        cerr << "FieldContainer::setPublicRead: string " << str 
+             << " not recognized!" << endl;
+    }
 }
 
 //----------------------------------------------------------------------
