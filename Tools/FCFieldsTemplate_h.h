@@ -83,7 +83,7 @@ const char *FCPtrTemplate_h[]={
 "#include <@!ParentHeader!@Fields.h>",
 "@@else",
 "@@if parentsystemcomponent",
-"#include \<@!ParentHeaderPrefix!@OSG@!Parent!@Fields.h\>",
+"#include <@!ParentHeaderPrefix!@OSG@!Parent!@Fields.h>",
 "@@else",
 "#include \"@!ParentHeaderPrefix!@KE@!Parent!@Fields.h\"",
 "@@endif",

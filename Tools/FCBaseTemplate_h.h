@@ -88,7 +88,7 @@ const char *FCBaseTemplate_h[]={
 "#include <@!ParentHeader!@.h> // Parent",
 "@@else",
 "@@if parentsystemcomponent",
-"#include \<@!ParentHeaderPrefix!@OSG@!Parent!@.h\> // Parent",
+"#include <@!ParentHeaderPrefix!@OSG@!Parent!@.h> // Parent",
 "@@else",
 "#include \"@!ParentHeaderPrefix!@KE@!Parent!@.h\" // Parent",
 "@@endif",
