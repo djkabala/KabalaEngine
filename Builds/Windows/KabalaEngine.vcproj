@@ -161,7 +161,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OSGBase.lib OSGSystem.lib OSGToolbox.lib OSGInput.lib OSGUserInterface.lib OSGAnimation.lib OSGParticleSystem.lib OSGDynamics.lib OSGGame.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib"
+				AdditionalDependencies="OSGBase.lib OSGSystem.lib OSGToolbox.lib OSGInput.lib OSGUserInterface.lib OSGAnimation.lib OSGParticleSystem.lib OSGDynamics.lib OSGGame.lib OSGLua.lib OSGSound.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -256,6 +256,34 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Source\Project\KEProjectEvent.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\Project\KEProjectEvent.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\Project\KEProjectEvent.inl"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\Project\KEProjectEventBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\Project\KEProjectEventBase.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\Project\KEProjectEventBase.inl"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\Project\KEProjectEventFields.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Source\Project\KEProjectFields.h"
 					>
 				</File>
@@ -284,6 +312,34 @@
 					</File>
 					<File
 						RelativePath="..\..\Source\Project\Scene\KESceneBase.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Scene\KESceneEvent.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Scene\KESceneEvent.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Scene\KESceneEvent.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Scene\KESceneEventBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Scene\KESceneEventBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Scene\KESceneEventBase.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Scene\KESceneEventFields.h"
 						>
 					</File>
 					<File

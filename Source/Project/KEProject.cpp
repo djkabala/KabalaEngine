@@ -587,11 +587,29 @@ void Project::mouseMoved(const MouseEventPtr e)
 
     m.mult(YRot_Mat);
     m.mult(XRot_Mat);
-    setCameraBeaconMatrix(m);
+   // setCameraBeaconMatrix(m);
 }
 
 void Project::mouseDragged(const MouseEventPtr e)
 {
+	if(e->getButton() == MouseEvent::BUTTON1)
+	{
+			Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
+		//Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
+		//m.multMatrixVec(Local_x);
+		//m.multMatrixVec(Local_y);
+
+		Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e->getDelta().x() * _YRotMotionFactor);
+		Matrix YRot_Mat;
+		YRot_Mat.setRotate(YRot_Quat);
+		Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0),-e->getDelta().y() * _XRotMotionFactor);
+		Matrix XRot_Mat;
+		XRot_Mat.setRotate(XRot_Quat);
+
+		m.mult(YRot_Mat);
+		m.mult(XRot_Mat);
+	    setCameraBeaconMatrix(m);
+	}
 }
 
 void Project::setDefaults(void)
