@@ -65,6 +65,20 @@ OSG::UInt32 ProjectBase::getClassTypeId(void)
     return _type.getId(); 
 } 
 
+//! access the producer type of the class
+inline
+const EventProducerType &ProjectBase::getProducerClassType(void)
+{
+    return _producerType;
+}
+
+//! access the producer type id of the class
+inline
+UInt32 ProjectBase::getProducerClassTypeId(void)
+{
+    return _producerType.getId();
+}
+
 //! create a new instance of the class
 inline
 ProjectPtr ProjectBase::create(void) 
@@ -895,4 +909,72 @@ const MFParticleSystemPtr &ProjectBase::getActiveParticleSystems(void) const
 }
 
 #endif
+
+inline
+EventConnection ProjectBase::attachActivity(ActivityPtr TheActivity, UInt32 ProducedEventId)
+{
+    return _Producer.attachActivity(TheActivity, ProducedEventId);
+}
+
+inline
+bool ProjectBase::isActivityAttached(ActivityPtr TheActivity, UInt32 ProducedEventId) const
+{
+    return _Producer.isActivityAttached(TheActivity, ProducedEventId);
+}
+
+inline
+UInt32 ProjectBase::getNumActivitiesAttached(UInt32 ProducedEventId) const
+{
+    return _Producer.getNumActivitiesAttached(ProducedEventId);
+}
+
+inline
+ActivityPtr ProjectBase::getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const
+{
+    return _Producer.getAttachedActivity(ProducedEventId,ActivityIndex);
+}
+
+inline
+void ProjectBase::detachActivity(ActivityPtr TheActivity, UInt32 ProducedEventId)
+{
+    _Producer.detachActivity(TheActivity, ProducedEventId);
+}
+
+inline
+UInt32 ProjectBase::getNumProducedEvents(void) const
+{
+    return _Producer.getNumProducedEvents();
+}
+
+inline
+const MethodDescription *ProjectBase::getProducedEventDescription(const Char8 *ProducedEventName) const
+{
+    return _Producer.getProducedEventDescription(ProducedEventName);
+}
+
+inline
+const MethodDescription *ProjectBase::getProducedEventDescription(UInt32 ProducedEventId) const
+{
+    return _Producer.getProducedEventDescription(ProducedEventId);
+}
+
+inline
+UInt32 ProjectBase::getProducedEventId(const Char8 *ProducedEventName) const
+{
+    return _Producer.getProducedEventId(ProducedEventName);
+}
+
+inline
+SFEventProducerPtr *ProjectBase::editSFEventProducer(void)
+{
+    return &_sfEventProducer;
+}
+
+//! Get the value of the Project::_sfEventProducer field.
+inline
+EventProducerPtr &ProjectBase::editEventProducer(void)
+{
+    return _sfEventProducer.getValue();
+}
+
 OSG_END_NAMESPACE

@@ -41,6 +41,7 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KESceneBase.h"
+#include "KESceneEvent.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -96,6 +97,10 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
 
 	void enter(void);
 	void exit(void);
+	void start(void);
+	void end(void);
+	void reset(void);
+
 	void createDefaults(void);
 	void initDefaults(void);
 
@@ -103,6 +108,11 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
 
 	void attachNames(void);
     
+    void producerSceneEntered(const SceneEventPtr e);
+    void producerSceneExited(const SceneEventPtr e);
+    void producerSceneStarted(const SceneEventPtr e);
+    void producerSceneEnded(const SceneEventPtr e);
+    void producerSceneReset(const SceneEventPtr e);
     /*==========================  PRIVATE  ================================*/
   private:
 

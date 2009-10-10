@@ -67,6 +67,16 @@ void SceneEvent::initMethod (void)
 {
 }
 
+SceneEventPtr SceneEvent::create(FieldContainerPtr Source,
+                                 Time TimeStamp)
+{
+    SceneEventPtr TheEvent(SceneEvent::createEmpty());
+
+    TheEvent->setSource(Source);
+    TheEvent->setTimeStamp(TimeStamp);
+
+    return TheEvent;
+}
 
 /***************************************************************************\
  *                           Instance methods                              *

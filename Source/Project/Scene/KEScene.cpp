@@ -133,8 +133,24 @@ void Scene::enter(void)
     }
 
 
-
+    producerSceneEntered(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 }
+
+void Scene::start(void)
+{
+    producerSceneStarted(SceneEvent::create(ScenePtr(this), getTimeStamp()));
+}
+
+void Scene::end(void)
+{
+    producerSceneEnded(SceneEvent::create(ScenePtr(this), getTimeStamp()));
+}
+
+void Scene::reset(void)
+{
+    producerSceneReset(SceneEvent::create(ScenePtr(this), getTimeStamp()));
+}
+
 
 void Scene::exit(void)
 {
@@ -151,6 +167,7 @@ void Scene::exit(void)
         getInternalParentProject()->removeActiveParticleSystem(getInitialParticleSystems(i));
     }
 
+    producerSceneExited(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 }
 
 void Scene::createDefaults(void)
@@ -254,6 +271,31 @@ void Scene::attachNames(void)
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
+void Scene::producerSceneEntered(const SceneEventPtr e)
+{
+    _Producer.produceEvent(SceneEnteredMethodId, e);
+}
+
+void Scene::producerSceneExited(const SceneEventPtr e)
+{
+    _Producer.produceEvent(SceneExitedMethodId, e);
+}
+
+void Scene::producerSceneStarted(const SceneEventPtr e)
+{
+    _Producer.produceEvent(SceneStartedMethodId, e);
+}
+
+void Scene::producerSceneEnded(const SceneEventPtr e)
+{
+    _Producer.produceEvent(SceneEndedMethodId, e);
+}
+
+void Scene::producerSceneReset(const SceneEventPtr e)
+{
+    _Producer.produceEvent(SceneResetMethodId, e);
+}
+
 
 /*----------------------- constructors & destructors ----------------------*/
 

@@ -61,7 +61,7 @@ def main():
    GenFCsPyDir = os.path.split(sys.argv[0])[0]
    if os.name == "posix":
       if sys.platform == "darwin":
-          FcdCompilePath = os.path.join(GenFCsPyDir, "../Tools/OS X/fcdCompile")
+          FcdCompilePath = os.path.join(GenFCsPyDir, "../Tools/OS\ X/fcdCompile")
       else:
           FcdCompilePath = os.path.join(GenFCsPyDir, "../Tools/Linux/fcdCompile")
    else:

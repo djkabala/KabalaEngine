@@ -73,6 +73,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectEvent : public ProjectEventBase
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
+    static ProjectEventPtr create(FieldContainerPtr Source,
+                                  Time TimeStamp);
     /*=========================  PROTECTED  ===============================*/
   protected:
 

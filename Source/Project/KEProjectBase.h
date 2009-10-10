@@ -85,6 +85,11 @@
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ActiveParticleSystems type
 
 #include "KEProjectFields.h"
+#include <OpenSG/Toolbox/OSGEventProducer.h>
+#include <OpenSG/Toolbox/OSGEventProducerType.h>
+#include <OpenSG/Toolbox/OSGMethodDescription.h>
+#include <OpenSG/Toolbox/OSGEventProducerPtrType.h>
+
 OSG_BEGIN_NAMESPACE
 
 class Project;
@@ -125,7 +130,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
         InternalActiveViewportFieldId    = InternalActiveCameraFieldId      + 1,
         ActiveAnimationsFieldId          = InternalActiveViewportFieldId    + 1,
         ActiveParticleSystemsFieldId     = ActiveAnimationsFieldId          + 1,
-        NextFieldId                      = ActiveParticleSystemsFieldId     + 1
+        EventProducerFieldId             = ActiveParticleSystemsFieldId     + 1,
+        NextFieldId                      = EventProducerFieldId             + 1
     };
 
     static const OSG::BitVector NameFieldMask;
@@ -148,6 +154,19 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     static const OSG::BitVector InternalActiveViewportFieldMask;
     static const OSG::BitVector ActiveAnimationsFieldMask;
     static const OSG::BitVector ActiveParticleSystemsFieldMask;
+    static const OSG::BitVector EventProducerFieldMask;
+
+
+    enum
+    {
+        ProjectStartedMethodId  = 1,
+        ProjectStoppingMethodId = ProjectStartedMethodId  + 1,
+        ProjectStoppedMethodId  = ProjectStoppingMethodId + 1,
+        ProjectResetMethodId    = ProjectStoppedMethodId  + 1,
+        SceneChangedMethodId    = ProjectResetMethodId    + 1,
+        NextMethodId            = SceneChangedMethodId    + 1
+    };
+
 
 
     static const OSG::BitVector MTInfluenceMask;
@@ -158,6 +177,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 
     static        FieldContainerType &getClassType    (void); 
     static        UInt32              getClassTypeId  (void); 
+    static const  EventProducerType  &getProducerClassType  (void); 
+    static        UInt32              getProducerClassTypeId(void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -204,15 +225,12 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 
            MFNodePtr           *editMFModelNodes     (void);
      const MFNodePtr           *getMFModelNodes     (void) const;
-     const MFNodePtr           *getMFInternalActiveModelNodes(void) const;
 
            MFNodePtr           *editMFGlobalActiveModelNodes(void);
      const MFNodePtr           *getMFGlobalActiveModelNodes(void) const;
 
            MFCameraPtr         *editMFCameras        (void);
      const MFCameraPtr         *getMFCameras        (void) const;
-     const SFCameraPtr         *getSFInternalActiveCamera(void) const;
-     const SFViewportPtr       *getSFInternalActiveViewport(void) const;
 
 
            std::string         &editName           (void);
@@ -232,9 +250,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 
 
 
-     const CameraPtr           &getInternalActiveCamera(void) const;
 
-     const ViewportPtr         &getInternalActiveViewport(void) const;
 
            ScenePtr            &editScenes         (const UInt32 index);
      const ScenePtr            &getScenes         (const UInt32 index) const;
@@ -272,7 +288,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
      const MFNodePtr           &getModelNodes     (void) const;
 #endif
 
-     const NodePtr             &getInternalActiveModelNodes(const UInt32 index) const;
 
            NodePtr             &editGlobalActiveModelNodes(const UInt32 index);
      const NodePtr             &getGlobalActiveModelNodes(const UInt32 index) const;
@@ -300,6 +315,22 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
      void setMainWindowTitle( const std::string &value );
      void setFilePath       ( const Path &value );
      void setInitialScene   ( const ScenePtr &value );
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Method Produced Get                           */
+    /*! \{                                                                 */
+
+    virtual const EventProducerType &getProducerType(void) const; 
+    EventConnection attachActivity(ActivityPtr TheActivity, UInt32 ProducedEventId);
+    bool isActivityAttached(ActivityPtr TheActivity, UInt32 ProducedEventId) const;
+    UInt32 getNumActivitiesAttached(UInt32 ProducedEventId) const;
+    ActivityPtr getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const;
+    void detachActivity(ActivityPtr TheActivity, UInt32 ProducedEventId);
+    UInt32 getNumProducedEvents(void) const;
+    const MethodDescription *getProducedEventDescription(const Char8 *ProducedEventName) const;
+    const MethodDescription *getProducedEventDescription(UInt32 ProducedEventId) const;
+    UInt32 getProducedEventId(const Char8 *ProducedEventName) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -337,6 +368,10 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
   protected:
+    EventProducer _Producer;
+
+    SFEventProducerPtr *editSFEventProducer(void);
+    EventProducerPtr &editEventProducer(void);
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
@@ -364,6 +399,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     MFParticleSystemPtr   _mfActiveParticleSystems;
 
     /*! \}                                                                 */
+    SFEventProducerPtr _sfEventProducer;
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
@@ -390,8 +426,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
            MFForegroundPtr     *editMFInternalActiveForegrounds(void);
      const MFForegroundPtr     *getMFInternalActiveForegrounds(void) const;
            MFNodePtr           *editMFInternalActiveModelNodes(void);
+     const MFNodePtr           *getMFInternalActiveModelNodes(void) const;
            SFCameraPtr         *editSFInternalActiveCamera(void);
+     const SFCameraPtr         *getSFInternalActiveCamera(void) const;
            SFViewportPtr       *editSFInternalActiveViewport(void);
+     const SFViewportPtr       *getSFInternalActiveViewport(void) const;
            MFAnimationPtr      *editMFActiveAnimations(void);
      const MFAnimationPtr      *getMFActiveAnimations(void) const;
            MFParticleSystemPtr *editMFActiveParticleSystems(void);
@@ -402,7 +441,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
            BackgroundPtr       &editInternalActiveBackground(void);
      const BackgroundPtr       &getInternalActiveBackground(void) const;
            CameraPtr           &editInternalActiveCamera(void);
+     const CameraPtr           &getInternalActiveCamera(void) const;
            ViewportPtr         &editInternalActiveViewport(void);
+     const ViewportPtr         &getInternalActiveViewport(void) const;
            ForegroundPtr       &editInternalActiveForegrounds(UInt32 index);
 #ifndef OSG_2_PREP
            MFForegroundPtr     &getInternalActiveForegrounds(void);
@@ -414,6 +455,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
            MFNodePtr           &getInternalActiveModelNodes(void);
      const MFNodePtr           &getInternalActiveModelNodes(void) const;
 #endif
+     const NodePtr             &getInternalActiveModelNodes(UInt32 index) const;
            AnimationPtr        &editActiveAnimations(UInt32 index);
 #ifndef OSG_2_PREP
            MFAnimationPtr      &getActiveAnimations(void);
@@ -473,6 +515,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
   private:
 
     friend class FieldContainer;
+
+    static MethodDescription   *_methodDesc[];
+    static EventProducerType _producerType;
 
     static FieldDescription   *_desc[];
     static FieldContainerType  _type;

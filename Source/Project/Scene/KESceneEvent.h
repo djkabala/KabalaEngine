@@ -73,6 +73,9 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneEvent : public SceneEventBase
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
+
+    static SceneEventPtr create(FieldContainerPtr Source,
+                                Time TimeStamp); 
     /*=========================  PROTECTED  ===============================*/
   protected:
 

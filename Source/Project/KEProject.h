@@ -41,6 +41,7 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KEProjectBase.h"
+#include "KEProjectEvent.h"
 
 #include <OpenSG/Toolbox/OSGPathType.h>
 #include <OpenSG/Input/OSGWindowEventProducerFields.h>
@@ -84,6 +85,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     /*! \}                                                                 */
 
 	void start(void);
+
+	void reset(void);
 
 	void stop(void);
 
@@ -196,6 +199,12 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void updateNavigatorSceneAttachment(void);
     void setCameraBeaconMatrix(const Matrix& m);
     ViewportPtr createDefaultViewport(void) const;
+
+    void produceSceneChanged(const ProjectEventPtr e);
+    void produceProjectStarted(const ProjectEventPtr e);
+    void produceProjectStopping(const ProjectEventPtr e);
+    void produceProjectStopped(const ProjectEventPtr e);
+    void produceProjectReset(const ProjectEventPtr e);
     
     /*==========================  PRIVATE  ================================*/
   private:

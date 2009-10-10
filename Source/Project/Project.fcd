@@ -187,6 +187,26 @@ The Project.
 	>
 	</Field>
 	<ProducedMethod
+		name="ProjectStarted"
+		producedEventType="ProjectEventPtr"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="ProjectStopping"
+		producedEventType="ProjectEventPtr"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="ProjectStopped"
+		producedEventType="ProjectEventPtr"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="ProjectReset"
+		producedEventType="ProjectEventPtr"
+	>
+	</ProducedMethod>
+	<ProducedMethod
 		name="SceneChanged"
 		producedEventType="ProjectEventPtr"
 	>

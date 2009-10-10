@@ -172,10 +172,25 @@ void Project::start(void)
     //MainApplication::the()->getMainWindowEventProducer()->setShowCursor(false);
     //MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
     setDefaults();
+
+    produceProjectStarted(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
+}
+
+void Project::reset(void)
+{
+	//If I have an initial Scene then enter it
+	if(getInitialScene() != NullFC)
+	{
+		setActiveScene(getInitialScene());
+	}
+
+    produceProjectReset(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
 
 void Project::stop(void)
 {
+    produceProjectStopping(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
+
 	setActiveScene(NullFC);
 	if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC && MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
 	{
@@ -185,6 +200,8 @@ void Project::stop(void)
 	}
     //Dettach the update listener
     MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_ProjectUpdateListener);
+
+    produceProjectStopped(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
 
 void Project::setActiveScene(ScenePtr TheScene)
@@ -207,6 +224,7 @@ void Project::setActiveScene(ScenePtr TheScene)
                 updateNavigatorSceneAttachment();
             }
 		}
+        produceSceneChanged(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 
         //Reset Animation Advancer
         _AnimationAdvancer->reset();
@@ -588,6 +606,30 @@ void Project::setDefaults(void)
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
+void Project::produceSceneChanged(const ProjectEventPtr e)
+{
+    _Producer.produceEvent(SceneChangedMethodId, e);
+}
+
+void Project::produceProjectStarted(const ProjectEventPtr e)
+{
+    _Producer.produceEvent(ProjectStartedMethodId, e);
+}
+
+void Project::produceProjectStopping(const ProjectEventPtr e)
+{
+    _Producer.produceEvent(ProjectStoppingMethodId, e);
+}
+
+void Project::produceProjectStopped(const ProjectEventPtr e)
+{
+    _Producer.produceEvent(ProjectStoppedMethodId, e);
+}
+
+void Project::produceProjectReset(const ProjectEventPtr e)
+{
+    _Producer.produceEvent(ProjectResetMethodId, e);
+}
 /*----------------------- constructors & destructors ----------------------*/
 
 Project::Project(void) :

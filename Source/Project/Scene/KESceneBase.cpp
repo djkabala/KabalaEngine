@@ -120,6 +120,9 @@ const OSG::BitVector  SceneBase::ParticleSystemsFieldMask =
 const OSG::BitVector  SceneBase::InitialParticleSystemsFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::InitialParticleSystemsFieldId);
 
+const OSG::BitVector  SceneBase::EventProducerFieldMask =
+    (TypeTraits<BitVector>::One << SceneBase::EventProducerFieldId);
+
 const OSG::BitVector SceneBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
     (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
@@ -292,6 +295,12 @@ FieldDescription *SceneBase::_desc[] =
                      InitialParticleSystemsFieldId, InitialParticleSystemsFieldMask,
                      false,
                      reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialParticleSystems))
+    , 
+    new FieldDescription(SFEventProducerPtr::getClassType(), 
+                     "EventProducer", 
+                     EventProducerFieldId,EventProducerFieldMask,
+                     true,
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFEventProducer))
 };
 
 
@@ -304,6 +313,39 @@ FieldContainerType SceneBase::_type(
     _desc,
     sizeof(_desc));
 
+//! Scene Produced Methods
+
+MethodDescription *SceneBase::_methodDesc[] =
+{
+    new MethodDescription("SceneEntered", 
+                     SceneEnteredMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("SceneExited", 
+                     SceneExitedMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("SceneStarted", 
+                     SceneStartedMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("SceneEnded", 
+                     SceneEndedMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("SceneReset", 
+                     SceneResetMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod())
+};
+
+EventProducerType SceneBase::_producerType(
+    "SceneProducerType",
+    "EventProducerType",
+    NULL,
+    InitEventProducerFunctor(),
+    _methodDesc,
+    sizeof(_methodDesc));
 //OSG_FIELD_CONTAINER_DEF(SceneBase, ScenePtr)
 
 /*------------------------------ get -----------------------------------*/
@@ -317,6 +359,11 @@ const FieldContainerType &SceneBase::getType(void) const
 {
     return _type;
 } 
+
+const EventProducerType &SceneBase::getProducerType(void) const
+{
+    return _producerType;
+}
 
 
 FieldContainerPtr SceneBase::shallowCopy(void) const 
@@ -379,6 +426,7 @@ void SceneBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 #endif
 
 SceneBase::SceneBase(void) :
+    _Producer(&getProducerType()),
     _sfInternalParentProject  (ProjectPtr(NullFC)), 
     _sfName                   (), 
     _mfBackgrounds            (), 
@@ -399,6 +447,7 @@ SceneBase::SceneBase(void) :
     _sfTimeInScene            (), 
     _mfParticleSystems        (), 
     _mfInitialParticleSystems (), 
+    _sfEventProducer(&_Producer),
     Inherited() 
 {
 }
@@ -408,6 +457,7 @@ SceneBase::SceneBase(void) :
 #endif
 
 SceneBase::SceneBase(const SceneBase &source) :
+    _Producer(&source.getProducerType()),
     _sfInternalParentProject  (source._sfInternalParentProject  ), 
     _sfName                   (source._sfName                   ), 
     _mfBackgrounds            (source._mfBackgrounds            ), 
@@ -428,6 +478,7 @@ SceneBase::SceneBase(const SceneBase &source) :
     _sfTimeInScene            (source._sfTimeInScene            ), 
     _mfParticleSystems        (source._mfParticleSystems        ), 
     _mfInitialParticleSystems (source._mfInitialParticleSystems ), 
+    _sfEventProducer(&_Producer),
     Inherited                 (source)
 {
 }
@@ -544,6 +595,11 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
         returnValue += _mfInitialParticleSystems.getBinSize();
     }
 
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        returnValue += _sfEventProducer.getBinSize();
+    }
+
 
     return returnValue;
 }
@@ -651,6 +707,11 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
     {
         _mfInitialParticleSystems.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        _sfEventProducer.copyToBin(pMem);
     }
 
 
@@ -761,6 +822,11 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
         _mfInitialParticleSystems.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        _sfEventProducer.copyFromBin(pMem);
+    }
+
 
 }
 
@@ -830,6 +896,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 
     if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
         _mfInitialParticleSystems.syncWith(pOther->_mfInitialParticleSystems);
+
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+        _sfEventProducer.syncWith(pOther->_sfEventProducer);
 
 
 }
@@ -962,6 +1031,7 @@ DataType FieldDataTraits<ScenePtr>::_type("ScenePtr", "AttachmentContainerPtr");
 
 OSG_DLLEXPORT_SFIELD_DEF1(ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 OSG_DLLEXPORT_MFIELD_DEF1(ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+
 
 OSG_END_NAMESPACE
 

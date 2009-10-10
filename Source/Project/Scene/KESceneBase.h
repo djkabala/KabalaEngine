@@ -62,6 +62,7 @@
 #include <OpenSG/OSGCoredNodePtr.h>
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
+
 #include <Project/KEProjectFields.h> // InternalParentProject type
 #include <OpenSG/OSGStringFields.h> // Name type
 #include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
@@ -84,6 +85,10 @@
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // InitialParticleSystems type
 
 #include "KESceneFields.h"
+#include <OpenSG/Toolbox/OSGEventProducer.h>
+#include <OpenSG/Toolbox/OSGEventProducerType.h>
+#include <OpenSG/Toolbox/OSGMethodDescription.h>
+#include <OpenSG/Toolbox/OSGEventProducerPtrType.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -125,7 +130,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
         TimeInSceneFieldId             = InitialAnimationsFieldId       + 1,
         ParticleSystemsFieldId         = TimeInSceneFieldId             + 1,
         InitialParticleSystemsFieldId  = ParticleSystemsFieldId         + 1,
-        NextFieldId                    = InitialParticleSystemsFieldId  + 1
+        EventProducerFieldId           = InitialParticleSystemsFieldId  + 1,
+        NextFieldId                    = EventProducerFieldId           + 1
     };
 
     static const OSG::BitVector InternalParentProjectFieldMask;
@@ -148,6 +154,19 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     static const OSG::BitVector TimeInSceneFieldMask;
     static const OSG::BitVector ParticleSystemsFieldMask;
     static const OSG::BitVector InitialParticleSystemsFieldMask;
+    static const OSG::BitVector EventProducerFieldMask;
+
+
+    enum
+    {
+        SceneEnteredMethodId = 1,
+        SceneExitedMethodId  = SceneEnteredMethodId + 1,
+        SceneStartedMethodId = SceneExitedMethodId  + 1,
+        SceneEndedMethodId   = SceneStartedMethodId + 1,
+        SceneResetMethodId   = SceneEndedMethodId   + 1,
+        NextMethodId         = SceneResetMethodId   + 1
+    };
+
 
 
     static const OSG::BitVector MTInfluenceMask;
@@ -158,6 +177,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
     static        FieldContainerType &getClassType    (void); 
     static        UInt32              getClassTypeId  (void); 
+    static const  EventProducerType  &getProducerClassType  (void); 
+    static        UInt32              getProducerClassTypeId(void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -177,107 +198,56 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
            SFString            *editSFName           (void);
      const SFString            *getSFName           (void) const;
-#ifndef OSG_2_PREP
-           SFString            *getSFName           (void);
-#endif
 
            MFBackgroundPtr     *editMFBackgrounds    (void);
      const MFBackgroundPtr     *getMFBackgrounds    (void) const;
-#ifndef OSG_2_PREP
-           MFBackgroundPtr     *getMFBackgrounds    (void);
-#endif
 
            MFUIDrawingSurfacePtr *editMFUIDrawingSurfaces(void);
      const MFUIDrawingSurfacePtr *getMFUIDrawingSurfaces(void) const;
-#ifndef OSG_2_PREP
-           MFUIDrawingSurfacePtr *getMFUIDrawingSurfaces(void);
-#endif
 
            SFBackgroundPtr     *editSFInitialBackground(void);
      const SFBackgroundPtr     *getSFInitialBackground(void) const;
-#ifndef OSG_2_PREP
-           SFBackgroundPtr     *getSFInitialBackground(void);
-#endif
 
            MFForegroundPtr     *editMFForegrounds    (void);
      const MFForegroundPtr     *getMFForegrounds    (void) const;
-#ifndef OSG_2_PREP
-           MFForegroundPtr     *getMFForegrounds    (void);
-#endif
 
            MFForegroundPtr     *editMFInitialForegrounds(void);
      const MFForegroundPtr     *getMFInitialForegrounds(void) const;
-#ifndef OSG_2_PREP
-           MFForegroundPtr     *getMFInitialForegrounds(void);
-#endif
 
            MFNodePtr           *editMFModelNodes     (void);
      const MFNodePtr           *getMFModelNodes     (void) const;
-#ifndef OSG_2_PREP
-           MFNodePtr           *getMFModelNodes     (void);
-#endif
 
            MFNodePtr           *editMFInitialModelNodes(void);
      const MFNodePtr           *getMFInitialModelNodes(void) const;
-#ifndef OSG_2_PREP
-           MFNodePtr           *getMFInitialModelNodes(void);
-#endif
 
            MFCameraPtr         *editMFCameras        (void);
      const MFCameraPtr         *getMFCameras        (void) const;
-#ifndef OSG_2_PREP
-           MFCameraPtr         *getMFCameras        (void);
-#endif
 
            SFCameraPtr         *editSFInitialCamera  (void);
      const SFCameraPtr         *getSFInitialCamera  (void) const;
-#ifndef OSG_2_PREP
-           SFCameraPtr         *getSFInitialCamera  (void);
-#endif
 
            MFAnimationPtr      *editMFAnimations     (void);
      const MFAnimationPtr      *getMFAnimations     (void) const;
-#ifndef OSG_2_PREP
-           MFAnimationPtr      *getMFAnimations     (void);
-#endif
 
            MFAnimationPtr      *editMFInitialAnimations(void);
      const MFAnimationPtr      *getMFInitialAnimations(void) const;
-#ifndef OSG_2_PREP
-           MFAnimationPtr      *getMFInitialAnimations(void);
-#endif
 
            SFReal32            *editSFTimeInScene    (void);
      const SFReal32            *getSFTimeInScene    (void) const;
-#ifndef OSG_2_PREP
-           SFReal32            *getSFTimeInScene    (void);
-#endif
 
            MFParticleSystemPtr *editMFParticleSystems(void);
      const MFParticleSystemPtr *getMFParticleSystems(void) const;
-#ifndef OSG_2_PREP
-           MFParticleSystemPtr *getMFParticleSystems(void);
-#endif
 
            MFParticleSystemPtr *editMFInitialParticleSystems(void);
      const MFParticleSystemPtr *getMFInitialParticleSystems(void) const;
-#ifndef OSG_2_PREP
-           MFParticleSystemPtr *getMFInitialParticleSystems(void);
-#endif
 
 
 
            std::string         &editName           (void);
      const std::string         &getName           (void) const;
-#ifndef OSG_2_PREP
-           std::string         &getName           (void);
-#endif
 
            BackgroundPtr       &editInitialBackground(void);
      const BackgroundPtr       &getInitialBackground(void) const;
-#ifndef OSG_2_PREP
-           BackgroundPtr       &getInitialBackground(void);
-#endif
 
 
 
@@ -285,20 +255,13 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
            CameraPtr           &editInitialCamera  (void);
      const CameraPtr           &getInitialCamera  (void) const;
-#ifndef OSG_2_PREP
-           CameraPtr           &getInitialCamera  (void);
-#endif
 
            Real32              &editTimeInScene    (void);
      const Real32              &getTimeInScene    (void) const;
-#ifndef OSG_2_PREP
-           Real32              &getTimeInScene    (void);
-#endif
 
            BackgroundPtr       &editBackgrounds    (const UInt32 index);
      const BackgroundPtr       &getBackgrounds    (const UInt32 index) const;
 #ifndef OSG_2_PREP
-           BackgroundPtr       &getBackgrounds    (const UInt32 index);
            MFBackgroundPtr     &getBackgrounds    (void);
      const MFBackgroundPtr     &getBackgrounds    (void) const;
 #endif
@@ -306,7 +269,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            UIDrawingSurfacePtr &editUIDrawingSurfaces(const UInt32 index);
      const UIDrawingSurfacePtr &getUIDrawingSurfaces(const UInt32 index) const;
 #ifndef OSG_2_PREP
-           UIDrawingSurfacePtr &getUIDrawingSurfaces(const UInt32 index);
            MFUIDrawingSurfacePtr &getUIDrawingSurfaces(void);
      const MFUIDrawingSurfacePtr &getUIDrawingSurfaces(void) const;
 #endif
@@ -314,7 +276,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            ForegroundPtr       &editForegrounds    (const UInt32 index);
      const ForegroundPtr       &getForegrounds    (const UInt32 index) const;
 #ifndef OSG_2_PREP
-           ForegroundPtr       &getForegrounds    (const UInt32 index);
            MFForegroundPtr     &getForegrounds    (void);
      const MFForegroundPtr     &getForegrounds    (void) const;
 #endif
@@ -322,7 +283,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            ForegroundPtr       &editInitialForegrounds(const UInt32 index);
      const ForegroundPtr       &getInitialForegrounds(const UInt32 index) const;
 #ifndef OSG_2_PREP
-           ForegroundPtr       &getInitialForegrounds(const UInt32 index);
            MFForegroundPtr     &getInitialForegrounds(void);
      const MFForegroundPtr     &getInitialForegrounds(void) const;
 #endif
@@ -330,7 +290,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            NodePtr             &editModelNodes     (const UInt32 index);
      const NodePtr             &getModelNodes     (const UInt32 index) const;
 #ifndef OSG_2_PREP
-           NodePtr             &getModelNodes     (const UInt32 index);
            MFNodePtr           &getModelNodes     (void);
      const MFNodePtr           &getModelNodes     (void) const;
 #endif
@@ -338,7 +297,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            NodePtr             &editInitialModelNodes(const UInt32 index);
      const NodePtr             &getInitialModelNodes(const UInt32 index) const;
 #ifndef OSG_2_PREP
-           NodePtr             &getInitialModelNodes(const UInt32 index);
            MFNodePtr           &getInitialModelNodes(void);
      const MFNodePtr           &getInitialModelNodes(void) const;
 #endif
@@ -346,7 +304,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            CameraPtr           &editCameras        (const UInt32 index);
      const CameraPtr           &getCameras        (const UInt32 index) const;
 #ifndef OSG_2_PREP
-           CameraPtr           &getCameras        (const UInt32 index);
            MFCameraPtr         &getCameras        (void);
      const MFCameraPtr         &getCameras        (void) const;
 #endif
@@ -354,7 +311,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            AnimationPtr        &editAnimations     (const UInt32 index);
      const AnimationPtr        &getAnimations     (const UInt32 index) const;
 #ifndef OSG_2_PREP
-           AnimationPtr        &getAnimations     (const UInt32 index);
            MFAnimationPtr      &getAnimations     (void);
      const MFAnimationPtr      &getAnimations     (void) const;
 #endif
@@ -362,7 +318,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            AnimationPtr        &editInitialAnimations(const UInt32 index);
      const AnimationPtr        &getInitialAnimations(const UInt32 index) const;
 #ifndef OSG_2_PREP
-           AnimationPtr        &getInitialAnimations(const UInt32 index);
            MFAnimationPtr      &getInitialAnimations(void);
      const MFAnimationPtr      &getInitialAnimations(void) const;
 #endif
@@ -370,7 +325,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            ParticleSystemPtr   &editParticleSystems(const UInt32 index);
      const ParticleSystemPtr   &getParticleSystems(const UInt32 index) const;
 #ifndef OSG_2_PREP
-           ParticleSystemPtr   &getParticleSystems(const UInt32 index);
            MFParticleSystemPtr &getParticleSystems(void);
      const MFParticleSystemPtr &getParticleSystems(void) const;
 #endif
@@ -378,7 +332,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            ParticleSystemPtr   &editInitialParticleSystems(const UInt32 index);
      const ParticleSystemPtr   &getInitialParticleSystems(const UInt32 index) const;
 #ifndef OSG_2_PREP
-           ParticleSystemPtr   &getInitialParticleSystems(const UInt32 index);
            MFParticleSystemPtr &getInitialParticleSystems(void);
      const MFParticleSystemPtr &getInitialParticleSystems(void) const;
 #endif
@@ -392,6 +345,22 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
      void setInitialBackground( const BackgroundPtr &value );
      void setInitialCamera  ( const CameraPtr &value );
      void setTimeInScene    ( const Real32 &value );
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Method Produced Get                           */
+    /*! \{                                                                 */
+
+    virtual const EventProducerType &getProducerType(void) const; 
+    EventConnection attachActivity(ActivityPtr TheActivity, UInt32 ProducedEventId);
+    bool isActivityAttached(ActivityPtr TheActivity, UInt32 ProducedEventId) const;
+    UInt32 getNumActivitiesAttached(UInt32 ProducedEventId) const;
+    ActivityPtr getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const;
+    void detachActivity(ActivityPtr TheActivity, UInt32 ProducedEventId);
+    UInt32 getNumProducedEvents(void) const;
+    const MethodDescription *getProducedEventDescription(const Char8 *ProducedEventName) const;
+    const MethodDescription *getProducedEventDescription(UInt32 ProducedEventId) const;
+    UInt32 getProducedEventId(const Char8 *ProducedEventName) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -429,6 +398,10 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
   protected:
+    EventProducer _Producer;
+
+    SFEventProducerPtr *editSFEventProducer(void);
+    EventProducerPtr &editEventProducer(void);
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
@@ -456,6 +429,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     MFParticleSystemPtr   _mfInitialParticleSystems;
 
     /*! \}                                                                 */
+    SFEventProducerPtr _sfEventProducer;
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
@@ -477,55 +451,25 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
            SFProjectPtr        *editSFInternalParentProject(void);
      const SFProjectPtr        *getSFInternalParentProject(void) const;
-#ifndef OSG_2_PREP
-           SFProjectPtr        *getSFInternalParentProject(void);
-#endif
            SFNodePtr           *editSFRoot           (void);
      const SFNodePtr           *getSFRoot           (void) const;
-#ifndef OSG_2_PREP
-           SFNodePtr           *getSFRoot           (void);
-#endif
            SFTransformPtr      *editSFRootCore       (void);
      const SFTransformPtr      *getSFRootCore       (void) const;
-#ifndef OSG_2_PREP
-           SFTransformPtr      *getSFRootCore       (void);
-#endif
            SFNodePtr           *editSFDefaultCameraBeacon(void);
      const SFNodePtr           *getSFDefaultCameraBeacon(void) const;
-#ifndef OSG_2_PREP
-           SFNodePtr           *getSFDefaultCameraBeacon(void);
-#endif
            SFTransformPtr      *editSFDefaultCameraBeaconCore(void);
      const SFTransformPtr      *getSFDefaultCameraBeaconCore(void) const;
-#ifndef OSG_2_PREP
-           SFTransformPtr      *getSFDefaultCameraBeaconCore(void);
-#endif
 
            ProjectPtr          &editInternalParentProject(void);
      const ProjectPtr          &getInternalParentProject(void) const;
-#ifndef OSG_2_PREP
-           ProjectPtr          &getInternalParentProject(void);
-#endif
            NodePtr             &editRoot           (void);
      const NodePtr             &getRoot           (void) const;
-#ifndef OSG_2_PREP
-           NodePtr             &getRoot           (void);
-#endif
            TransformPtr        &editRootCore       (void);
      const TransformPtr        &getRootCore       (void) const;
-#ifndef OSG_2_PREP
-           TransformPtr        &getRootCore       (void);
-#endif
            NodePtr             &editDefaultCameraBeacon(void);
      const NodePtr             &getDefaultCameraBeacon(void) const;
-#ifndef OSG_2_PREP
-           NodePtr             &getDefaultCameraBeacon(void);
-#endif
            TransformPtr        &editDefaultCameraBeaconCore(void);
      const TransformPtr        &getDefaultCameraBeaconCore(void) const;
-#ifndef OSG_2_PREP
-           TransformPtr        &getDefaultCameraBeaconCore(void);
-#endif
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -574,6 +518,9 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
   private:
 
     friend class FieldContainer;
+
+    static MethodDescription   *_methodDesc[];
+    static EventProducerType _producerType;
 
     static FieldDescription   *_desc[];
     static FieldContainerType  _type;

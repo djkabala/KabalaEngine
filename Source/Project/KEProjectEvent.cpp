@@ -67,6 +67,16 @@ void ProjectEvent::initMethod (void)
 {
 }
 
+ProjectEventPtr ProjectEvent::create(FieldContainerPtr Source,
+                                 Time TimeStamp)
+{
+    ProjectEventPtr TheEvent(ProjectEvent::createEmpty());
+
+    TheEvent->setSource(Source);
+    TheEvent->setTimeStamp(TimeStamp);
+
+    return TheEvent;
+}
 
 /***************************************************************************\
  *                           Instance methods                              *

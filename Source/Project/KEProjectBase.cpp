@@ -120,6 +120,9 @@ const OSG::BitVector  ProjectBase::ActiveAnimationsFieldMask =
 const OSG::BitVector  ProjectBase::ActiveParticleSystemsFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::ActiveParticleSystemsFieldId);
 
+const OSG::BitVector  ProjectBase::EventProducerFieldMask =
+    (TypeTraits<BitVector>::One << ProjectBase::EventProducerFieldId);
+
 const OSG::BitVector ProjectBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
     (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
@@ -292,6 +295,12 @@ FieldDescription *ProjectBase::_desc[] =
                      ActiveParticleSystemsFieldId, ActiveParticleSystemsFieldMask,
                      false,
                      reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFActiveParticleSystems))
+    , 
+    new FieldDescription(SFEventProducerPtr::getClassType(), 
+                     "EventProducer", 
+                     EventProducerFieldId,EventProducerFieldMask,
+                     true,
+                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFEventProducer))
 };
 
 
@@ -304,6 +313,39 @@ FieldContainerType ProjectBase::_type(
     _desc,
     sizeof(_desc));
 
+//! Project Produced Methods
+
+MethodDescription *ProjectBase::_methodDesc[] =
+{
+    new MethodDescription("ProjectStarted", 
+                     ProjectStartedMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("ProjectStopping", 
+                     ProjectStoppingMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("ProjectStopped", 
+                     ProjectStoppedMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("ProjectReset", 
+                     ProjectResetMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("SceneChanged", 
+                     SceneChangedMethodId, 
+                     SFEventPtr::getClassType(),
+                     FunctorAccessMethod())
+};
+
+EventProducerType ProjectBase::_producerType(
+    "ProjectProducerType",
+    "EventProducerType",
+    NULL,
+    InitEventProducerFunctor(),
+    _methodDesc,
+    sizeof(_methodDesc));
 //OSG_FIELD_CONTAINER_DEF(ProjectBase, ProjectPtr)
 
 /*------------------------------ get -----------------------------------*/
@@ -317,6 +359,11 @@ const FieldContainerType &ProjectBase::getType(void) const
 {
     return _type;
 } 
+
+const EventProducerType &ProjectBase::getProducerType(void) const
+{
+    return _producerType;
+}
 
 
 FieldContainerPtr ProjectBase::shallowCopy(void) const 
@@ -379,6 +426,7 @@ void ProjectBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 #endif
 
 ProjectBase::ProjectBase(void) :
+    _Producer(&getProducerType()),
     _sfName                   (), 
     _sfVersion                (), 
     _sfMainWindowTitle        (), 
@@ -399,6 +447,7 @@ ProjectBase::ProjectBase(void) :
     _sfInternalActiveViewport (ViewportPtr(NullFC)), 
     _mfActiveAnimations       (), 
     _mfActiveParticleSystems  (), 
+    _sfEventProducer(&_Producer),
     Inherited() 
 {
 }
@@ -408,6 +457,7 @@ ProjectBase::ProjectBase(void) :
 #endif
 
 ProjectBase::ProjectBase(const ProjectBase &source) :
+    _Producer(&source.getProducerType()),
     _sfName                   (source._sfName                   ), 
     _sfVersion                (source._sfVersion                ), 
     _sfMainWindowTitle        (source._sfMainWindowTitle        ), 
@@ -428,6 +478,7 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _sfInternalActiveViewport (source._sfInternalActiveViewport ), 
     _mfActiveAnimations       (source._mfActiveAnimations       ), 
     _mfActiveParticleSystems  (source._mfActiveParticleSystems  ), 
+    _sfEventProducer(&_Producer),
     Inherited                 (source)
 {
 }
@@ -544,6 +595,11 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
         returnValue += _mfActiveParticleSystems.getBinSize();
     }
 
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        returnValue += _sfEventProducer.getBinSize();
+    }
+
 
     return returnValue;
 }
@@ -651,6 +707,11 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
     {
         _mfActiveParticleSystems.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        _sfEventProducer.copyToBin(pMem);
     }
 
 
@@ -761,6 +822,11 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
         _mfActiveParticleSystems.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        _sfEventProducer.copyFromBin(pMem);
+    }
+
 
 }
 
@@ -830,6 +896,9 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 
     if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
         _mfActiveParticleSystems.syncWith(pOther->_mfActiveParticleSystems);
+
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+        _sfEventProducer.syncWith(pOther->_sfEventProducer);
 
 
 }
