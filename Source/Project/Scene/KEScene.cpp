@@ -49,6 +49,7 @@
 #include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGNode.h>
 #include <OpenSG/UserInterface/OSGUIDrawingSurface.h>
+#include "Application/KEMainApplication.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -84,6 +85,14 @@ void Scene::enter(void)
 		createDefaults();
 		initDefaults();
 	}
+
+    //Attach the listeners
+    MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addMouseListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addMouseMotionListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addMouseWheelListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addWindowListener(&_SceneUpdateListener);
 
 
 	//Set up Initial Model Nodes
@@ -166,6 +175,14 @@ void Scene::exit(void)
 	{
         getInternalParentProject()->removeActiveParticleSystem(getInitialParticleSystems(i));
     }
+    
+    //Detach the listeners
+    MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeMouseListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeMouseMotionListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeMouseWheelListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_SceneUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeWindowListener(&_SceneUpdateListener);
 
     producerSceneExited(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 }
@@ -300,12 +317,14 @@ void Scene::producerSceneReset(const SceneEventPtr e)
 /*----------------------- constructors & destructors ----------------------*/
 
 Scene::Scene(void) :
-    Inherited()
+    Inherited(),
+        _SceneUpdateListener(ScenePtr(this))
 {
 }
 
 Scene::Scene(const Scene &source) :
-    Inherited(source)
+    Inherited(source),
+        _SceneUpdateListener(ScenePtr(this))
 {
 }
 

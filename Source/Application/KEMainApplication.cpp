@@ -71,7 +71,6 @@
 
 #include <boost/filesystem.hpp>
 
-#include <OpenSG/Sound/OSGSound.h>
 #include <OpenSG/Game/OSGInventory.h>
 #include <OpenSG/Lua/OSGLuaManager.h>
 
@@ -143,12 +142,6 @@ void MainApplication::printCommandLineHelp(void) const
 Int32 MainApplication::run(int argc, char **argv)
 {
     //Make Dummy Values to link in external libs
-    //Sound
-    if(Sound::getClassType().getId() == 0)
-    {
-        return -1;
-    }
-    
     //Game
     if(Inventory::getClassType().getId() == 0)
     {

@@ -159,12 +159,33 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 
     enum
     {
-        ProjectStartedMethodId  = 1,
-        ProjectStoppingMethodId = ProjectStartedMethodId  + 1,
-        ProjectStoppedMethodId  = ProjectStoppingMethodId + 1,
-        ProjectResetMethodId    = ProjectStoppedMethodId  + 1,
-        SceneChangedMethodId    = ProjectResetMethodId    + 1,
-        NextMethodId            = SceneChangedMethodId    + 1
+        ProjectStartedMethodId    = 1,
+        ProjectStoppingMethodId   = ProjectStartedMethodId    + 1,
+        ProjectStoppedMethodId    = ProjectStoppingMethodId   + 1,
+        ProjectResetMethodId      = ProjectStoppedMethodId    + 1,
+        SceneChangedMethodId      = ProjectResetMethodId      + 1,
+        WindowOpenedMethodId      = SceneChangedMethodId      + 1,
+        WindowClosingMethodId     = WindowOpenedMethodId      + 1,
+        WindowClosedMethodId      = WindowClosingMethodId     + 1,
+        WindowIconifiedMethodId   = WindowClosedMethodId      + 1,
+        WindowDeiconifiedMethodId = WindowIconifiedMethodId   + 1,
+        WindowActivatedMethodId   = WindowDeiconifiedMethodId + 1,
+        WindowDeactivatedMethodId = WindowActivatedMethodId   + 1,
+        WindowEnteredMethodId     = WindowDeactivatedMethodId + 1,
+        WindowExitedMethodId      = WindowEnteredMethodId     + 1,
+        MouseClickedMethodId      = WindowExitedMethodId      + 1,
+        MouseEnteredMethodId      = MouseClickedMethodId      + 1,
+        MouseExitedMethodId       = MouseEnteredMethodId      + 1,
+        MousePressedMethodId      = MouseExitedMethodId       + 1,
+        MouseReleasedMethodId     = MousePressedMethodId      + 1,
+        MouseMovedMethodId        = MouseReleasedMethodId     + 1,
+        MouseDraggedMethodId      = MouseMovedMethodId        + 1,
+        MouseWheelMovedMethodId   = MouseDraggedMethodId      + 1,
+        KeyPressedMethodId        = MouseWheelMovedMethodId   + 1,
+        KeyReleasedMethodId       = KeyPressedMethodId        + 1,
+        KeyTypedMethodId          = KeyReleasedMethodId       + 1,
+        UpdateMethodId            = KeyTypedMethodId          + 1,
+        NextMethodId              = UpdateMethodId            + 1
     };
 
 

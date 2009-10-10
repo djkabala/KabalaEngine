@@ -42,6 +42,12 @@
 
 #include "KESceneBase.h"
 #include "KESceneEvent.h"
+#include <OpenSG/Input/OSGUpdateListener.h>
+#include <OpenSG/Input/OSGMouseListener.h>
+#include <OpenSG/Input/OSGMouseMotionListener.h>
+#include <OpenSG/Input/OSGMouseWheelListener.h>
+#include <OpenSG/Input/OSGKeyListener.h>
+#include <OpenSG/Input/OSGWindowListener.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -113,6 +119,50 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
     void producerSceneStarted(const SceneEventPtr e);
     void producerSceneEnded(const SceneEventPtr e);
     void producerSceneReset(const SceneEventPtr e);
+    
+	class SceneUpdateListener : public UpdateListener,
+                                  public MouseListener,
+                                  public MouseMotionListener,
+                                  public MouseWheelListener,
+                                  public KeyListener,
+                                  public WindowListener
+	{
+	public:
+		SceneUpdateListener(ScenePtr TheScene);
+
+        virtual void update(const UpdateEventPtr e);
+        
+        virtual void mouseClicked(const MouseEventPtr e);
+        virtual void mouseEntered(const MouseEventPtr e);
+        virtual void mouseExited(const MouseEventPtr e);
+        virtual void mousePressed(const MouseEventPtr e);
+        virtual void mouseReleased(const MouseEventPtr e);
+
+        virtual void mouseMoved(const MouseEventPtr e);
+        virtual void mouseDragged(const MouseEventPtr e);
+        
+        virtual void mouseWheelMoved(const MouseWheelEventPtr e);
+        
+        virtual void keyPressed(const KeyEventPtr e);
+        virtual void keyReleased(const KeyEventPtr e);
+        virtual void keyTyped(const KeyEventPtr e);
+        
+        virtual void windowOpened(const WindowEventPtr e);
+        virtual void windowClosing(const WindowEventPtr e);
+        virtual void windowClosed(const WindowEventPtr e);
+        virtual void windowIconified(const WindowEventPtr e);
+        virtual void windowDeiconified(const WindowEventPtr e);
+        virtual void windowActivated(const WindowEventPtr e);
+        virtual void windowDeactivated(const WindowEventPtr e);
+        virtual void windowEntered(const WindowEventPtr e);
+        virtual void windowExited(const WindowEventPtr e);
+	protected :
+		ScenePtr _Scene;
+	};
+
+    friend class SceneUpdateListener;
+
+	SceneUpdateListener _SceneUpdateListener;
     /*==========================  PRIVATE  ================================*/
   private:
 

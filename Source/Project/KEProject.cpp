@@ -56,6 +56,8 @@
 #include "Application/KEMainApplication.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 
+#include <OpenSG/Sound/OSGSoundManager.h>
+
 OSG_BEGIN_NAMESPACE
 
 /***************************************************************************\
@@ -138,8 +140,17 @@ void Project::start(void)
     //Temporarily validate all openGL Objects
     //MainApplication::the()->getMainWindowEventProducer()->getWindow()->validateAllGLObjects();
 
-    //Attach the update listener
+    //Attach the listeners
     MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addMouseListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addMouseMotionListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addMouseWheelListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->addWindowListener(&_ProjectUpdateListener);
+    
+    //Attach the SoundManager
+    SoundManager::the()->attachUpdateProducer(MainApplication::the()->getMainWindowEventProducer());
+
     if(_AnimationAdvancer == NullFC)
     {
         _AnimationAdvancer = ElapsedTimeAnimationAdvancer::create();
@@ -198,8 +209,17 @@ void Project::stop(void)
 			MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(0);
 		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
-    //Dettach the update listener
+    //Detach the listeners
     MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeMouseListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeMouseMotionListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeMouseWheelListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindowEventProducer()->removeWindowListener(&_ProjectUpdateListener);
+
+    //Detach the SoundManager
+    SoundManager::the()->detachUpdateProducer(MainApplication::the()->getMainWindowEventProducer());
+    
 
     produceProjectStopped(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
@@ -466,9 +486,6 @@ void Project::updateNavigatorSceneAttachment(void)
 
 void Project::attachFlyNavigation(void)
 {
-    MainApplication::the()->getMainWindowEventProducer()->addMouseListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->addMouseMotionListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_ProjectUpdateListener);
 
 
     updateNavigatorSceneAttachment();
@@ -484,9 +501,6 @@ void Project::attachFlyNavigation(void)
 
 void Project::dettachFlyNavigation(void)
 {
-    MainApplication::the()->getMainWindowEventProducer()->removeMouseListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->removeMouseMotionListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_ProjectUpdateListener);
     _NavigatorAttached = false;
 }
 
@@ -514,50 +528,56 @@ void Project::mouseReleased(const MouseEventPtr e)
 
 void Project::keyPressed(const KeyEventPtr e)
 {
-   switch(e->getKey())
-   {
-   case KeyEvent::KEY_A:
-       _IsAKeyDown = true;
-	   break;
-   case KeyEvent::KEY_S:
-       _IsSKeyDown = true;
-	   break;
-   case KeyEvent::KEY_D:
-       _IsDKeyDown = true;
-	   break;
-   case KeyEvent::KEY_W:
-       _IsWKeyDown = true;
-	   break;
-   case KeyEvent::KEY_SHIFT:
-       _IsShiftKeyDown = true;
-	   break;
-   default:
-	   break;
+    if(_NavigatorAttached)
+    {
+       switch(e->getKey())
+       {
+       case KeyEvent::KEY_A:
+           _IsAKeyDown = true;
+	       break;
+       case KeyEvent::KEY_S:
+           _IsSKeyDown = true;
+	       break;
+       case KeyEvent::KEY_D:
+           _IsDKeyDown = true;
+	       break;
+       case KeyEvent::KEY_W:
+           _IsWKeyDown = true;
+	       break;
+       case KeyEvent::KEY_SHIFT:
+           _IsShiftKeyDown = true;
+	       break;
+       default:
+	       break;
+       }
    }
 }
 
 void Project::keyReleased(const KeyEventPtr e)
 {
-   switch(e->getKey())
-   {
-   case KeyEvent::KEY_A:
-       _IsAKeyDown = false;
-	   break;
-   case KeyEvent::KEY_S:
-       _IsSKeyDown = false;
-	   break;
-   case KeyEvent::KEY_D:
-       _IsDKeyDown = false;
-	   break;
-   case KeyEvent::KEY_W:
-       _IsWKeyDown = false;
-	   break;
-   case KeyEvent::KEY_SHIFT:
-       _IsShiftKeyDown = false;
-	   break;
-   default:
-	   break;
-   }
+    if(_NavigatorAttached)
+    {
+       switch(e->getKey())
+       {
+       case KeyEvent::KEY_A:
+           _IsAKeyDown = false;
+	       break;
+       case KeyEvent::KEY_S:
+           _IsSKeyDown = false;
+	       break;
+       case KeyEvent::KEY_D:
+           _IsDKeyDown = false;
+	       break;
+       case KeyEvent::KEY_W:
+           _IsWKeyDown = false;
+	       break;
+       case KeyEvent::KEY_SHIFT:
+           _IsShiftKeyDown = false;
+	       break;
+       default:
+	       break;
+       }
+    }
 }
 
 void Project::setCameraBeaconMatrix(const Matrix& m)
@@ -573,26 +593,29 @@ void Project::setCameraBeaconMatrix(const Matrix& m)
 
 void Project::mouseMoved(const MouseEventPtr e)
 {
-    Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-    //Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
-    //m.multMatrixVec(Local_x);
-    //m.multMatrixVec(Local_y);
+    if(_NavigatorAttached)
+    {
+        Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
+        //Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
+        //m.multMatrixVec(Local_x);
+        //m.multMatrixVec(Local_y);
 
-    Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e->getDelta().x() * _YRotMotionFactor);
-    Matrix YRot_Mat;
-    YRot_Mat.setRotate(YRot_Quat);
-    Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0),-e->getDelta().y() * _XRotMotionFactor);
-    Matrix XRot_Mat;
-    XRot_Mat.setRotate(XRot_Quat);
+        Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e->getDelta().x() * _YRotMotionFactor);
+        Matrix YRot_Mat;
+        YRot_Mat.setRotate(YRot_Quat);
+        Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0),-e->getDelta().y() * _XRotMotionFactor);
+        Matrix XRot_Mat;
+        XRot_Mat.setRotate(XRot_Quat);
 
-    m.mult(YRot_Mat);
-    m.mult(XRot_Mat);
-   // setCameraBeaconMatrix(m);
+        m.mult(YRot_Mat);
+        m.mult(XRot_Mat);
+       // setCameraBeaconMatrix(m);
+    }
 }
 
 void Project::mouseDragged(const MouseEventPtr e)
 {
-	if(e->getButton() == MouseEvent::BUTTON1)
+	if(_NavigatorAttached && e->getButton() == MouseEvent::BUTTON1)
 	{
 			Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
 		//Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
@@ -701,41 +724,6 @@ void Project::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump Project NI" << std::endl;
-}
-
-void Project::ProjectUpdateListener::update(const UpdateEventPtr e)
-{
-    _Project->update(e);
-}
-
-void Project::ProjectUpdateListener::mousePressed(const MouseEventPtr e)
-{
-    _Project->mousePressed(e);
-}
-
-void Project::ProjectUpdateListener::mouseReleased(const MouseEventPtr e)
-{
-    _Project->mouseReleased(e);
-}
-
-void Project::ProjectUpdateListener::mouseMoved(const MouseEventPtr e)
-{
-    _Project->mouseMoved(e);
-}
-
-void Project::ProjectUpdateListener::mouseDragged(const MouseEventPtr e)
-{
-    _Project->mouseDragged(e);
-}
-
-void Project::ProjectUpdateListener::keyPressed(const KeyEventPtr e)
-{
-    _Project->keyPressed(e);
-}
-
-void Project::ProjectUpdateListener::keyReleased(const KeyEventPtr e)
-{
-    _Project->keyReleased(e);
 }
 
 

@@ -46,9 +46,11 @@
 #include <OpenSG/Toolbox/OSGPathType.h>
 #include <OpenSG/Input/OSGWindowEventProducerFields.h>
 #include <OpenSG/Input/OSGUpdateListener.h>
-#include <OpenSG/Input/OSGMouseAdapter.h>
-#include <OpenSG/Input/OSGMouseMotionAdapter.h>
-#include <OpenSG/Input/OSGKeyAdapter.h>
+#include <OpenSG/Input/OSGMouseListener.h>
+#include <OpenSG/Input/OSGMouseMotionListener.h>
+#include <OpenSG/Input/OSGMouseWheelListener.h>
+#include <OpenSG/Input/OSGKeyListener.h>
+#include <OpenSG/Input/OSGWindowListener.h>
 #include <OpenSG/Animation/OSGElapsedTimeAnimationAdvancer.h>
 #include <OpenSG/OSGNavigator.h>
 
@@ -79,8 +81,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
-                      const BitVector  bvFlags  = 0) const;
+    virtual void dump(      UInt32     uiIndent, 
+                      const BitVector  bvFlags ) const;
 
     /*! \}                                                                 */
 
@@ -148,20 +150,41 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     
     
 	class ProjectUpdateListener : public UpdateListener,
-                                  public MouseAdapter,
-                                  public MouseMotionAdapter,
-                                  public KeyAdapter
+                                  public MouseListener,
+                                  public MouseMotionListener,
+                                  public MouseWheelListener,
+                                  public KeyListener,
+                                  public WindowListener
 	{
 	public:
 		ProjectUpdateListener(ProjectPtr TheProject);
 
         virtual void update(const UpdateEventPtr e);
+        
+        virtual void mouseClicked(const MouseEventPtr e);
+        virtual void mouseEntered(const MouseEventPtr e);
+        virtual void mouseExited(const MouseEventPtr e);
         virtual void mousePressed(const MouseEventPtr e);
         virtual void mouseReleased(const MouseEventPtr e);
+
         virtual void mouseMoved(const MouseEventPtr e);
         virtual void mouseDragged(const MouseEventPtr e);
+        
+        virtual void mouseWheelMoved(const MouseWheelEventPtr e);
+        
         virtual void keyPressed(const KeyEventPtr e);
         virtual void keyReleased(const KeyEventPtr e);
+        virtual void keyTyped(const KeyEventPtr e);
+        
+        virtual void windowOpened(const WindowEventPtr e);
+        virtual void windowClosing(const WindowEventPtr e);
+        virtual void windowClosed(const WindowEventPtr e);
+        virtual void windowIconified(const WindowEventPtr e);
+        virtual void windowDeiconified(const WindowEventPtr e);
+        virtual void windowActivated(const WindowEventPtr e);
+        virtual void windowDeactivated(const WindowEventPtr e);
+        virtual void windowEntered(const WindowEventPtr e);
+        virtual void windowExited(const WindowEventPtr e);
 	protected :
 		ProjectPtr _Project;
 	};
