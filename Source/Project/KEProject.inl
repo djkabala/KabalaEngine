@@ -71,6 +71,7 @@ void Project::togglePauseActiveUpdates(void)
 inline
 void Project::ProjectUpdateListener::update(const UpdateEventPtr e)
 {
+    _Project->update(e);
     _Project->_Producer.produceEvent(UpdateMethodId,e);
 }
 
@@ -95,23 +96,27 @@ void Project::ProjectUpdateListener::mouseExited(const MouseEventPtr e)
 inline
 void Project::ProjectUpdateListener::mousePressed(const MouseEventPtr e)
 {
+    _Project->mousePressed(e);
     _Project->_Producer.produceEvent(MousePressedMethodId,e);
 }
 inline
 void Project::ProjectUpdateListener::mouseReleased(const MouseEventPtr e)
 {
+    _Project->mouseReleased(e);
     _Project->_Producer.produceEvent(MouseReleasedMethodId,e);
 }
 
 inline
 void Project::ProjectUpdateListener::mouseMoved(const MouseEventPtr e)
 {
+    _Project->mouseMoved(e);
     _Project->_Producer.produceEvent(MouseMovedMethodId,e);
 }
 
 inline
 void Project::ProjectUpdateListener::mouseDragged(const MouseEventPtr e)
 {
+    _Project->mouseDragged(e);
     _Project->_Producer.produceEvent(MouseDraggedMethodId,e);
 }
 
@@ -125,12 +130,14 @@ void Project::ProjectUpdateListener::mouseWheelMoved(const MouseWheelEventPtr e)
 inline
 void Project::ProjectUpdateListener::keyPressed(const KeyEventPtr e)
 {
+    _Project->keyPressed(e);
     _Project->_Producer.produceEvent(KeyPressedMethodId,e);
 }
 
 inline
 void Project::ProjectUpdateListener::keyReleased(const KeyEventPtr e)
 {
+    _Project->keyReleased(e);
     _Project->_Producer.produceEvent(KeyReleasedMethodId,e);
 }
 
