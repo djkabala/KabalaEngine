@@ -57,6 +57,7 @@
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 
 #include <OpenSG/Sound/OSGSoundManager.h>
+#include <OpenSG/Lua/OSGLuaManager.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -184,6 +185,12 @@ void Project::start(void)
     //MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
     setDefaults();
 
+    //If I have a Lua Module then load it
+    if(!getLuaModule().string().empty())
+    {
+        LuaManager::the()->runScript(getLuaModule());
+    }
+
     produceProjectStarted(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
 
@@ -220,6 +227,11 @@ void Project::stop(void)
     //Detach the SoundManager
     SoundManager::the()->detachUpdateProducer(MainApplication::the()->getMainWindowEventProducer());
     
+    //End all Scenes
+    for(UInt32 i(0) ; i<getScenes().size(); ++i)
+    {
+        getScenes(i)->end();
+    }
 
     produceProjectStopped(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
@@ -232,11 +244,18 @@ void Project::setActiveScene(ScenePtr TheScene)
 		{
 			getInternalActiveScene()->exit();
 		}
+
 		beginEditCP(ProjectPtr(this), InternalActiveSceneFieldMask);
 			setInternalActiveScene(TheScene);
 		endEditCP(ProjectPtr(this), InternalActiveSceneFieldMask);
 		if(getInternalActiveScene() != NullFC)
 		{
+            //Start the scene if it hasn't allready
+            if(!getInternalActiveScene()->isStarted())
+            {    
+                getInternalActiveScene()->start();
+            }
+
 			getInternalActiveScene()->enter();
 
             if(_NavigatorAttached)
@@ -244,6 +263,7 @@ void Project::setActiveScene(ScenePtr TheScene)
                 updateNavigatorSceneAttachment();
             }
 		}
+
         produceSceneChanged(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 
         //Reset Animation Advancer

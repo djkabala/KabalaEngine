@@ -41,6 +41,12 @@
 OSG_BEGIN_NAMESPACE
 
 inline
+bool Scene::isStarted(void) const
+{
+    return _IsStarted;
+}
+
+inline
 Scene::SceneUpdateListener::SceneUpdateListener(ScenePtr TheScene) : _Scene(TheScene)
 {
 }

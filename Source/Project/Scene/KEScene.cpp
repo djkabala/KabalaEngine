@@ -50,6 +50,7 @@
 #include <OpenSG/OSGNode.h>
 #include <OpenSG/UserInterface/OSGUIDrawingSurface.h>
 #include "Application/KEMainApplication.h"
+#include <OpenSG/Lua/OSGLuaManager.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -147,11 +148,21 @@ void Scene::enter(void)
 
 void Scene::start(void)
 {
+    //If there is  a Lua Module for this scene then load it
+    if(!getLuaModule().string().empty())
+    {
+        LuaManager::the()->runScript(getLuaModule());
+    }
+
     producerSceneStarted(SceneEvent::create(ScenePtr(this), getTimeStamp()));
+
+    _IsStarted = true;
 }
 
 void Scene::end(void)
 {
+    _IsStarted = false;
+
     producerSceneEnded(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 }
 
@@ -175,6 +186,12 @@ void Scene::exit(void)
 	{
         getInternalParentProject()->removeActiveParticleSystem(getInitialParticleSystems(i));
     }
+    
+	//Detach the User Interface Drawing Surfaces from the Window Event Producer
+	for(::osg::UInt32 i(0) ; i<getUIDrawingSurfaces().size() ; ++i)
+	{
+        //getUIDrawingSurfaces(i)->detachFromEventProducer();
+	}
     
     //Detach the listeners
     MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_SceneUpdateListener);
@@ -318,13 +335,15 @@ void Scene::producerSceneReset(const SceneEventPtr e)
 
 Scene::Scene(void) :
     Inherited(),
-        _SceneUpdateListener(ScenePtr(this))
+        _SceneUpdateListener(ScenePtr(this)),
+    _IsStarted(false)
 {
 }
 
 Scene::Scene(const Scene &source) :
     Inherited(source),
-        _SceneUpdateListener(ScenePtr(this))
+        _SceneUpdateListener(ScenePtr(this)),
+    _IsStarted(false)
 {
 }
 

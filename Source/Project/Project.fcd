@@ -186,6 +186,15 @@ The Project.
 		access="protected"
 	>
 	</Field>
+	<Field
+		name="LuaModule"
+		type="Path"
+		cardinality="single"
+		visibility="external"
+		header="OpenSG/Toolbox/OSGPathType.h"
+		access="public"
+	>
+	</Field>
 	<ProducedMethod
 		name="ProjectStarted"
 		producedEventType="ProjectEventPtr"

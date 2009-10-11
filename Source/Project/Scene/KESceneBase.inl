@@ -388,6 +388,20 @@ MFParticleSystemPtr *SceneBase::editMFInitialParticleSystems(void)
     return &_mfInitialParticleSystems;
 }
 
+//! Get the Scene::_sfLuaModule field.
+inline
+const SFPath *SceneBase::getSFLuaModule(void) const
+{
+    return &_sfLuaModule;
+}
+
+//! Get the Scene::_sfLuaModule field.
+inline
+SFPath *SceneBase::editSFLuaModule(void)
+{
+    return &_sfLuaModule;
+}
+
 
 //! Get the value of the Scene::_sfInternalParentProject field.
 inline
@@ -576,6 +590,27 @@ inline
 void SceneBase::setTimeInScene(const Real32 &value)
 {
     _sfTimeInScene.setValue(value);
+}
+
+//! Get the value of the Scene::_sfLuaModule field.
+inline
+Path &SceneBase::editLuaModule(void)
+{
+    return _sfLuaModule.getValue();
+}
+
+//! Get the value of the Scene::_sfLuaModule field.
+inline
+const Path &SceneBase::getLuaModule(void) const
+{
+    return _sfLuaModule.getValue();
+}
+
+//! Set the value of the Scene::_sfLuaModule field.
+inline
+void SceneBase::setLuaModule(const Path &value)
+{
+    _sfLuaModule.setValue(value);
 }
 
 

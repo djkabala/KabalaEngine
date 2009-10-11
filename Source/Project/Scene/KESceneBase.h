@@ -83,6 +83,7 @@
 #include <OpenSG/OSGReal32Fields.h> // TimeInScene type
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ParticleSystems type
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // InitialParticleSystems type
+#include <OpenSG/Toolbox/OSGPathType.h> // LuaModule type
 
 #include "KESceneFields.h"
 #include <OpenSG/Toolbox/OSGEventProducer.h>
@@ -130,7 +131,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
         TimeInSceneFieldId             = InitialAnimationsFieldId       + 1,
         ParticleSystemsFieldId         = TimeInSceneFieldId             + 1,
         InitialParticleSystemsFieldId  = ParticleSystemsFieldId         + 1,
-        EventProducerFieldId           = InitialParticleSystemsFieldId  + 1,
+        LuaModuleFieldId               = InitialParticleSystemsFieldId  + 1,
+        EventProducerFieldId           = LuaModuleFieldId               + 1,
         NextFieldId                    = EventProducerFieldId           + 1
     };
 
@@ -154,6 +156,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     static const OSG::BitVector TimeInSceneFieldMask;
     static const OSG::BitVector ParticleSystemsFieldMask;
     static const OSG::BitVector InitialParticleSystemsFieldMask;
+    static const OSG::BitVector LuaModuleFieldMask;
     static const OSG::BitVector EventProducerFieldMask;
 
 
@@ -262,6 +265,9 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            MFParticleSystemPtr *editMFInitialParticleSystems(void);
      const MFParticleSystemPtr *getMFInitialParticleSystems(void) const;
 
+           SFPath              *editSFLuaModule      (void);
+     const SFPath              *getSFLuaModule      (void) const;
+
 
 
            std::string         &editName           (void);
@@ -279,6 +285,9 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
            Real32              &editTimeInScene    (void);
      const Real32              &getTimeInScene    (void) const;
+
+           Path                &editLuaModule      (void);
+     const Path                &getLuaModule      (void) const;
 
            BackgroundPtr       &editBackgrounds    (const UInt32 index);
      const BackgroundPtr       &getBackgrounds    (const UInt32 index) const;
@@ -366,6 +375,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
      void setInitialBackground( const BackgroundPtr &value );
      void setInitialCamera  ( const CameraPtr &value );
      void setTimeInScene    ( const Real32 &value );
+     void setLuaModule      ( const Path &value );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -448,6 +458,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     SFReal32            _sfTimeInScene;
     MFParticleSystemPtr   _mfParticleSystems;
     MFParticleSystemPtr   _mfInitialParticleSystems;
+    SFPath              _sfLuaModule;
 
     /*! \}                                                                 */
     SFEventProducerPtr _sfEventProducer;

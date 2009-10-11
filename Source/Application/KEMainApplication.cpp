@@ -72,7 +72,6 @@
 #include <boost/filesystem.hpp>
 
 #include <OpenSG/Game/OSGInventory.h>
-#include <OpenSG/Lua/OSGLuaManager.h>
 
 OSG_USING_NAMESPACE
 
@@ -148,12 +147,6 @@ Int32 MainApplication::run(int argc, char **argv)
         return -1;
     }
 
-    //Lua
-    if(LuaManager::the() == NULL)
-    {
-        return -1;
-    }
-
 	//Parse the Program arguments
 	boost::program_options::variables_map OptionsVariableMap;
 	try
@@ -190,6 +183,7 @@ Int32 MainApplication::run(int argc, char **argv)
 
     // Set up Window
     setMainWindowEventProducer(createDefaultWindowEventProducer());
+    setName(getMainWindowEventProducer(),"__KABALA_ENGINE_WINDOW_EVENT_PRODUCER");
    
     ::osg::WindowPtr MainWindow = getMainWindowEventProducer()->initWindow();
 

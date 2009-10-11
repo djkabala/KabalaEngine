@@ -388,6 +388,20 @@ MFParticleSystemPtr *ProjectBase::editMFActiveParticleSystems(void)
     return &_mfActiveParticleSystems;
 }
 
+//! Get the Project::_sfLuaModule field.
+inline
+const SFPath *ProjectBase::getSFLuaModule(void) const
+{
+    return &_sfLuaModule;
+}
+
+//! Get the Project::_sfLuaModule field.
+inline
+SFPath *ProjectBase::editSFLuaModule(void)
+{
+    return &_sfLuaModule;
+}
+
 
 //! Get the value of the Project::_sfName field.
 inline
@@ -576,6 +590,27 @@ inline
 void ProjectBase::setInternalActiveViewport(const ViewportPtr &value)
 {
     _sfInternalActiveViewport.setValue(value);
+}
+
+//! Get the value of the Project::_sfLuaModule field.
+inline
+Path &ProjectBase::editLuaModule(void)
+{
+    return _sfLuaModule.getValue();
+}
+
+//! Get the value of the Project::_sfLuaModule field.
+inline
+const Path &ProjectBase::getLuaModule(void) const
+{
+    return _sfLuaModule.getValue();
+}
+
+//! Set the value of the Project::_sfLuaModule field.
+inline
+void ProjectBase::setLuaModule(const Path &value)
+{
+    _sfLuaModule.setValue(value);
 }
 
 

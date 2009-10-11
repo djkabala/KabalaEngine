@@ -120,6 +120,9 @@ const OSG::BitVector  ProjectBase::ActiveAnimationsFieldMask =
 const OSG::BitVector  ProjectBase::ActiveParticleSystemsFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::ActiveParticleSystemsFieldId);
 
+const OSG::BitVector  ProjectBase::LuaModuleFieldMask = 
+    (TypeTraits<BitVector>::One << ProjectBase::LuaModuleFieldId);
+
 const OSG::BitVector  ProjectBase::EventProducerFieldMask =
     (TypeTraits<BitVector>::One << ProjectBase::EventProducerFieldId);
 
@@ -188,6 +191,9 @@ const OSG::BitVector ProjectBase::MTInfluenceMask =
     
 */
 /*! \var ParticleSystemPtr ProjectBase::_mfActiveParticleSystems
+    
+*/
+/*! \var Path            ProjectBase::_sfLuaModule
     
 */
 
@@ -294,7 +300,12 @@ FieldDescription *ProjectBase::_desc[] =
                      "ActiveParticleSystems", 
                      ActiveParticleSystemsFieldId, ActiveParticleSystemsFieldMask,
                      false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFActiveParticleSystems))
+                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFActiveParticleSystems)),
+    new FieldDescription(SFPath::getClassType(), 
+                     "LuaModule", 
+                     LuaModuleFieldId, LuaModuleFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFLuaModule))
     , 
     new FieldDescription(SFEventProducerPtr::getClassType(), 
                      "EventProducer", 
@@ -531,6 +542,7 @@ ProjectBase::ProjectBase(void) :
     _sfInternalActiveViewport (ViewportPtr(NullFC)), 
     _mfActiveAnimations       (), 
     _mfActiveParticleSystems  (), 
+    _sfLuaModule              (), 
     _sfEventProducer(&_Producer),
     Inherited() 
 {
@@ -562,6 +574,7 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _sfInternalActiveViewport (source._sfInternalActiveViewport ), 
     _mfActiveAnimations       (source._mfActiveAnimations       ), 
     _mfActiveParticleSystems  (source._mfActiveParticleSystems  ), 
+    _sfLuaModule              (source._sfLuaModule              ), 
     _sfEventProducer(&_Producer),
     Inherited                 (source)
 {
@@ -679,6 +692,11 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
         returnValue += _mfActiveParticleSystems.getBinSize();
     }
 
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+    {
+        returnValue += _sfLuaModule.getBinSize();
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         returnValue += _sfEventProducer.getBinSize();
@@ -791,6 +809,11 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
     {
         _mfActiveParticleSystems.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+    {
+        _sfLuaModule.copyToBin(pMem);
     }
 
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
@@ -906,6 +929,11 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
         _mfActiveParticleSystems.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+    {
+        _sfLuaModule.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyFromBin(pMem);
@@ -981,6 +1009,9 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
     if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
         _mfActiveParticleSystems.syncWith(pOther->_mfActiveParticleSystems);
 
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+        _sfLuaModule.syncWith(pOther->_sfLuaModule);
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
         _sfEventProducer.syncWith(pOther->_sfEventProducer);
 
@@ -1020,6 +1051,9 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 
     if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
         _sfInternalActiveViewport.syncWith(pOther->_sfInternalActiveViewport);
+
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+        _sfLuaModule.syncWith(pOther->_sfLuaModule);
 
 
     if(FieldBits::NoField != (ScenesFieldMask & whichField))

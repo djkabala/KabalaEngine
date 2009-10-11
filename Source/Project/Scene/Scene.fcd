@@ -186,6 +186,15 @@ The Scene.
 		access="public"
 	>
 	</Field>
+	<Field
+		name="LuaModule"
+		type="Path"
+		cardinality="single"
+		visibility="external"
+		header="OpenSG/Toolbox/OSGPathType.h"
+		access="public"
+	>
+	</Field>
 	<ProducedMethod
 		name="SceneEntered"
 		producedEventType="SceneEventPtr"

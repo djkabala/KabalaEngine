@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="ChangeSceneActivity"
+	parent="Activity"
+	parentHeader="OpenSG/Toolbox/OSGActivity"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+	<Field
+		name="GotoScene"
+		type="ScenePtr"
+        header="Project/Scene/KESceneFields.h"
+		cardinality="single"
+		visibility="external"
+		access="public"
+        defaultValue="NullFC"
+	>
+	</Field>
+</FieldContainer>

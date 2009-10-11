@@ -120,6 +120,9 @@ const OSG::BitVector  SceneBase::ParticleSystemsFieldMask =
 const OSG::BitVector  SceneBase::InitialParticleSystemsFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::InitialParticleSystemsFieldId);
 
+const OSG::BitVector  SceneBase::LuaModuleFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::LuaModuleFieldId);
+
 const OSG::BitVector  SceneBase::EventProducerFieldMask =
     (TypeTraits<BitVector>::One << SceneBase::EventProducerFieldId);
 
@@ -188,6 +191,9 @@ const OSG::BitVector SceneBase::MTInfluenceMask =
     
 */
 /*! \var ParticleSystemPtr SceneBase::_mfInitialParticleSystems
+    
+*/
+/*! \var Path            SceneBase::_sfLuaModule
     
 */
 
@@ -294,7 +300,12 @@ FieldDescription *SceneBase::_desc[] =
                      "InitialParticleSystems", 
                      InitialParticleSystemsFieldId, InitialParticleSystemsFieldMask,
                      false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialParticleSystems))
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialParticleSystems)),
+    new FieldDescription(SFPath::getClassType(), 
+                     "LuaModule", 
+                     LuaModuleFieldId, LuaModuleFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFLuaModule))
     , 
     new FieldDescription(SFEventProducerPtr::getClassType(), 
                      "EventProducer", 
@@ -531,6 +542,7 @@ SceneBase::SceneBase(void) :
     _sfTimeInScene            (), 
     _mfParticleSystems        (), 
     _mfInitialParticleSystems (), 
+    _sfLuaModule              (), 
     _sfEventProducer(&_Producer),
     Inherited() 
 {
@@ -562,6 +574,7 @@ SceneBase::SceneBase(const SceneBase &source) :
     _sfTimeInScene            (source._sfTimeInScene            ), 
     _mfParticleSystems        (source._mfParticleSystems        ), 
     _mfInitialParticleSystems (source._mfInitialParticleSystems ), 
+    _sfLuaModule              (source._sfLuaModule              ), 
     _sfEventProducer(&_Producer),
     Inherited                 (source)
 {
@@ -679,6 +692,11 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
         returnValue += _mfInitialParticleSystems.getBinSize();
     }
 
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+    {
+        returnValue += _sfLuaModule.getBinSize();
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         returnValue += _sfEventProducer.getBinSize();
@@ -791,6 +809,11 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
     {
         _mfInitialParticleSystems.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+    {
+        _sfLuaModule.copyToBin(pMem);
     }
 
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
@@ -906,6 +929,11 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
         _mfInitialParticleSystems.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+    {
+        _sfLuaModule.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyFromBin(pMem);
@@ -981,6 +1009,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
         _mfInitialParticleSystems.syncWith(pOther->_mfInitialParticleSystems);
 
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+        _sfLuaModule.syncWith(pOther->_sfLuaModule);
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
         _sfEventProducer.syncWith(pOther->_sfEventProducer);
 
@@ -1020,6 +1051,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 
     if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
         _sfTimeInScene.syncWith(pOther->_sfTimeInScene);
+
+    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
+        _sfLuaModule.syncWith(pOther->_sfLuaModule);
 
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))

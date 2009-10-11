@@ -116,7 +116,7 @@ void ApplicationPlayer::start(void)
 	{
 		MainApplication::the()->getProject()->start();
 
-        enableDebug(true);
+        enableDebug(false);
 	}
 }
 
@@ -139,7 +139,7 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
     else
     {
         std::cout << "Debug Mode Disabled" << std::endl;
-        MainApplication::the()->getProject()->attachFlyNavigation();
+        MainApplication::the()->getProject()->dettachFlyNavigation();
     }
 }
 

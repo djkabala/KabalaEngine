@@ -83,6 +83,7 @@
 #include <OpenSG/OSGViewportFields.h> // InternalActiveViewport type
 #include <OpenSG/Animation/OSGAnimation.h> // ActiveAnimations type
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ActiveParticleSystems type
+#include <OpenSG/Toolbox/OSGPathType.h> // LuaModule type
 
 #include "KEProjectFields.h"
 #include <OpenSG/Toolbox/OSGEventProducer.h>
@@ -130,7 +131,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
         InternalActiveViewportFieldId    = InternalActiveCameraFieldId      + 1,
         ActiveAnimationsFieldId          = InternalActiveViewportFieldId    + 1,
         ActiveParticleSystemsFieldId     = ActiveAnimationsFieldId          + 1,
-        EventProducerFieldId             = ActiveParticleSystemsFieldId     + 1,
+        LuaModuleFieldId                 = ActiveParticleSystemsFieldId     + 1,
+        EventProducerFieldId             = LuaModuleFieldId                 + 1,
         NextFieldId                      = EventProducerFieldId             + 1
     };
 
@@ -154,6 +156,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     static const OSG::BitVector InternalActiveViewportFieldMask;
     static const OSG::BitVector ActiveAnimationsFieldMask;
     static const OSG::BitVector ActiveParticleSystemsFieldMask;
+    static const OSG::BitVector LuaModuleFieldMask;
     static const OSG::BitVector EventProducerFieldMask;
 
 
@@ -253,6 +256,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
            MFCameraPtr         *editMFCameras        (void);
      const MFCameraPtr         *getMFCameras        (void) const;
 
+           SFPath              *editSFLuaModule      (void);
+     const SFPath              *getSFLuaModule      (void) const;
+
 
            std::string         &editName           (void);
      const std::string         &getName           (void) const;
@@ -272,6 +278,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 
 
 
+
+           Path                &editLuaModule      (void);
+     const Path                &getLuaModule      (void) const;
 
            ScenePtr            &editScenes         (const UInt32 index);
      const ScenePtr            &getScenes         (const UInt32 index) const;
@@ -336,6 +345,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
      void setMainWindowTitle( const std::string &value );
      void setFilePath       ( const Path &value );
      void setInitialScene   ( const ScenePtr &value );
+     void setLuaModule      ( const Path &value );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -418,6 +428,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     SFViewportPtr       _sfInternalActiveViewport;
     MFAnimationPtr      _mfActiveAnimations;
     MFParticleSystemPtr   _mfActiveParticleSystems;
+    SFPath              _sfLuaModule;
 
     /*! \}                                                                 */
     SFEventProducerPtr _sfEventProducer;

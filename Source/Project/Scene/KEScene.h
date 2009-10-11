@@ -80,6 +80,9 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
+
+    bool isStarted(void) const;
+
     /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -163,6 +166,9 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
     friend class SceneUpdateListener;
 
 	SceneUpdateListener _SceneUpdateListener;
+    
+    bool _IsStarted;
+
     /*==========================  PRIVATE  ================================*/
   private:
 
