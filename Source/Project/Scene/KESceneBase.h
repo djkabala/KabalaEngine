@@ -80,7 +80,6 @@
 #include <OpenSG/OSGCameraFields.h> // InitialCamera type
 #include <OpenSG/Animation/OSGAnimation.h> // Animations type
 #include <OpenSG/Animation/OSGAnimation.h> // InitialAnimations type
-#include <OpenSG/OSGReal32Fields.h> // TimeInScene type
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ParticleSystems type
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // InitialParticleSystems type
 #include <OpenSG/Toolbox/OSGPathType.h> // LuaModule type
@@ -128,8 +127,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
         InitialCameraFieldId           = CamerasFieldId                 + 1,
         AnimationsFieldId              = InitialCameraFieldId           + 1,
         InitialAnimationsFieldId       = AnimationsFieldId              + 1,
-        TimeInSceneFieldId             = InitialAnimationsFieldId       + 1,
-        ParticleSystemsFieldId         = TimeInSceneFieldId             + 1,
+        ParticleSystemsFieldId         = InitialAnimationsFieldId       + 1,
         InitialParticleSystemsFieldId  = ParticleSystemsFieldId         + 1,
         LuaModuleFieldId               = InitialParticleSystemsFieldId  + 1,
         EventProducerFieldId           = LuaModuleFieldId               + 1,
@@ -153,7 +151,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     static const OSG::BitVector InitialCameraFieldMask;
     static const OSG::BitVector AnimationsFieldMask;
     static const OSG::BitVector InitialAnimationsFieldMask;
-    static const OSG::BitVector TimeInSceneFieldMask;
     static const OSG::BitVector ParticleSystemsFieldMask;
     static const OSG::BitVector InitialParticleSystemsFieldMask;
     static const OSG::BitVector LuaModuleFieldMask;
@@ -256,9 +253,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            MFAnimationPtr      *editMFInitialAnimations(void);
      const MFAnimationPtr      *getMFInitialAnimations(void) const;
 
-           SFReal32            *editSFTimeInScene    (void);
-     const SFReal32            *getSFTimeInScene    (void) const;
-
            MFParticleSystemPtr *editMFParticleSystems(void);
      const MFParticleSystemPtr *getMFParticleSystems(void) const;
 
@@ -282,9 +276,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
            CameraPtr           &editInitialCamera  (void);
      const CameraPtr           &getInitialCamera  (void) const;
-
-           Real32              &editTimeInScene    (void);
-     const Real32              &getTimeInScene    (void) const;
 
            Path                &editLuaModule      (void);
      const Path                &getLuaModule      (void) const;
@@ -374,7 +365,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
      void setName           ( const std::string &value );
      void setInitialBackground( const BackgroundPtr &value );
      void setInitialCamera  ( const CameraPtr &value );
-     void setTimeInScene    ( const Real32 &value );
      void setLuaModule      ( const Path &value );
 
     /*! \}                                                                 */
@@ -455,7 +445,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     SFCameraPtr         _sfInitialCamera;
     MFAnimationPtr      _mfAnimations;
     MFAnimationPtr      _mfInitialAnimations;
-    SFReal32            _sfTimeInScene;
     MFParticleSystemPtr   _mfParticleSystems;
     MFParticleSystemPtr   _mfInitialParticleSystems;
     SFPath              _sfLuaModule;

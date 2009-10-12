@@ -202,7 +202,6 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void keyReleased(const KeyEventPtr e);
 
     ElapsedTimeAnimationAdvancerPtr _AnimationAdvancer;
-    Real32 _TimeInScene;
     bool _PauseActiveUpdates;
     bool _NavigatorAttached;
     Navigator _navigator;

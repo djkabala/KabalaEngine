@@ -161,14 +161,6 @@ The Scene.
 	>
 	</Field>
 	<Field
-		name="TimeInScene"
-		type="Real32"
-		cardinality="single"
-		visibility="external"
-		access="public"
-	>
-	</Field>
-	<Field
 		name="ParticleSystems"
 		type="ParticleSystemPtr"
 		cardinality="multi"

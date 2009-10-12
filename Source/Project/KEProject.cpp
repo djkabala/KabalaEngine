@@ -268,7 +268,6 @@ void Project::setActiveScene(ScenePtr TheScene)
 
         //Reset Animation Advancer
         _AnimationAdvancer->reset();
-        _TimeInScene = 0.0;
 	}
 }
 
@@ -418,26 +417,6 @@ void Project::update(const UpdateEventPtr e)
         for(UInt32 i(0) ; i<getActiveAnimations().size() ; ++i)
         {
             getActiveAnimations(i)->update(_AnimationAdvancer);
-        }
-
-        _TimeInScene += e->getElapsedTime();
-        if(_TimeInScene >= getActiveScene()->getTimeInScene())
-        {
-            //GOTO next scene
-            MFScenePtr::iterator SearchItor(getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
-            if(SearchItor != getScenes().end())
-            {
-                ++SearchItor;
-                if(SearchItor == getScenes().end())
-                {
-                    SearchItor = getScenes().begin();
-                }
-            }
-            else
-            {
-                SearchItor = getScenes().begin();
-            }
-            setActiveScene(*SearchItor);
         }
     }
 

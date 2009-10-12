@@ -346,20 +346,6 @@ MFAnimationPtr *SceneBase::editMFInitialAnimations(void)
     return &_mfInitialAnimations;
 }
 
-//! Get the Scene::_sfTimeInScene field.
-inline
-const SFReal32 *SceneBase::getSFTimeInScene(void) const
-{
-    return &_sfTimeInScene;
-}
-
-//! Get the Scene::_sfTimeInScene field.
-inline
-SFReal32 *SceneBase::editSFTimeInScene(void)
-{
-    return &_sfTimeInScene;
-}
-
 //! Get the Scene::_mfParticleSystems field.
 inline
 const MFParticleSystemPtr *SceneBase::getMFParticleSystems(void) const
@@ -569,27 +555,6 @@ inline
 void SceneBase::setInitialCamera(const CameraPtr &value)
 {
     _sfInitialCamera.setValue(value);
-}
-
-//! Get the value of the Scene::_sfTimeInScene field.
-inline
-Real32 &SceneBase::editTimeInScene(void)
-{
-    return _sfTimeInScene.getValue();
-}
-
-//! Get the value of the Scene::_sfTimeInScene field.
-inline
-const Real32 &SceneBase::getTimeInScene(void) const
-{
-    return _sfTimeInScene.getValue();
-}
-
-//! Set the value of the Scene::_sfTimeInScene field.
-inline
-void SceneBase::setTimeInScene(const Real32 &value)
-{
-    _sfTimeInScene.setValue(value);
 }
 
 //! Get the value of the Scene::_sfLuaModule field.

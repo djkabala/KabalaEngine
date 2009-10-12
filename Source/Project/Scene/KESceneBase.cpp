@@ -111,9 +111,6 @@ const OSG::BitVector  SceneBase::AnimationsFieldMask =
 const OSG::BitVector  SceneBase::InitialAnimationsFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::InitialAnimationsFieldId);
 
-const OSG::BitVector  SceneBase::TimeInSceneFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::TimeInSceneFieldId);
-
 const OSG::BitVector  SceneBase::ParticleSystemsFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::ParticleSystemsFieldId);
 
@@ -182,9 +179,6 @@ const OSG::BitVector SceneBase::MTInfluenceMask =
     
 */
 /*! \var AnimationPtr    SceneBase::_mfInitialAnimations
-    
-*/
-/*! \var Real32          SceneBase::_sfTimeInScene
     
 */
 /*! \var ParticleSystemPtr SceneBase::_mfParticleSystems
@@ -286,11 +280,6 @@ FieldDescription *SceneBase::_desc[] =
                      InitialAnimationsFieldId, InitialAnimationsFieldMask,
                      false,
                      reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialAnimations)),
-    new FieldDescription(SFReal32::getClassType(), 
-                     "TimeInScene", 
-                     TimeInSceneFieldId, TimeInSceneFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFTimeInScene)),
     new FieldDescription(MFParticleSystemPtr::getClassType(), 
                      "ParticleSystems", 
                      ParticleSystemsFieldId, ParticleSystemsFieldMask,
@@ -539,7 +528,6 @@ SceneBase::SceneBase(void) :
     _sfInitialCamera          (CameraPtr(NullFC)), 
     _mfAnimations             (), 
     _mfInitialAnimations      (), 
-    _sfTimeInScene            (), 
     _mfParticleSystems        (), 
     _mfInitialParticleSystems (), 
     _sfLuaModule              (), 
@@ -571,7 +559,6 @@ SceneBase::SceneBase(const SceneBase &source) :
     _sfInitialCamera          (source._sfInitialCamera          ), 
     _mfAnimations             (source._mfAnimations             ), 
     _mfInitialAnimations      (source._mfInitialAnimations      ), 
-    _sfTimeInScene            (source._sfTimeInScene            ), 
     _mfParticleSystems        (source._mfParticleSystems        ), 
     _mfInitialParticleSystems (source._mfInitialParticleSystems ), 
     _sfLuaModule              (source._sfLuaModule              ), 
@@ -675,11 +662,6 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
     if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
     {
         returnValue += _mfInitialAnimations.getBinSize();
-    }
-
-    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
-    {
-        returnValue += _sfTimeInScene.getBinSize();
     }
 
     if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
@@ -796,11 +778,6 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
         _mfInitialAnimations.copyToBin(pMem);
     }
 
-    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
-    {
-        _sfTimeInScene.copyToBin(pMem);
-    }
-
     if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
     {
         _mfParticleSystems.copyToBin(pMem);
@@ -914,11 +891,6 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
         _mfInitialAnimations.copyFromBin(pMem);
     }
 
-    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
-    {
-        _sfTimeInScene.copyFromBin(pMem);
-    }
-
     if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
     {
         _mfParticleSystems.copyFromBin(pMem);
@@ -1000,9 +972,6 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
         _mfInitialAnimations.syncWith(pOther->_mfInitialAnimations);
 
-    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
-        _sfTimeInScene.syncWith(pOther->_sfTimeInScene);
-
     if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
         _mfParticleSystems.syncWith(pOther->_mfParticleSystems);
 
@@ -1048,9 +1017,6 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 
     if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
         _sfInitialCamera.syncWith(pOther->_sfInitialCamera);
-
-    if(FieldBits::NoField != (TimeInSceneFieldMask & whichField))
-        _sfTimeInScene.syncWith(pOther->_sfTimeInScene);
 
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
         _sfLuaModule.syncWith(pOther->_sfLuaModule);
