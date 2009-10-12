@@ -347,6 +347,38 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Activities"
+					>
+					<File
+						RelativePath="..\..\Source\Project\Activities\KEChangeSceneActivity.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Activities\KEChangeSceneActivity.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Activities\KEChangeSceneActivity.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Activities\KEChangeSceneActivityBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Activities\KEChangeSceneActivityBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Activities\KEChangeSceneActivityBase.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\Activities\KEChangeSceneActivityFields.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Application"
