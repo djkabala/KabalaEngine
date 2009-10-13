@@ -180,6 +180,7 @@ void Project::start(void)
 		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
 	}
 
+
     //Hide and dettach Cursor
     //MainApplication::the()->getMainWindowEventProducer()->setShowCursor(false);
     //MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
@@ -280,6 +281,7 @@ ViewportPtr Project::createDefaultViewport(void) const
 		DefaultViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
 		DefaultViewport->setBackground              (NullFC);
 	endEditCP(DefaultViewport);
+    osg::setName(DefaultViewport,"__KABALA_ENGINE_PROJECT_VIEWPORT");
 
 	return DefaultViewport;
 }
