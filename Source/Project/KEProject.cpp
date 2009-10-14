@@ -186,17 +186,35 @@ void Project::start(void)
     //MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
     setDefaults();
 
-    //If I have a Lua Module then load it
-    if(!getLuaModule().string().empty())
-    {
-        LuaManager::the()->runScript(getLuaModule());
-    }
+    loadScripts();
 
     produceProjectStarted(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
 
 void Project::reset(void)
 {
+    //Scene Active Scene To NullFC
+    setActiveScene(NullFC);
+
+    //Send end to all scenes
+    for(UInt32 i(0) ; i<getScenes().size() ; ++i)
+    {
+        getScenes(i)->end();
+    }
+
+    //Recreate the Lua State
+    LuaManager::the()->recreateLuaState();
+
+    //Reload this projects Script
+    loadScripts();
+
+    //Reset all scenes
+    for(UInt32 i(0) ; i<getScenes().size() ; ++i)
+    {
+        getScenes(i)->reset();
+    }
+
+
 	//If I have an initial Scene then enter it
 	if(getInitialScene() != NullFC)
 	{
@@ -237,12 +255,23 @@ void Project::stop(void)
     produceProjectStopped(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
 
+void Project::loadScripts(void)
+{
+    //If I have a Lua Module then load it
+    if(!getLuaModule().string().empty())
+    {
+        LuaManager::the()->runScript(getLuaModule());
+    }
+
+}
+
 void Project::setActiveScene(ScenePtr TheScene)
 {
 	if(getInternalActiveScene() != TheScene)
 	{
 		if(getInternalActiveScene() != NullFC)
 		{
+            _LastActiveScene = getInternalActiveScene();
 			getInternalActiveScene()->exit();
 		}
 
@@ -529,7 +558,7 @@ void Project::mouseReleased(const MouseEventPtr e)
 
 void Project::keyPressed(const KeyEventPtr e)
 {
-    if(_NavigatorAttached)
+    if(_NavigatorAttached && false)
     {
        switch(e->getKey())
        {
@@ -556,7 +585,7 @@ void Project::keyPressed(const KeyEventPtr e)
 
 void Project::keyReleased(const KeyEventPtr e)
 {
-    if(_NavigatorAttached)
+    if(_NavigatorAttached && false)
     {
        switch(e->getKey())
        {
@@ -594,24 +623,6 @@ void Project::setCameraBeaconMatrix(const Matrix& m)
 
 void Project::mouseMoved(const MouseEventPtr e)
 {
-    if(_NavigatorAttached)
-    {
-        Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-        //Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
-        //m.multMatrixVec(Local_x);
-        //m.multMatrixVec(Local_y);
-
-        Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e->getDelta().x() * _YRotMotionFactor);
-        Matrix YRot_Mat;
-        YRot_Mat.setRotate(YRot_Quat);
-        Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0),-e->getDelta().y() * _XRotMotionFactor);
-        Matrix XRot_Mat;
-        XRot_Mat.setRotate(XRot_Quat);
-
-        m.mult(YRot_Mat);
-        m.mult(XRot_Mat);
-       // setCameraBeaconMatrix(m);
-    }
 }
 
 void Project::mouseDragged(const MouseEventPtr e)
@@ -683,7 +694,8 @@ Project::Project(void) :
         _IsSKeyDown(false),
         _IsDKeyDown(false),
         _IsWKeyDown(false),
-        _IsShiftKeyDown(false)
+        _IsShiftKeyDown(false),
+        _LastActiveScene(NullFC)
 {
 }
 
@@ -696,7 +708,8 @@ Project::Project(const Project &source) :
         _IsSKeyDown(false),
         _IsDKeyDown(false),
         _IsWKeyDown(false),
-        _IsShiftKeyDown(false)
+        _IsShiftKeyDown(false),
+        _LastActiveScene(NullFC)
 {
 }
 

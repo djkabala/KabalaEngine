@@ -127,6 +127,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void attachFlyNavigation(void);
     void dettachFlyNavigation(void);
     void toggleFlyNavigation(void);
+
+    ScenePtr getLastActiveScene(void) const;
     /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -218,6 +220,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     bool _IsWKeyDown;
     bool _IsShiftKeyDown;
 
+    ScenePtr _LastActiveScene;
+
     void updateNavigatorSceneAttachment(void);
     void setCameraBeaconMatrix(const Matrix& m);
     ViewportPtr createDefaultViewport(void) const;
@@ -228,6 +232,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void produceProjectStopped(const ProjectEventPtr e);
     void produceProjectReset(const ProjectEventPtr e);
     
+    void loadScripts(void);
+
     /*==========================  PRIVATE  ================================*/
   private:
     void setDefaults(void);

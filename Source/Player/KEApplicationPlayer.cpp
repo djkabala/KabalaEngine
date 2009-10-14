@@ -217,24 +217,31 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
                 MainApplication::the()->getProject()->setActiveScene(*SearchItor);
             }
         }
+        //Scene Activation
+        else if(e->getKey() == KeyEvent::KEY_E && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        {
+            //Reset the Project
+            MainApplication::the()->getProject()->reset();
+            MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
+        }
         //Statistic Foregrounds
         else if(e->getKey() == KeyEvent::KEY_B && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
         {
             toggleStatForeground(_DebugBasicStatForeground);
         }
-        else if(e->getKey() == KeyEvent::KEY_R && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_R && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Render Statistics Foreground
         {
             toggleStatForeground(_DebugRenderStatForeground);
         }
-        else if(e->getKey() == KeyEvent::KEY_Y && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_Y && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Physics Statistics Foreground
         {
             toggleStatForeground(_DebugPhysicsStatForeground);
         }
-        else if(e->getKey() == KeyEvent::KEY_P && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_P && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Particle Systems Statistics Foreground
         {
             toggleStatForeground(_DebugParticleSystemStatForeground);
         }
-        else if(e->getKey() == KeyEvent::KEY_A && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_A && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Animation Statistics Foreground
         {
             toggleStatForeground(_DebugAnimationStatForeground);
         }

@@ -47,6 +47,12 @@ ScenePtr Project::getActiveScene(void) const
 }
 
 inline
+ScenePtr Project::getLastActiveScene(void) const
+{
+	return _LastActiveScene;
+}
+
+inline
 Project::ProjectUpdateListener::ProjectUpdateListener(ProjectPtr TheProject) : _Project(TheProject)
 {
 }
