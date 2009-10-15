@@ -1,0 +1,8 @@
+
+Add the following to the end of the file KELuaBindings.cpp after code generation
+
+
+osg::LuaManager::OpenBoundLuaLibFunctor getKabalaEngineLuaBindingsLibFunctor(void)
+{
+    return boost::bind(&luaopen_KabalaEngine, _1);
+}

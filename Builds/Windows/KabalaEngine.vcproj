@@ -71,11 +71,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OSGBaseD.lib OSGSystemD.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib OSGToolboxD.lib OSGInputD.lib OSGUserInterfaceD.lib OSGAnimationD.lib OSGSoundD.lib OSGGameD.lib OSGParticleSystemD.lib OSGDynamicsD.lib OSGLuaD.lib"
+				AdditionalDependencies="OSGBaseD.lib OSGSystemD.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib OSGToolboxD.lib OSGInputD.lib OSGUserInterfaceD.lib OSGAnimationD.lib OSGSoundD.lib OSGGameD.lib OSGParticleSystemD.lib OSGDynamicsD.lib OSGLuaD.lib OSGToolboxLuaBindingsD.lib lua51.lib"
 				OutputFile="..\..\$(ProjectName)D.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OPENSG_TOOLBOX_DIR)\lib;$(BOOST_BASE_DIR)\lib;&quot;$(OPENSG)&quot;"
+				AdditionalLibraryDirectories="&quot;$(LUA_BASE_DIR)\lib&quot;;&quot;$(OPENSG_TOOLBOX_DIR)\lib&quot;;&quot;$(BOOST_BASE_DIR)\lib&quot;;&quot;$(OPENSG)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName)D.pdb"
 				SubSystem="1"
@@ -161,18 +161,18 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OSGBase.lib OSGSystem.lib OSGToolbox.lib OSGInput.lib OSGUserInterface.lib OSGAnimation.lib OSGParticleSystem.lib OSGDynamics.lib OSGGame.lib OSGLua.lib OSGSound.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib"
+				AdditionalDependencies="OSGBase.lib OSGSystem.lib OSGToolbox.lib OSGInput.lib OSGUserInterface.lib OSGAnimation.lib OSGParticleSystem.lib OSGDynamics.lib OSGGame.lib OSGLua.lib OSGToolboxLuaBindings.lib OSGSound.lib lua51.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OPENSG_TOOLBOX_DIR)\lib;$(BOOST_BASE_DIR)\lib;&quot;$(OPENSG)&quot;"
+				AdditionalLibraryDirectories="&quot;$(LUA_BASE_DIR)\lib&quot;;&quot;$(OPENSG_TOOLBOX_DIR)\lib&quot;;&quot;$(BOOST_BASE_DIR)\lib&quot;;&quot;$(OPENSG)&quot;"
 				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile=""
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="lib/$(ProjectName).lib"
+				ImportLibrary="$(OutDir)/$(ProjectName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -1293,6 +1293,18 @@
 				</File>
 				<File
 					RelativePath="..\..\Source\StartScreen\KEApplicationStartScreenFields.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="LuaBindings"
+				>
+				<File
+					RelativePath="..\..\Source\LuaBindings\KELuaBindings.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Source\LuaBindings\KELuaBindings.h"
 					>
 				</File>
 			</Filter>
