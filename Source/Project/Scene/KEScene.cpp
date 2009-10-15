@@ -190,7 +190,7 @@ void Scene::exit(void)
 	//Detach the User Interface Drawing Surfaces from the Window Event Producer
 	for(::osg::UInt32 i(0) ; i<getUIDrawingSurfaces().size() ; ++i)
 	{
-        //getUIDrawingSurfaces(i)->detachFromEventProducer();
+        getUIDrawingSurfaces(i)->detachFromEventProducer();
 	}
     
     //Detach the listeners
