@@ -131,6 +131,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     void initDebugStatForegrounds(void);
     void hideAllStatForegrounds(void);
     void toggleStatForeground(StatisticsForegroundPtr TheForeground);
+    void toggleDrawBoundingVolumes(void);
+    void toggleFrustumCulling(void);
     /*==========================  PRIVATE  ================================*/
   private:
 

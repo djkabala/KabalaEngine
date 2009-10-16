@@ -245,7 +245,28 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         {
             toggleStatForeground(_DebugAnimationStatForeground);
         }
+        //Toggle Volume Drawing
+        else if(e->getKey() == KeyEvent::KEY_V && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Animation Statistics Foreground
+        {
+            toggleDrawBoundingVolumes();
+        }
+        //Toggle Frustum Culling
+        else if(e->getKey() == KeyEvent::KEY_F && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Animation Statistics Foreground
+        {
+            toggleFrustumCulling();
+        }
     }
+}
+
+
+void ApplicationPlayer::toggleDrawBoundingVolumes(void)
+{
+    MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->setVolumeDrawing(!MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->getVolumeDrawing());
+}
+
+void ApplicationPlayer::toggleFrustumCulling(void)
+{
+    MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->setFrustumCulling(!MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->getFrustumCulling());
 }
 
 void ApplicationPlayer::toggleStatForeground(StatisticsForegroundPtr TheForeground)
