@@ -102,6 +102,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 	MFForegroundPtr &getActiveForegrounds(void);
 
 	void setActiveNode(NodePtr TheNode);
+    NodePtr getActiveNode(void);
     
 	void addActiveAnimation(AnimationPtr TheAnimation);
 	void removeActiveAnimation(AnimationPtr TheAnimation);
@@ -129,6 +130,10 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void toggleFlyNavigation(void);
 
     ScenePtr getLastActiveScene(void) const;
+    
+    void blockInput(bool block);
+    bool isInputBlocked(void) const;
+
     /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -233,6 +238,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void produceProjectReset(const ProjectEventPtr e);
     
     void loadScripts(void);
+    bool _BlockInput;
 
     /*==========================  PRIVATE  ================================*/
   private:

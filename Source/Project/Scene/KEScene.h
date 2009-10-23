@@ -82,6 +82,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
     /*! \}                                                                 */
 
     bool isStarted(void) const;
+    void blockInput(bool block);
+    bool isInputBlocked(void) const;
 
     /*=========================  PROTECTED  ===============================*/
   protected:
@@ -168,6 +170,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
 	SceneUpdateListener _SceneUpdateListener;
     
     bool _IsStarted;
+    bool _BlockInput;
 
     /*==========================  PRIVATE  ================================*/
   private:

@@ -353,6 +353,11 @@ void Project::setActiveNode(NodePtr TheNode)
 	endEditCP(getInternalActiveViewport(), Viewport::RootFieldMask);
 }
 
+NodePtr Project::getActiveNode(void)
+{
+    getInternalActiveViewport()->getRoot();
+}
+
 MFForegroundPtr &Project::getActiveForegrounds(void)
 {
 	return getInternalActiveViewport()->getForegrounds();
@@ -558,7 +563,7 @@ void Project::mouseReleased(const MouseEventPtr e)
 
 void Project::keyPressed(const KeyEventPtr e)
 {
-    if(_NavigatorAttached && false)
+    if(_NavigatorAttached)
     {
        switch(e->getKey())
        {
@@ -585,7 +590,7 @@ void Project::keyPressed(const KeyEventPtr e)
 
 void Project::keyReleased(const KeyEventPtr e)
 {
-    if(_NavigatorAttached && false)
+    if(_NavigatorAttached)
     {
        switch(e->getKey())
        {
@@ -642,7 +647,7 @@ void Project::mouseDragged(const MouseEventPtr e)
 		XRot_Mat.setRotate(XRot_Quat);
 
 		m.mult(YRot_Mat);
-		m.mult(XRot_Mat);
+		//m.mult(XRot_Mat);
 	    setCameraBeaconMatrix(m);
 	}
 }
@@ -695,7 +700,8 @@ Project::Project(void) :
         _IsDKeyDown(false),
         _IsWKeyDown(false),
         _IsShiftKeyDown(false),
-        _LastActiveScene(NullFC)
+        _LastActiveScene(NullFC),
+        _BlockInput(false)
 {
 }
 
@@ -709,7 +715,8 @@ Project::Project(const Project &source) :
         _IsDKeyDown(false),
         _IsWKeyDown(false),
         _IsShiftKeyDown(false),
-        _LastActiveScene(NullFC)
+        _LastActiveScene(NullFC),
+        _BlockInput(source._BlockInput)
 {
 }
 

@@ -335,15 +335,17 @@ void Scene::producerSceneReset(const SceneEventPtr e)
 
 Scene::Scene(void) :
     Inherited(),
-        _SceneUpdateListener(ScenePtr(this)),
-    _IsStarted(false)
+    _SceneUpdateListener(ScenePtr(this)),
+    _IsStarted(false),
+    _BlockInput(false)
 {
 }
 
 Scene::Scene(const Scene &source) :
     Inherited(source),
         _SceneUpdateListener(ScenePtr(this)),
-    _IsStarted(false)
+    _IsStarted(false),
+    _BlockInput(source._BlockInput)
 {
 }
 

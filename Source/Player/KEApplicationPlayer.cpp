@@ -49,6 +49,7 @@
 
 #include "KEApplicationPlayer.h"
 #include "Project/KEProject.h"
+#include "Project/Scene/KEScene.h"
 #include "Application/KEMainApplication.h"
 
 OSG_USING_NAMESPACE
@@ -90,7 +91,7 @@ void ApplicationPlayer::attachApplication(void)
 	//Main Window Titlebar
 	ProjectPtr TheProject(MainApplication::the()->getProject());
 	std::string MainWindowTitle(TheProject->getName());
-	MainApplication::the()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
+    updateWindowTitle();
 	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener);
 
 }
@@ -133,14 +134,34 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
     _IsDebugActive = EnableDebug;
     if(_IsDebugActive)
     {
-        std::cout << "Debug Mode Enabled" << std::endl;
-        MainApplication::the()->getProject()->attachFlyNavigation();
+        updateWindowTitle();
     }
     else
     {
-        std::cout << "Debug Mode Disabled" << std::endl;
         MainApplication::the()->getProject()->dettachFlyNavigation();
+
+        //Turn off Input Blocking
+        MainApplication::the()->getProject()->blockInput(false);
+        for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
+        {
+            MainApplication::the()->getProject()->getScenes(i)->blockInput(false);
+        }
+        updateWindowTitle();
     }
+}
+
+void ApplicationPlayer::updateWindowTitle(void)
+{
+    std::string MainWindowTitle(MainApplication::the()->getProject()->getName());
+    if(_IsDebugActive)
+    {
+        MainWindowTitle += "(Debug)";
+    }
+    if(MainApplication::the()->getProject()->isInputBlocked())
+    {
+        MainWindowTitle += "(Input Blocked)";
+    }
+    MainApplication::the()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
 }
 
 void ApplicationPlayer::keyTyped(const KeyEventPtr e)
@@ -164,6 +185,18 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         if(e->getKey() == KeyEvent::KEY_SPACE)
         {
             MainApplication::the()->getProject()->togglePauseActiveUpdates();
+        }
+
+        //Toggle Input Blocking
+        if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        {
+            bool BlockInput(!MainApplication::the()->getProject()->isInputBlocked());
+            MainApplication::the()->getProject()->blockInput(BlockInput);
+            for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
+            {
+                MainApplication::the()->getProject()->getScenes(i)->blockInput(BlockInput);
+            }
+            updateWindowTitle();
         }
 
         //Scene Activation
@@ -237,23 +270,33 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         {
             toggleStatForeground(_DebugPhysicsStatForeground);
         }
-        else if(e->getKey() == KeyEvent::KEY_P && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Particle Systems Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_Z && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Particle Systems Statistics Foreground
         {
             toggleStatForeground(_DebugParticleSystemStatForeground);
         }
-        else if(e->getKey() == KeyEvent::KEY_A && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Animation Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_A && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
         {
             toggleStatForeground(_DebugAnimationStatForeground);
         }
         //Toggle Volume Drawing
-        else if(e->getKey() == KeyEvent::KEY_V && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Animation Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_V && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
         {
             toggleDrawBoundingVolumes();
         }
         //Toggle Frustum Culling
-        else if(e->getKey() == KeyEvent::KEY_F && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Animation Statistics Foreground
+        else if(e->getKey() == KeyEvent::KEY_F && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
         {
             toggleFrustumCulling();
+        }
+        //Toggle Physics Drawing
+        else if(e->getKey() == KeyEvent::KEY_P && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
+        {
+            toggleDrawPhysicsCharacteristics();
+        }
+        //Toggle Navigator
+        else if(e->getKey() == KeyEvent::KEY_N && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
+        {
+            MainApplication::the()->getProject()->toggleFlyNavigation();
         }
     }
 }
@@ -262,6 +305,50 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
 void ApplicationPlayer::toggleDrawBoundingVolumes(void)
 {
     MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->setVolumeDrawing(!MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->getVolumeDrawing());
+}
+
+void ApplicationPlayer::toggleDrawPhysicsCharacteristics(void)
+{
+    NodePtr CurrentRoot(MainApplication::the()->getProject()->getActiveNode());
+    NodePtr PhysNode(getPhysicsDrawableNode());
+
+    //Get the Root Node of the Project
+    beginEditCP(_PhysDrawable, PhysicsCharacteristicsDrawable::RootFieldMask);
+        _PhysDrawable->setRoot(CurrentRoot);
+    endEditCP(_PhysDrawable, PhysicsCharacteristicsDrawable::RootFieldMask);
+
+    std::cout << "CurrentRoot" << CurrentRoot.getCPtr() << std::endl;
+    std::cout << "PhysNode" << PhysNode.getCPtr() << std::endl;
+    //Add the Physics Drawable Node to the project
+    beginEditCP(CurrentRoot, Node::ChildrenFieldMask);
+        //if(CurrentRoot->findChild(PhysNode) < 0)
+        //{
+            //CurrentRoot->addChild(PhysNode);
+        //}
+        //else
+        //{
+            ////CurrentRoot->subChild(PhysNode);
+        //}
+    endEditCP(CurrentRoot, Node::ChildrenFieldMask);
+}
+
+NodePtr ApplicationPlayer::getPhysicsDrawableNode(void)
+{
+    if(_PhysDrawable == NullFC)
+    {
+        //Make The Physics Characteristics Core
+        _PhysDrawable = PhysicsCharacteristicsDrawable::create();
+    }
+    if(_PhysDrawableNode == NullFC)
+    {
+        //Make The Physics Characteristics Node
+        _PhysDrawableNode = Node::create();
+        beginEditCP(_PhysDrawableNode, Node::CoreFieldMask);
+            _PhysDrawableNode->setCore(_PhysDrawable);
+        endEditCP  (_PhysDrawableNode, Node::CoreFieldMask);
+        addRefCP(_PhysDrawableNode);
+    }
+    return _PhysDrawableNode;
 }
 
 void ApplicationPlayer::toggleFrustumCulling(void)
@@ -402,7 +489,9 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
 ApplicationPlayer::ApplicationPlayer(void) :
     Inherited(),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
-    _IsDebugActive(false)
+    _IsDebugActive(false),
+    _PhysDrawable(NullFC),
+    _PhysDrawableNode(NullFC)
 {
     initDebugStatForegrounds();
 }
@@ -415,7 +504,9 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     _DebugRenderStatForeground(source._DebugRenderStatForeground),
     _DebugPhysicsStatForeground(source._DebugPhysicsStatForeground),
     _DebugParticleSystemStatForeground(source._DebugParticleSystemStatForeground),
-    _DebugAnimationStatForeground(source._DebugAnimationStatForeground)
+    _DebugAnimationStatForeground(source._DebugAnimationStatForeground),
+    _PhysDrawable(NullFC),
+    _PhysDrawableNode(NullFC)
 {
 }
 

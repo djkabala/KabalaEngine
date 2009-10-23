@@ -41,6 +41,18 @@
 OSG_BEGIN_NAMESPACE
 
 inline
+void Project::blockInput(bool block)
+{
+    _BlockInput = block;
+}
+
+inline
+bool Project::isInputBlocked(void) const
+{
+    return _BlockInput;
+}
+
+inline
 ScenePtr Project::getActiveScene(void) const
 {
 	return getInternalActiveScene();
@@ -78,58 +90,85 @@ inline
 void Project::ProjectUpdateListener::update(const UpdateEventPtr e)
 {
     _Project->update(e);
-    _Project->_Producer.produceEvent(UpdateMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(UpdateMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::mouseClicked(const MouseEventPtr e)
 {
-    _Project->_Producer.produceEvent(MouseClickedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(MouseClickedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::mouseEntered(const MouseEventPtr e)
 {
-    _Project->_Producer.produceEvent(MouseEnteredMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(MouseEnteredMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::mouseExited(const MouseEventPtr e)
 {
-    _Project->_Producer.produceEvent(MouseExitedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(MouseExitedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::mousePressed(const MouseEventPtr e)
 {
     _Project->mousePressed(e);
-    _Project->_Producer.produceEvent(MousePressedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(MousePressedMethodId,e);
+    }
 }
 inline
 void Project::ProjectUpdateListener::mouseReleased(const MouseEventPtr e)
 {
     _Project->mouseReleased(e);
-    _Project->_Producer.produceEvent(MouseReleasedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(MouseReleasedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::mouseMoved(const MouseEventPtr e)
 {
     _Project->mouseMoved(e);
-    _Project->_Producer.produceEvent(MouseMovedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(MouseMovedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::mouseDragged(const MouseEventPtr e)
 {
     _Project->mouseDragged(e);
-    _Project->_Producer.produceEvent(MouseDraggedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(MouseDraggedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::mouseWheelMoved(const MouseWheelEventPtr e)
 {
-    _Project->_Producer.produceEvent(MouseWheelMovedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(MouseWheelMovedMethodId,e);
+    }
 }
 
 
@@ -137,74 +176,110 @@ inline
 void Project::ProjectUpdateListener::keyPressed(const KeyEventPtr e)
 {
     _Project->keyPressed(e);
-    _Project->_Producer.produceEvent(KeyPressedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(KeyPressedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::keyReleased(const KeyEventPtr e)
 {
     _Project->keyReleased(e);
-    _Project->_Producer.produceEvent(KeyReleasedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(KeyReleasedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::keyTyped(const KeyEventPtr e)
 {
-    _Project->_Producer.produceEvent(KeyTypedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(KeyTypedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowOpened(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowOpenedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowOpenedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowClosing(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowClosingMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowClosingMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowClosed(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowClosedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowClosedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowIconified(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowIconifiedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowIconifiedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowDeiconified(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowDeiconifiedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowDeiconifiedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowActivated(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowActivatedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowActivatedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowDeactivated(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowDeactivatedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowDeactivatedMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowEntered(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowEnteredMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowEnteredMethodId,e);
+    }
 }
 
 inline
 void Project::ProjectUpdateListener::windowExited(const WindowEventPtr e)
 {
-    _Project->_Producer.produceEvent(WindowExitedMethodId,e);
+    if(!_Project->_BlockInput)
+    {
+        _Project->_Producer.produceEvent(WindowExitedMethodId,e);
+    }
 }
 
 OSG_END_NAMESPACE

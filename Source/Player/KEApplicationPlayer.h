@@ -45,6 +45,9 @@
 #include <OpenSG/Input/OSGKeyAdapter.h>
 #include <OpenSG/OSGSimpleStatisticsForeground.h>
 
+#include <OpenSG/Physics/OSGPhysicsCharacteristicsDrawable.h>
+#include <OpenSG/OSGNode.h>
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationPlayer class. See \ref 
@@ -133,6 +136,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     void toggleStatForeground(StatisticsForegroundPtr TheForeground);
     void toggleDrawBoundingVolumes(void);
     void toggleFrustumCulling(void);
+    void toggleDrawPhysicsCharacteristics(void);
+
+    NodePtr getPhysicsDrawableNode(void);
     /*==========================  PRIVATE  ================================*/
   private:
 
@@ -144,6 +150,10 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     // prohibit default functions (move to 'public' if you need one)
 
     void operator =(const ApplicationPlayer &source);
+    void updateWindowTitle(void);
+
+    PhysicsCharacteristicsDrawablePtr _PhysDrawable;
+    NodePtr                           _PhysDrawableNode;
 };
 
 typedef ApplicationPlayer *ApplicationPlayerP;
