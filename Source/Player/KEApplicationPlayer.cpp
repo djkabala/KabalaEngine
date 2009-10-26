@@ -317,18 +317,16 @@ void ApplicationPlayer::toggleDrawPhysicsCharacteristics(void)
         _PhysDrawable->setRoot(CurrentRoot);
     endEditCP(_PhysDrawable, PhysicsCharacteristicsDrawable::RootFieldMask);
 
-    std::cout << "CurrentRoot" << CurrentRoot.getCPtr() << std::endl;
-    std::cout << "PhysNode" << PhysNode.getCPtr() << std::endl;
     //Add the Physics Drawable Node to the project
     beginEditCP(CurrentRoot, Node::ChildrenFieldMask);
-        //if(CurrentRoot->findChild(PhysNode) < 0)
-        //{
-            //CurrentRoot->addChild(PhysNode);
-        //}
-        //else
-        //{
-            ////CurrentRoot->subChild(PhysNode);
-        //}
+        if(CurrentRoot->findChild(PhysNode) < 0)
+        {
+            CurrentRoot->addChild(PhysNode);
+        }
+        else
+        {
+            CurrentRoot->subChild(PhysNode);
+        }
     endEditCP(CurrentRoot, Node::ChildrenFieldMask);
 }
 

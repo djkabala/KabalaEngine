@@ -355,7 +355,7 @@ void Project::setActiveNode(NodePtr TheNode)
 
 NodePtr Project::getActiveNode(void)
 {
-    getInternalActiveViewport()->getRoot();
+    return getInternalActiveViewport()->getRoot();
 }
 
 MFForegroundPtr &Project::getActiveForegrounds(void)
