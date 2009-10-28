@@ -43,6 +43,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGSimpleAttachments.h>
 #include <OpenSG/OSGDrawable.h>
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <OpenSG/Input/OSGStringUtils.h>
@@ -90,7 +91,6 @@ void ApplicationPlayer::attachApplication(void)
 
 	//Main Window Titlebar
 	ProjectPtr TheProject(MainApplication::the()->getProject());
-	std::string MainWindowTitle(TheProject->getName());
     updateWindowTitle();
 	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener);
 
@@ -152,7 +152,7 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
 
 void ApplicationPlayer::updateWindowTitle(void)
 {
-    std::string MainWindowTitle(MainApplication::the()->getProject()->getName());
+    std::string MainWindowTitle(MainApplication::the()->getProject()->getMainWindowTitle());
     if(_IsDebugActive)
     {
         MainWindowTitle += "(Debug)";

@@ -13,15 +13,6 @@
 >
 The Project.
 	<Field
-		name="Name"
-		type="std::string"
-		cardinality="single"
-		visibility="external"
-		defaultValue=""
-		access="public"
-	>
-	</Field>
-	<Field
 		name="Version"
 		type="std::string"
 		cardinality="single"
@@ -193,6 +184,16 @@ The Project.
 		visibility="external"
 		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
+	>
+	</Field>
+	<Field
+		name="LuaModulesDirectory"
+		type="Path"
+		cardinality="single"
+		visibility="external"
+		header="OpenSG/Toolbox/OSGPathType.h"
+		access="public"
+        defaultValue="./lua"
 	>
 	</Field>
 	<ProducedMethod

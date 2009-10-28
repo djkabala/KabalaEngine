@@ -108,20 +108,6 @@ ProjectPtr ProjectBase::createEmpty(void)
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the Project::_sfName field.
-inline
-const SFString *ProjectBase::getSFName(void) const
-{
-    return &_sfName;
-}
-
-//! Get the Project::_sfName field.
-inline
-SFString *ProjectBase::editSFName(void)
-{
-    return &_sfName;
-}
-
 //! Get the Project::_sfVersion field.
 inline
 const SFString *ProjectBase::getSFVersion(void) const
@@ -402,27 +388,20 @@ SFPath *ProjectBase::editSFLuaModule(void)
     return &_sfLuaModule;
 }
 
-
-//! Get the value of the Project::_sfName field.
+//! Get the Project::_sfLuaModulesDirectory field.
 inline
-std::string &ProjectBase::editName(void)
+const SFPath *ProjectBase::getSFLuaModulesDirectory(void) const
 {
-    return _sfName.getValue();
+    return &_sfLuaModulesDirectory;
 }
 
-//! Get the value of the Project::_sfName field.
+//! Get the Project::_sfLuaModulesDirectory field.
 inline
-const std::string &ProjectBase::getName(void) const
+SFPath *ProjectBase::editSFLuaModulesDirectory(void)
 {
-    return _sfName.getValue();
+    return &_sfLuaModulesDirectory;
 }
 
-//! Set the value of the Project::_sfName field.
-inline
-void ProjectBase::setName(const std::string &value)
-{
-    _sfName.setValue(value);
-}
 
 //! Get the value of the Project::_sfVersion field.
 inline
@@ -611,6 +590,27 @@ inline
 void ProjectBase::setLuaModule(const Path &value)
 {
     _sfLuaModule.setValue(value);
+}
+
+//! Get the value of the Project::_sfLuaModulesDirectory field.
+inline
+Path &ProjectBase::editLuaModulesDirectory(void)
+{
+    return _sfLuaModulesDirectory.getValue();
+}
+
+//! Get the value of the Project::_sfLuaModulesDirectory field.
+inline
+const Path &ProjectBase::getLuaModulesDirectory(void) const
+{
+    return _sfLuaModulesDirectory.getValue();
+}
+
+//! Set the value of the Project::_sfLuaModulesDirectory field.
+inline
+void ProjectBase::setLuaModulesDirectory(const Path &value)
+{
+    _sfLuaModulesDirectory.setValue(value);
 }
 
 

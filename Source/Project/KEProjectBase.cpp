@@ -60,9 +60,6 @@
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  ProjectBase::NameFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::NameFieldId);
-
 const OSG::BitVector  ProjectBase::VersionFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::VersionFieldId);
 
@@ -123,6 +120,9 @@ const OSG::BitVector  ProjectBase::ActiveParticleSystemsFieldMask =
 const OSG::BitVector  ProjectBase::LuaModuleFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::LuaModuleFieldId);
 
+const OSG::BitVector  ProjectBase::LuaModulesDirectoryFieldMask = 
+    (TypeTraits<BitVector>::One << ProjectBase::LuaModulesDirectoryFieldId);
+
 const OSG::BitVector  ProjectBase::EventProducerFieldMask =
     (TypeTraits<BitVector>::One << ProjectBase::EventProducerFieldId);
 
@@ -133,9 +133,6 @@ const OSG::BitVector ProjectBase::MTInfluenceMask =
 
 // Field descriptions
 
-/*! \var std::string     ProjectBase::_sfName
-    
-*/
 /*! \var std::string     ProjectBase::_sfVersion
     
 */
@@ -196,16 +193,14 @@ const OSG::BitVector ProjectBase::MTInfluenceMask =
 /*! \var Path            ProjectBase::_sfLuaModule
     
 */
+/*! \var Path            ProjectBase::_sfLuaModulesDirectory
+    
+*/
 
 //! Project description
 
 FieldDescription *ProjectBase::_desc[] = 
 {
-    new FieldDescription(SFString::getClassType(), 
-                     "Name", 
-                     NameFieldId, NameFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFName)),
     new FieldDescription(SFString::getClassType(), 
                      "Version", 
                      VersionFieldId, VersionFieldMask,
@@ -305,7 +300,12 @@ FieldDescription *ProjectBase::_desc[] =
                      "LuaModule", 
                      LuaModuleFieldId, LuaModuleFieldMask,
                      false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFLuaModule))
+                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFLuaModule)),
+    new FieldDescription(SFPath::getClassType(), 
+                     "LuaModulesDirectory", 
+                     LuaModulesDirectoryFieldId, LuaModulesDirectoryFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFLuaModulesDirectory))
     , 
     new FieldDescription(SFEventProducerPtr::getClassType(), 
                      "EventProducer", 
@@ -522,7 +522,6 @@ void ProjectBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 
 ProjectBase::ProjectBase(void) :
     _Producer(&getProducerType()),
-    _sfName                   (), 
     _sfVersion                (), 
     _sfMainWindowTitle        (), 
     _sfFilePath               (), 
@@ -543,6 +542,7 @@ ProjectBase::ProjectBase(void) :
     _mfActiveAnimations       (), 
     _mfActiveParticleSystems  (), 
     _sfLuaModule              (), 
+    _sfLuaModulesDirectory    ("./lua"), 
     _sfEventProducer(&_Producer),
     Inherited() 
 {
@@ -554,7 +554,6 @@ ProjectBase::ProjectBase(void) :
 
 ProjectBase::ProjectBase(const ProjectBase &source) :
     _Producer(&source.getProducerType()),
-    _sfName                   (source._sfName                   ), 
     _sfVersion                (source._sfVersion                ), 
     _sfMainWindowTitle        (source._sfMainWindowTitle        ), 
     _sfFilePath               (source._sfFilePath               ), 
@@ -575,6 +574,7 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _mfActiveAnimations       (source._mfActiveAnimations       ), 
     _mfActiveParticleSystems  (source._mfActiveParticleSystems  ), 
     _sfLuaModule              (source._sfLuaModule              ), 
+    _sfLuaModulesDirectory    (source._sfLuaModulesDirectory    ), 
     _sfEventProducer(&_Producer),
     Inherited                 (source)
 {
@@ -591,11 +591,6 @@ ProjectBase::~ProjectBase(void)
 UInt32 ProjectBase::getBinSize(const BitVector &whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        returnValue += _sfName.getBinSize();
-    }
 
     if(FieldBits::NoField != (VersionFieldMask & whichField))
     {
@@ -697,6 +692,11 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
         returnValue += _sfLuaModule.getBinSize();
     }
 
+    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
+    {
+        returnValue += _sfLuaModulesDirectory.getBinSize();
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         returnValue += _sfEventProducer.getBinSize();
@@ -710,11 +710,6 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
                                   const BitVector         &whichField)
 {
     Inherited::copyToBin(pMem, whichField);
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        _sfName.copyToBin(pMem);
-    }
 
     if(FieldBits::NoField != (VersionFieldMask & whichField))
     {
@@ -816,6 +811,11 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
         _sfLuaModule.copyToBin(pMem);
     }
 
+    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
+    {
+        _sfLuaModulesDirectory.copyToBin(pMem);
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyToBin(pMem);
@@ -828,11 +828,6 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
                                     const BitVector    &whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        _sfName.copyFromBin(pMem);
-    }
 
     if(FieldBits::NoField != (VersionFieldMask & whichField))
     {
@@ -934,6 +929,11 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
         _sfLuaModule.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
+    {
+        _sfLuaModulesDirectory.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyFromBin(pMem);
@@ -948,9 +948,6 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 {
 
     Inherited::executeSyncImpl(pOther, whichField);
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pOther->_sfName);
 
     if(FieldBits::NoField != (VersionFieldMask & whichField))
         _sfVersion.syncWith(pOther->_sfVersion);
@@ -1012,6 +1009,9 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
         _sfLuaModule.syncWith(pOther->_sfLuaModule);
 
+    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
+        _sfLuaModulesDirectory.syncWith(pOther->_sfLuaModulesDirectory);
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
         _sfEventProducer.syncWith(pOther->_sfEventProducer);
 
@@ -1024,9 +1024,6 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 {
 
     Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pOther->_sfName);
 
     if(FieldBits::NoField != (VersionFieldMask & whichField))
         _sfVersion.syncWith(pOther->_sfVersion);
@@ -1054,6 +1051,9 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
         _sfLuaModule.syncWith(pOther->_sfLuaModule);
+
+    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
+        _sfLuaModulesDirectory.syncWith(pOther->_sfLuaModulesDirectory);
 
 
     if(FieldBits::NoField != (ScenesFieldMask & whichField))

@@ -43,6 +43,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGSimpleAttachments.h>
 
 #include "KEBuilderInterface.h"
 #include <OpenSG/UserInterface/OSGInternalWindow.h>
@@ -500,7 +501,7 @@ void BuilderInterface::connectInterface(ApplicationBuilderPtr TheApplicationBuil
 
 	//Main Window Titlebar
 	ProjectPtr TheProject(MainApplication::the()->getProject());
-	std::string MainWindowTitle(TheProject->getName() + " -  Kabala Engine Builder");
+	std::string MainWindowTitle(std::string(getName(TheProject)) + " -  Kabala Engine Builder");
 	MainApplication::the()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
 
 	//Editor

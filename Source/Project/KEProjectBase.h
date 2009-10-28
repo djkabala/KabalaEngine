@@ -63,7 +63,6 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <OpenSG/OSGStringFields.h> // Name type
 #include <OpenSG/OSGStringFields.h> // Version type
 #include <OpenSG/OSGStringFields.h> // MainWindowTitle type
 #include <OpenSG/Toolbox/OSGPathType.h> // FilePath type
@@ -84,6 +83,7 @@
 #include <OpenSG/Animation/OSGAnimation.h> // ActiveAnimations type
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ActiveParticleSystems type
 #include <OpenSG/Toolbox/OSGPathType.h> // LuaModule type
+#include <OpenSG/Toolbox/OSGPathType.h> // LuaModulesDirectory type
 
 #include "KEProjectFields.h"
 #include <OpenSG/Toolbox/OSGEventProducer.h>
@@ -111,8 +111,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 
     enum
     {
-        NameFieldId                      = Inherited::NextFieldId,
-        VersionFieldId                   = NameFieldId                      + 1,
+        VersionFieldId                   = Inherited::NextFieldId,
         MainWindowTitleFieldId           = VersionFieldId                   + 1,
         FilePathFieldId                  = MainWindowTitleFieldId           + 1,
         ScenesFieldId                    = FilePathFieldId                  + 1,
@@ -132,11 +131,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
         ActiveAnimationsFieldId          = InternalActiveViewportFieldId    + 1,
         ActiveParticleSystemsFieldId     = ActiveAnimationsFieldId          + 1,
         LuaModuleFieldId                 = ActiveParticleSystemsFieldId     + 1,
-        EventProducerFieldId             = LuaModuleFieldId                 + 1,
+        LuaModulesDirectoryFieldId       = LuaModuleFieldId                 + 1,
+        EventProducerFieldId             = LuaModulesDirectoryFieldId       + 1,
         NextFieldId                      = EventProducerFieldId             + 1
     };
 
-    static const OSG::BitVector NameFieldMask;
     static const OSG::BitVector VersionFieldMask;
     static const OSG::BitVector MainWindowTitleFieldMask;
     static const OSG::BitVector FilePathFieldMask;
@@ -157,6 +156,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     static const OSG::BitVector ActiveAnimationsFieldMask;
     static const OSG::BitVector ActiveParticleSystemsFieldMask;
     static const OSG::BitVector LuaModuleFieldMask;
+    static const OSG::BitVector LuaModulesDirectoryFieldMask;
     static const OSG::BitVector EventProducerFieldMask;
 
 
@@ -220,9 +220,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \{                                                                 */
 
 
-           SFString            *editSFName           (void);
-     const SFString            *getSFName           (void) const;
-
            SFString            *editSFVersion        (void);
      const SFString            *getSFVersion        (void) const;
 
@@ -259,9 +256,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
            SFPath              *editSFLuaModule      (void);
      const SFPath              *getSFLuaModule      (void) const;
 
+           SFPath              *editSFLuaModulesDirectory(void);
+     const SFPath              *getSFLuaModulesDirectory(void) const;
 
-           std::string         &editName           (void);
-     const std::string         &getName           (void) const;
 
            std::string         &editVersion        (void);
      const std::string         &getVersion        (void) const;
@@ -281,6 +278,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 
            Path                &editLuaModule      (void);
      const Path                &getLuaModule      (void) const;
+
+           Path                &editLuaModulesDirectory(void);
+     const Path                &getLuaModulesDirectory(void) const;
 
            ScenePtr            &editScenes         (const UInt32 index);
      const ScenePtr            &getScenes         (const UInt32 index) const;
@@ -340,12 +340,12 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-     void setName           ( const std::string &value );
      void setVersion        ( const std::string &value );
      void setMainWindowTitle( const std::string &value );
      void setFilePath       ( const Path &value );
      void setInitialScene   ( const ScenePtr &value );
      void setLuaModule      ( const Path &value );
+     void setLuaModulesDirectory( const Path &value );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -408,7 +408,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFString            _sfName;
     SFString            _sfVersion;
     SFString            _sfMainWindowTitle;
     SFPath              _sfFilePath;
@@ -429,6 +428,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     MFAnimationPtr      _mfActiveAnimations;
     MFParticleSystemPtr   _mfActiveParticleSystems;
     SFPath              _sfLuaModule;
+    SFPath              _sfLuaModulesDirectory;
 
     /*! \}                                                                 */
     SFEventProducerPtr _sfEventProducer;

@@ -188,6 +188,7 @@ void Project::start(void)
 
     loadScripts();
 
+
     produceProjectStarted(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
 
@@ -257,6 +258,13 @@ void Project::stop(void)
 
 void Project::loadScripts(void)
 {
+    //Set the Path used for finding modules by lua
+    std::string PackagePath("?;" + getLuaModulesDirectory().string() + "/?;" + getLuaModulesDirectory().string() + "/?.lua;" + getLuaModulesDirectory().string() + "/?/.lua;");
+    LuaManager::the()->setPackagePath(PackagePath);
+
+    std::string PackageCPath("?;" + getLuaModulesDirectory().string() + "/?;" + getLuaModulesDirectory().string() + "/?.so;" + getLuaModulesDirectory().string() + "/?/.dll;");
+    LuaManager::the()->setPackageCPath(PackageCPath);
+
     //If I have a Lua Module then load it
     if(!getLuaModule().string().empty())
     {
