@@ -259,10 +259,18 @@ void Project::stop(void)
 void Project::loadScripts(void)
 {
     //Set the Path used for finding modules by lua
-    std::string PackagePath("?;" + getLuaModulesDirectory().string() + "/?;" + getLuaModulesDirectory().string() + "/?.lua;" + getLuaModulesDirectory().string() + "/?/.lua;");
+    std::string PackagePath("?;"
+            + (getLuaModulesDirectory() / "?" ).file_string() + ";"
+            + (getLuaModulesDirectory() / "?.lua" ).file_string() + ";"
+            + (getLuaModulesDirectory() / "?" /  "init.lua").file_string());
+
     LuaManager::the()->setPackagePath(PackagePath);
 
-    std::string PackageCPath("?;" + getLuaModulesDirectory().string() + "/?;" + getLuaModulesDirectory().string() + "/?.so;" + getLuaModulesDirectory().string() + "/?/.dll;");
+    std::string PackageCPath("?;"
+            + (getLuaModulesDirectory() / "?" ).file_string() + ";"
+            + (getLuaModulesDirectory() / "?.so" ).file_string() + ";"
+            + (getLuaModulesDirectory() / "?.dylib" ).file_string() + ";"
+            + (getLuaModulesDirectory() / "?.dll" ).file_string());
     LuaManager::the()->setPackageCPath(PackageCPath);
 
     //If I have a Lua Module then load it
