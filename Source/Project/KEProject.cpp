@@ -59,6 +59,13 @@
 #include <OpenSG/Sound/OSGSoundManager.h>
 #include <OpenSG/Lua/OSGLuaManager.h>
 
+
+//Bindings for the OSGToolbox libraries
+#include <OpenSG/ToolboxLuaBindings/OSGToolbox_wrap.h>
+
+//Kabala Engine Lua Bindings
+#include "LuaBindings/KELuaBindings.h"
+
 OSG_BEGIN_NAMESPACE
 
 /***************************************************************************\
@@ -205,6 +212,14 @@ void Project::reset(void)
 
     //Recreate the Lua State
     LuaManager::the()->recreateLuaState();
+
+    //Load the Bindings Libs
+
+    //Toolbox Bindings
+    LuaManager::the()->openLuaBindingLib(getOSGToolboxLuaBindingsLibFunctor());
+    
+    //Kabala Engine Bindings
+    LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
 
     //Reload this projects Script
     loadScripts();
