@@ -542,7 +542,7 @@ ProjectBase::ProjectBase(void) :
     _mfActiveAnimations       (), 
     _mfActiveParticleSystems  (), 
     _sfLuaModule              (), 
-    _sfLuaModulesDirectory    ("./lua"), 
+    _sfLuaModulesDirectory    (Path("./lua")), 
     _sfEventProducer(&_Producer),
     Inherited() 
 {

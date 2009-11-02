@@ -51,6 +51,9 @@
 #include <OpenSG/UserInterface/OSGUIDrawingSurface.h>
 #include "Application/KEMainApplication.h"
 #include <OpenSG/Lua/OSGLuaManager.h>
+#include <OpenSG/Physics/OSGPhysicsWorld.h>
+#include <OpenSG/Physics/OSGPhysicsHandler.h>
+#include <OpenSG/Physics/OSGPhysicsUtils.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -142,6 +145,59 @@ void Scene::enter(void)
         getInternalParentProject()->addActiveParticleSystem(getInitialParticleSystems(i));
     }
 
+    //If There is a physics World then update it's contents
+    if(getPhysicsWorld() != NullFC)
+    {
+        PhysicsAttachmentsFinder PhysicsFinder;
+        PhysicsFinder.traverse(getRoot());
+
+        //For each Body set it's world to this scenes world
+        const std::vector<PhysicsBodyPtr>& FoundBodies(PhysicsFinder.getFoundBodies());
+        for(UInt32 i(0) ; i<FoundBodies.size() ; ++i)
+        {
+            beginEditCP(FoundBodies[i],PhysicsBody::WorldFieldMask);
+                FoundBodies[i]->setWorld(getPhysicsWorld());
+            endEditCP(FoundBodies[i],PhysicsBody::WorldFieldMask);
+        }
+
+        //For each Joint set it's world to this scenes world
+        const std::vector<PhysicsJointPtr>& FoundJoints(PhysicsFinder.getFoundJoints());
+        for(UInt32 i(0) ; i<FoundJoints.size() ; ++i)
+        {
+            beginEditCP(FoundJoints[i],PhysicsJoint::WorldFieldMask);
+                FoundJoints[i]->setWorld(getPhysicsWorld());
+            endEditCP(FoundJoints[i],PhysicsJoint::WorldFieldMask);
+        }
+
+        //If There is a physics Handler then attach it to the update
+        if(getPhysicsHandler() != NullFC)
+        {
+            
+            getPhysicsHandler()->attachUpdateProducer(editEventProducer());
+
+            //Attach all Physics spaces without a parent space to the Physics handler
+            beginEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
+                getPhysicsHandler()->setUpdateNode(getRoot());
+                getPhysicsHandler()->setWorld(getPhysicsWorld());
+            endEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
+            if(getPhysicsHandler()->getSpaces().size() > 0)
+            {
+                const std::vector<PhysicsGeomPtr>& FoundGeoms(PhysicsFinder.getFoundGeoms());
+                for(UInt32 i(0) ; i<FoundGeoms.size() ; ++i)
+                {
+                    if(FoundGeoms[i]->getSpace() == NullFC)
+                    {
+                        //If the Goem has no parent space then add it to this scenes space
+                        beginEditCP(FoundGeoms[i], PhysicsGeom::SpaceFieldMask);
+                            FoundGeoms[i]->setSpace(getPhysicsHandler()->getSpaces()[0]);
+                        endEditCP(FoundGeoms[i], PhysicsGeom::SpaceFieldMask);
+                    }
+                    //Tell the Geom to update it's body
+                    endEditCP(FoundGeoms[i], PhysicsGeom::BodyFieldMask);
+                }
+            }
+        }
+    }
 
     producerSceneEntered(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 }
@@ -200,6 +256,19 @@ void Scene::exit(void)
     MainApplication::the()->getMainWindowEventProducer()->removeMouseWheelListener(&_SceneUpdateListener);
     MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_SceneUpdateListener);
     MainApplication::the()->getMainWindowEventProducer()->removeWindowListener(&_SceneUpdateListener);
+
+    //If There is a physics Handler then detach it
+    if(getPhysicsHandler() != NullFC)
+    {
+        getPhysicsHandler()->detachUpdateProducer(editEventProducer());
+
+        //Detach all Physics spaces from the Physics handler
+        beginEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
+            getPhysicsHandler()->getSpaces().clear();
+            getPhysicsHandler()->setUpdateNode(NullFC);
+            getPhysicsHandler()->setWorld(NullFC);
+        endEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
+    }
 
     producerSceneExited(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 }

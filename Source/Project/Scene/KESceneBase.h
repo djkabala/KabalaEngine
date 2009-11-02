@@ -64,7 +64,6 @@
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
 #include <Project/KEProjectFields.h> // InternalParentProject type
-#include <OpenSG/OSGStringFields.h> // Name type
 #include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
 #include <OpenSG/UserInterface/OSGUIDrawingSurfaceFields.h> // UIDrawingSurfaces type
 #include <OpenSG/OSGBackgroundFields.h> // InitialBackground type
@@ -83,6 +82,8 @@
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ParticleSystems type
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // InitialParticleSystems type
 #include <OpenSG/Toolbox/OSGPathType.h> // LuaModule type
+#include <OpenSG/Physics/OSGPhysicsHandler.h> // PhysicsHandler type
+#include <OpenSG/Physics/OSGPhysicsWorld.h> // PhysicsWorld type
 
 #include "KESceneFields.h"
 #include <OpenSG/Toolbox/OSGEventProducer.h>
@@ -111,8 +112,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     enum
     {
         InternalParentProjectFieldId   = Inherited::NextFieldId,
-        NameFieldId                    = InternalParentProjectFieldId   + 1,
-        BackgroundsFieldId             = NameFieldId                    + 1,
+        BackgroundsFieldId             = InternalParentProjectFieldId   + 1,
         UIDrawingSurfacesFieldId       = BackgroundsFieldId             + 1,
         InitialBackgroundFieldId       = UIDrawingSurfacesFieldId       + 1,
         ForegroundsFieldId             = InitialBackgroundFieldId       + 1,
@@ -130,12 +130,13 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
         ParticleSystemsFieldId         = InitialAnimationsFieldId       + 1,
         InitialParticleSystemsFieldId  = ParticleSystemsFieldId         + 1,
         LuaModuleFieldId               = InitialParticleSystemsFieldId  + 1,
-        EventProducerFieldId           = LuaModuleFieldId               + 1,
+        PhysicsHandlerFieldId          = LuaModuleFieldId               + 1,
+        PhysicsWorldFieldId            = PhysicsHandlerFieldId          + 1,
+        EventProducerFieldId           = PhysicsWorldFieldId            + 1,
         NextFieldId                    = EventProducerFieldId           + 1
     };
 
     static const OSG::BitVector InternalParentProjectFieldMask;
-    static const OSG::BitVector NameFieldMask;
     static const OSG::BitVector BackgroundsFieldMask;
     static const OSG::BitVector UIDrawingSurfacesFieldMask;
     static const OSG::BitVector InitialBackgroundFieldMask;
@@ -154,6 +155,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     static const OSG::BitVector ParticleSystemsFieldMask;
     static const OSG::BitVector InitialParticleSystemsFieldMask;
     static const OSG::BitVector LuaModuleFieldMask;
+    static const OSG::BitVector PhysicsHandlerFieldMask;
+    static const OSG::BitVector PhysicsWorldFieldMask;
     static const OSG::BitVector EventProducerFieldMask;
 
 
@@ -217,9 +220,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \{                                                                 */
 
 
-           SFString            *editSFName           (void);
-     const SFString            *getSFName           (void) const;
-
            MFBackgroundPtr     *editMFBackgrounds    (void);
      const MFBackgroundPtr     *getMFBackgrounds    (void) const;
 
@@ -262,10 +262,13 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
            SFPath              *editSFLuaModule      (void);
      const SFPath              *getSFLuaModule      (void) const;
 
+           SFPhysicsHandlerPtr *editSFPhysicsHandler (void);
+     const SFPhysicsHandlerPtr *getSFPhysicsHandler (void) const;
+
+           SFPhysicsWorldPtr   *editSFPhysicsWorld   (void);
+     const SFPhysicsWorldPtr   *getSFPhysicsWorld   (void) const;
 
 
-           std::string         &editName           (void);
-     const std::string         &getName           (void) const;
 
            BackgroundPtr       &editInitialBackground(void);
      const BackgroundPtr       &getInitialBackground(void) const;
@@ -279,6 +282,12 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
            Path                &editLuaModule      (void);
      const Path                &getLuaModule      (void) const;
+
+           PhysicsHandlerPtr   &editPhysicsHandler (void);
+     const PhysicsHandlerPtr   &getPhysicsHandler (void) const;
+
+           PhysicsWorldPtr     &editPhysicsWorld   (void);
+     const PhysicsWorldPtr     &getPhysicsWorld   (void) const;
 
            BackgroundPtr       &editBackgrounds    (const UInt32 index);
      const BackgroundPtr       &getBackgrounds    (const UInt32 index) const;
@@ -362,10 +371,11 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-     void setName           ( const std::string &value );
      void setInitialBackground( const BackgroundPtr &value );
      void setInitialCamera  ( const CameraPtr &value );
      void setLuaModule      ( const Path &value );
+     void setPhysicsHandler ( const PhysicsHandlerPtr &value );
+     void setPhysicsWorld   ( const PhysicsWorldPtr &value );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -429,7 +439,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \{                                                                 */
 
     SFProjectPtr        _sfInternalParentProject;
-    SFString            _sfName;
     MFBackgroundPtr     _mfBackgrounds;
     MFUIDrawingSurfacePtr   _mfUIDrawingSurfaces;
     SFBackgroundPtr     _sfInitialBackground;
@@ -448,6 +457,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     MFParticleSystemPtr   _mfParticleSystems;
     MFParticleSystemPtr   _mfInitialParticleSystems;
     SFPath              _sfLuaModule;
+    SFPhysicsHandlerPtr   _sfPhysicsHandler;
+    SFPhysicsWorldPtr   _sfPhysicsWorld;
 
     /*! \}                                                                 */
     SFEventProducerPtr _sfEventProducer;

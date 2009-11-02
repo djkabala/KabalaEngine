@@ -23,15 +23,6 @@ The Scene.
 	>
 	</Field>
 	<Field
-		name="Name"
-		type="std::string"
-		cardinality="single"
-		visibility="external"
-		access="public"
-	>
-	</Field>
-	
-	<Field
 		name="Backgrounds"
 		type="BackgroundPtr"
 		cardinality="multi"
@@ -185,6 +176,26 @@ The Scene.
 		visibility="external"
 		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
+	>
+	</Field>
+	<Field
+		name="PhysicsHandler"
+		type="PhysicsHandlerPtr"
+		cardinality="single"
+		visibility="external"
+		header="OpenSG/Physics/OSGPhysicsHandler.h"
+		access="public"
+        defaultValue="NullFC"
+	>
+	</Field>
+	<Field
+		name="PhysicsWorld"
+		type="PhysicsWorldPtr"
+		cardinality="single"
+		visibility="external"
+		header="OpenSG/Physics/OSGPhysicsWorld.h"
+		access="public"
+        defaultValue="NullFC"
 	>
 	</Field>
 	<ProducedMethod

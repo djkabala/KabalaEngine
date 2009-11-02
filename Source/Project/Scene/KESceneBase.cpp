@@ -63,9 +63,6 @@ OSG_BEGIN_NAMESPACE
 const OSG::BitVector  SceneBase::InternalParentProjectFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::InternalParentProjectFieldId);
 
-const OSG::BitVector  SceneBase::NameFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::NameFieldId);
-
 const OSG::BitVector  SceneBase::BackgroundsFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::BackgroundsFieldId);
 
@@ -120,6 +117,12 @@ const OSG::BitVector  SceneBase::InitialParticleSystemsFieldMask =
 const OSG::BitVector  SceneBase::LuaModuleFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::LuaModuleFieldId);
 
+const OSG::BitVector  SceneBase::PhysicsHandlerFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::PhysicsHandlerFieldId);
+
+const OSG::BitVector  SceneBase::PhysicsWorldFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::PhysicsWorldFieldId);
+
 const OSG::BitVector  SceneBase::EventProducerFieldMask =
     (TypeTraits<BitVector>::One << SceneBase::EventProducerFieldId);
 
@@ -131,9 +134,6 @@ const OSG::BitVector SceneBase::MTInfluenceMask =
 // Field descriptions
 
 /*! \var ProjectPtr      SceneBase::_sfInternalParentProject
-    
-*/
-/*! \var std::string     SceneBase::_sfName
     
 */
 /*! \var BackgroundPtr   SceneBase::_mfBackgrounds
@@ -190,6 +190,12 @@ const OSG::BitVector SceneBase::MTInfluenceMask =
 /*! \var Path            SceneBase::_sfLuaModule
     
 */
+/*! \var PhysicsHandlerPtr SceneBase::_sfPhysicsHandler
+    
+*/
+/*! \var PhysicsWorldPtr SceneBase::_sfPhysicsWorld
+    
+*/
 
 //! Scene description
 
@@ -200,11 +206,6 @@ FieldDescription *SceneBase::_desc[] =
                      InternalParentProjectFieldId, InternalParentProjectFieldMask,
                      false,
                      reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFInternalParentProject)),
-    new FieldDescription(SFString::getClassType(), 
-                     "Name", 
-                     NameFieldId, NameFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFName)),
     new FieldDescription(MFBackgroundPtr::getClassType(), 
                      "Backgrounds", 
                      BackgroundsFieldId, BackgroundsFieldMask,
@@ -294,7 +295,17 @@ FieldDescription *SceneBase::_desc[] =
                      "LuaModule", 
                      LuaModuleFieldId, LuaModuleFieldMask,
                      false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFLuaModule))
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFLuaModule)),
+    new FieldDescription(SFPhysicsHandlerPtr::getClassType(), 
+                     "PhysicsHandler", 
+                     PhysicsHandlerFieldId, PhysicsHandlerFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFPhysicsHandler)),
+    new FieldDescription(SFPhysicsWorldPtr::getClassType(), 
+                     "PhysicsWorld", 
+                     PhysicsWorldFieldId, PhysicsWorldFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFPhysicsWorld))
     , 
     new FieldDescription(SFEventProducerPtr::getClassType(), 
                      "EventProducer", 
@@ -512,7 +523,6 @@ void SceneBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 SceneBase::SceneBase(void) :
     _Producer(&getProducerType()),
     _sfInternalParentProject  (ProjectPtr(NullFC)), 
-    _sfName                   (), 
     _mfBackgrounds            (), 
     _mfUIDrawingSurfaces      (), 
     _sfInitialBackground      (BackgroundPtr(NullFC)), 
@@ -531,6 +541,8 @@ SceneBase::SceneBase(void) :
     _mfParticleSystems        (), 
     _mfInitialParticleSystems (), 
     _sfLuaModule              (), 
+    _sfPhysicsHandler         (PhysicsHandlerPtr(NullFC)), 
+    _sfPhysicsWorld           (PhysicsWorldPtr(NullFC)), 
     _sfEventProducer(&_Producer),
     Inherited() 
 {
@@ -543,7 +555,6 @@ SceneBase::SceneBase(void) :
 SceneBase::SceneBase(const SceneBase &source) :
     _Producer(&source.getProducerType()),
     _sfInternalParentProject  (source._sfInternalParentProject  ), 
-    _sfName                   (source._sfName                   ), 
     _mfBackgrounds            (source._mfBackgrounds            ), 
     _mfUIDrawingSurfaces      (source._mfUIDrawingSurfaces      ), 
     _sfInitialBackground      (source._sfInitialBackground      ), 
@@ -562,6 +573,8 @@ SceneBase::SceneBase(const SceneBase &source) :
     _mfParticleSystems        (source._mfParticleSystems        ), 
     _mfInitialParticleSystems (source._mfInitialParticleSystems ), 
     _sfLuaModule              (source._sfLuaModule              ), 
+    _sfPhysicsHandler         (source._sfPhysicsHandler         ), 
+    _sfPhysicsWorld           (source._sfPhysicsWorld           ), 
     _sfEventProducer(&_Producer),
     Inherited                 (source)
 {
@@ -582,11 +595,6 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
         returnValue += _sfInternalParentProject.getBinSize();
-    }
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        returnValue += _sfName.getBinSize();
     }
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
@@ -679,6 +687,16 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
         returnValue += _sfLuaModule.getBinSize();
     }
 
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
+    {
+        returnValue += _sfPhysicsHandler.getBinSize();
+    }
+
+    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+    {
+        returnValue += _sfPhysicsWorld.getBinSize();
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         returnValue += _sfEventProducer.getBinSize();
@@ -696,11 +714,6 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
         _sfInternalParentProject.copyToBin(pMem);
-    }
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        _sfName.copyToBin(pMem);
     }
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
@@ -793,6 +806,16 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
         _sfLuaModule.copyToBin(pMem);
     }
 
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
+    {
+        _sfPhysicsHandler.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+    {
+        _sfPhysicsWorld.copyToBin(pMem);
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyToBin(pMem);
@@ -809,11 +832,6 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
         _sfInternalParentProject.copyFromBin(pMem);
-    }
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        _sfName.copyFromBin(pMem);
     }
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
@@ -906,6 +924,16 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
         _sfLuaModule.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
+    {
+        _sfPhysicsHandler.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+    {
+        _sfPhysicsWorld.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyFromBin(pMem);
@@ -923,9 +951,6 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
         _sfInternalParentProject.syncWith(pOther->_sfInternalParentProject);
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pOther->_sfName);
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
         _mfBackgrounds.syncWith(pOther->_mfBackgrounds);
@@ -981,6 +1006,12 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
         _sfLuaModule.syncWith(pOther->_sfLuaModule);
 
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
+        _sfPhysicsHandler.syncWith(pOther->_sfPhysicsHandler);
+
+    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+        _sfPhysicsWorld.syncWith(pOther->_sfPhysicsWorld);
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
         _sfEventProducer.syncWith(pOther->_sfEventProducer);
 
@@ -996,9 +1027,6 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
         _sfInternalParentProject.syncWith(pOther->_sfInternalParentProject);
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pOther->_sfName);
 
     if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
         _sfInitialBackground.syncWith(pOther->_sfInitialBackground);
@@ -1020,6 +1048,12 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
         _sfLuaModule.syncWith(pOther->_sfLuaModule);
+
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
+        _sfPhysicsHandler.syncWith(pOther->_sfPhysicsHandler);
+
+    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+        _sfPhysicsWorld.syncWith(pOther->_sfPhysicsWorld);
 
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))

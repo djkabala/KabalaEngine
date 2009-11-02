@@ -122,20 +122,6 @@ SFProjectPtr *SceneBase::editSFInternalParentProject(void)
     return &_sfInternalParentProject;
 }
 
-//! Get the Scene::_sfName field.
-inline
-const SFString *SceneBase::getSFName(void) const
-{
-    return &_sfName;
-}
-
-//! Get the Scene::_sfName field.
-inline
-SFString *SceneBase::editSFName(void)
-{
-    return &_sfName;
-}
-
 //! Get the Scene::_mfBackgrounds field.
 inline
 const MFBackgroundPtr *SceneBase::getMFBackgrounds(void) const
@@ -388,6 +374,34 @@ SFPath *SceneBase::editSFLuaModule(void)
     return &_sfLuaModule;
 }
 
+//! Get the Scene::_sfPhysicsHandler field.
+inline
+const SFPhysicsHandlerPtr *SceneBase::getSFPhysicsHandler(void) const
+{
+    return &_sfPhysicsHandler;
+}
+
+//! Get the Scene::_sfPhysicsHandler field.
+inline
+SFPhysicsHandlerPtr *SceneBase::editSFPhysicsHandler(void)
+{
+    return &_sfPhysicsHandler;
+}
+
+//! Get the Scene::_sfPhysicsWorld field.
+inline
+const SFPhysicsWorldPtr *SceneBase::getSFPhysicsWorld(void) const
+{
+    return &_sfPhysicsWorld;
+}
+
+//! Get the Scene::_sfPhysicsWorld field.
+inline
+SFPhysicsWorldPtr *SceneBase::editSFPhysicsWorld(void)
+{
+    return &_sfPhysicsWorld;
+}
+
 
 //! Get the value of the Scene::_sfInternalParentProject field.
 inline
@@ -408,27 +422,6 @@ inline
 void SceneBase::setInternalParentProject(const ProjectPtr &value)
 {
     _sfInternalParentProject.setValue(value);
-}
-
-//! Get the value of the Scene::_sfName field.
-inline
-std::string &SceneBase::editName(void)
-{
-    return _sfName.getValue();
-}
-
-//! Get the value of the Scene::_sfName field.
-inline
-const std::string &SceneBase::getName(void) const
-{
-    return _sfName.getValue();
-}
-
-//! Set the value of the Scene::_sfName field.
-inline
-void SceneBase::setName(const std::string &value)
-{
-    _sfName.setValue(value);
 }
 
 //! Get the value of the Scene::_sfInitialBackground field.
@@ -576,6 +569,48 @@ inline
 void SceneBase::setLuaModule(const Path &value)
 {
     _sfLuaModule.setValue(value);
+}
+
+//! Get the value of the Scene::_sfPhysicsHandler field.
+inline
+PhysicsHandlerPtr &SceneBase::editPhysicsHandler(void)
+{
+    return _sfPhysicsHandler.getValue();
+}
+
+//! Get the value of the Scene::_sfPhysicsHandler field.
+inline
+const PhysicsHandlerPtr &SceneBase::getPhysicsHandler(void) const
+{
+    return _sfPhysicsHandler.getValue();
+}
+
+//! Set the value of the Scene::_sfPhysicsHandler field.
+inline
+void SceneBase::setPhysicsHandler(const PhysicsHandlerPtr &value)
+{
+    _sfPhysicsHandler.setValue(value);
+}
+
+//! Get the value of the Scene::_sfPhysicsWorld field.
+inline
+PhysicsWorldPtr &SceneBase::editPhysicsWorld(void)
+{
+    return _sfPhysicsWorld.getValue();
+}
+
+//! Get the value of the Scene::_sfPhysicsWorld field.
+inline
+const PhysicsWorldPtr &SceneBase::getPhysicsWorld(void) const
+{
+    return _sfPhysicsWorld.getValue();
+}
+
+//! Set the value of the Scene::_sfPhysicsWorld field.
+inline
+void SceneBase::setPhysicsWorld(const PhysicsWorldPtr &value)
+{
+    _sfPhysicsWorld.setValue(value);
 }
 
 

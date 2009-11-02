@@ -43,6 +43,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGSimpleAttachments.h>
 
 #include "KESceneEditor.h"
 
@@ -332,7 +333,7 @@ void SceneEditor::changed(BitVector whichField, ::osg::UInt32 origin)
 			beginEditCP(_SceneNameLabel, Label::TextFieldMask);
 			if(getEditingScene() != NullFC)
 			{
-				_SceneNameLabel->setText(getEditingScene()->getName());
+				_SceneNameLabel->setText(getName(getEditingScene()));
 			}
 			else
 			{
