@@ -1609,7 +1609,7 @@ typedef struct{} LANGUAGE_OBJ;
 #include <OpenSG/OSGGeometry.h>
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGCamera.h>
-#include <OpenSG/OSGImage.h>S
+#include <OpenSG/OSGImage.h>
 #include <OpenSG/OSGSysFieldDataType.h>
 #include <OpenSG/OSGVecFieldDataType.h>
 #include <OpenSG/OSGMathFieldDataType.h>
