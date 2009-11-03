@@ -53,7 +53,16 @@
 #include "Project/Scene/KEScene.h"
 #include "Application/KEMainApplication.h"
 
+
 OSG_USING_NAMESPACE
+
+
+//  the ptrs for the debug interface
+
+InternalWindowPtr MainInternalWindow;		
+GraphicsPtr DebuggerGraphics;				
+UIForegroundPtr DebuggerUIForeground;		
+UIDrawingSurfacePtr DebuggerDrawingSurface;	
 
 /***************************************************************************\
  *                            Description                                  *
@@ -93,13 +102,12 @@ void ApplicationPlayer::attachApplication(void)
 	ProjectPtr TheProject(MainApplication::the()->getProject());
     updateWindowTitle();
 	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener);
-
 }
+
 
 void ApplicationPlayer::dettachApplication(void)
 {
 	MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_PlayerKeyListener);
-
 	Inherited::dettachApplication();
 }
 
@@ -116,8 +124,8 @@ void ApplicationPlayer::start(void)
 	if(MainApplication::the()->getProject() != NullFC)
 	{
 		MainApplication::the()->getProject()->start();
-
-        enableDebug(false);
+		createDebugInterface();							// Allocate memory to the various pointers in the debug interface when the ApplicationPlayer is started
+		enableDebug(false);
 	}
 }
 
@@ -129,15 +137,522 @@ void ApplicationPlayer::stop(void)
 	}
 }
 
+
+void ApplicationPlayer::createDebugInterface(void)
+{
+	 // debug interface creation
+	DebuggerGraphics = osg::Graphics2D::create();
+
+	/*************************************************** Menu creation *******************************************************************/
+	// the menu items
+	ResetItem = MenuItem::create();				
+    ForceQuitItem = MenuItem::create();			
+    NextItem = MenuItem::create();				
+    PrevItem = MenuItem::create();				
+    FirstItem = MenuItem::create();				
+    LastItem = MenuItem::create();				
+	FlyNavigatorItem = MenuItem::create();		
+    TrackballNavigatorItem = MenuItem::create();
+    BasicItem = MenuItem::create();				
+    RenderItem = MenuItem::create();			
+    PhysicsItem = MenuItem::create();			
+    ParticleSystemItem = MenuItem::create();	
+	AnimationItem = MenuItem::create();
+	PauseActiveUpdatesItem = MenuItem::create();
+	DrawBoundingVolumesItem = MenuItem::create();
+	FrustrumCullingItem = MenuItem::create();
+
+	// setting the fields of the menu items
+	beginEditCP(ResetItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        ResetItem->setText("Reset");
+		ResetItem->setAcceleratorKey(KeyEvent::KEY_E);
+        ResetItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        ResetItem->setMnemonicKey(KeyEvent::KEY_E);
+    endEditCP(ResetItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+    beginEditCP(ForceQuitItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        ForceQuitItem ->setText("Force Quit");
+		ForceQuitItem ->setAcceleratorKey(KeyEvent::KEY_Q);
+        ForceQuitItem ->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        ForceQuitItem ->setMnemonicKey(KeyEvent::KEY_Q);
+    endEditCP(ForceQuitItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+    beginEditCP(NextItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        NextItem ->setText("Next");
+		NextItem ->setAcceleratorKey(KeyEvent::KEY_TAB);
+		//NextItem ->setAcceleratorModifiers(!KeyEvent::KEY_MODIFIER_SHIFT);
+	endEditCP(NextItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+    beginEditCP(PrevItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        PrevItem->setText("Previous");
+	    PrevItem->setAcceleratorKey(KeyEvent::KEY_TAB);
+        PrevItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_SHIFT);
+    endEditCP(PrevItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+    beginEditCP(FirstItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        FirstItem->setText("First");
+		FirstItem->setAcceleratorKey(KeyEvent::KEY_F);
+        FirstItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        FirstItem->setMnemonicKey(KeyEvent::KEY_F);
+    endEditCP(FirstItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(LastItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        LastItem->setText("Last");
+		LastItem->setAcceleratorKey(KeyEvent::KEY_L);
+        LastItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        LastItem->setMnemonicKey(KeyEvent::KEY_L);
+    endEditCP(LastItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        FlyNavigatorItem->setText("FlyNavigator ");
+		FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_Z);
+        FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_Z);
+    endEditCP(FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(TrackballNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        TrackballNavigatorItem->setText("TrackballNavigator ");
+		TrackballNavigatorItem->setAcceleratorKey(KeyEvent::KEY_T);
+        TrackballNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        TrackballNavigatorItem->setMnemonicKey(KeyEvent::KEY_T);
+    endEditCP(TrackballNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(BasicItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        BasicItem->setText("Basic ");
+	    BasicItem->setAcceleratorKey(KeyEvent::KEY_B);
+        BasicItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        BasicItem->setMnemonicKey(KeyEvent::KEY_B);
+    endEditCP(BasicItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(RenderItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        RenderItem->setText("Render ");
+	    RenderItem->setAcceleratorKey(KeyEvent::KEY_R);
+        RenderItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        RenderItem->setMnemonicKey(KeyEvent::KEY_R);
+    endEditCP(RenderItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(PhysicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        PhysicsItem->setText("Physics ");
+        PhysicsItem->setAcceleratorKey(KeyEvent::KEY_Y);
+        PhysicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        PhysicsItem->setMnemonicKey(KeyEvent::KEY_Y);
+    endEditCP(PhysicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        ParticleSystemItem->setText("ParticleSystem ");
+        ParticleSystemItem->setAcceleratorKey(KeyEvent::KEY_P);
+        ParticleSystemItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_P);
+    endEditCP(ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+	beginEditCP(AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        AnimationItem->setText("Animation ");
+        AnimationItem->setAcceleratorKey(KeyEvent::KEY_A);
+        AnimationItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        AnimationItem->setMnemonicKey(KeyEvent::KEY_A);
+    endEditCP(AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+		beginEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        PauseActiveUpdatesItem->setText("Pause Active Updates");
+        PauseActiveUpdatesItem->setAcceleratorKey(KeyEvent::KEY_SPACE);
+        //PauseActiveUpdatesItem->setMnemonicKey(KeyEvent::KEY_SPACE);
+    endEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+		beginEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
+        DrawBoundingVolumesItem->setAcceleratorKey(KeyEvent::KEY_V);
+        DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        DrawBoundingVolumesItem->setMnemonicKey(KeyEvent::KEY_V);
+    endEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+		beginEditCP(FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        FrustrumCullingItem->setText("Frustrum Culling ");
+        FrustrumCullingItem->setAcceleratorKey(KeyEvent::KEY_F);
+        FrustrumCullingItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        FrustrumCullingItem->setMnemonicKey(KeyEvent::KEY_F);
+    endEditCP(FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+	// creation of menus and addition of menu items to them
+	ProjectMenu = Menu::create();
+    ProjectMenu->addItem(ResetItem);
+    ProjectMenu->addItem(ForceQuitItem);
+    
+	SceneMenu = Menu::create();
+    SceneMenu->addItem(NextItem);
+    SceneMenu->addItem(PrevItem);
+	SceneMenu->addItem(FirstItem);
+	SceneMenu->addItem(LastItem);
+
+	NavigatorMenu = Menu::create();
+    NavigatorMenu->addItem(FlyNavigatorItem);
+    NavigatorMenu->addItem(TrackballNavigatorItem);
+
+	StatisticsMenu = Menu::create();
+    StatisticsMenu->addItem(BasicItem);
+    StatisticsMenu->addItem(RenderItem);
+	StatisticsMenu->addItem(PhysicsItem);
+	StatisticsMenu->addItem(ParticleSystemItem);
+	StatisticsMenu->addItem(AnimationItem);
+
+	ToggleMenu = Menu::create();
+	ToggleMenu->addItem(PauseActiveUpdatesItem);
+	ToggleMenu->addItem(DrawBoundingVolumesItem);
+	ToggleMenu->addItem(FrustrumCullingItem);
+
+	// setting the fields for the menus 
+	beginEditCP(ProjectMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        ProjectMenu->setText("Project");
+        ProjectMenu->setMnemonicKey(KeyEvent::KEY_P);
+	endEditCP(ProjectMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(SceneMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        SceneMenu->setText("Scene");
+        SceneMenu->setMnemonicKey(KeyEvent::KEY_S);
+	endEditCP(SceneMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(NavigatorMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        NavigatorMenu->setText("Navigator");
+        NavigatorMenu->setMnemonicKey(KeyEvent::KEY_N);
+	endEditCP(NavigatorMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(StatisticsMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        StatisticsMenu->setText("Statistics");
+        StatisticsMenu->setMnemonicKey(KeyEvent::KEY_S);
+	endEditCP(StatisticsMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+	beginEditCP(ToggleMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        ToggleMenu->setText("Toggle");
+        ToggleMenu->setMnemonicKey(KeyEvent::KEY_S);
+	endEditCP(ToggleMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+	// adding actionlisteners to each of the menuitems
+	ResetItem->addActionListener(&_BasicListener);
+	ForceQuitItem->addActionListener(&_BasicListener);
+	NextItem->addActionListener(&_BasicListener);
+	PrevItem->addActionListener(&_BasicListener);
+	FirstItem->addActionListener(&_BasicListener);
+	LastItem->addActionListener(&_BasicListener);
+	FlyNavigatorItem->addActionListener(&_BasicListener);
+	TrackballNavigatorItem->addActionListener(&_BasicListener);
+	BasicItem->addActionListener(&_BasicListener);
+    RenderItem->addActionListener(&_BasicListener);
+    PhysicsItem->addActionListener(&_BasicListener);
+	ParticleSystemItem->addActionListener(&_BasicListener);
+	AnimationItem->addActionListener(&_BasicListener);
+	PauseActiveUpdatesItem->addActionListener(&_BasicListener);
+	DrawBoundingVolumesItem->addActionListener(&_BasicListener);
+	FrustrumCullingItem->addActionListener(&_BasicListener);
+	ProjectMenu->addActionListener(&_BasicListener);
+	SceneMenu->addActionListener(&_BasicListener);	
+	NavigatorMenu->addActionListener(&_BasicListener);
+	StatisticsMenu->addActionListener(&_BasicListener);
+	ToggleMenu->addActionListener(&_BasicListener);
+	
+	// Creation of the menubar and addition of the menus to it
+	MainMenuBar = MenuBar::create();
+    MainMenuBar->addMenu(ProjectMenu);
+	MainMenuBar->addMenu(SceneMenu);
+	MainMenuBar->addMenu(NavigatorMenu);
+	MainMenuBar->addMenu(StatisticsMenu);
+	MainMenuBar->addMenu(ToggleMenu);
+    
+	/*************************************************** END Menu creation *******************************************************************/
+	/*************************************************** Tab Panel creation *******************************************************************/
+	
+	// Create a CodeTextArea
+    CodeTextArea = osg::TextArea::create();
+
+    beginEditCP(CodeTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        //CodeTextArea->setPreferredSize(Vec2f(300, 200));
+        //CodeTextArea->setMinSize(Vec2f(300, 100));
+        //CodeTextArea->setTextColor(Color4f(0.0, 0.0, 0.0, 1.0));
+        //CodeTextArea->setSelectionBoxColor(Color4f(0.0, 0.0, 1.0, 1.0));
+        //CodeTextArea->setSelectionTextColor(Color4f(1.0, 1.0, 1.0, 1.0));
+        // Determine the font and initial text
+        CodeTextArea->setText("?>");
+//        CodeTextArea->setFont(ExampleFont);
+        // This will select the "a" from above
+        //CodeTextArea->setSelectionStart(2);
+        //CodeTextArea->setSelectionEnd(3);
+        //CodeTextArea->setCaretPosition(2);
+        //CodeTextArea->setLineWrap(false);
+		//CodeTextArea->setEditable(false);
+    endEditCP(CodeTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        
+    // Create a ScrollPanel
+    TabContentA = ScrollPanel::create();
+    beginEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        TabContentA->setPreferredSize(Vec2f(300,1200));
+        TabContentA->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the CodeTextArea to the ScrollPanel so it is displayed
+	TabContentA->setViewComponent(CodeTextArea);
+
+	// Create an ErrorTextArea	
+	ErrorTextArea = osg::TextArea::create();
+
+    beginEditCP(ErrorTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        //ErrorTextArea->setPreferredSize(Vec2f(300, 1200));
+        //ErrorTextArea->setMinSize(Vec2f(300, 300));
+        //ErrorTextArea->setTextColor(Color4f(0.0, 0.0, 0.0, 1.0));
+        //ErrorTextArea->setSelectionBoxColor(Color4f(0.0, 0.0, 1.0, 1.0));
+        //ErrorTextArea->setSelectionTextColor(Color4f(1.0, 1.0, 1.0, 1.0));
+        // Determine the font and initial text
+        ErrorTextArea->setText("Error List");
+//        ErrorTextArea->setFont(ExampleFont);
+        // This will select the "a" from above
+        //ErrorTextArea->setSelectionStart(2);
+        //ErrorTextArea->setSelectionEnd(3);
+        //ErrorTextArea->setCaretPosition(2);
+        //ErrorTextArea->setLineWrap(false);
+		ErrorTextArea->setEditable(false);
+    endEditCP(ErrorTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        
+    // Create a ScrollPanel
+    TabContentB = ScrollPanel::create();
+    beginEditCP(TabContentB, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        TabContentB->setPreferredSize(Vec2f(200,1200));
+        TabContentB->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(TabContentB, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the ErrorTextArea to the ScrollPanel so it is displayed
+	TabContentB->setViewComponent(ErrorTextArea);
+
+	// Create a StackTraceTextArea
+	StackTraceTextArea = osg::TextArea::create();
+
+    beginEditCP(StackTraceTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        //StackTraceTextArea->setPreferredSize(Vec2f(300, 200));
+        //StackTraceTextArea->setMinSize(Vec2f(300, 300));
+        //StackTraceTextArea->setTextColor(Color4f(0.0, 0.0, 0.0, 1.0));
+        //StackTraceTextArea->setSelectionBoxColor(Color4f(0.0, 0.0, 1.0, 1.0));
+        //StackTraceTextArea->setSelectionTextColor(Color4f(1.0, 1.0, 1.0, 1.0));
+        // Determine the font and initial text
+        StackTraceTextArea->setText("Stack Trace");
+//        StackTraceTextArea->setFont(ExampleFont);
+        // This will select the "a" from above
+        //StackTraceTextArea->setSelectionStart(2);
+        //StackTraceTextArea->setSelectionEnd(3);
+        //StackTraceTextArea->setCaretPosition(2);
+        //StackTraceTextArea->setLineWrap(false);
+		StackTraceTextArea->setEditable(false);
+    endEditCP(StackTraceTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        
+    // Create a ScrollPanel
+    TabContentC = ScrollPanel::create();
+    beginEditCP(TabContentC, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        TabContentC->setPreferredSize(Vec2f(200,1200));
+        TabContentC->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(TabContentC, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the StackTraceTextArea to the ScrollPanel so it is displayed
+	TabContentC->setViewComponent(StackTraceTextArea);
+
+	// creating the labels for the various tabs
+	
+	TabPanel1 = osg::Label::create();
+    TabPanel2 = osg::Label::create();
+    TabPanel3 = osg::Label::create();
+
+	// set the fields of the labels
+	beginEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        TabPanel1->setText("Lua Console");
+        TabPanel1->setBorders(NullFC);
+        TabPanel1->setBackgrounds(NullFC);
+    endEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+    
+    beginEditCP(TabPanel2, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        TabPanel2->setText("Error");
+        TabPanel2->setBorders(NullFC);
+        TabPanel2->setBackgrounds(NullFC);
+    endEditCP(TabPanel2, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	LuaManager::the()->addLuaListener(&_LuaErrorListener);
+        
+    beginEditCP(TabPanel3, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        TabPanel3->setText("Stack");
+        TabPanel3->setBorders(NullFC);
+        TabPanel3->setBackgrounds(NullFC);
+    endEditCP(TabPanel3, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+    
+	// creating the tab panel
+	InfoTabPanel= osg::TabPanel::create();
+    beginEditCP(InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
+		//InfoTabPanel->setPreferredSize(MainApplication::the()->getMainWindowEventProducer()->getDesktopSize());
+		InfoTabPanel->setPreferredSize(Vec2f(1200,200));
+	    InfoTabPanel->addTab(TabPanel1, TabContentA);
+        InfoTabPanel->addTab(TabPanel2, TabContentB);
+        InfoTabPanel->addTab(TabPanel3, TabContentC);
+		InfoTabPanel->setTabAlignment(0.5f);
+        InfoTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
+	endEditCP(InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
+    InfoTabPanel->setSelectedIndex(0);
+	
+	executeBtn=osg::Button::create();
+
+	beginEditCP(executeBtn,Button::TextFieldMask);
+		executeBtn->setText("EXECUTE");
+		executeBtn->setPreferredSize(Vec2f(100,30));
+	endEditCP(executeBtn,Button::TextFieldMask);
+
+	executeBtn->addActionListener(&_BasicListener);
+
+	// Creating a panel for adding the tabpanel to it and setting springlayout as the layout
+	SplitPanelPanel = osg::Panel::create();
+    
+	PanelFlowLayout = osg::SpringLayout::create();
+
+	int SPACE_FOR_BUTTON = 110;
+
+    // OverlayLayout has no options to edit!
+    beginEditCP(PanelFlowLayout);
+        // NOTHING : )
+    endEditCP(PanelFlowLayout); 
+
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  // The North edge of ExampleButton1 is 25 pixels below the North edge of the MainInternalWindow.
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPanel);  // The South edge of ExampleButton1 is 5 pixels above the Vertical Center of the MainInternalWindow.
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, InfoTabPanel, -1*SPACE_FOR_BUTTON, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  // The East edge of ExampleButton1 is 25 pixels to the left of the East edge of the MainInternalWindow.
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, SplitPanelPanel);  // The West edge of ExampleButton1 is 25 pixels to the right of the West edge of the MainInternalWindow.
+
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, executeBtn, -15, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, SplitPanelPanel);  // The North edge of ExampleButton1 is 25 pixels below the North edge of the MainInternalWindow.
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, executeBtn, 15, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, SplitPanelPanel);  // The South edge of ExampleButton1 is 5 pixels above the Vertical Center of the MainInternalWindow.
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, executeBtn, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  // The East edge of ExampleButton1 is 25 pixels to the left of the East edge of the MainInternalWindow.
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, executeBtn, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  // The West edge of ExampleButton1 is 25 pixels to the right of the West edge of the MainInternalWindow.
+    
+	beginEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+		SplitPanelPanel->getChildren().push_back(InfoTabPanel);
+		SplitPanelPanel->getChildren().push_back(executeBtn);
+        SplitPanelPanel->setLayout(PanelFlowLayout);
+    endEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+
+	/*************************************************** END Tab Panel creation *******************************************************************/
+	/*************************************************** SplitPanel creation **********************************************************************/
+	
+	// Creation of the splitpanel ,the only component of which is the SplitPanelPanel created previously
+	SplitPanelConstraints = osg::BorderLayoutConstraints::create();
+
+	beginEditCP(SplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
+        SplitPanelConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    endEditCP(SplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
+    
+
+	SplitPanel = osg::SplitPanel::create();
+
+	beginEditCP(SplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+        SplitPanel->setConstraints(SplitPanelConstraints);
+        SplitPanel->setMaxComponent(SplitPanelPanel);
+         SplitPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
+        // SplitPanel->setDividerPosition(.25); // this is a percentage
+        SplitPanel->setDividerPosition(.75); // this is an absolute (300 > 1.0) 
+        // location from the left/top
+        SplitPanel->setDividerSize(5);
+        // SplitPanel->setExpandable(false);
+        SplitPanel->setMaxDividerPosition(.75);
+        SplitPanel->setMinDividerPosition(.25);
+        // SplitPanel->setDividerDrawObject(drawObjectName);
+    endEditCP(SplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+	/*************************************************** END SplitPanel creation **********************************************************************/
+	
+	/*************************************************** MainInternalWindow creation*************************************************************/
+	
+	BorderLayoutPtr MainInternalWindowLayout = osg::BorderLayout::create();
+
+    beginEditCP(MainInternalWindowLayout);
+        // Nothing
+    endEditCP(MainInternalWindowLayout);
+
+    // Create The Main InternalWindow
+    // Create Background to be used with the Main InternalWindow
+    ColorLayerPtr MainInternalWindowBackground = osg::ColorLayer::create();
+    beginEditCP(MainInternalWindowBackground, ColorLayer::ColorFieldMask);
+        MainInternalWindowBackground->setColor(Color4f(1.0,1.0,1.0,0.0));
+    endEditCP(MainInternalWindowBackground, ColorLayer::ColorFieldMask);
+
+
+    MainInternalWindow = osg::InternalWindow::create();
+	beginEditCP(MainInternalWindow, InternalWindow::ChildrenFieldMask | InternalWindow::MenuBarFieldMask | InternalWindow::LayoutFieldMask | InternalWindow::BackgroundsFieldMask | InternalWindow::AlignmentInDrawingSurfaceFieldMask | InternalWindow::ScalingInDrawingSurfaceFieldMask | InternalWindow::DrawTitlebarFieldMask | InternalWindow::ResizableFieldMask);
+	   MainInternalWindow->getChildren().push_back(SplitPanel);
+	   MainInternalWindow->setLayout(MainInternalWindowLayout);
+       MainInternalWindow->setBackgrounds(MainInternalWindowBackground);
+	   MainInternalWindow->setAlignmentInDrawingSurface(Vec2f(1.0f,1.0f));
+	   MainInternalWindow->setMenuBar(MainMenuBar);
+	   MainInternalWindow->setScalingInDrawingSurface(Vec2f(1.0f,1.0f));
+	   MainInternalWindow->setDrawTitlebar(false);
+	   MainInternalWindow->setResizable(false);
+    endEditCP(MainInternalWindow, InternalWindow::ChildrenFieldMask | InternalWindow::MenuBarFieldMask | InternalWindow::LayoutFieldMask | InternalWindow::BackgroundsFieldMask | InternalWindow::AlignmentInDrawingSurfaceFieldMask | InternalWindow::ScalingInDrawingSurfaceFieldMask | InternalWindow::DrawTitlebarFieldMask | InternalWindow::ResizableFieldMask);
+
+	/*************************************************** END MainInternalWindow creation*************************************************************/
+
+	
+	// Create the DrawingSurface Object
+	DebuggerDrawingSurface = UIDrawingSurface::create();
+    beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
+        DebuggerDrawingSurface->setGraphics(DebuggerGraphics);
+    endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
+    
+	DebuggerDrawingSurface->openWindow(MainInternalWindow);
+
+    // Create the UI Foreground Object
+    DebuggerUIForeground = osg::UIForeground::create();
+
+    beginEditCP(DebuggerUIForeground, UIForeground::DrawingSurfaceFieldMask);
+        DebuggerUIForeground->setDrawingSurface(DebuggerDrawingSurface);
+    endEditCP(DebuggerUIForeground, UIForeground::DrawingSurfaceFieldMask);
+
+}
+
+void ApplicationPlayer::attachDebugInterface(void)
+{
+	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
+    	DebuggerDrawingSurface->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
+    endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
+    	
+	MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().push_back(DebuggerUIForeground);
+}
+
+
+void ApplicationPlayer::detachDebugInterface(void)
+{
+	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
+        DebuggerDrawingSurface->setEventProducer(NullFC);
+    endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
+    
+	// if the debuginterface foreground is present in the list of foreground objects then delete it (the if condition if not mentioned would throw an exception)
+	if((find(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().begin(),MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().end(),DebuggerUIForeground))!=MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().end())
+	MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().erase(find(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().begin(),MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().end(),DebuggerUIForeground));
+}
+
+
+
+
 void ApplicationPlayer::enableDebug(bool EnableDebug)
 {
     _IsDebugActive = EnableDebug;
     if(_IsDebugActive)
     {
+<<<<<<< .mine
+        std::cout << "Debug Mode Enabled" << std::endl;
+		attachDebugInterface();
+		MainApplication::the()->getProject()->attachFlyNavigation();
+		
+=======
         updateWindowTitle();
+>>>>>>> .r108
     }
     else
     {
+		detachDebugInterface();
         MainApplication::the()->getProject()->dettachFlyNavigation();
 
         //Turn off Input Blocking
@@ -150,6 +665,9 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
     }
 }
 
+<<<<<<< .mine
+void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
+=======
 void ApplicationPlayer::updateWindowTitle(void)
 {
     std::string MainWindowTitle(MainApplication::the()->getProject()->getMainWindowTitle());
@@ -165,21 +683,30 @@ void ApplicationPlayer::updateWindowTitle(void)
 }
 
 void ApplicationPlayer::keyTyped(const KeyEventPtr e)
+>>>>>>> .r108
 {
-    if(e->getKey() == KeyEvent::KEY_D && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
-    {
-        enableDebug(!_IsDebugActive);
-        return;
-    }
 
-    if(_IsDebugActive)
-    {
-        //Force Quit
-        if(e->getKey() == KeyEvent::KEY_Q && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
-        {
-            MainApplication::the()->exit();
-        }
+	if(e->getSource() == executeBtn)
+	{
+		std::cout<<"Executing the LUA Script..."<<std::endl;
+		LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
 
+<<<<<<< .mine
+	}
+	else if(e->getSource() == ResetItem)
+	{
+		//Reset the Project
+            MainApplication::the()->getProject()->reset();
+            MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
+	}
+	else if(e->getSource() == ForceQuitItem)
+	{
+			MainApplication::the()->exit();
+	}
+	else if(e->getSource() == NextItem)
+	{
+			MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+=======
         
         //Pause Active Updates
         if(e->getKey() == KeyEvent::KEY_SPACE)
@@ -204,6 +731,7 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         {
             //Move to next scene
             MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+>>>>>>> .r108
             if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
             {
                 ++SearchItor;
@@ -217,11 +745,10 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
                 SearchItor = MainApplication::the()->getProject()->getScenes().begin();
             }
             MainApplication::the()->getProject()->setActiveScene(*SearchItor);
-        }
-        else if(e->getKey() == KeyEvent::KEY_TAB && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
-        {
-            //Move to previous scene
-            MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+	}
+	else if(e->getSource() == PrevItem)
+	{
+			MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
             if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
             {
                 if(SearchItor == MainApplication::the()->getProject()->getScenes().begin())
@@ -229,7 +756,7 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
                     SearchItor = MainApplication::the()->getProject()->getScenes().end();
                 }
                 if(MainApplication::the()->getProject()->getScenes().size() > 1)
-                {
+                {	
                     --SearchItor;
                 }
             }
@@ -238,8 +765,81 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
                 SearchItor = MainApplication::the()->getProject()->getScenes().begin();
             }
             MainApplication::the()->getProject()->setActiveScene(*SearchItor);
-        }
-        else if(isNumericKey(static_cast<KeyEvent::Key>(e->getKey())) && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+	}
+	else if(e->getSource() == FirstItem)
+	{
+		MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().begin());
+        //SearchItor = SearchItor + SceneNumber;
+		MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+
+	}
+	else if(e->getSource() == LastItem)
+	{
+		UInt32 SceneNumber = 3;
+		MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().begin());
+        SearchItor = SearchItor + SceneNumber;
+		MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+	}
+	else if(e->getSource() == FlyNavigatorItem )
+	{
+	
+	}
+	else if(e->getSource() == TrackballNavigatorItem )
+	{
+	
+	}
+	else if(e->getSource() == BasicItem)
+	{
+		toggleStatForeground(_DebugBasicStatForeground);
+	}
+	else if(e->getSource() == RenderItem)
+	{
+		toggleStatForeground(_DebugRenderStatForeground);
+	}
+	else if(e->getSource() == PhysicsItem)
+	{
+		toggleStatForeground(_DebugPhysicsStatForeground);
+	}
+	else if(e->getSource() == ParticleSystemItem)
+	{
+		toggleStatForeground(_DebugParticleSystemStatForeground);
+	}
+	else if(e->getSource() == AnimationItem)
+	{
+		toggleStatForeground(_DebugAnimationStatForeground);
+	}
+	else if(e->getSource() == PauseActiveUpdatesItem)
+	{
+		MainApplication::the()->getProject()->togglePauseActiveUpdates();
+	}
+	else if(e->getSource() == DrawBoundingVolumesItem)
+	{
+		toggleDrawBoundingVolumes();
+	}
+	else if(e->getSource() == FrustrumCullingItem)
+	{
+		toggleFrustumCulling();
+	}
+	else
+	{
+		//do nothing
+	}
+}
+
+
+
+void ApplicationPlayer::keyTyped(const KeyEventPtr e)
+{
+    if(e->getKey() == KeyEvent::KEY_D && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+    {
+        enableDebug(!_IsDebugActive);
+        return;
+    }
+
+    if(_IsDebugActive)
+    {
+
+        if(isNumericKey(static_cast<KeyEvent::Key>(e->getKey())) && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
         {
             //Switch To scene #
             UInt32 SceneNumber(boost::lexical_cast<UInt32>(KeyEvent::getCharFromKey(e->getKey(),0)));
@@ -250,6 +850,8 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
                 MainApplication::the()->getProject()->setActiveScene(*SearchItor);
             }
         }
+<<<<<<< .mine
+=======
         //Scene Activation
         else if(e->getKey() == KeyEvent::KEY_E && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
         {
@@ -288,6 +890,7 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         {
             toggleFrustumCulling();
         }
+>>>>>>> .r108
         //Toggle Physics Drawing
         else if(e->getKey() == KeyEvent::KEY_P && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
         {
@@ -417,6 +1020,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     beginEditCP(_DebugBasicStatForeground);
         _DebugBasicStatForeground->setSize(25);
         _DebugBasicStatForeground->setColor(Color4f(0,1,0,0.7));
+		_DebugBasicStatForeground->addElement(RenderAction::statDrawTime, " ");
         _DebugBasicStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
         _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
         _DebugBasicStatForeground->addElement(Drawable::statNTriangles, "%d triangles drawn");
@@ -427,9 +1031,10 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugRenderStatForeground = SimpleStatisticsForeground::create();
     beginEditCP(_DebugRenderStatForeground);
         _DebugRenderStatForeground->setSize(25);
+		//_DebugRenderStatForeground->setPosition(Pnt2f(10,30));
         _DebugRenderStatForeground->setColor(Color4f(0,1,0,0.7));
-
-        _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+		_DebugRenderStatForeground->addElement(RenderAction::statDrawTime," ");
+		_DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
         _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
         _DebugRenderStatForeground->addElement(DrawActionBase::statTravTime, "TravTime: %.3f s");
         _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "DrawTime: %.3f s");
@@ -454,7 +1059,9 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugPhysicsStatForeground = SimpleStatisticsForeground::create();
     beginEditCP(_DebugPhysicsStatForeground);
         _DebugPhysicsStatForeground->setSize(25);
+		//_DebugPhysicsStatForeground->setPosition(Pnt2f(10,30));
         _DebugPhysicsStatForeground->setColor(Color4f(0,1,0,0.7));
+		_DebugPhysicsStatForeground->addElement(RenderAction::statDrawTime," ");
         _DebugPhysicsStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     endEditCP(_DebugPhysicsStatForeground);
     addRefCP(_DebugPhysicsStatForeground);
@@ -464,6 +1071,8 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     beginEditCP(_DebugParticleSystemStatForeground);
         _DebugParticleSystemStatForeground->setSize(25);
         _DebugParticleSystemStatForeground->setColor(Color4f(0,1,0,0.7));
+		_DebugParticleSystemStatForeground->addElement(RenderAction::statDrawTime," ");
+		//_DebugParticleSystemStatForeground->setPosition(Pnt2f(10,30));
         _DebugParticleSystemStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     endEditCP(_DebugParticleSystemStatForeground);
     addRefCP(_DebugParticleSystemStatForeground);
@@ -473,6 +1082,8 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     beginEditCP(_DebugAnimationStatForeground);
         _DebugAnimationStatForeground->setSize(25);
         _DebugAnimationStatForeground->setColor(Color4f(0,1,0,0.7));
+		//_DebugAnimationStatForeground->setPosition(Pnt2f(10,30));
+		_DebugAnimationStatForeground->addElement(RenderAction::statDrawTime," ");
         _DebugAnimationStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     endEditCP(_DebugAnimationStatForeground);
     addRefCP(_DebugAnimationStatForeground);
@@ -487,9 +1098,15 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
 ApplicationPlayer::ApplicationPlayer(void) :
     Inherited(),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
+<<<<<<< .mine
+	_BasicListener(ApplicationPlayerPtr(this)),
+	_LuaErrorListener(ApplicationPlayerPtr(this)),
+    _IsDebugActive(false)
+=======
     _IsDebugActive(false),
     _PhysDrawable(NullFC),
     _PhysDrawableNode(NullFC)
+>>>>>>> .r108
 {
     initDebugStatForegrounds();
 }
@@ -497,6 +1114,8 @@ ApplicationPlayer::ApplicationPlayer(void) :
 ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     Inherited(source),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
+	_BasicListener(ApplicationPlayerPtr(this)),
+	_LuaErrorListener(ApplicationPlayerPtr(this)),
     _IsDebugActive(false),
     _DebugBasicStatForeground(source._DebugBasicStatForeground),
     _DebugRenderStatForeground(source._DebugRenderStatForeground),
@@ -529,3 +1148,25 @@ void ApplicationPlayer::PlayerKeyListener::keyTyped(const KeyEventPtr e)
 {
     _ApplicationPlayer->keyTyped(e);
 }
+
+void ApplicationPlayer::BasicListener::actionPerformed(const ActionEventPtr e)
+{
+    _ApplicationPlayer->actionPerformed(e);
+}
+
+ApplicationPlayer::BasicListener::BasicListener(ApplicationPlayerPtr TheApplicationPlayer)
+{
+	_ApplicationPlayer=TheApplicationPlayer;
+}
+
+
+ApplicationPlayer::BasicListener::~BasicListener()
+{
+	
+}
+
+ApplicationPlayer::LuaErrorListener::LuaErrorListener(ApplicationPlayerPtr TheApplicationPlayer)
+{
+	_ApplicationPlayer=TheApplicationPlayer;
+}
+
