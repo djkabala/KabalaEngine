@@ -116,7 +116,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	MenuItemPtr AnimationItem ;			
 	MenuItemPtr PauseActiveUpdatesItem;			
 	MenuItemPtr DrawBoundingVolumesItem ;		
-	MenuItemPtr FrustrumCullingItem  ;			
+	MenuItemPtr FrustrumCullingItem  ;
+	MenuItemPtr DrawPhysicsCharacteristicsItem  ;
 	MenuPtr ProjectMenu;
 	MenuPtr SceneMenu;
 	MenuPtr NavigatorMenu;
@@ -132,6 +133,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	LabelPtr TabPanel1;
 	LabelPtr TabPanel2;
 	LabelPtr TabPanel3;
+	LabelPtr Label1;
 	ScrollPanelPtr TabContentA;
 	ScrollPanelPtr TabContentB;
 	ScrollPanelPtr TabContentC;
