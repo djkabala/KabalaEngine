@@ -161,6 +161,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	PauseActiveUpdatesItem = MenuItem::create();
 	DrawBoundingVolumesItem = MenuItem::create();
 	FrustrumCullingItem = MenuItem::create();
+	DrawPhysicsCharacteristicsItem = MenuItem::create();
 
 	// setting the fields of the menu items
 	beginEditCP(ResetItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
@@ -205,9 +206,9 @@ void ApplicationPlayer::createDebugInterface(void)
     
 	beginEditCP(FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         FlyNavigatorItem->setText("FlyNavigator ");
-		FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_Z);
+		FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_N);
         FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_Z);
+        FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_N);
     endEditCP(FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
 	beginEditCP(TrackballNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
@@ -240,9 +241,9 @@ void ApplicationPlayer::createDebugInterface(void)
     
 	beginEditCP(ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         ParticleSystemItem->setText("ParticleSystem ");
-        ParticleSystemItem->setAcceleratorKey(KeyEvent::KEY_P);
+        ParticleSystemItem->setAcceleratorKey(KeyEvent::KEY_Z);
         ParticleSystemItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_P);
+        ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_Z);
     endEditCP(ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	beginEditCP(AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
@@ -258,19 +259,26 @@ void ApplicationPlayer::createDebugInterface(void)
         //PauseActiveUpdatesItem->setMnemonicKey(KeyEvent::KEY_SPACE);
     endEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-		beginEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
         DrawBoundingVolumesItem->setAcceleratorKey(KeyEvent::KEY_V);
         DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         DrawBoundingVolumesItem->setMnemonicKey(KeyEvent::KEY_V);
     endEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-		beginEditCP(FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         FrustrumCullingItem->setText("Frustrum Culling ");
         FrustrumCullingItem->setAcceleratorKey(KeyEvent::KEY_F);
         FrustrumCullingItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         FrustrumCullingItem->setMnemonicKey(KeyEvent::KEY_F);
     endEditCP(FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+	beginEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics ");
+        DrawPhysicsCharacteristicsItem->setAcceleratorKey(KeyEvent::KEY_P);
+        DrawPhysicsCharacteristicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        DrawPhysicsCharacteristicsItem->setMnemonicKey(KeyEvent::KEY_P);
+    endEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	// creation of menus and addition of menu items to them
 	ProjectMenu = Menu::create();
@@ -298,6 +306,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	ToggleMenu->addItem(PauseActiveUpdatesItem);
 	ToggleMenu->addItem(DrawBoundingVolumesItem);
 	ToggleMenu->addItem(FrustrumCullingItem);
+	ToggleMenu->addItem(DrawPhysicsCharacteristicsItem);
 
 	// setting the fields for the menus 
 	beginEditCP(ProjectMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
@@ -342,6 +351,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	PauseActiveUpdatesItem->addActionListener(&_BasicListener);
 	DrawBoundingVolumesItem->addActionListener(&_BasicListener);
 	FrustrumCullingItem->addActionListener(&_BasicListener);
+	DrawPhysicsCharacteristicsItem->addActionListener(&_BasicListener);
 	ProjectMenu->addActionListener(&_BasicListener);
 	SceneMenu->addActionListener(&_BasicListener);	
 	NavigatorMenu->addActionListener(&_BasicListener);
@@ -371,7 +381,7 @@ void ApplicationPlayer::createDebugInterface(void)
         //CodeTextArea->setSelectionBoxColor(Color4f(0.0, 0.0, 1.0, 1.0));
         //CodeTextArea->setSelectionTextColor(Color4f(1.0, 1.0, 1.0, 1.0));
         // Determine the font and initial text
-        CodeTextArea->setText("?>");
+        CodeTextArea->setText("");
 //        CodeTextArea->setFont(ExampleFont);
         // This will select the "a" from above
         //CodeTextArea->setSelectionStart(2);
@@ -464,6 +474,7 @@ void ApplicationPlayer::createDebugInterface(void)
     TabPanel2 = osg::Label::create();
     TabPanel3 = osg::Label::create();
 
+
 	// set the fields of the labels
 	beginEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
         TabPanel1->setText("Lua Console");
@@ -506,30 +517,46 @@ void ApplicationPlayer::createDebugInterface(void)
 
 	executeBtn->addActionListener(&_BasicListener);
 
+	Label1	  = osg::Label::create();
+	   
+	beginEditCP(Label1, Label::MinSizeFieldMask | Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+		//Label1->setMinSize(vec2f(400,50));
+        Label1->setText("Press Ctrl+Shift+<SceneNumber> to go to the corresponding scene");
+        Label1->setBorders(NullFC);
+        Label1->setBackgrounds(NullFC);
+    endEditCP(Label1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+
 	// Creating a panel for adding the tabpanel to it and setting springlayout as the layout
 	SplitPanelPanel = osg::Panel::create();
     
 	PanelFlowLayout = osg::SpringLayout::create();
 
-	int SPACE_FOR_BUTTON = 110;
+	int SPACE_FOR_BUTTON = 400;
 
     // OverlayLayout has no options to edit!
     beginEditCP(PanelFlowLayout);
         // NOTHING : )
     endEditCP(PanelFlowLayout); 
 
-	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  // The North edge of ExampleButton1 is 25 pixels below the North edge of the MainInternalWindow.
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPanel);  // The South edge of ExampleButton1 is 5 pixels above the Vertical Center of the MainInternalWindow.
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, InfoTabPanel, -1*SPACE_FOR_BUTTON, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  // The East edge of ExampleButton1 is 25 pixels to the left of the East edge of the MainInternalWindow.
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, SplitPanelPanel);  // The West edge of ExampleButton1 is 25 pixels to the right of the West edge of the MainInternalWindow.
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPanel); 
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, InfoTabPanel, -1*SPACE_FOR_BUTTON, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, SplitPanelPanel);  
 
-	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, executeBtn, -15, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, SplitPanelPanel);  // The North edge of ExampleButton1 is 25 pixels below the North edge of the MainInternalWindow.
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, executeBtn, 15, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, SplitPanelPanel);  // The South edge of ExampleButton1 is 5 pixels above the Vertical Center of the MainInternalWindow.
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, executeBtn, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  // The East edge of ExampleButton1 is 25 pixels to the left of the East edge of the MainInternalWindow.
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, executeBtn, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  // The West edge of ExampleButton1 is 25 pixels to the right of the West edge of the MainInternalWindow.
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, Label1, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, Label1, -15, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, Label1, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, Label1, 25, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
+    	
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, executeBtn, 15, SpringLayoutConstraints::SOUTH_EDGE, Label1);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, executeBtn, -15, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, executeBtn, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, executeBtn, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
     
+	
 	beginEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 		SplitPanelPanel->getChildren().push_back(InfoTabPanel);
+		SplitPanelPanel->getChildren().push_back(Label1);
 		SplitPanelPanel->getChildren().push_back(executeBtn);
         SplitPanelPanel->setLayout(PanelFlowLayout);
     endEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
@@ -696,7 +723,11 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	else if(e->getSource() == NextItem)
 	{
 			MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
-        
+			SearchItor++;
+			if(SearchItor == MainApplication::the()->getProject()->getScenes().end())
+				SearchItor = MainApplication::the()->getProject()->getScenes().begin();
+			MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+    
 	}
 	else if(e->getSource() == PrevItem)
 	{
@@ -721,20 +752,22 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	else if(e->getSource() == FirstItem)
 	{
 		MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().begin());
-        //SearchItor = SearchItor + SceneNumber;
-		MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+        MainApplication::the()->getProject()->setActiveScene(*SearchItor);
 
 	}
+
+	
 	else if(e->getSource() == LastItem)
 	{
-		UInt32 SceneNumber = 3;
+
+		UInt32 SceneNumber = MainApplication::the()->getProject()->getScenes().size();
 		MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().begin());
-        SearchItor = SearchItor + SceneNumber;
+        SearchItor = SearchItor + SceneNumber - 1;
 		MainApplication::the()->getProject()->setActiveScene(*SearchItor);
 	}
 	else if(e->getSource() == FlyNavigatorItem )
 	{
-	
+		MainApplication::the()->getProject()->toggleFlyNavigation();
 	}
 	else if(e->getSource() == TrackballNavigatorItem )
 	{
@@ -771,6 +804,10 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	else if(e->getSource() == FrustrumCullingItem)
 	{
 		toggleFrustumCulling();
+	}
+	else if(e->getSource() == DrawPhysicsCharacteristicsItem)
+	{
+		toggleDrawPhysicsCharacteristics();
 	}
 	else
 	{
@@ -848,7 +885,7 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
             MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
         }
         //Statistic Foregrounds
-        else if(e->getKey() == KeyEvent::KEY_B && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
+        /*else if(e->getKey() == KeyEvent::KEY_B && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
         {
             toggleStatForeground(_DebugBasicStatForeground);
         }
@@ -887,7 +924,7 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         else if(e->getKey() == KeyEvent::KEY_N && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
         {
             MainApplication::the()->getProject()->toggleFlyNavigation();
-        }
+        }*/
     }
 }
 
