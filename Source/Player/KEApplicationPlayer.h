@@ -59,7 +59,6 @@
 #include <OpenSG/UserInterface/OSGScrollPanel.h>
 #include <OpenSG/UserInterface/OSGTextArea.h>
 
-<<<<<<< .mine
 // tab panel
 #include <OpenSG/UserInterface/OSGTabPanel.h>
 
@@ -83,11 +82,9 @@
 #include <OpenSG/UserInterface/OSGLookAndFeelManager.h>
 
 
-=======
 #include <OpenSG/Physics/OSGPhysicsCharacteristicsDrawable.h>
 #include <OpenSG/OSGNode.h>
 
->>>>>>> .r108
 OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationPlayer class. See \ref 

@@ -641,14 +641,11 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
     _IsDebugActive = EnableDebug;
     if(_IsDebugActive)
     {
-<<<<<<< .mine
         std::cout << "Debug Mode Enabled" << std::endl;
 		attachDebugInterface();
 		MainApplication::the()->getProject()->attachFlyNavigation();
 		
-=======
         updateWindowTitle();
->>>>>>> .r108
     }
     else
     {
@@ -665,9 +662,6 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
     }
 }
 
-<<<<<<< .mine
-void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
-=======
 void ApplicationPlayer::updateWindowTitle(void)
 {
     std::string MainWindowTitle(MainApplication::the()->getProject()->getMainWindowTitle());
@@ -682,16 +676,12 @@ void ApplicationPlayer::updateWindowTitle(void)
     MainApplication::the()->getMainWindowEventProducer()->setTitle(MainWindowTitle);
 }
 
-void ApplicationPlayer::keyTyped(const KeyEventPtr e)
->>>>>>> .r108
+void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 {
-
 	if(e->getSource() == executeBtn)
 	{
 		std::cout<<"Executing the LUA Script..."<<std::endl;
 		LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
-
-<<<<<<< .mine
 	}
 	else if(e->getSource() == ResetItem)
 	{
@@ -706,45 +696,7 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
 	else if(e->getSource() == NextItem)
 	{
 			MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
-=======
         
-        //Pause Active Updates
-        if(e->getKey() == KeyEvent::KEY_SPACE)
-        {
-            MainApplication::the()->getProject()->togglePauseActiveUpdates();
-        }
-
-        //Toggle Input Blocking
-        if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
-        {
-            bool BlockInput(!MainApplication::the()->getProject()->isInputBlocked());
-            MainApplication::the()->getProject()->blockInput(BlockInput);
-            for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
-            {
-                MainApplication::the()->getProject()->getScenes(i)->blockInput(BlockInput);
-            }
-            updateWindowTitle();
-        }
-
-        //Scene Activation
-        if(e->getKey() == KeyEvent::KEY_TAB && !(e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
-        {
-            //Move to next scene
-            MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
->>>>>>> .r108
-            if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
-            {
-                ++SearchItor;
-                if(SearchItor == MainApplication::the()->getProject()->getScenes().end())
-                {
-                    SearchItor = MainApplication::the()->getProject()->getScenes().begin();
-                }
-            }
-            else
-            {
-                SearchItor = MainApplication::the()->getProject()->getScenes().begin();
-            }
-            MainApplication::the()->getProject()->setActiveScene(*SearchItor);
 	}
 	else if(e->getSource() == PrevItem)
 	{
@@ -839,6 +791,7 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
     if(_IsDebugActive)
     {
 
+
         if(isNumericKey(static_cast<KeyEvent::Key>(e->getKey())) && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
         {
             //Switch To scene #
@@ -850,10 +803,45 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
                 MainApplication::the()->getProject()->setActiveScene(*SearchItor);
             }
         }
-<<<<<<< .mine
-=======
+        //Pause Active Updates
+        //else if(e->getKey() == KeyEvent::KEY_SPACE)
+        //{
+            //MainApplication::the()->getProject()->togglePauseActiveUpdates();
+        //}
+
+        ////Toggle Input Blocking
+        //else if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        //{
+            //bool BlockInput(!MainApplication::the()->getProject()->isInputBlocked());
+            //MainApplication::the()->getProject()->blockInput(BlockInput);
+            //for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
+            //{
+                //MainApplication::the()->getProject()->getScenes(i)->blockInput(BlockInput);
+            //}
+            //updateWindowTitle();
+        //}
+
         //Scene Activation
-        else if(e->getKey() == KeyEvent::KEY_E && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        //else if(e->getKey() == KeyEvent::KEY_TAB && !(e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
+        //{
+            ////Move to next scene
+            //MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
+            //if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
+            //{
+                //++SearchItor;
+                //if(SearchItor == MainApplication::the()->getProject()->getScenes().end())
+                //{
+                    //SearchItor = MainApplication::the()->getProject()->getScenes().begin();
+                //}
+            //}
+            //else
+            //{
+                //SearchItor = MainApplication::the()->getProject()->getScenes().begin();
+            //}
+            //MainApplication::the()->getProject()->setActiveScene(*SearchItor);
+        //}
+        //Scene Activation
+        if(e->getKey() == KeyEvent::KEY_E && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
         {
             //Reset the Project
             MainApplication::the()->getProject()->reset();
@@ -890,7 +878,6 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         {
             toggleFrustumCulling();
         }
->>>>>>> .r108
         //Toggle Physics Drawing
         else if(e->getKey() == KeyEvent::KEY_P && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
         {
@@ -1098,15 +1085,11 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
 ApplicationPlayer::ApplicationPlayer(void) :
     Inherited(),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
-<<<<<<< .mine
 	_BasicListener(ApplicationPlayerPtr(this)),
 	_LuaErrorListener(ApplicationPlayerPtr(this)),
-    _IsDebugActive(false)
-=======
     _IsDebugActive(false),
     _PhysDrawable(NullFC),
     _PhysDrawableNode(NullFC)
->>>>>>> .r108
 {
     initDebugStatForegrounds();
 }
