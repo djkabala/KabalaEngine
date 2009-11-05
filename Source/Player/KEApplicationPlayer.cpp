@@ -843,16 +843,16 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         //}
 
         ////Toggle Input Blocking
-        //else if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
-        //{
-            //bool BlockInput(!MainApplication::the()->getProject()->isInputBlocked());
-            //MainApplication::the()->getProject()->blockInput(BlockInput);
-            //for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
-            //{
-                //MainApplication::the()->getProject()->getScenes(i)->blockInput(BlockInput);
-            //}
-            //updateWindowTitle();
-        //}
+        else if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        {
+            bool BlockInput(!MainApplication::the()->getProject()->isInputBlocked());
+            MainApplication::the()->getProject()->blockInput(BlockInput);
+            for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
+            {
+                MainApplication::the()->getProject()->getScenes(i)->blockInput(BlockInput);
+            }
+            updateWindowTitle();
+        }
 
         //Scene Activation
         //else if(e->getKey() == KeyEvent::KEY_TAB && !(e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
