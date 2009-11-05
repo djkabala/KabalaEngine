@@ -221,75 +221,23 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	BasicListener _BasicListener;
 
 	
-	class LuaErrorListener : public LuaListener
-	{
-
-	public:
-		LuaErrorListener(ApplicationPlayerPtr TheApplicationPlayer);
-
-	protected :
-		ApplicationPlayerPtr _ApplicationPlayer;
-
-	public:
-
-    virtual void error(const LuaErrorEventPtr e)
+    class LuaErrorListener : public LuaListener
     {
-        std::string ErrorType("");
-        switch(e->getStatus())
-        {
-        case LUA_ERRSYNTAX:
-            //Syntax Error
-            ErrorType = "Lua Syntax Error";
-            break;
-        case LUA_ERRMEM:
-            //Memory Allocation Error
-            ErrorType = "Lua Memory Allocation Error";
-            break;
-        case LUA_ERRRUN:
-            //Memory Allocation Error
-            ErrorType = "Lua Runtime Error";
-            break;
-        case LUA_ERRERR:
-            //Memory Allocation Error
-            ErrorType = "Lua Error in Error Handler";
-            break;
-        default:
-            //Unknown
-            ErrorType = "Lua Unknown Error";
-            break;
-        }
-        _ApplicationPlayer->ErrorTextArea->moveCaretToEnd();
-        if(_ApplicationPlayer->ErrorTextArea->getText().size() != 0)
-        {
-            _ApplicationPlayer->ErrorTextArea->write("\n");
-        }
-        _ApplicationPlayer->ErrorTextArea->write(ErrorType + ":\n    " + e->getErrorString());
 
-        //Select the Error Tab
-        _ApplicationPlayer->InfoTabPanel->setSelectedIndex(1);
+        public:
+            LuaErrorListener(ApplicationPlayerPtr TheApplicationPlayer);
 
-        //Fill Stack Trace
-        if(e->getStackTraceEnabled() && 
-            (e->getStatus() == LUA_ERRMEM ||
-             e->getStatus() == LUA_ERRERR ||
-             e->getStatus() == LUA_ERRRUN))
-        {
-            std::stringstream ss;
-            ss << "Lua Stack Trace: " << std::endl;
-            
-            MFString::StorageType::const_iterator ListItor(e->getMFStackTrace()->begin());
-            for(; ListItor != e->getMFStackTrace()->end() ; ++ListItor)
-            {
-                ss << "     " << (*ListItor) << std::endl;
-            }
-            _ApplicationPlayer->StackTraceTextArea->write(ss.str());
-        }
-		}
-	};
+        protected :
+            ApplicationPlayerPtr _ApplicationPlayer;
+
+        public:
+
+            virtual void error(const LuaErrorEventPtr e);
+    };
 
 
 
-	friend class LuaErrorListener;
+    friend class LuaErrorListener;
 
 	LuaErrorListener  _LuaErrorListener;
 	

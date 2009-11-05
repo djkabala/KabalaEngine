@@ -668,16 +668,13 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
     _IsDebugActive = EnableDebug;
     if(_IsDebugActive)
     {
-        std::cout << "Debug Mode Enabled" << std::endl;
 		attachDebugInterface();
-		MainApplication::the()->getProject()->attachFlyNavigation();
 		
         updateWindowTitle();
     }
     else
     {
 		detachDebugInterface();
-        MainApplication::the()->getProject()->dettachFlyNavigation();
 
         //Turn off Input Blocking
         MainApplication::the()->getProject()->blockInput(false);
@@ -707,7 +704,6 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 {
 	if(e->getSource() == executeBtn)
 	{
-		std::cout<<"Executing the LUA Script..."<<std::endl;
 		LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
 	}
 	else if(e->getSource() == ResetItem)
@@ -1188,5 +1184,59 @@ ApplicationPlayer::BasicListener::~BasicListener()
 ApplicationPlayer::LuaErrorListener::LuaErrorListener(ApplicationPlayerPtr TheApplicationPlayer)
 {
 	_ApplicationPlayer=TheApplicationPlayer;
+}
+void ApplicationPlayer::LuaErrorListener::error(const LuaErrorEventPtr e)
+{
+    std::string ErrorType("");
+    switch(e->getStatus())
+    {
+        case LUA_ERRSYNTAX:
+            //Syntax Error
+            ErrorType = "Lua Syntax Error";
+            break;
+        case LUA_ERRMEM:
+            //Memory Allocation Error
+            ErrorType = "Lua Memory Allocation Error";
+            break;
+        case LUA_ERRRUN:
+            //Memory Allocation Error
+            ErrorType = "Lua Runtime Error";
+            break;
+        case LUA_ERRERR:
+            //Memory Allocation Error
+            ErrorType = "Lua Error in Error Handler";
+            break;
+        default:
+            //Unknown
+            ErrorType = "Lua Unknown Error";
+            break;
+    }
+    _ApplicationPlayer->ErrorTextArea->clear();
+    if(_ApplicationPlayer->ErrorTextArea->getText().size() != 0)
+    {
+        _ApplicationPlayer->ErrorTextArea->write("\n");
+    }
+    _ApplicationPlayer->ErrorTextArea->write(ErrorType + ":\n    " + e->getErrorString());
+
+    //Select the Error Tab
+    _ApplicationPlayer->InfoTabPanel->setSelectedIndex(1);
+
+    //Fill Stack Trace
+    if(e->getStackTraceEnabled() && 
+            (e->getStatus() == LUA_ERRMEM ||
+             e->getStatus() == LUA_ERRERR ||
+             e->getStatus() == LUA_ERRRUN))
+    {
+        std::stringstream ss;
+        ss << "Lua Stack Trace: " << std::endl;
+
+        MFString::StorageType::const_iterator ListItor(e->getMFStackTrace()->begin());
+        for(; ListItor != e->getMFStackTrace()->end() ; ++ListItor)
+        {
+            ss << "     " << (*ListItor) << std::endl;
+        }
+        _ApplicationPlayer->StackTraceTextArea->clear();
+        _ApplicationPlayer->StackTraceTextArea->write(ss.str());
+    }
 }
 

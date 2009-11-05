@@ -144,6 +144,8 @@ void Scene::enter(void)
 	{
         getInternalParentProject()->addActiveParticleSystem(getInitialParticleSystems(i));
     }
+    
+    producerSceneEntered(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 
     //If There is a physics World then update it's contents
     if(getPhysicsWorld() != NullFC)
@@ -199,7 +201,6 @@ void Scene::enter(void)
         }
     }
 
-    producerSceneEntered(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 }
 
 void Scene::start(void)
