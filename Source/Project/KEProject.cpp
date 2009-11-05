@@ -53,6 +53,7 @@
 #include "Project/Scene/KEScene.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <OpenSG/Toolbox/OSGFCFileHandler.h>
+#include <OpenSG/Toolbox/OSGFilePathAttachment.h>
 #include "Application/KEMainApplication.h"
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 
@@ -109,6 +110,10 @@ ProjectPtr Project::create(const Path& ProjectFile)
 				Project::Ptr::dcast(*Itor)->setFilePath(ProjectFile);
 			endEditCP(Project::Ptr::dcast(*Itor), Project::FilePathFieldMask);
 			Project::Ptr::dcast(*Itor)->attachNames();
+
+            FilePathAttachment::setFilePath(Project::Ptr::dcast(*Itor), ProjectFile);
+
+            //Attach the FilePath to me
 			return Project::Ptr::dcast(*Itor);
 		}
 	}
@@ -273,19 +278,27 @@ void Project::stop(void)
 
 void Project::loadScripts(void)
 {
+    //Get the directory that the project is located in
+    Path ProjectBaseDir("");
+    const Path* ProjectFilePath = FilePathAttachment::getFilePath(ProjectPtr(this));
+    if(ProjectFilePath != NULL)
+    {
+        ProjectBaseDir = ProjectFilePath->parent_path();
+    }
+
     //Set the Path used for finding modules by lua
     std::string PackagePath("?;"
-            + (getLuaModulesDirectory() / "?" ).file_string() + ";"
-            + (getLuaModulesDirectory() / "?.lua" ).file_string() + ";"
-            + (getLuaModulesDirectory() / "?" /  "init.lua").file_string());
+            + (ProjectBaseDir / getLuaModulesDirectory() / "?" ).file_string() + ";"
+            + (ProjectBaseDir / getLuaModulesDirectory() / "?.lua" ).file_string() + ";"
+            + (ProjectBaseDir / getLuaModulesDirectory() / "?" /  "init.lua").file_string());
 
     LuaManager::the()->setPackagePath(PackagePath);
 
     std::string PackageCPath("?;"
-            + (getLuaModulesDirectory() / "?" ).file_string() + ";"
-            + (getLuaModulesDirectory() / "?.so" ).file_string() + ";"
-            + (getLuaModulesDirectory() / "?.dylib" ).file_string() + ";"
-            + (getLuaModulesDirectory() / "?.dll" ).file_string());
+            + (ProjectBaseDir / getLuaModulesDirectory() / "?" ).file_string() + ";"
+            + (ProjectBaseDir / getLuaModulesDirectory() / "?.so" ).file_string() + ";"
+            + (ProjectBaseDir / getLuaModulesDirectory() / "?.dylib" ).file_string() + ";"
+            + (ProjectBaseDir / getLuaModulesDirectory() / "?.dll" ).file_string());
     LuaManager::the()->setPackageCPath(PackageCPath);
 
     //If I have a Lua Module then load it
