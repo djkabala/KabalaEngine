@@ -1609,7 +1609,7 @@ typedef struct{} LANGUAGE_OBJ;
 #include <OpenSG/OSGGeometry.h>
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGCamera.h>
-#include <OpenSG/OSGImage.h>
+#include <OpenSG/OSGImage.h>S
 #include <OpenSG/OSGSysFieldDataType.h>
 #include <OpenSG/OSGVecFieldDataType.h>
 #include <OpenSG/OSGMathFieldDataType.h>
@@ -1780,6 +1780,56 @@ fail:
 }
 
 
+static int _wrap_ScenePtr_blockInput(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  bool arg2 ;
+  
+  SWIG_check_num_args("blockInput",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("blockInput",1,"osg::ScenePtr *");
+  if(!lua_isboolean(L,2)) SWIG_fail_arg("blockInput",2,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_blockInput",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  arg2 = (lua_toboolean(L, 2)!=0);
+  (*arg1)->blockInput(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ScenePtr_isInputBlocked(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("isInputBlocked",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInputBlocked",1,"osg::ScenePtr const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_isInputBlocked",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  result = (bool)(*arg1)->isInputBlocked();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static void swig_delete_ScenePtr(void *obj) {
 osg::ScenePtr *arg1 = (osg::ScenePtr *) obj;
 delete arg1;
@@ -1787,6 +1837,8 @@ delete arg1;
 static swig_lua_method swig_osg_ScenePtr_methods[] = {
     {"__deref__", _wrap_ScenePtr___deref__}, 
     {"isStarted", _wrap_ScenePtr_isStarted}, 
+    {"blockInput", _wrap_ScenePtr_blockInput}, 
+    {"isInputBlocked", _wrap_ScenePtr_isInputBlocked}, 
     {0,0}
 };
 static swig_lua_attribute swig_osg_ScenePtr_attributes[] = {
@@ -1820,8 +1872,60 @@ fail:
 }
 
 
+static int _wrap_Scene_blockInput(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  bool arg2 ;
+  
+  SWIG_check_num_args("blockInput",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("blockInput",1,"osg::Scene *");
+  if(!lua_isboolean(L,2)) SWIG_fail_arg("blockInput",2,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_blockInput",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  arg2 = (lua_toboolean(L, 2)!=0);
+  (arg1)->blockInput(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Scene_isInputBlocked(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("isInputBlocked",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInputBlocked",1,"osg::Scene const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_isInputBlocked",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  result = (bool)((osg::Scene const *)arg1)->isInputBlocked();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static swig_lua_method swig_osg_Scene_methods[] = {
     {"isStarted", _wrap_Scene_isStarted}, 
+    {"blockInput", _wrap_Scene_blockInput}, 
+    {"isInputBlocked", _wrap_Scene_isInputBlocked}, 
     {0,0}
 };
 static swig_lua_attribute swig_osg_Scene_attributes[] = {
