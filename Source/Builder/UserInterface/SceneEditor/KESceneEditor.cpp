@@ -331,7 +331,8 @@ void SceneEditor::changed(BitVector whichField, ::osg::UInt32 origin)
 		if(_SceneNameLabel != NullFC)
 		{
 			beginEditCP(_SceneNameLabel, Label::TextFieldMask);
-			if(getEditingScene() != NullFC)
+			if(getEditingScene() != NullFC
+               && getName(getEditingScene()))
 			{
 				_SceneNameLabel->setText(getName(getEditingScene()));
 			}

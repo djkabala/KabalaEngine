@@ -474,6 +474,7 @@ ProjectPtr MainApplication::createDefaultProject(void)
 		TheDefaultProject->getScenes().push_back(TheDefaultScene);
 		TheDefaultProject->setInitialScene(TheDefaultScene);	
 	endEditCP(TheDefaultProject, Project::ScenesFieldMask | Project::InitialSceneFieldMask);
+    setName(TheDefaultProject,"Untitled Project");
 
 	return TheDefaultProject;
 }

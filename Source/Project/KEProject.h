@@ -130,6 +130,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void toggleFlyNavigation(void);
 
     ScenePtr getLastActiveScene(void) const;
+    ScenePtr getSceneByName(const std::string& FindSceneName) const;
     
     void blockInput(bool block);
     bool isInputBlocked(void) const;

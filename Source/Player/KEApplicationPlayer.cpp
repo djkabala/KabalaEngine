@@ -123,8 +123,13 @@ void ApplicationPlayer::start(void)
 {
 	if(MainApplication::the()->getProject() != NullFC)
 	{
-		MainApplication::the()->getProject()->start();
+        //TODO: Check if te Debug Interface has already been created
 		createDebugInterface();							// Allocate memory to the various pointers in the debug interface when the ApplicationPlayer is started
+
+        createGotoSceneMenuItems(MainApplication::the()->getProject());
+
+		MainApplication::the()->getProject()->start();
+        
 		enableDebug(false);
 	}
 }
@@ -147,12 +152,16 @@ void ApplicationPlayer::createDebugInterface(void)
 	// the menu items
 	ResetItem = MenuItem::create();				
     ForceQuitItem = MenuItem::create();			
+
     NextItem = MenuItem::create();				
     PrevItem = MenuItem::create();				
     FirstItem = MenuItem::create();				
     LastItem = MenuItem::create();				
+    _SceneSubItem = Menu::create();				
+
 	FlyNavigatorItem = MenuItem::create();		
     TrackballNavigatorItem = MenuItem::create();
+
     BasicItem = MenuItem::create();				
     RenderItem = MenuItem::create();			
     PhysicsItem = MenuItem::create();			
@@ -203,6 +212,10 @@ void ApplicationPlayer::createDebugInterface(void)
         LastItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         LastItem->setMnemonicKey(KeyEvent::KEY_L);
     endEditCP(LastItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    
+	beginEditCP(_SceneSubItem, Menu::TextFieldMask);
+        _SceneSubItem->setText("Scenes");
+    endEditCP(_SceneSubItem, Menu::TextFieldMask);
     
 	beginEditCP(FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         FlyNavigatorItem->setText("FlyNavigator ");
@@ -283,6 +296,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	// creation of menus and addition of menu items to them
 	ProjectMenu = Menu::create();
     ProjectMenu->addItem(ResetItem);
+	ProjectMenu->addSeparator();
     ProjectMenu->addItem(ForceQuitItem);
     
 	SceneMenu = Menu::create();
@@ -290,6 +304,8 @@ void ApplicationPlayer::createDebugInterface(void)
     SceneMenu->addItem(PrevItem);
 	SceneMenu->addItem(FirstItem);
 	SceneMenu->addItem(LastItem);
+	SceneMenu->addSeparator();
+	SceneMenu->addItem(_SceneSubItem);
 
 	NavigatorMenu = Menu::create();
     NavigatorMenu->addItem(FlyNavigatorItem);
@@ -517,15 +533,6 @@ void ApplicationPlayer::createDebugInterface(void)
 
 	executeBtn->addActionListener(&_BasicListener);
 
-	Label1	  = osg::Label::create();
-	   
-	beginEditCP(Label1, Label::MinSizeFieldMask | Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-		//Label1->setMinSize(vec2f(400,50));
-        Label1->setText("Press Ctrl+Shift+<SceneNumber> to go to the corresponding scene");
-        Label1->setBorders(NullFC);
-        Label1->setBackgrounds(NullFC);
-    endEditCP(Label1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-
 	// Creating a panel for adding the tabpanel to it and setting springlayout as the layout
 	SplitPanelPanel = osg::Panel::create();
     
@@ -543,12 +550,7 @@ void ApplicationPlayer::createDebugInterface(void)
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, InfoTabPanel, -1*SPACE_FOR_BUTTON, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, SplitPanelPanel);  
 
-	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, Label1, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, Label1, -15, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, SplitPanelPanel);
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, Label1, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, Label1, 25, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
-    	
-	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, executeBtn, 15, SpringLayoutConstraints::SOUTH_EDGE, Label1);  
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, executeBtn, 15, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, executeBtn, -15, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPanel);
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, executeBtn, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, executeBtn, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
@@ -556,8 +558,8 @@ void ApplicationPlayer::createDebugInterface(void)
 	
 	beginEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 		SplitPanelPanel->getChildren().push_back(InfoTabPanel);
-		SplitPanelPanel->getChildren().push_back(Label1);
 		SplitPanelPanel->getChildren().push_back(executeBtn);
+        SplitPanelPanel->setLayout(PanelFlowLayout);
         SplitPanelPanel->setLayout(PanelFlowLayout);
     endEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
@@ -578,15 +580,13 @@ void ApplicationPlayer::createDebugInterface(void)
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
         SplitPanel->setConstraints(SplitPanelConstraints);
         SplitPanel->setMaxComponent(SplitPanelPanel);
-         SplitPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
-        // SplitPanel->setDividerPosition(.25); // this is a percentage
-        SplitPanel->setDividerPosition(.75); // this is an absolute (300 > 1.0) 
+        SplitPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
+        SplitPanel->setDividerPosition(.75); 
         // location from the left/top
         SplitPanel->setDividerSize(5);
         // SplitPanel->setExpandable(false);
-        SplitPanel->setMaxDividerPosition(.75);
-        SplitPanel->setMinDividerPosition(.25);
-        // SplitPanel->setDividerDrawObject(drawObjectName);
+        SplitPanel->setMaxDividerPosition(.95);
+        SplitPanel->setMinDividerPosition(.15);
     endEditCP(SplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
 	/*************************************************** END SplitPanel creation **********************************************************************/
@@ -639,6 +639,70 @@ void ApplicationPlayer::createDebugInterface(void)
 
 }
 
+void ApplicationPlayer::updateGotoSceneMenuItems(ProjectPtr TheProject)
+{
+    ScenePtr CurrentlyActiveScene = TheProject->getActiveScene();
+    ScenePtr GotoItemScene;
+    MenuItemPtr GotoItem;
+
+    //Disable the Goto Menu Item for the currently active Scene
+    for(UInt32 i(0) ; i<_SceneSubItem->getNumItems() ; ++i)
+    {
+        GotoItem = _SceneSubItem->getItem(i);
+        GotoItemScene = TheProject->getSceneByName(GotoItem->getText());
+        if(CurrentlyActiveScene == GotoItemScene
+                && GotoItem->getEnabled())
+        {
+            beginEditCP(GotoItem, MenuItem::EnabledFieldMask);
+                GotoItem->setEnabled(false);
+            endEditCP(GotoItem, MenuItem::EnabledFieldMask);
+        }
+        else if(CurrentlyActiveScene != GotoItemScene
+                && !GotoItem->getEnabled())
+        {
+            beginEditCP(GotoItem, MenuItem::EnabledFieldMask);
+                GotoItem->setEnabled(true);
+            endEditCP(GotoItem, MenuItem::EnabledFieldMask);
+        }
+    }
+}
+
+void ApplicationPlayer::createGotoSceneMenuItems(ProjectPtr TheProject)
+{
+    //Clear all of the previous Items
+    _SceneSubItem->removeAllItems();
+
+    //Make a Menu Item for each of the scenes
+    const Char8* SceneCharName(NULL);
+    std::string SceneName;
+    MenuItemPtr NewSceneItem;
+    for(UInt32 i(0) ; i<TheProject->getScenes().size() ; ++i)
+    {
+        //Get the Name of the Scene
+        SceneCharName = getName(TheProject->getScenes(i));
+
+        if(SceneCharName == NULL)
+        {
+            SceneName = "Untitled Scene ";
+        }
+        else
+        {
+            SceneName = SceneCharName;
+        }
+        
+        //Create the menu Item
+        NewSceneItem = MenuItem::create();
+        beginEditCP(NewSceneItem, MenuItem::TextFieldMask);
+            NewSceneItem->setText(SceneName);
+        endEditCP(NewSceneItem, MenuItem::TextFieldMask);
+        //Attach the Goto Listener
+        NewSceneItem->addActionListener(&_GotoSceneItemListener);
+
+        //Add the Scene Menu Item to the SubMenu
+        _SceneSubItem->addItem(NewSceneItem);
+    }
+}
+
 void ApplicationPlayer::attachDebugInterface(void)
 {
 	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
@@ -660,29 +724,56 @@ void ApplicationPlayer::detachDebugInterface(void)
 	MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().erase(find(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().begin(),MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().end(),DebuggerUIForeground));
 }
 
-
-
-
 void ApplicationPlayer::enableDebug(bool EnableDebug)
 {
     _IsDebugActive = EnableDebug;
     if(_IsDebugActive)
     {
+        //Attach the Interface
 		attachDebugInterface();
+        updateGotoSceneMenuItems(MainApplication::the()->getProject());
+
+        //Attach Listeners to the project
+        MainApplication::the()->getProject()->editEventProducer()->attachEventListener(&_ProjectListener, Project::SceneChangedMethodId);
 		
+        //Update Title
         updateWindowTitle();
+
+        //Turn on Input Blocking
+        setSceneInputBlocking(true);
+
+        _WasMouseHidden = !MainApplication::the()->getMainWindowEventProducer()->getShowCursor();
+        if(_WasMouseHidden)
+        {
+            MainApplication::the()->getMainWindowEventProducer()->setShowCursor(true);
+        }
+        _WasMouseAttached = !MainApplication::the()->getMainWindowEventProducer()->getAttachMouseToCursor();
+        if(_WasMouseAttached)
+        {
+            MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(true);
+        }
     }
     else
     {
 		detachDebugInterface();
 
+        //Attach Listeners to the project
+        MainApplication::the()->getProject()->editEventProducer()->detachEventListener(&_ProjectListener, Project::SceneChangedMethodId);
+
         //Turn off Input Blocking
-        MainApplication::the()->getProject()->blockInput(false);
-        for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
-        {
-            MainApplication::the()->getProject()->getScenes(i)->blockInput(false);
-        }
+        setSceneInputBlocking(false);
+
+        //Update Title
         updateWindowTitle();
+
+        if(_WasMouseHidden)
+        {
+            MainApplication::the()->getMainWindowEventProducer()->setShowCursor(false);
+        }
+        if(_WasMouseAttached)
+        {
+            MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
+        }
     }
 }
 
@@ -845,34 +936,9 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
         ////Toggle Input Blocking
         else if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
         {
-            bool BlockInput(!MainApplication::the()->getProject()->isInputBlocked());
-            MainApplication::the()->getProject()->blockInput(BlockInput);
-            for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
-            {
-                MainApplication::the()->getProject()->getScenes(i)->blockInput(BlockInput);
-            }
-            updateWindowTitle();
+            toggleSceneInputBlocking();
         }
 
-        //Scene Activation
-        //else if(e->getKey() == KeyEvent::KEY_TAB && !(e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT))
-        //{
-            ////Move to next scene
-            //MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
-            //if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
-            //{
-                //++SearchItor;
-                //if(SearchItor == MainApplication::the()->getProject()->getScenes().end())
-                //{
-                    //SearchItor = MainApplication::the()->getProject()->getScenes().begin();
-                //}
-            //}
-            //else
-            //{
-                //SearchItor = MainApplication::the()->getProject()->getScenes().begin();
-            //}
-            //MainApplication::the()->getProject()->setActiveScene(*SearchItor);
-        //}
         //Scene Activation
         if(e->getKey() == KeyEvent::KEY_E && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
         {
@@ -880,50 +946,23 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
             MainApplication::the()->getProject()->reset();
             MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
         }
-        //Statistic Foregrounds
-        /*else if(e->getKey() == KeyEvent::KEY_B && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Basic Statistics Foreground
-        {
-            toggleStatForeground(_DebugBasicStatForeground);
-        }
-        else if(e->getKey() == KeyEvent::KEY_R && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Render Statistics Foreground
-        {
-            toggleStatForeground(_DebugRenderStatForeground);
-        }
-        else if(e->getKey() == KeyEvent::KEY_Y && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Physics Statistics Foreground
-        {
-            toggleStatForeground(_DebugPhysicsStatForeground);
-        }
-        else if(e->getKey() == KeyEvent::KEY_Z && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //Particle Systems Statistics Foreground
-        {
-            toggleStatForeground(_DebugParticleSystemStatForeground);
-        }
-        else if(e->getKey() == KeyEvent::KEY_A && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
-        {
-            toggleStatForeground(_DebugAnimationStatForeground);
-        }
-        //Toggle Volume Drawing
-        else if(e->getKey() == KeyEvent::KEY_V && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
-        {
-            toggleDrawBoundingVolumes();
-        }
-        //Toggle Frustum Culling
-        else if(e->getKey() == KeyEvent::KEY_F && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
-        {
-            toggleFrustumCulling();
-        }
-        //Toggle Physics Drawing
-        else if(e->getKey() == KeyEvent::KEY_P && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
-        {
-            toggleDrawPhysicsCharacteristics();
-        }
-        //Toggle Navigator
-        else if(e->getKey() == KeyEvent::KEY_N && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)  //
-        {
-            MainApplication::the()->getProject()->toggleFlyNavigation();
-        }*/
     }
 }
 
+void ApplicationPlayer::toggleSceneInputBlocking(void)
+{
+    setSceneInputBlocking(!MainApplication::the()->getProject()->isInputBlocked());
+}
+
+void ApplicationPlayer::setSceneInputBlocking(bool block)
+{
+    MainApplication::the()->getProject()->blockInput(block);
+    for(UInt32 i(0) ; i<MainApplication::the()->getProject()->getScenes().size(); ++i)
+    {
+        MainApplication::the()->getProject()->getScenes(i)->blockInput(block);
+    }
+    updateWindowTitle();
+}
 
 void ApplicationPlayer::toggleDrawBoundingVolumes(void)
 {
@@ -970,6 +1009,11 @@ NodePtr ApplicationPlayer::getPhysicsDrawableNode(void)
         addRefCP(_PhysDrawableNode);
     }
     return _PhysDrawableNode;
+}
+
+void ApplicationPlayer::gotoScene(ScenePtr TheScene)
+{
+    MainApplication::the()->getProject()->setActiveScene(TheScene);
 }
 
 void ApplicationPlayer::toggleFrustumCulling(void)
@@ -1109,6 +1153,13 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     addRefCP(_DebugAnimationStatForeground);
 }
 
+void ApplicationPlayer::updateDebugSceneChange(void)
+{
+    updateGotoSceneMenuItems(MainApplication::the()->getProject());
+
+	MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().push_back(DebuggerUIForeground);
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -1119,10 +1170,14 @@ ApplicationPlayer::ApplicationPlayer(void) :
     Inherited(),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
 	_BasicListener(ApplicationPlayerPtr(this)),
+	_GotoSceneItemListener(ApplicationPlayerPtr(this)),
+	_ProjectListener(ApplicationPlayerPtr(this)),
 	_LuaErrorListener(ApplicationPlayerPtr(this)),
     _IsDebugActive(false),
     _PhysDrawable(NullFC),
-    _PhysDrawableNode(NullFC)
+    _PhysDrawableNode(NullFC),
+    _WasMouseHidden(false),
+    _WasMouseAttached(false)
 {
     initDebugStatForegrounds();
 }
@@ -1131,6 +1186,8 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     Inherited(source),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
 	_BasicListener(ApplicationPlayerPtr(this)),
+	_GotoSceneItemListener(ApplicationPlayerPtr(this)),
+	_ProjectListener(ApplicationPlayerPtr(this)),
 	_LuaErrorListener(ApplicationPlayerPtr(this)),
     _IsDebugActive(false),
     _DebugBasicStatForeground(source._DebugBasicStatForeground),
@@ -1139,7 +1196,10 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     _DebugParticleSystemStatForeground(source._DebugParticleSystemStatForeground),
     _DebugAnimationStatForeground(source._DebugAnimationStatForeground),
     _PhysDrawable(NullFC),
-    _PhysDrawableNode(NullFC)
+    _PhysDrawableNode(NullFC),
+    _WasMouseHidden(false),
+    _WasMouseAttached(false)
+
 {
 }
 
@@ -1170,21 +1230,31 @@ void ApplicationPlayer::BasicListener::actionPerformed(const ActionEventPtr e)
     _ApplicationPlayer->actionPerformed(e);
 }
 
-ApplicationPlayer::BasicListener::BasicListener(ApplicationPlayerPtr TheApplicationPlayer)
+void ApplicationPlayer::GotoSceneItemListener::actionPerformed(const ActionEventPtr e)
 {
-	_ApplicationPlayer=TheApplicationPlayer;
+    ScenePtr TheScene(MainApplication::the()->getProject()->getSceneByName(MenuItemPtr::dcast(e->getSource())->getText()));
+
+    if(TheScene != NullFC)
+    {
+        _ApplicationPlayer->gotoScene(TheScene);
+    }
 }
 
-
-ApplicationPlayer::BasicListener::~BasicListener()
+void ApplicationPlayer::ProjectListener::eventProduced(const EventPtr e, UInt32 EventProducedId)
 {
-	
+    switch(EventProducedId)
+    {
+        case Project::SceneChangedMethodId:
+            _ApplicationPlayer->updateDebugSceneChange();
+            break;
+    }
 }
 
 ApplicationPlayer::LuaErrorListener::LuaErrorListener(ApplicationPlayerPtr TheApplicationPlayer)
 {
 	_ApplicationPlayer=TheApplicationPlayer;
 }
+
 void ApplicationPlayer::LuaErrorListener::error(const LuaErrorEventPtr e)
 {
     std::string ErrorType("");

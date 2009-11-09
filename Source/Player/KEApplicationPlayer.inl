@@ -47,5 +47,35 @@ ApplicationPlayer::PlayerKeyListener::PlayerKeyListener(ApplicationPlayerPtr The
 {
 }
 
+inline
+ApplicationPlayer::BasicListener::BasicListener(ApplicationPlayerPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
+{
+}
+
+inline
+ApplicationPlayer::BasicListener::~BasicListener()
+{
+}
+
+inline
+ApplicationPlayer::GotoSceneItemListener::GotoSceneItemListener(ApplicationPlayerPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
+{
+}
+
+inline
+ApplicationPlayer::GotoSceneItemListener::~GotoSceneItemListener()
+{
+}
+
+inline
+ApplicationPlayer::ProjectListener::ProjectListener(ApplicationPlayerPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
+{
+}
+
+inline
+ApplicationPlayer::ProjectListener::~ProjectListener()
+{
+}
+
 OSG_END_NAMESPACE
 

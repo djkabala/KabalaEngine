@@ -124,6 +124,23 @@ ProjectPtr Project::create(const Path& ProjectFile)
  *                           Instance methods                              *
 \***************************************************************************/
 
+ScenePtr Project::getSceneByName(const std::string& FindSceneName) const
+{
+    const Char8* SceneName;
+    for(UInt32 i(0) ; i<getScenes().size() ; ++i)
+    {
+        //Get the Name of the Scene
+        SceneName = getName(getScenes(i));
+
+        if(SceneName != NULL &&
+           strcmp(SceneName,FindSceneName.c_str()) == 0)
+        {
+            return getScenes(i);
+        }
+    }
+    return NullFC;
+}
+
 WindowEventProducerPtr Project::getEventProducer(void) const
 {
 	return MainApplication::the()->getMainWindowEventProducer();

@@ -42,6 +42,11 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationPlayerBase.h"
+
+#include "Project/KEProjectFields.h"
+#include "Project/Scene/KESceneFields.h"
+#include <OpenSG/Toolbox/OSGEventListener.h>
+
 #include <OpenSG/Input/OSGKeyAdapter.h>
 #include <OpenSG/OSGSimpleStatisticsForeground.h>
 #include <OpenSG/UserInterface/OSGMenu.h>
@@ -100,13 +105,47 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
     /*==========================  PUBLIC  =================================*/
   public:
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Sync                                    */
+    /*! \{                                                                 */
+
+    virtual void changed(BitVector  whichField, 
+                         ::osg::UInt32     origin    );
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Output                                   */
+    /*! \{                                                                 */
+
+    virtual void dump(      ::osg::UInt32     uiIndent = 0, 
+                      const BitVector  bvFlags  = 0) const;
+
+    /*! \}                                                                 */
+	virtual void attachApplication(void);
+	virtual void dettachApplication(void);
+	virtual void attachInterface(void);
+	virtual void attachListeners(void);
+	virtual void start(void);
+	virtual void stop(void);
+    virtual void reset(void);
+    virtual void gotoScene(ScenePtr TheScene);
+
+    /*=========================  PROTECTED  ===============================*/
+  protected:
+
+	virtual void attachDebugInterface(void);
+	virtual void detachDebugInterface(void);
+	virtual void createDebugInterface(void);
 
   	MenuItemPtr ResetItem ;				
     MenuItemPtr ForceQuitItem ;			
+
     MenuItemPtr NextItem ;				
     MenuItemPtr PrevItem ;				
     MenuItemPtr FirstItem;				
     MenuItemPtr LastItem ;				
+    MenuPtr _SceneSubItem ;				
+
 	MenuItemPtr FlyNavigatorItem ;		
     MenuItemPtr TrackballNavigatorItem ;
     MenuItemPtr BasicItem ;				
@@ -133,7 +172,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	LabelPtr TabPanel1;
 	LabelPtr TabPanel2;
 	LabelPtr TabPanel3;
-	LabelPtr Label1;
 	ScrollPanelPtr TabContentA;
 	ScrollPanelPtr TabContentB;
 	ScrollPanelPtr TabContentC;
@@ -142,37 +180,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	BorderLayoutConstraintsPtr SplitPanelConstraints;
 	SplitPanelPtr SplitPanel;
 
-    /*---------------------------------------------------------------------*/
-    /*! \name                      Sync                                    */
-    /*! \{                                                                 */
-
-    virtual void changed(BitVector  whichField, 
-                         ::osg::UInt32     origin    );
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                     Output                                   */
-    /*! \{                                                                 */
-
-    virtual void dump(      ::osg::UInt32     uiIndent = 0, 
-                      const BitVector  bvFlags  = 0) const;
-
-    /*! \}                                                                 */
-	virtual void attachApplication(void);
-	virtual void dettachApplication(void);
-	virtual void attachInterface(void);
-	virtual void attachListeners(void);
-	virtual void start(void);
-	virtual void stop(void);
-    virtual void reset(void);
-	virtual void attachDebugInterface(void);
-	virtual void detachDebugInterface(void);
-	virtual void createDebugInterface(void);
-
-    /*=========================  PROTECTED  ===============================*/
-  protected:
-
-    // Variables should all be in ApplicationPlayerBase.
+    void createGotoSceneMenuItems(ProjectPtr TheProject);
+    void updateGotoSceneMenuItems(ProjectPtr TheProject);
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
@@ -220,7 +229,38 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
 	BasicListener _BasicListener;
 
+	class GotoSceneItemListener : public ActionListener
+	{
+	public:
+		GotoSceneItemListener(ApplicationPlayerPtr TheApplicationPlayer);
+		~GotoSceneItemListener();
+
+		virtual void actionPerformed(const ActionEventPtr e);
+	protected :
+		ApplicationPlayerPtr _ApplicationPlayer;
 	
+	};
+	
+	friend class GotoSceneItemListener;
+
+	GotoSceneItemListener _GotoSceneItemListener;
+	
+	class ProjectListener : public EventListener
+	{
+	public:
+		ProjectListener(ApplicationPlayerPtr TheApplicationPlayer);
+		~ProjectListener();
+
+		virtual void eventProduced(const EventPtr e, UInt32 EventProducedId);
+	protected :
+		ApplicationPlayerPtr _ApplicationPlayer;
+	
+	};
+	
+	friend class ProjectListener;
+
+	ProjectListener _ProjectListener;
+
     class LuaErrorListener : public LuaListener
     {
 
@@ -260,8 +300,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     void toggleDrawBoundingVolumes(void);
     void toggleFrustumCulling(void);
     void toggleDrawPhysicsCharacteristics(void);
+    void toggleSceneInputBlocking(void);
+    void setSceneInputBlocking(bool block);
 
     NodePtr getPhysicsDrawableNode(void);
+    void updateDebugSceneChange(void);
     /*==========================  PRIVATE  ================================*/
   private:
 
@@ -278,6 +321,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
     PhysicsCharacteristicsDrawablePtr _PhysDrawable;
     NodePtr                           _PhysDrawableNode;
+    bool _WasMouseHidden;
+    bool _WasMouseAttached;
 };
 
 typedef ApplicationPlayer *ApplicationPlayerP;
