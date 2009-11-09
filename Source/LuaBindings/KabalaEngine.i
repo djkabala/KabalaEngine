@@ -78,6 +78,8 @@ namespace osg {
       public:
     
         bool isStarted(void) const;
+        void blockInput(bool block);
+        bool isInputBlocked(void) const;
       protected:
         Scene(void);
         Scene(const Animation &source);
