@@ -275,7 +275,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	beginEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
         DrawBoundingVolumesItem->setAcceleratorKey(KeyEvent::KEY_V);
-        DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL | KeyEvent::KEY_MODIFIER_SHIFT);
         DrawBoundingVolumesItem->setMnemonicKey(KeyEvent::KEY_V);
     endEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 

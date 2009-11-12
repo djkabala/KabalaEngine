@@ -143,7 +143,7 @@ void Scene::enter(void)
     //Attach the initial particle systems
 	for(::osg::UInt32 i(0) ; i<getInitialParticleSystems().size() ; ++i)
 	{
-        getInternalParentProject()->addActiveParticleSystem(getInitialParticleSystems(i));
+        getInitialParticleSystems(i)->attachUpdateProducer(editEventProducer());
     }
     
     producerSceneEntered(SceneEvent::create(ScenePtr(this), getTimeStamp()));
@@ -242,7 +242,7 @@ void Scene::exit(void)
     //Dettach the initial particle systems
 	for(::osg::UInt32 i(0) ; i<getInitialParticleSystems().size() ; ++i)
 	{
-        getInternalParentProject()->removeActiveParticleSystem(getInitialParticleSystems(i));
+        getInitialParticleSystems(i)->detachUpdateProducer();
     }
     
 	//Detach the User Interface Drawing Surfaces from the Window Event Producer
@@ -262,7 +262,7 @@ void Scene::exit(void)
     //If There is a physics Handler then detach it
     if(getPhysicsHandler() != NullFC)
     {
-        getPhysicsHandler()->detachUpdateProducer(editEventProducer());
+        getPhysicsHandler()->detachUpdateProducer();
 
         //Detach all Physics spaces from the Physics handler
         beginEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
