@@ -136,7 +136,8 @@ void Scene::enter(void)
 	//Attach the initial animations
 	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
 	{
-        getInternalParentProject()->addActiveAnimation(getInitialAnimations(i));
+        getInitialAnimations(i)->attachUpdateProducer(editEventProducer());
+        getInitialAnimations(i)->start();
     }
 
     //Attach the initial particle systems
@@ -235,7 +236,7 @@ void Scene::exit(void)
 	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
 	{
         //getInitialAnimations(i)->stop();
-        getInternalParentProject()->removeActiveAnimation(getInitialAnimations(i));
+        getInitialAnimations(i)->detachUpdateProducer();
     }
 
     //Dettach the initial particle systems
