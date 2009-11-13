@@ -89,10 +89,13 @@ void Project::togglePauseActiveUpdates(void)
 inline
 void Project::ProjectUpdateListener::update(const UpdateEventPtr e)
 {
-    _Project->update(e);
-    if(!_Project->_BlockInput)
+    if(e->getElapsedTime() < 1.0)
     {
-        _Project->_Producer.produceEvent(UpdateMethodId,e);
+        _Project->update(e);
+        if(!_Project->_BlockInput)
+        {
+            _Project->_Producer.produceEvent(UpdateMethodId,e);
+        }
     }
 }
 

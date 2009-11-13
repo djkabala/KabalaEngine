@@ -168,7 +168,9 @@ void Project::save(const Path& ProjectFile)
 void Project::start(void)
 {
     //Temporarily validate all openGL Objects
-    //MainApplication::the()->getMainWindowEventProducer()->getWindow()->validateAllGLObjects();
+    //SLOG << "Starting to validate all OpenGL Objects." << std::endl;
+    MainApplication::the()->getMainWindowEventProducer()->getWindow()->validateAllGLObjects();
+    //SLOG << "Finished validating all OpenGL Objects." << std::endl;
 
     //Attach the listeners
     MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_ProjectUpdateListener);

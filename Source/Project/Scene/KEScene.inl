@@ -66,7 +66,7 @@ Scene::SceneUpdateListener::SceneUpdateListener(ScenePtr TheScene) : _Scene(TheS
 inline
 void Scene::SceneUpdateListener::update(const UpdateEventPtr e)
 {
-    if(!_Scene->_BlockInput)
+    if(!_Scene->_BlockInput && e->getElapsedTime() < 1.0)
     {
         _Scene->_Producer.produceEvent(UpdateMethodId,e);
     }
