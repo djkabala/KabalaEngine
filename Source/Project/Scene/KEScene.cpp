@@ -149,7 +149,7 @@ void Scene::enter(void)
     producerSceneEntered(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 
     //If There is a physics World then update it's contents
-    if(getPhysicsWorld() != NullFC)
+    if(getPhysicsWorld() != NullFC && getPhysicsHandler()->getUpdateNode() == NullFC)
     {
         PhysicsAttachmentsFinder PhysicsFinder;
         PhysicsFinder.traverse(getRoot());
@@ -262,14 +262,15 @@ void Scene::exit(void)
     //If There is a physics Handler then detach it
     if(getPhysicsHandler() != NullFC)
     {
-        getPhysicsHandler()->detachUpdateProducer();
+        std::cout << "Detaching Update Producer" << std::endl;
+        //getPhysicsHandler()->detachUpdateProducer();
 
         //Detach all Physics spaces from the Physics handler
-        beginEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
-            getPhysicsHandler()->getSpaces().clear();
-            getPhysicsHandler()->setUpdateNode(NullFC);
-            getPhysicsHandler()->setWorld(NullFC);
-        endEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
+        //beginEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
+            //getPhysicsHandler()->getSpaces().clear();
+            //getPhysicsHandler()->setUpdateNode(NullFC);
+            //getPhysicsHandler()->setWorld(NullFC);
+        //endEditCP(getPhysicsHandler(), PhysicsHandler::SpacesFieldMask | PhysicsHandler::UpdateNodeFieldMask | PhysicsHandler::WorldFieldMask);
     }
 
     producerSceneExited(SceneEvent::create(ScenePtr(this), getTimeStamp()));
