@@ -504,6 +504,8 @@ void Project::removeActiveParticleSystem(ParticleSystemPtr TheParticleSystem)
 
 void Project::update(const UpdateEventPtr e)
 {
+    //Update Fmod Manager
+
     //if(_NavigatorAttached)
     //{
     //    _navigator.idle(_mousebuttons,_lastx, _lasty);
