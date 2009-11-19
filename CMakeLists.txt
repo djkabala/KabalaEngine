@@ -219,7 +219,6 @@ ADD_EXECUTABLE(KabalaEngine ${HEADERS} ${SOURCES} ${INLINES})
 TARGET_LINK_LIBRARIES(KabalaEngine 
 	optimized OSGToolbox  
 	optimized OSGInput
-	optimized OSGDynamics
 	optimized OSGParticleSystem
 	optimized OSGUserInterface
     optimized OSGLua
@@ -232,7 +231,6 @@ TARGET_LINK_LIBRARIES(KabalaEngine
 	
 	debug OSGToolboxD  
 	debug OSGInputD
-	debug OSGDynamicsD
 	debug OSGParticleSystemD
 	debug OSGUserInterfaceD
     debug OSGLuaD
