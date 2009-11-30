@@ -52,7 +52,7 @@
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
 #include "Application/KEMainApplication.h"
-
+#include <OpenSG/UserInterface/OSGFlowLayout.h>
 
 OSG_USING_NAMESPACE
 
@@ -306,6 +306,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	SceneMenu->addItem(LastItem);
 	SceneMenu->addSeparator();
 	SceneMenu->addItem(_SceneSubItem);
+	
 
 	NavigatorMenu = Menu::create();
     NavigatorMenu->addItem(FlyNavigatorItem);
@@ -390,7 +391,7 @@ void ApplicationPlayer::createDebugInterface(void)
 
     beginEditCP(CodeTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
         | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
-        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask ); //| FocusedFieldMask
         //CodeTextArea->setPreferredSize(Vec2f(300, 200));
         //CodeTextArea->setMinSize(Vec2f(300, 100));
         //CodeTextArea->setTextColor(Color4f(0.0, 0.0, 0.0, 1.0));
@@ -398,6 +399,7 @@ void ApplicationPlayer::createDebugInterface(void)
         //CodeTextArea->setSelectionTextColor(Color4f(1.0, 1.0, 1.0, 1.0));
         // Determine the font and initial text
         CodeTextArea->setText("");
+		//setFocused(true);
 //        CodeTextArea->setFont(ExampleFont);
         // This will select the "a" from above
         //CodeTextArea->setSelectionStart(2);
@@ -408,16 +410,16 @@ void ApplicationPlayer::createDebugInterface(void)
     endEditCP(CodeTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
         | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
         | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
-        
+	
+	
     // Create a ScrollPanel
     TabContentA = ScrollPanel::create();
     beginEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
         TabContentA->setPreferredSize(Vec2f(300,1200));
         TabContentA->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    endEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+		endEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
     // Add the CodeTextArea to the ScrollPanel so it is displayed
 	TabContentA->setViewComponent(CodeTextArea);
-
 	// Create an ErrorTextArea	
 	ErrorTextArea = osg::TextArea::create();
 
@@ -496,9 +498,9 @@ void ApplicationPlayer::createDebugInterface(void)
         TabPanel1->setText("Lua Console");
         TabPanel1->setBorders(NullFC);
         TabPanel1->setBackgrounds(NullFC);
-    endEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	endEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
     
-    beginEditCP(TabPanel2, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	beginEditCP(TabPanel2, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
         TabPanel2->setText("Error");
         TabPanel2->setBorders(NullFC);
         TabPanel2->setBackgrounds(NullFC);
@@ -526,19 +528,77 @@ void ApplicationPlayer::createDebugInterface(void)
 	
 	executeBtn=osg::Button::create();
 
-	beginEditCP(executeBtn,Button::TextFieldMask);
+	beginEditCP(executeBtn,Button::TextFieldMask);// | Button::AcceleratorKeyFieldMask | Button::AcceleratorModifiersFieldMask | Button::MnemonicKeyFieldMask);
 		executeBtn->setText("EXECUTE");
 		executeBtn->setPreferredSize(Vec2f(100,30));
+		//executeBtn->setAcceleratorKey(KeyEvent::KEY_X);
+        //executeBtn->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+		//executeBtn->setMnemonicKey(KeyEvent::KEY_X);
 	endEditCP(executeBtn,Button::TextFieldMask);
 
 	executeBtn->addActionListener(&_BasicListener);
 
+	ListSelectionModelPtr HistoryListSelectionModel(new DefaultListSelectionModel);
+// 52
+	HistoryListModel = DefaultListModel::create();
+
+	updateListBox();
+	
+	HistoryList = List::create();
+	beginEditCP(HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
+	    HistoryList->setPreferredSize(Vec2f(100, 100));
+	    HistoryList->setOrientation(List::VERTICAL_ORIENTATION);
+		//HistoryList->setOrientation(List::HORIZONTAL_ORIENTATION);
+		HistoryList->setModel(HistoryListModel);
+	endEditCP(HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
+
+	//HistoryList.setMode(DefaultListSelectionModel::SINGLE_SELECTION);
+
+	HistoryList->setSelectionModel(HistoryListSelectionModel);
+
+	HistoryScrollPanel = ScrollPanel::create();
+	beginEditCP(HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+		HistoryScrollPanel->setPreferredSize(Vec2f(100,100));
+		HistoryScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+		//HistoryScrollPanel->setVerticalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+	endEditCP(HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+	HistoryScrollPanel->setViewComponent(HistoryList);
+	
+	historyLabel = osg::Label::create();
+	historyLabel2 = osg::Label::create();
+
+
+	// set the fields of the labels
+
+	beginEditCP(historyLabel, Label::TextFieldMask);
+        historyLabel->setText("History");
+   	endEditCP(historyLabel, Label::TextFieldMask);
+    beginEditCP(historyLabel2, Label::TextFieldMask);
+        historyLabel2->setText("History2");
+   	endEditCP(historyLabel2, Label::TextFieldMask);
+
 	// Creating a panel for adding the tabpanel to it and setting springlayout as the layout
 	SplitPanelPanel = osg::Panel::create();
+	SplitPanelPaneltopleft = osg::Panel::create();
     
 	PanelFlowLayout = osg::SpringLayout::create();
+	PanelFlowLayout2= osg::FlowLayout::create();
+    
+	beginEditCP(PanelFlowLayout2, FlowLayout::HorizontalGapFieldMask | FlowLayout::VerticalGapFieldMask | FlowLayout::OrientationFieldMask | FlowLayout::MajorAxisAlignmentFieldMask | FlowLayout::MinorAxisAlignmentFieldMask);
+        PanelFlowLayout2->setHorizontalGap(3.0f);
+        PanelFlowLayout2->setVerticalGap(3.0f);
+		PanelFlowLayout2->setOrientation(FlowLayout::VERTICAL_ORIENTATION);
+        PanelFlowLayout2->setMajorAxisAlignment(0.5f);
+        PanelFlowLayout2->setMinorAxisAlignment(1.0f);
+    endEditCP(PanelFlowLayout2, FlowLayout::HorizontalGapFieldMask | FlowLayout::VerticalGapFieldMask | FlowLayout::OrientationFieldMask | FlowLayout::MajorAxisAlignmentFieldMask | FlowLayout::MinorAxisAlignmentFieldMask);
+    
 
-	int SPACE_FOR_BUTTON = 400;
+
+	int SPACE_FOR_BUTTON = 200;
+
+	beginEditCP(PanelFlowLayout2);
+        // NOTHING : )
+    endEditCP(PanelFlowLayout2); 
 
     // OverlayLayout has no options to edit!
     beginEditCP(PanelFlowLayout);
@@ -550,7 +610,17 @@ void ApplicationPlayer::createDebugInterface(void)
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, InfoTabPanel, -1*SPACE_FOR_BUTTON, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, SplitPanelPanel);  
 
-	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, executeBtn, 15, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, historyLabel, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, historyLabel, 25, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel); 
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, historyLabel, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, historyLabel, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
+
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, HistoryScrollPanel, 5, SpringLayoutConstraints::SOUTH_EDGE, historyLabel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, HistoryScrollPanel, -5, SpringLayoutConstraints::NORTH_EDGE, executeBtn); 
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, HistoryScrollPanel, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, HistoryScrollPanel, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
+
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, executeBtn, 15, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, SplitPanelPanel);  
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, executeBtn, -15, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPanel);
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, executeBtn, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  
     PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, executeBtn, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
@@ -558,28 +628,82 @@ void ApplicationPlayer::createDebugInterface(void)
 	
 	beginEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 		SplitPanelPanel->getChildren().push_back(InfoTabPanel);
+		SplitPanelPanel->getChildren().push_back(historyLabel);
+		SplitPanelPanel->getChildren().push_back(HistoryScrollPanel);		
 		SplitPanelPanel->getChildren().push_back(executeBtn);
         SplitPanelPanel->setLayout(PanelFlowLayout);
-        SplitPanelPanel->setLayout(PanelFlowLayout);
+        //SplitPanelPanel->setLayout(PanelFlowLayout);
     endEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+
+	// SplitPanelPaneltopleft panel elements creation
+	ComboBoxModel = DefaultMutableComboBoxModel::create();
+	ComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
+	ComboBoxModel->addElement(boost::any(std::string("Lua Graph")));
+	ComboBoxPtr ComboBox = ComboBox::create();
+	beginEditCP(ComboBox, ComboBox::ModelFieldMask | ComboBox::MinSizeFieldMask  | ComboBox::EditableFieldMask);
+		ComboBox->setMinSize(Vec2f(100.0,20));
+		ComboBox->setEditable(false);
+		ComboBox->setModel(ComboBoxModel);
+	endEditCP(ComboBox, ComboBox::ModelFieldMask);
+	
+	// Determine where the ComboBox starts
+	ComboBox->setSelectedIndex(0);
+
+
+	beginEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+		//SplitPanelPaneltopleft->getChildren().push_back(historyLabel2);
+		SplitPanelPaneltopleft->getChildren().push_back(ComboBox);
+		SplitPanelPaneltopleft->setLayout(PanelFlowLayout2);
+    endEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 	/*************************************************** END Tab Panel creation *******************************************************************/
 	/*************************************************** SplitPanel creation **********************************************************************/
+
+	SplitPanelConstraints2 = osg::BorderLayoutConstraints::create();
+	
+	beginEditCP(SplitPanelConstraints2, BorderLayoutConstraints::RegionFieldMask);
+        SplitPanelConstraints2->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    endEditCP(SplitPanelConstraints2, BorderLayoutConstraints::RegionFieldMask);
+
+	TopHalfSplitPanel = osg::SplitPanel::create();
+
+	beginEditCP(TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+        TopHalfSplitPanel->setConstraints(SplitPanelConstraints2);
+        TopHalfSplitPanel->setMinComponent(SplitPanelPaneltopleft);
+		//TopHalfSplitPanel->setMinComponent(SplitPanelPanel);
+        TopHalfSplitPanel->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
+        TopHalfSplitPanel->setDividerPosition(.25); 
+        // location from the left/top
+        TopHalfSplitPanel->setDividerSize(1);
+        TopHalfSplitPanel->setExpandable(true);
+        TopHalfSplitPanel->setMaxDividerPosition(.25);
+        TopHalfSplitPanel->setMinDividerPosition(.15);
+    endEditCP(TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
 	
 	// Creation of the splitpanel ,the only component of which is the SplitPanelPanel created previously
+/*	SplitPanelPanel2 = osg::Panel::create();
+
+	beginEditCP(SplitPanelPanel2, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+		SplitPanelPanel2->getChildren().push_back(TopHalfSplitPanel);
+		SplitPanelPanel2->setLayout(PanelFlowLayout2);
+        //SplitPanelPanel2->setLayout(PanelFlowLayout);
+    endEditCP(SplitPanelPanel2, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+*/
 	SplitPanelConstraints = osg::BorderLayoutConstraints::create();
 
 	beginEditCP(SplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
         SplitPanelConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
     endEditCP(SplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
     
-
 	SplitPanel = osg::SplitPanel::create();
 
 	beginEditCP(SplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
         SplitPanel->setConstraints(SplitPanelConstraints);
         SplitPanel->setMaxComponent(SplitPanelPanel);
+		SplitPanel->setMinComponent(TopHalfSplitPanel);
         SplitPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
         SplitPanel->setDividerPosition(.75); 
         // location from the left/top
@@ -619,8 +743,10 @@ void ApplicationPlayer::createDebugInterface(void)
 	   MainInternalWindow->setResizable(false);
     endEditCP(MainInternalWindow, InternalWindow::ChildrenFieldMask | InternalWindow::MenuBarFieldMask | InternalWindow::LayoutFieldMask | InternalWindow::BackgroundsFieldMask | InternalWindow::AlignmentInDrawingSurfaceFieldMask | InternalWindow::ScalingInDrawingSurfaceFieldMask | InternalWindow::DrawTitlebarFieldMask | InternalWindow::ResizableFieldMask);
 
-	/*************************************************** END MainInternalWindow creation*************************************************************/
+	MainInternalWindow->setFocusedComponent(CodeTextArea);
 
+	/*************************************************** END MainInternalWindow creation*************************************************************/
+	
 	
 	// Create the DrawingSurface Object
 	DebuggerDrawingSurface = UIDrawingSurface::create();
@@ -796,6 +922,8 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	if(e->getSource() == executeBtn)
 	{
 		LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
+		list_of_commands.push_back(std::string(CodeTextArea->getText()));
+		updateListBox();
 	}
 	else if(e->getSource() == ResetItem)
 	{
@@ -915,7 +1043,7 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
     if(_IsDebugActive)
     {
 
-
+	
         if(isNumericKey(static_cast<KeyEvent::Key>(e->getKey())) && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
         {
             //Switch To scene #
@@ -927,6 +1055,21 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
                 MainApplication::the()->getProject()->setActiveScene(*SearchItor);
             }
         }
+		// shortcut to execute Lua code
+		if(e->getKey() == KeyEvent::KEY_X && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+		{
+			LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
+			list_of_commands.push_back(std::string(CodeTextArea->getText()));
+			updateListBox();
+			
+		}
+		if(e->getKey() == KeyEvent::KEY_C && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+		{
+			MainInternalWindow->setFocusedComponent(CodeTextArea);
+			InfoTabPanel->setSelectedIndex(0);
+
+		}
+
         //Pause Active Updates
         //else if(e->getKey() == KeyEvent::KEY_SPACE)
         //{
@@ -1308,5 +1451,18 @@ void ApplicationPlayer::LuaErrorListener::error(const LuaErrorEventPtr e)
         _ApplicationPlayer->StackTraceTextArea->clear();
         _ApplicationPlayer->StackTraceTextArea->write(ss.str());
     }
+}
+
+void ApplicationPlayer::updateListBox(void)
+{
+	// clear off 
+	HistoryListModel->clear();
+	
+	for(int i=list_of_commands.size()-1;i>=0;i--)
+	{
+		HistoryListModel->pushBack(boost::any(list_of_commands[i]));
+		//std::cout<<list_of_commands[i]<<"***";
+	}
+	std::cout<<std::endl;
 }
 

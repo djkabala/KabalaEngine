@@ -90,6 +90,17 @@
 #include <OpenSG/Physics/OSGPhysicsCharacteristicsDrawable.h>
 #include <OpenSG/OSGNode.h>
 
+
+// List header files
+#include <OpenSG/UserInterface/OSGList.h>
+#include <OpenSG/UserInterface/OSGDefaultListModel.h>
+#include <OpenSG/UserInterface/OSGDefaultListSelectionModel.h>
+#include <OpenSG/UserInterface/OSGFlowLayout.h>
+
+//Combobox
+#include <OpenSG/UserInterface/OSGComboBox.h>
+#include <OpenSG/UserInterface/OSGDefaultMutableComboBoxModel.h>
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationPlayer class. See \ref 
@@ -136,6 +147,16 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	virtual void attachDebugInterface(void);
 	virtual void detachDebugInterface(void);
 	virtual void createDebugInterface(void);
+	
+	// Declare the SelectionModel up front to allow for
+	// the ActionListeners
+	ListSelectionModelPtr HistoryListSelectionModel;
+
+	// Create ListModel   
+	ListPtr HistoryList;
+	DefaultListModelPtr HistoryListModel;
+	ScrollPanelPtr HistoryScrollPanel;
+
 
   	MenuItemPtr ResetItem ;				
     MenuItemPtr ForceQuitItem ;			
@@ -146,6 +167,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     MenuItemPtr LastItem ;				
     MenuPtr _SceneSubItem ;				
 
+	std::vector<std::string> list_of_commands;
 	MenuItemPtr FlyNavigatorItem ;		
     MenuItemPtr TrackballNavigatorItem ;
     MenuItemPtr BasicItem ;				
@@ -172,17 +194,26 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	LabelPtr TabPanel1;
 	LabelPtr TabPanel2;
 	LabelPtr TabPanel3;
+	LabelPtr historyLabel;
+	LabelPtr historyLabel2;
 	ScrollPanelPtr TabContentA;
 	ScrollPanelPtr TabContentB;
 	ScrollPanelPtr TabContentC;
 	PanelPtr SplitPanelPanel;
+	//PanelPtr SplitPanelPanel2;
+	PanelPtr SplitPanelPaneltopleft;
 	SpringLayoutPtr PanelFlowLayout;
+	FlowLayoutPtr PanelFlowLayout2;
 	BorderLayoutConstraintsPtr SplitPanelConstraints;
+	BorderLayoutConstraintsPtr SplitPanelConstraints2;
 	SplitPanelPtr SplitPanel;
+	SplitPanelPtr TopHalfSplitPanel;
+	DefaultMutableComboBoxModelPtr ComboBoxModel;
+	ComboBoxPtr ComboBox;
 
-    void createGotoSceneMenuItems(ProjectPtr TheProject);
+	void createGotoSceneMenuItems(ProjectPtr TheProject);
     void updateGotoSceneMenuItems(ProjectPtr TheProject);
-
+	void updateListBox(void);
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
