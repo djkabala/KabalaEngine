@@ -582,23 +582,69 @@ void ApplicationPlayer::createDebugInterface(void)
 	SplitPanelPaneltopleft = osg::Panel::create();
     
 	PanelFlowLayout = osg::SpringLayout::create();
-	PanelFlowLayout2= osg::FlowLayout::create();
+	PanelFlowLayout2= osg::BorderLayout::create();
+
+	PanelTopLeftConstraints1 = osg::BorderLayoutConstraints::create();
+	PanelTopLeftConstraints2 = osg::BorderLayoutConstraints::create();
+
+	beginEditCP(PanelTopLeftConstraints1, BorderLayoutConstraints::RegionFieldMask);
+        PanelTopLeftConstraints1->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    endEditCP(PanelTopLeftConstraints1, BorderLayoutConstraints::RegionFieldMask);
+
+	beginEditCP(PanelTopLeftConstraints2, BorderLayoutConstraints::RegionFieldMask);
+        PanelTopLeftConstraints2->setRegion(BorderLayoutConstraints::BORDER_SOUTH);
+    endEditCP(PanelTopLeftConstraints2, BorderLayoutConstraints::RegionFieldMask);
     
-	beginEditCP(PanelFlowLayout2, FlowLayout::HorizontalGapFieldMask | FlowLayout::VerticalGapFieldMask | FlowLayout::OrientationFieldMask | FlowLayout::MajorAxisAlignmentFieldMask | FlowLayout::MinorAxisAlignmentFieldMask);
-        PanelFlowLayout2->setHorizontalGap(3.0f);
-        PanelFlowLayout2->setVerticalGap(3.0f);
-		PanelFlowLayout2->setOrientation(FlowLayout::VERTICAL_ORIENTATION);
-        PanelFlowLayout2->setMajorAxisAlignment(0.5f);
-        PanelFlowLayout2->setMinorAxisAlignment(1.0f);
-    endEditCP(PanelFlowLayout2, FlowLayout::HorizontalGapFieldMask | FlowLayout::VerticalGapFieldMask | FlowLayout::OrientationFieldMask | FlowLayout::MajorAxisAlignmentFieldMask | FlowLayout::MinorAxisAlignmentFieldMask);
-    
+	TopLeftCardLayout = osg::CardLayout::create(); 
+	TopLeftTreePanel = osg::Panel::create();
+
+	ButtonPtr ExampleButton1 = osg::Button::create();
+    ButtonPtr ExampleButton2 = osg::Button::create();
+
+	beginEditCP(ExampleButton1, Button::TextFieldMask);
+        ExampleButton1->setText("Scene Graph");
+    endEditCP(ExampleButton1, Button::TextFieldMask);
+
+	beginEditCP(ExampleButton2, Button::TextFieldMask);
+        ExampleButton2->setText("Lua Graph");
+    endEditCP(ExampleButton2, Button::TextFieldMask);
+
+	beginEditCP(TopLeftTreePanel, Panel::LayoutFieldMask | Panel::ChildrenFieldMask);
+        TopLeftTreePanel->setLayout(TopLeftCardLayout);
+        TopLeftTreePanel->getChildren().push_back(ExampleButton2);
+        TopLeftTreePanel->getChildren().push_back(ExampleButton1);
+        TopLeftTreePanel->setConstraints(PanelTopLeftConstraints1);
+    endEditCP(TopLeftTreePanel, Panel::LayoutFieldMask | Panel::ChildrenFieldMask);
+
+
+	// SplitPanelPaneltopleft panel elements creation
+	ComboBoxModel = DefaultMutableComboBoxModel::create();
+	ComboBoxModel->addElement(boost::any(std::string("Lua Graph")));
+	ComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
+	ComboBoxPtr ComboBox = ComboBox::create();
+	beginEditCP(ComboBox, ComboBox::ModelFieldMask | ComboBox::MinSizeFieldMask  | ComboBox::EditableFieldMask);
+		ComboBox->setConstraints(PanelTopLeftConstraints2);
+		ComboBox->setMinSize(Vec2f(100.0,20));
+		ComboBox->setEditable(false);
+		ComboBox->setModel(ComboBoxModel);
+	endEditCP(ComboBox, ComboBox::ModelFieldMask);
+	
+	//ComboBox->addActionListener(&_BasicListener);
+	_ComboBoxListener.set(ComboBox,TopLeftCardLayout,TopLeftTreePanel);
+	ComboBoxModel->addSelectionListener(&_ComboBoxListener);
+			
+	// Determine where the ComboBox starts
+	ComboBox->setSelectedIndex(0);
+
+
+	beginEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+		SplitPanelPaneltopleft->getChildren().push_back(TopLeftTreePanel);
+		SplitPanelPaneltopleft->getChildren().push_back(ComboBox);
+		SplitPanelPaneltopleft->setLayout(PanelFlowLayout2);
+    endEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 
 	int SPACE_FOR_BUTTON = 200;
-
-	beginEditCP(PanelFlowLayout2);
-        // NOTHING : )
-    endEditCP(PanelFlowLayout2); 
 
     // OverlayLayout has no options to edit!
     beginEditCP(PanelFlowLayout);
@@ -635,26 +681,6 @@ void ApplicationPlayer::createDebugInterface(void)
         //SplitPanelPanel->setLayout(PanelFlowLayout);
     endEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
-	// SplitPanelPaneltopleft panel elements creation
-	ComboBoxModel = DefaultMutableComboBoxModel::create();
-	ComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
-	ComboBoxModel->addElement(boost::any(std::string("Lua Graph")));
-	ComboBoxPtr ComboBox = ComboBox::create();
-	beginEditCP(ComboBox, ComboBox::ModelFieldMask | ComboBox::MinSizeFieldMask  | ComboBox::EditableFieldMask);
-		ComboBox->setMinSize(Vec2f(100.0,20));
-		ComboBox->setEditable(false);
-		ComboBox->setModel(ComboBoxModel);
-	endEditCP(ComboBox, ComboBox::ModelFieldMask);
-	
-	// Determine where the ComboBox starts
-	ComboBox->setSelectedIndex(0);
-
-
-	beginEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-		//SplitPanelPaneltopleft->getChildren().push_back(historyLabel2);
-		SplitPanelPaneltopleft->getChildren().push_back(ComboBox);
-		SplitPanelPaneltopleft->setLayout(PanelFlowLayout2);
-    endEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 	/*************************************************** END Tab Panel creation *******************************************************************/
 	/*************************************************** SplitPanel creation **********************************************************************/
@@ -1023,6 +1049,14 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	else if(e->getSource() == DrawPhysicsCharacteristicsItem)
 	{
 		toggleDrawPhysicsCharacteristics();
+	}
+	else if(e->getSource() == ComboBox)
+	{
+		std::cout<<"COMBOBOX CHANGED"<<std::endl;
+		int temp = ComboBox->getSelectedIndex();
+		if(temp == 1)TopLeftCardLayout->last(TopLeftTreePanel);
+		else TopLeftCardLayout->first(TopLeftTreePanel);
+
 	}
 	else
 	{
@@ -1397,6 +1431,8 @@ ApplicationPlayer::LuaErrorListener::LuaErrorListener(ApplicationPlayerPtr TheAp
 {
 	_ApplicationPlayer=TheApplicationPlayer;
 }
+
+
 
 void ApplicationPlayer::LuaErrorListener::error(const LuaErrorEventPtr e)
 {

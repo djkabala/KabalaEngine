@@ -101,6 +101,9 @@
 #include <OpenSG/UserInterface/OSGComboBox.h>
 #include <OpenSG/UserInterface/OSGDefaultMutableComboBoxModel.h>
 
+//cardlayout
+#include <OpenSG/UserInterface/OSGCardLayout.h>
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationPlayer class. See \ref 
@@ -203,7 +206,13 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	//PanelPtr SplitPanelPanel2;
 	PanelPtr SplitPanelPaneltopleft;
 	SpringLayoutPtr PanelFlowLayout;
-	FlowLayoutPtr PanelFlowLayout2;
+	BorderLayoutPtr PanelFlowLayout2;
+	BorderLayoutConstraintsPtr PanelTopLeftConstraints1;
+	BorderLayoutConstraintsPtr PanelTopLeftConstraints2;
+
+	CardLayoutPtr TopLeftCardLayout;
+	PanelPtr TopLeftTreePanel;
+
 	BorderLayoutConstraintsPtr SplitPanelConstraints;
 	BorderLayoutConstraintsPtr SplitPanelConstraints2;
 	SplitPanelPtr SplitPanel;
@@ -255,11 +264,37 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 		ApplicationPlayerPtr _ApplicationPlayer;
 	
 	};
-	
-	friend class BasicListener;
 
+	friend class BasicListener;
 	BasicListener _BasicListener;
 
+	class ComboBoxListener: public ComboBoxSelectionListener
+    {
+    public:
+        void selectionChanged(const ComboBoxSelectionEventPtr e)
+        {
+			int index = _ComboBox->getSelectedIndex();
+			//std::cout<<"reaced"<<index<<std::endl;
+            if(index == 1)_TopLeftCardLayout->last(_TopLeftTreePanel);
+			else _TopLeftCardLayout->first(_TopLeftTreePanel);
+		}
+		void set(ComboBoxPtr ComboBoxP,CardLayoutPtr TopLeftCardLayout,PanelPtr TopLeftTreePanel)
+        {
+        	_ComboBox = ComboBoxP;
+			_TopLeftCardLayout = TopLeftCardLayout;
+			_TopLeftTreePanel = TopLeftTreePanel;
+
+        }
+	protected:
+	         ComboBoxPtr _ComboBox;
+			 CardLayoutPtr _TopLeftCardLayout;
+			 PanelPtr _TopLeftTreePanel;
+	};
+
+	friend class ComboBoxListener;
+	ComboBoxListener _ComboBoxListener;
+	
+	
 	class GotoSceneItemListener : public ActionListener
 	{
 	public:
