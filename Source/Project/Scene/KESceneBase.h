@@ -64,6 +64,7 @@
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
 #include <Project/KEProjectFields.h> // InternalParentProject type
+#include <OpenSG/OSGViewportFields.h> // Viewports type
 #include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
 #include <OpenSG/UserInterface/OSGUIDrawingSurfaceFields.h> // UIDrawingSurfaces type
 #include <OpenSG/OSGBackgroundFields.h> // InitialBackground type
@@ -112,7 +113,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     enum
     {
         InternalParentProjectFieldId   = Inherited::NextFieldId,
-        BackgroundsFieldId             = InternalParentProjectFieldId   + 1,
+        ViewportsFieldId               = InternalParentProjectFieldId   + 1,
+        BackgroundsFieldId             = ViewportsFieldId               + 1,
         UIDrawingSurfacesFieldId       = BackgroundsFieldId             + 1,
         InitialBackgroundFieldId       = UIDrawingSurfacesFieldId       + 1,
         ForegroundsFieldId             = InitialBackgroundFieldId       + 1,
@@ -137,6 +139,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     };
 
     static const OSG::BitVector InternalParentProjectFieldMask;
+    static const OSG::BitVector ViewportsFieldMask;
     static const OSG::BitVector BackgroundsFieldMask;
     static const OSG::BitVector UIDrawingSurfacesFieldMask;
     static const OSG::BitVector InitialBackgroundFieldMask;
@@ -220,6 +223,9 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \{                                                                 */
 
 
+           MFViewportPtr       *editMFViewports      (void);
+     const MFViewportPtr       *getMFViewports      (void) const;
+
            MFBackgroundPtr     *editMFBackgrounds    (void);
      const MFBackgroundPtr     *getMFBackgrounds    (void) const;
 
@@ -288,6 +294,13 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
            PhysicsWorldPtr     &editPhysicsWorld   (void);
      const PhysicsWorldPtr     &getPhysicsWorld   (void) const;
+
+           ViewportPtr         &editViewports      (const UInt32 index);
+     const ViewportPtr         &getViewports      (const UInt32 index) const;
+#ifndef OSG_2_PREP
+           MFViewportPtr       &getViewports      (void);
+     const MFViewportPtr       &getViewports      (void) const;
+#endif
 
            BackgroundPtr       &editBackgrounds    (const UInt32 index);
      const BackgroundPtr       &getBackgrounds    (const UInt32 index) const;
@@ -439,6 +452,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \{                                                                 */
 
     SFProjectPtr        _sfInternalParentProject;
+    MFViewportPtr       _mfViewports;
     MFBackgroundPtr     _mfBackgrounds;
     MFUIDrawingSurfacePtr   _mfUIDrawingSurfaces;
     SFBackgroundPtr     _sfInitialBackground;

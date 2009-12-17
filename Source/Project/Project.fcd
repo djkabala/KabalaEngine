@@ -151,15 +151,6 @@ The Project.
 	>
 	</Field>
 	<Field
-		name="InternalActiveViewport"
-		type="ViewportPtr"
-		cardinality="single"
-		visibility="internal"
-		defaultValue="NullFC"
-		access="protected"
-	>
-	</Field>
-	<Field
 		name="ActiveAnimations"
 		type="AnimationPtr"
 		cardinality="multi"

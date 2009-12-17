@@ -2210,7 +2210,7 @@ static int _wrap_ProjectPtr_setActiveCamera(lua_State* L) {
   }
   arg2 = *argp2;
   
-  (*arg1)->setActiveCamera(arg2);
+  //(*arg1)->setActiveCamera(arg2);
   
   return SWIG_arg;
   
@@ -3465,7 +3465,7 @@ static int _wrap_Project_setActiveCamera(lua_State* L) {
   }
   arg2 = *argp2;
   
-  (arg1)->setActiveCamera(arg2);
+  //(arg1)->setActiveCamera(arg2);
   
   return SWIG_arg;
   

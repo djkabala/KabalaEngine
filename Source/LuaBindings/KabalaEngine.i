@@ -119,12 +119,6 @@ namespace osg {
         void setActiveScene(ScenePtr TheScene);
         ScenePtr getActiveScene(void) const;
     
-        //void setActiveBackground(BackgroundPtr TheBackground);
-    
-        void setActiveCamera(CameraPtr TheCamera);
-    
-        //MFForegroundPtr &getActiveForegrounds(void);
-    
         void setActiveNode(NodePtr TheNode);
         
         void addActiveAnimation(AnimationPtr TheAnimation);

@@ -23,6 +23,14 @@ The Scene.
 	>
 	</Field>
 	<Field
+		name="Viewports"
+		type="ViewportPtr"
+		cardinality="multi"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+	<Field
 		name="Backgrounds"
 		type="BackgroundPtr"
 		cardinality="multi"

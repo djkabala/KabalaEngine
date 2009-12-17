@@ -122,6 +122,20 @@ SFProjectPtr *SceneBase::editSFInternalParentProject(void)
     return &_sfInternalParentProject;
 }
 
+//! Get the Scene::_mfViewports field.
+inline
+const MFViewportPtr *SceneBase::getMFViewports(void) const
+{
+    return &_mfViewports;
+}
+
+//! Get the Scene::_mfViewports field.
+inline
+MFViewportPtr *SceneBase::editMFViewports(void)
+{
+    return &_mfViewports;
+}
+
 //! Get the Scene::_mfBackgrounds field.
 inline
 const MFBackgroundPtr *SceneBase::getMFBackgrounds(void) const
@@ -614,6 +628,36 @@ void SceneBase::setPhysicsWorld(const PhysicsWorldPtr &value)
 }
 
 
+//! Get the value of the \a index element the Scene::_mfViewports field.
+inline
+ViewportPtr &SceneBase::editViewports(const UInt32 index)
+{
+    return _mfViewports[index];
+}
+
+//! Get the value of the \a index element the Scene::_mfViewports field.
+inline
+const ViewportPtr &SceneBase::getViewports(const UInt32 index) const
+{
+    return _mfViewports[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the Scene::_mfViewports field.
+inline
+MFViewportPtr &SceneBase::getViewports(void)
+{
+    return _mfViewports;
+}
+
+//! Get the Scene::_mfViewports field.
+inline
+const MFViewportPtr &SceneBase::getViewports(void) const
+{
+    return _mfViewports;
+}
+
+#endif
 //! Get the value of the \a index element the Scene::_mfBackgrounds field.
 inline
 BackgroundPtr &SceneBase::editBackgrounds(const UInt32 index)

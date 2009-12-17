@@ -79,7 +79,6 @@
 #include <OpenSG/OSGNodeFields.h> // GlobalActiveModelNodes type
 #include <OpenSG/OSGCameraFields.h> // Cameras type
 #include <OpenSG/OSGCameraFields.h> // InternalActiveCamera type
-#include <OpenSG/OSGViewportFields.h> // InternalActiveViewport type
 #include <OpenSG/Animation/OSGAnimation.h> // ActiveAnimations type
 #include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ActiveParticleSystems type
 #include <OpenSG/Toolbox/OSGPathType.h> // LuaModule type
@@ -127,8 +126,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
         GlobalActiveModelNodesFieldId    = InternalActiveModelNodesFieldId  + 1,
         CamerasFieldId                   = GlobalActiveModelNodesFieldId    + 1,
         InternalActiveCameraFieldId      = CamerasFieldId                   + 1,
-        InternalActiveViewportFieldId    = InternalActiveCameraFieldId      + 1,
-        ActiveAnimationsFieldId          = InternalActiveViewportFieldId    + 1,
+        ActiveAnimationsFieldId          = InternalActiveCameraFieldId      + 1,
         ActiveParticleSystemsFieldId     = ActiveAnimationsFieldId          + 1,
         LuaModuleFieldId                 = ActiveParticleSystemsFieldId     + 1,
         LuaModulesDirectoryFieldId       = LuaModuleFieldId                 + 1,
@@ -152,7 +150,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     static const OSG::BitVector GlobalActiveModelNodesFieldMask;
     static const OSG::BitVector CamerasFieldMask;
     static const OSG::BitVector InternalActiveCameraFieldMask;
-    static const OSG::BitVector InternalActiveViewportFieldMask;
     static const OSG::BitVector ActiveAnimationsFieldMask;
     static const OSG::BitVector ActiveParticleSystemsFieldMask;
     static const OSG::BitVector LuaModuleFieldMask;
@@ -271,7 +268,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
 
            ScenePtr            &editInitialScene   (void);
      const ScenePtr            &getInitialScene   (void) const;
-
 
 
 
@@ -424,7 +420,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     MFNodePtr           _mfGlobalActiveModelNodes;
     MFCameraPtr         _mfCameras;
     SFCameraPtr         _sfInternalActiveCamera;
-    SFViewportPtr       _sfInternalActiveViewport;
     MFAnimationPtr      _mfActiveAnimations;
     MFParticleSystemPtr   _mfActiveParticleSystems;
     SFPath              _sfLuaModule;
@@ -461,8 +456,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
      const MFNodePtr           *getMFInternalActiveModelNodes(void) const;
            SFCameraPtr         *editSFInternalActiveCamera(void);
      const SFCameraPtr         *getSFInternalActiveCamera(void) const;
-           SFViewportPtr       *editSFInternalActiveViewport(void);
-     const SFViewportPtr       *getSFInternalActiveViewport(void) const;
            MFAnimationPtr      *editMFActiveAnimations(void);
      const MFAnimationPtr      *getMFActiveAnimations(void) const;
            MFParticleSystemPtr *editMFActiveParticleSystems(void);
@@ -474,8 +467,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
      const BackgroundPtr       &getInternalActiveBackground(void) const;
            CameraPtr           &editInternalActiveCamera(void);
      const CameraPtr           &getInternalActiveCamera(void) const;
-           ViewportPtr         &editInternalActiveViewport(void);
-     const ViewportPtr         &getInternalActiveViewport(void) const;
            ForegroundPtr       &editInternalActiveForegrounds(UInt32 index);
 #ifndef OSG_2_PREP
            MFForegroundPtr     &getInternalActiveForegrounds(void);
@@ -509,7 +500,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
      void setInternalActiveScene(const ScenePtr &value);
      void setInternalActiveBackground(const BackgroundPtr &value);
      void setInternalActiveCamera(const CameraPtr &value);
-     void setInternalActiveViewport(const ViewportPtr &value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

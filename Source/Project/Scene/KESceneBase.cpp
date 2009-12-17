@@ -63,6 +63,9 @@ OSG_BEGIN_NAMESPACE
 const OSG::BitVector  SceneBase::InternalParentProjectFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::InternalParentProjectFieldId);
 
+const OSG::BitVector  SceneBase::ViewportsFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::ViewportsFieldId);
+
 const OSG::BitVector  SceneBase::BackgroundsFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::BackgroundsFieldId);
 
@@ -136,6 +139,9 @@ const OSG::BitVector SceneBase::MTInfluenceMask =
 /*! \var ProjectPtr      SceneBase::_sfInternalParentProject
     
 */
+/*! \var ViewportPtr     SceneBase::_mfViewports
+    
+*/
 /*! \var BackgroundPtr   SceneBase::_mfBackgrounds
     
 */
@@ -206,6 +212,11 @@ FieldDescription *SceneBase::_desc[] =
                      InternalParentProjectFieldId, InternalParentProjectFieldMask,
                      false,
                      reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFInternalParentProject)),
+    new FieldDescription(MFViewportPtr::getClassType(), 
+                     "Viewports", 
+                     ViewportsFieldId, ViewportsFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFViewports)),
     new FieldDescription(MFBackgroundPtr::getClassType(), 
                      "Backgrounds", 
                      BackgroundsFieldId, BackgroundsFieldMask,
@@ -500,6 +511,7 @@ void SceneBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
+    _mfViewports.terminateShare(uiAspect, this->getContainerSize());
     _mfBackgrounds.terminateShare(uiAspect, this->getContainerSize());
     _mfUIDrawingSurfaces.terminateShare(uiAspect, this->getContainerSize());
     _mfForegrounds.terminateShare(uiAspect, this->getContainerSize());
@@ -523,6 +535,7 @@ void SceneBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 SceneBase::SceneBase(void) :
     _Producer(&getProducerType()),
     _sfInternalParentProject  (ProjectPtr(NullFC)), 
+    _mfViewports              (), 
     _mfBackgrounds            (), 
     _mfUIDrawingSurfaces      (), 
     _sfInitialBackground      (BackgroundPtr(NullFC)), 
@@ -555,6 +568,7 @@ SceneBase::SceneBase(void) :
 SceneBase::SceneBase(const SceneBase &source) :
     _Producer(&source.getProducerType()),
     _sfInternalParentProject  (source._sfInternalParentProject  ), 
+    _mfViewports              (source._mfViewports              ), 
     _mfBackgrounds            (source._mfBackgrounds            ), 
     _mfUIDrawingSurfaces      (source._mfUIDrawingSurfaces      ), 
     _sfInitialBackground      (source._sfInitialBackground      ), 
@@ -595,6 +609,11 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
         returnValue += _sfInternalParentProject.getBinSize();
+    }
+
+    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
+    {
+        returnValue += _mfViewports.getBinSize();
     }
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
@@ -716,6 +735,11 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
         _sfInternalParentProject.copyToBin(pMem);
     }
 
+    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
+    {
+        _mfViewports.copyToBin(pMem);
+    }
+
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
     {
         _mfBackgrounds.copyToBin(pMem);
@@ -832,6 +856,11 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
         _sfInternalParentProject.copyFromBin(pMem);
+    }
+
+    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
+    {
+        _mfViewports.copyFromBin(pMem);
     }
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
@@ -952,6 +981,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
         _sfInternalParentProject.syncWith(pOther->_sfInternalParentProject);
 
+    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
+        _mfViewports.syncWith(pOther->_mfViewports);
+
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
         _mfBackgrounds.syncWith(pOther->_mfBackgrounds);
 
@@ -1056,6 +1088,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
         _sfPhysicsWorld.syncWith(pOther->_sfPhysicsWorld);
 
 
+    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
+        _mfViewports.syncWith(pOther->_mfViewports, sInfo);
+
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
         _mfBackgrounds.syncWith(pOther->_mfBackgrounds, sInfo);
 
@@ -1097,6 +1132,9 @@ void SceneBase::execBeginEditImpl (const BitVector &whichField,
                                                  UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+
+    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
+        _mfViewports.beginEdit(uiAspect, uiContainerSize);
 
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
         _mfBackgrounds.beginEdit(uiAspect, uiContainerSize);

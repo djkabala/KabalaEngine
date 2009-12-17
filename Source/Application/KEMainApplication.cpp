@@ -457,6 +457,16 @@ ProjectPtr MainApplication::createDefaultProject(void)
         DefaultSceneBackground->setColor(Color3f(0.0f,1.0f,0.0f));
     endEditCP(DefaultSceneBackground, SolidBackground::ColorFieldMask);
 
+    //Viewport
+    ViewportPtr DefaultSceneViewport = Viewport::create();
+    setName(DefaultSceneViewport, "Viewport" );
+    beginEditCP(DefaultSceneViewport);
+        DefaultSceneViewport->setSize(0.0,0.0,1.0,1.0);
+        DefaultSceneViewport->setCamera(DefaultSceneCamera);
+        DefaultSceneViewport->setBackground(DefaultSceneBackground);
+        DefaultSceneViewport->setRoot(DefaultSceneNode);
+    endEditCP(DefaultSceneViewport);
+
 
 	ScenePtr TheDefaultScene = Scene::create();
     beginEditCP(TheDefaultScene);
@@ -468,6 +478,8 @@ ProjectPtr MainApplication::createDefaultProject(void)
 
         TheDefaultScene->getModelNodes().push_back(DefaultSceneNode);
         TheDefaultScene->getInitialModelNodes().push_back(DefaultSceneNode);
+
+        TheDefaultScene->getViewports().push_back(DefaultSceneViewport);
     endEditCP(TheDefaultScene);
 
 	beginEditCP(TheDefaultProject, Project::ScenesFieldMask | Project::InitialSceneFieldMask);

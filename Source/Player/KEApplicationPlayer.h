@@ -45,6 +45,7 @@
 
 #include "Project/KEProjectFields.h"
 #include "Project/Scene/KESceneFields.h"
+#include <OpenSG/OSGViewport.h>
 #include <OpenSG/Toolbox/OSGEventListener.h>
 
 #include <OpenSG/Input/OSGKeyAdapter.h>
@@ -219,6 +220,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	SplitPanelPtr TopHalfSplitPanel;
 	DefaultMutableComboBoxModelPtr ComboBoxModel;
 	ComboBoxPtr ComboBox;
+    
+    ViewportPtr _DebugViewport;
+    ViewportPtr createDebugViewport(void);
 
 	void createGotoSceneMenuItems(ProjectPtr TheProject);
     void updateGotoSceneMenuItems(ProjectPtr TheProject);

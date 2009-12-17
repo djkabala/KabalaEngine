@@ -95,12 +95,6 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 	void setActiveScene(ScenePtr TheScene);
 	ScenePtr getActiveScene(void) const;
 
-	void setActiveBackground(BackgroundPtr TheBackground);
-
-	void setActiveCamera(CameraPtr TheCamera);
-
-	MFForegroundPtr &getActiveForegrounds(void);
-
 	void setActiveNode(NodePtr TheNode);
     NodePtr getActiveNode(void);
     
@@ -135,6 +129,12 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void blockInput(bool block);
     bool isInputBlocked(void) const;
 
+    void addViewport(const ViewportPtr& port);
+    void insertViewport(const ViewportPtr& port, UInt32 index);
+    void removeViewport(const ViewportPtr& port);
+    void clearViewports(void);
+    UInt32 numViewports(void) const;
+    ViewportPtr getViewport(UInt32 index) const;
     /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -230,7 +230,6 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
 
     void updateNavigatorSceneAttachment(void);
     void setCameraBeaconMatrix(const Matrix& m);
-    ViewportPtr createDefaultViewport(void) const;
 
     void produceSceneChanged(const ProjectEventPtr e);
     void produceProjectStarted(const ProjectEventPtr e);

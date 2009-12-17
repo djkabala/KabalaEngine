@@ -169,7 +169,7 @@ void Project::start(void)
 {
     //Temporarily validate all openGL Objects
     //SLOG << "Starting to validate all OpenGL Objects." << std::endl;
-    MainApplication::the()->getMainWindowEventProducer()->getWindow()->validateAllGLObjects();
+    //MainApplication::the()->getMainWindowEventProducer()->getWindow()->validateAllGLObjects();
     //SLOG << "Finished validating all OpenGL Objects." << std::endl;
 
     //Attach the listeners
@@ -188,33 +188,12 @@ void Project::start(void)
         _AnimationAdvancer = ElapsedTimeAnimationAdvancer::create();
     }
 
-	//If needed create a default Viewport
-	if(getInternalActiveViewport() == NullFC)
-	{
-		beginEditCP(ProjectPtr(this), InternalActiveViewportFieldMask);
-			setInternalActiveViewport(createDefaultViewport());
-		endEditCP(ProjectPtr(this), InternalActiveViewportFieldMask);
-	}
-
 	//If I have an initial Scene then enter it
 	if(getInitialScene() != NullFC)
 	{
 		setActiveScene(getInitialScene());
 	}
 
-	//Attach the viewport to the window
-    if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC && 
-       MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
-	{
-		beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-			MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(getInternalActiveViewport());
-		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-	}
-
-
-    //Hide and dettach Cursor
-    //MainApplication::the()->getMainWindowEventProducer()->setShowCursor(false);
-    //MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
     setDefaults();
 
     loadScripts();
@@ -269,12 +248,7 @@ void Project::stop(void)
     produceProjectStopping(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 
 	setActiveScene(NullFC);
-	if(MainApplication::the()->getMainWindowEventProducer()->getWindow() != NullFC && MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size() == 0)
-	{
-		beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-			MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(0);
-		endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(), Window::PortFieldMask);
-	}
+
     //Detach the listeners
     MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_ProjectUpdateListener);
     MainApplication::the()->getMainWindowEventProducer()->removeMouseListener(&_ProjectUpdateListener);
@@ -364,66 +338,14 @@ void Project::setActiveScene(ScenePtr TheScene)
 	}
 }
 
-ViewportPtr Project::createDefaultViewport(void) const
-{
-	ViewportPtr DefaultViewport = Viewport::create();
-	beginEditCP(DefaultViewport);
-		DefaultViewport->setCamera                  (NullFC);
-		DefaultViewport->setRoot                    (NullFC);
-		DefaultViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
-		DefaultViewport->setBackground              (NullFC);
-	endEditCP(DefaultViewport);
-    osg::setName(DefaultViewport,"__KABALA_ENGINE_PROJECT_VIEWPORT");
-
-	return DefaultViewport;
-}
-
-
-void Project::setActiveBackground(BackgroundPtr TheBackground)
-{
-	beginEditCP(getInternalActiveViewport(), Viewport::BackgroundFieldMask);
-		getInternalActiveViewport()->setBackground(TheBackground);
-	endEditCP(getInternalActiveViewport(), Viewport::BackgroundFieldMask);
-}
-
-void Project::setActiveCamera(CameraPtr TheCamera)
-{
-	if(TheCamera->getType().isDerivedFrom(PerspectiveCamera::getClassType()))
-	{
-		//Vec2f WindowSize(MainApplication::the()->getMainWindowEventProducer()->getSize());
-		beginEditCP(TheCamera, PerspectiveCamera::AspectFieldMask);
-			//PerspectiveCamera::Ptr::dcast(TheCamera)->setAspect(WindowSize.y()/WindowSize.x());
-			PerspectiveCamera::Ptr::dcast(TheCamera)->setAspect(1.0);
-		endEditCP(TheCamera, PerspectiveCamera::AspectFieldMask);
-	}
-	if(TheCamera->getType().isDerivedFrom(OrthographicCamera::getClassType()))
-	{
-		//Vec2f WindowSize(MainApplication::the()->getMainWindowEventProducer()->getSize());
-		beginEditCP(TheCamera, OrthographicCamera::AspectFieldMask);
-			//OrthographicCamera::Ptr::dcast(TheCamera)->setAspect(WindowSize.y()/WindowSize.x());
-			OrthographicCamera::Ptr::dcast(TheCamera)->setAspect(1.0);
-		endEditCP(TheCamera, OrthographicCamera::AspectFieldMask);
-	}
-	beginEditCP(getInternalActiveViewport(), Viewport::CameraFieldMask);
-		getInternalActiveViewport()->setCamera(TheCamera);
-	endEditCP(getInternalActiveViewport(), Viewport::CameraFieldMask);
-}
-
 void Project::setActiveNode(NodePtr TheNode)
 {
-	beginEditCP(getInternalActiveViewport(), Viewport::RootFieldMask);
-		getInternalActiveViewport()->setRoot(TheNode);
-	endEditCP(getInternalActiveViewport(), Viewport::RootFieldMask);
+    //TODO: Implement
 }
 
 NodePtr Project::getActiveNode(void)
 {
-    return getInternalActiveViewport()->getRoot();
-}
-
-MFForegroundPtr &Project::getActiveForegrounds(void)
-{
-	return getInternalActiveViewport()->getForegrounds();
+    return NullFC;
 }
 
 void Project::attachNames(void)
@@ -521,67 +443,67 @@ void Project::update(const UpdateEventPtr e)
         }
     }
 
-    //Translation
-    Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-    Vec3f Local_x(1.0,0.0,0.0),Local_z(0.0,0.0,1.0);
-    m.multMatrixVec(Local_x);
-    m.multMatrixVec(Local_z);
+    ////Translation
+    //Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
+    //Vec3f Local_x(1.0,0.0,0.0),Local_z(0.0,0.0,1.0);
+    //m.multMatrixVec(Local_x);
+    //m.multMatrixVec(Local_z);
 
-    Vec3f Direction(0.0,0.0,0.0);
-    float TranlateSpeed;
-    if(_IsShiftKeyDown)
-    {
-        TranlateSpeed = _ScaledMotionFactor * _FastMotionFactor;
-    }
-    else
-    {
-        TranlateSpeed = _ScaledMotionFactor * _MotionFactor;
-    }
+    //Vec3f Direction(0.0,0.0,0.0);
+    //float TranlateSpeed;
+    //if(_IsShiftKeyDown)
+    //{
+        //TranlateSpeed = _ScaledMotionFactor * _FastMotionFactor;
+    //}
+    //else
+    //{
+        //TranlateSpeed = _ScaledMotionFactor * _MotionFactor;
+    //}
 
-    if(_IsAKeyDown)
-    {
-        Direction -= Local_x;
-    }
-    if(_IsDKeyDown)
-    {
-        Direction += Local_x;
-    }
-    if(_IsSKeyDown)
-    {
-        Direction += Local_z;
-    }
-    if(_IsWKeyDown)
-    {
-        Direction -= Local_z;
-    }
+    //if(_IsAKeyDown)
+    //{
+        //Direction -= Local_x;
+    //}
+    //if(_IsDKeyDown)
+    //{
+        //Direction += Local_x;
+    //}
+    //if(_IsSKeyDown)
+    //{
+        //Direction += Local_z;
+    //}
+    //if(_IsWKeyDown)
+    //{
+        //Direction -= Local_z;
+    //}
 
-    if(Direction != Vec2f(0.0,0.0,0.0))
-    {
-        Direction.normalize();
-        Matrix t;
-        t.setTranslate(TranlateSpeed*Direction*e->getElapsedTime());
-        m.multLeft(t);
-        setCameraBeaconMatrix(m);
-    }
+    //if(Direction != Vec2f(0.0,0.0,0.0))
+    //{
+        //Direction.normalize();
+        //Matrix t;
+        //t.setTranslate(TranlateSpeed*Direction*e->getElapsedTime());
+        //m.multLeft(t);
+        //setCameraBeaconMatrix(m);
+    //}
 }
 
 void Project::updateNavigatorSceneAttachment(void)
 {
-    getInternalActiveViewport()->getRoot()->updateVolume();
+    //getInternalActiveViewport()->getRoot()->updateVolume();
 
-    Vec3f min,max;
-    getInternalActiveViewport()->getRoot()->getVolume().getBounds( min, max );
-    Vec3f d = max - min;
+    //Vec3f min,max;
+    //getInternalActiveViewport()->getRoot()->getVolume().getBounds( min, max );
+    //Vec3f d = max - min;
 
-    if(d.length() < Eps) // Nothing loaded? Use a unity box
-    {
-        min.setValues(-1.f,-1.f,-1.f);
-        max.setValues( 1.f, 1.f, 1.f);
-        d = max - min;
-    }
+    //if(d.length() < Eps) // Nothing loaded? Use a unity box
+    //{
+        //min.setValues(-1.f,-1.f,-1.f);
+        //max.setValues( 1.f, 1.f, 1.f);
+        //d = max - min;
+    //}
 
-    // adjust the translation factors so that motions are sort of scaled
-    _ScaledMotionFactor = (d[0] + d[1] + d[2]) / 1000.f;
+    //// adjust the translation factors so that motions are sort of scaled
+    //_ScaledMotionFactor = (d[0] + d[1] + d[2]) / 1000.f;
 }
 
 void Project::attachFlyNavigation(void)
@@ -682,13 +604,13 @@ void Project::keyReleased(const KeyEventPtr e)
 
 void Project::setCameraBeaconMatrix(const Matrix& m)
 {
-    if(getInternalActiveViewport()->getCamera()->getBeacon()->getCore()->getType().isDerivedFrom(Transform::getClassType()))
-    {
-        TransformPtr TransCore = Transform::Ptr::dcast(getInternalActiveViewport()->getCamera()->getBeacon()->getCore());
-        beginEditCP(TransCore, Transform::MatrixFieldMask);
-            TransCore->setMatrix(m);
-        endEditCP(TransCore, Transform::MatrixFieldMask);
-    }
+    //if(getInternalActiveViewport()->getCamera()->getBeacon()->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+    //{
+        //TransformPtr TransCore = Transform::Ptr::dcast(getInternalActiveViewport()->getCamera()->getBeacon()->getCore());
+        //beginEditCP(TransCore, Transform::MatrixFieldMask);
+            //TransCore->setMatrix(m);
+        //endEditCP(TransCore, Transform::MatrixFieldMask);
+    //}
 }
 
 void Project::mouseMoved(const MouseEventPtr e)
@@ -697,24 +619,24 @@ void Project::mouseMoved(const MouseEventPtr e)
 
 void Project::mouseDragged(const MouseEventPtr e)
 {
-	if(_NavigatorAttached && e->getButton() == MouseEvent::BUTTON1)
-	{
-			Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-		//Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
-		//m.multMatrixVec(Local_x);
-		//m.multMatrixVec(Local_y);
+	//if(_NavigatorAttached && e->getButton() == MouseEvent::BUTTON1)
+	//{
+			//Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
+		////Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
+		////m.multMatrixVec(Local_x);
+		////m.multMatrixVec(Local_y);
 
-		Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e->getDelta().x() * _YRotMotionFactor);
-		Matrix YRot_Mat;
-		YRot_Mat.setRotate(YRot_Quat);
-		Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0),-e->getDelta().y() * _XRotMotionFactor);
-		Matrix XRot_Mat;
-		XRot_Mat.setRotate(XRot_Quat);
+		//Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e->getDelta().x() * _YRotMotionFactor);
+		//Matrix YRot_Mat;
+		//YRot_Mat.setRotate(YRot_Quat);
+		//Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0),-e->getDelta().y() * _XRotMotionFactor);
+		//Matrix XRot_Mat;
+		//XRot_Mat.setRotate(XRot_Quat);
 
-		m.mult(YRot_Mat);
-		//m.mult(XRot_Mat);
-	    setCameraBeaconMatrix(m);
-	}
+		//m.mult(YRot_Mat);
+		////m.mult(XRot_Mat);
+		//setCameraBeaconMatrix(m);
+	//}
 }
 
 void Project::setDefaults(void)

@@ -37,8 +37,47 @@
 //---------------------------------------------------------------------------
 
 #include <OpenSG/OSGConfig.h>
+#include "Application/KEMainApplication.h"
 
 OSG_BEGIN_NAMESPACE
+
+
+inline
+void Project::addViewport(const ViewportPtr& port)
+{
+    MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(port);
+}
+
+inline
+void Project::insertViewport(const ViewportPtr& port, UInt32 index)
+{
+    MainApplication::the()->getMainWindowEventProducer()->getWindow()->insertPort(index, port);
+}
+
+inline
+void Project::removeViewport(const ViewportPtr& port)
+{
+    MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(port);
+}
+
+inline
+void Project::clearViewports(void)
+{
+    MainApplication::the()->getMainWindowEventProducer()->getWindow()->clearPorts();
+}
+
+inline
+UInt32 Project::numViewports(void) const
+{
+    MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size();
+}
+
+inline
+ViewportPtr Project::getViewport(UInt32 index) const
+{
+    MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(index);
+}
+
 
 inline
 void Project::blockInput(bool block)

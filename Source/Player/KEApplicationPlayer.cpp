@@ -1200,24 +1200,24 @@ void ApplicationPlayer::toggleFrustumCulling(void)
 
 void ApplicationPlayer::toggleStatForeground(StatisticsForegroundPtr TheForeground)
 {
-    MFForegroundPtr::iterator SearchItor(MainApplication::the()->getProject()->getActiveForegrounds().find(TheForeground));
-    if( SearchItor != MainApplication::the()->getProject()->getActiveForegrounds().end())
-    {
-        //If the Stat foreground is present then switch it off
-        beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-    }
-    else
-    {
-        //If not present then switch all other stat foregrounds off
-        hideAllStatForegrounds();
-        //and switch it on
-        beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-            MainApplication::the()->getProject()->getActiveForegrounds().push_back(TheForeground);
-        endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-        MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->setStatistics(&TheForeground->getCollector());
-    }
+    //MFForegroundPtr::iterator SearchItor(MainApplication::the()->getProject()->getActiveForegrounds().find(TheForeground));
+    //if( SearchItor != MainApplication::the()->getProject()->getActiveForegrounds().end())
+    //{
+        ////If the Stat foreground is present then switch it off
+        //beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        //endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+    //}
+    //else
+    //{
+        ////If not present then switch all other stat foregrounds off
+        //hideAllStatForegrounds();
+        ////and switch it on
+        //beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+            //MainApplication::the()->getProject()->getActiveForegrounds().push_back(TheForeground);
+        //endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+        //MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->setStatistics(&TheForeground->getCollector());
+    //}
 }
 
 void ApplicationPlayer::hideAllStatForegrounds(void)
@@ -1225,33 +1225,33 @@ void ApplicationPlayer::hideAllStatForegrounds(void)
     
     MFForegroundPtr::iterator SearchItor;
 
-    beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-        //Hide Basic Stat Foreground if present
-        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugBasicStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        {
-            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        }
-        //Hide Render Stat Foreground if present
-        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugRenderStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        {
-            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        }
-        //Hide Physics Stat Foreground if present
-        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugPhysicsStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        {
-            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        }
-        //Hide Particle System Stat Foreground if present
-        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugParticleSystemStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        {
-            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        }
-        //Hide Animation Stat Foreground if present
-        if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugAnimationStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        {
-            MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        }
-    endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+    //beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+        ////Hide Basic Stat Foreground if present
+        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugBasicStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        //{
+            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        //}
+        ////Hide Render Stat Foreground if present
+        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugRenderStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        //{
+            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        //}
+        ////Hide Physics Stat Foreground if present
+        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugPhysicsStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        //{
+            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        //}
+        ////Hide Particle System Stat Foreground if present
+        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugParticleSystemStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        //{
+            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        //}
+        ////Hide Animation Stat Foreground if present
+        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugAnimationStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
+        //{
+            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
+        //}
+    //endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
 }
 
 void ApplicationPlayer::initDebugStatForegrounds(void)
@@ -1335,6 +1335,53 @@ void ApplicationPlayer::updateDebugSceneChange(void)
     updateGotoSceneMenuItems(MainApplication::the()->getProject());
 
 	MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().push_back(DebuggerUIForeground);
+}
+
+ViewportPtr ApplicationPlayer::createDebugViewport(void)
+{
+    //Camera Transformation Node
+	Matrix CameraTransformMatrix;
+	CameraTransformMatrix.setTranslate(0.0f,0.0f, 5.0f);
+	TransformPtr CameraBeaconTransform = Transform::create();
+	beginEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
+		CameraBeaconTransform->setMatrix(CameraTransformMatrix);
+	endEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
+
+	NodePtr CameraBeaconNode = Node::create();
+	beginEditCP(CameraBeaconNode, Node::CoreFieldMask);
+		CameraBeaconNode->setCore(CameraBeaconTransform);
+	endEditCP(CameraBeaconNode, Node::CoreFieldMask);
+
+	//Camera
+    PerspectiveCameraPtr DefaultCamera = PerspectiveCamera::create();
+    beginEditCP(DefaultCamera);
+        DefaultCamera->setBeacon(CameraBeaconNode);
+        DefaultCamera->setFov   (deg2rad(60.f));
+        DefaultCamera->setNear  (0.1f);
+        DefaultCamera->setFar   (10000.f);
+    endEditCP(DefaultCamera);
+
+    // Make Main Scene Node and add the Torus
+    NodePtr DefaultRootNode = osg::Node::create();
+    beginEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+        DefaultRootNode->setCore(osg::Group::create());
+        DefaultRootNode->addChild(CameraBeaconNode);
+        DefaultRootNode->addChild(CameraNode);
+    endEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+
+	//Background
+	PassiveBackgroundPtr DefaultBackground = PassiveBackground::create();
+
+    ViewportPtr DebugViewport = Viewport::create();
+    beginEditCP(DebugViewport);
+        DebugViewport->setCamera                  (DefaultCamera);
+        DebugViewport->setRoot                    (DefaultRootNode);
+        DebugViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
+        DebugViewport->setBackground              (DefaultBackground);
+        //DebugViewport->getForegrounds().push_back    (UserInterfaceForeground);
+    endEditCP(DefaultViewport);
+
+    return DefaultViewport;
 }
 
 /*-------------------------------------------------------------------------*\

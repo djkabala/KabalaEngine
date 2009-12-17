@@ -48,6 +48,7 @@
 #include "Project/KEProject.h"
 #include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGNode.h>
+#include <OpenSG/OSGViewport.h>
 #include <OpenSG/UserInterface/OSGUIDrawingSurface.h>
 #include "Application/KEMainApplication.h"
 #include <OpenSG/Lua/OSGLuaManager.h>
@@ -107,23 +108,8 @@ void Scene::enter(void)
 		}
 	endEditCP(getRoot(), Node::ChildrenFieldMask);
 
-	//Background
-	getInternalParentProject()->setActiveBackground(getInitialBackground());
-
-	//Camera
-	getInternalParentProject()->setActiveCamera(getInitialCamera());
-    
 	//Root Node
 	getInternalParentProject()->setActiveNode(getRoot());
-
-	//Foregrounds
-	beginEditCP(getInternalParentProject(), Project::InternalActiveForegroundsFieldMask);
-		getInternalParentProject()->getActiveForegrounds().clear();
-		for(::osg::UInt32 i(0) ; i<getInitialForegrounds().size() ; ++i)
-		{
-			getInternalParentProject()->getActiveForegrounds().push_back(getInitialForegrounds(i));
-		}
-	endEditCP(getInternalParentProject(), Project::InternalActiveForegroundsFieldMask);
 
 	//Attach the User Interface Drawing Surfaces to the Window Event Producer
 	for(::osg::UInt32 i(0) ; i<getUIDrawingSurfaces().size() ; ++i)
@@ -132,6 +118,12 @@ void Scene::enter(void)
 			getUIDrawingSurfaces(i)->setEventProducer(getInternalParentProject()->getEventProducer());
 		endEditCP(getUIDrawingSurfaces(i), UIDrawingSurface::EventProducerFieldMask);
 	}
+
+	//Attach the viewports
+	for(::osg::UInt32 i(0) ; i<getViewports().size() ; ++i)
+	{
+        getInternalParentProject()->addViewport(getViewports(i));
+    }
 
 	//Attach the initial animations
 	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
@@ -232,6 +224,12 @@ void Scene::reset(void)
 
 void Scene::exit(void)
 {
+	//Dettach the viewports
+	for(::osg::UInt32 i(0) ; i<getViewports().size() ; ++i)
+	{
+        getInternalParentProject()->removeViewport(getViewports(i));
+    }
+
 	//Dettach the initial animations
 	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
 	{
@@ -312,6 +310,16 @@ void Scene::createDefaults(void)
 		beginEditCP(ScenePtr(this), Scene::RootFieldMask);
 			setRoot(TheRoot);
 		endEditCP(ScenePtr(this), Scene::RootFieldMask);
+	}
+
+	if(getViewports().size() == 0)
+	{
+        std::cout << "getViewports().size(): " << getViewports().size()<< std::endl;
+		ViewportPtr TheViewport = Viewport::create();
+
+		beginEditCP(ScenePtr(this), Scene::ViewportsFieldMask);
+			getViewports().push_back(TheViewport);
+		endEditCP(ScenePtr(this), Scene::ViewportsFieldMask);
 	}
 }
 
@@ -430,6 +438,19 @@ Scene::~Scene(void)
 void Scene::changed(BitVector whichField, UInt32 origin)
 {
     Inherited::changed(whichField, origin);
+
+    if((whichField & ViewportsFieldMask) &&
+       getInternalParentProject() != NullFC &&
+       getInternalParentProject()->getActiveScene() == ScenePtr(this))
+    {
+        getInternalParentProject()->clearViewports();
+
+        //Add The Viewports
+        for(::osg::UInt32 i(0) ; i<getViewports().size() ; ++i)
+        {
+            getInternalParentProject()->addViewport(getViewports(i));
+        }
+    }
 }
 
 void Scene::dump(      UInt32    , 

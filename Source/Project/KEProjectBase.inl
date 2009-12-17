@@ -332,20 +332,6 @@ SFCameraPtr *ProjectBase::editSFInternalActiveCamera(void)
     return &_sfInternalActiveCamera;
 }
 
-//! Get the Project::_sfInternalActiveViewport field.
-inline
-const SFViewportPtr *ProjectBase::getSFInternalActiveViewport(void) const
-{
-    return &_sfInternalActiveViewport;
-}
-
-//! Get the Project::_sfInternalActiveViewport field.
-inline
-SFViewportPtr *ProjectBase::editSFInternalActiveViewport(void)
-{
-    return &_sfInternalActiveViewport;
-}
-
 //! Get the Project::_mfActiveAnimations field.
 inline
 const MFAnimationPtr *ProjectBase::getMFActiveAnimations(void) const
@@ -548,27 +534,6 @@ inline
 void ProjectBase::setInternalActiveCamera(const CameraPtr &value)
 {
     _sfInternalActiveCamera.setValue(value);
-}
-
-//! Get the value of the Project::_sfInternalActiveViewport field.
-inline
-ViewportPtr &ProjectBase::editInternalActiveViewport(void)
-{
-    return _sfInternalActiveViewport.getValue();
-}
-
-//! Get the value of the Project::_sfInternalActiveViewport field.
-inline
-const ViewportPtr &ProjectBase::getInternalActiveViewport(void) const
-{
-    return _sfInternalActiveViewport.getValue();
-}
-
-//! Set the value of the Project::_sfInternalActiveViewport field.
-inline
-void ProjectBase::setInternalActiveViewport(const ViewportPtr &value)
-{
-    _sfInternalActiveViewport.setValue(value);
 }
 
 //! Get the value of the Project::_sfLuaModule field.

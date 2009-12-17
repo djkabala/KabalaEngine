@@ -108,9 +108,6 @@ const OSG::BitVector  ProjectBase::CamerasFieldMask =
 const OSG::BitVector  ProjectBase::InternalActiveCameraFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::InternalActiveCameraFieldId);
 
-const OSG::BitVector  ProjectBase::InternalActiveViewportFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::InternalActiveViewportFieldId);
-
 const OSG::BitVector  ProjectBase::ActiveAnimationsFieldMask = 
     (TypeTraits<BitVector>::One << ProjectBase::ActiveAnimationsFieldId);
 
@@ -179,9 +176,6 @@ const OSG::BitVector ProjectBase::MTInfluenceMask =
     
 */
 /*! \var CameraPtr       ProjectBase::_sfInternalActiveCamera
-    
-*/
-/*! \var ViewportPtr     ProjectBase::_sfInternalActiveViewport
     
 */
 /*! \var AnimationPtr    ProjectBase::_mfActiveAnimations
@@ -281,11 +275,6 @@ FieldDescription *ProjectBase::_desc[] =
                      InternalActiveCameraFieldId, InternalActiveCameraFieldMask,
                      true,
                      reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFInternalActiveCamera)),
-    new FieldDescription(SFViewportPtr::getClassType(), 
-                     "InternalActiveViewport", 
-                     InternalActiveViewportFieldId, InternalActiveViewportFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFInternalActiveViewport)),
     new FieldDescription(MFAnimationPtr::getClassType(), 
                      "ActiveAnimations", 
                      ActiveAnimationsFieldId, ActiveAnimationsFieldMask,
@@ -538,7 +527,6 @@ ProjectBase::ProjectBase(void) :
     _mfGlobalActiveModelNodes (), 
     _mfCameras                (), 
     _sfInternalActiveCamera   (CameraPtr(NullFC)), 
-    _sfInternalActiveViewport (ViewportPtr(NullFC)), 
     _mfActiveAnimations       (), 
     _mfActiveParticleSystems  (), 
     _sfLuaModule              (), 
@@ -570,7 +558,6 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _mfGlobalActiveModelNodes (source._mfGlobalActiveModelNodes ), 
     _mfCameras                (source._mfCameras                ), 
     _sfInternalActiveCamera   (source._sfInternalActiveCamera   ), 
-    _sfInternalActiveViewport (source._sfInternalActiveViewport ), 
     _mfActiveAnimations       (source._mfActiveAnimations       ), 
     _mfActiveParticleSystems  (source._mfActiveParticleSystems  ), 
     _sfLuaModule              (source._sfLuaModule              ), 
@@ -670,11 +657,6 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
     {
         returnValue += _sfInternalActiveCamera.getBinSize();
-    }
-
-    if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
-    {
-        returnValue += _sfInternalActiveViewport.getBinSize();
     }
 
     if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
@@ -791,11 +773,6 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
         _sfInternalActiveCamera.copyToBin(pMem);
     }
 
-    if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
-    {
-        _sfInternalActiveViewport.copyToBin(pMem);
-    }
-
     if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
     {
         _mfActiveAnimations.copyToBin(pMem);
@@ -909,11 +886,6 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
         _sfInternalActiveCamera.copyFromBin(pMem);
     }
 
-    if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
-    {
-        _sfInternalActiveViewport.copyFromBin(pMem);
-    }
-
     if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
     {
         _mfActiveAnimations.copyFromBin(pMem);
@@ -997,9 +969,6 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
         _sfInternalActiveCamera.syncWith(pOther->_sfInternalActiveCamera);
 
-    if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
-        _sfInternalActiveViewport.syncWith(pOther->_sfInternalActiveViewport);
-
     if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
         _mfActiveAnimations.syncWith(pOther->_mfActiveAnimations);
 
@@ -1045,9 +1014,6 @@ void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
 
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
         _sfInternalActiveCamera.syncWith(pOther->_sfInternalActiveCamera);
-
-    if(FieldBits::NoField != (InternalActiveViewportFieldMask & whichField))
-        _sfInternalActiveViewport.syncWith(pOther->_sfInternalActiveViewport);
 
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
         _sfLuaModule.syncWith(pOther->_sfLuaModule);
