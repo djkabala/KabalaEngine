@@ -69,13 +69,13 @@ void Project::clearViewports(void)
 inline
 UInt32 Project::numViewports(void) const
 {
-    MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size();
+    return MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size();
 }
 
 inline
 ViewportPtr Project::getViewport(UInt32 index) const
 {
-    MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(index);
+    return MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(index);
 }
 
 

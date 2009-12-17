@@ -45,6 +45,10 @@
 #include <OpenSG/OSGConfig.h>
 #include <OpenSG/OSGSimpleAttachments.h>
 #include <OpenSG/OSGDrawable.h>
+#include <OpenSG/OSGTransform.h>
+#include <OpenSG/OSGPerspectiveCamera.h>
+#include <OpenSG/OSGPassiveBackground.h>
+#include <OpenSG/OSGViewport.h>
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <OpenSG/Input/OSGStringUtils.h>
 
@@ -1366,7 +1370,6 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
     beginEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
         DefaultRootNode->setCore(osg::Group::create());
         DefaultRootNode->addChild(CameraBeaconNode);
-        DefaultRootNode->addChild(CameraNode);
     endEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
 
 	//Background
@@ -1379,9 +1382,9 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
         DebugViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
         DebugViewport->setBackground              (DefaultBackground);
         //DebugViewport->getForegrounds().push_back    (UserInterfaceForeground);
-    endEditCP(DefaultViewport);
+    endEditCP(DebugViewport);
 
-    return DefaultViewport;
+    return DebugViewport;
 }
 
 /*-------------------------------------------------------------------------*\
