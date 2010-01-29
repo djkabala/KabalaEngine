@@ -51,6 +51,8 @@
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <OpenSG/Input/OSGStringUtils.h>
+#include <OpenSG/OSGSimpleMaterial.h>
+
 
 #include "KEApplicationPlayer.h"
 #include "Project/KEProject.h"
@@ -106,12 +108,14 @@ void ApplicationPlayer::attachApplication(void)
 	ProjectPtr TheProject(MainApplication::the()->getProject());
     updateWindowTitle();
 	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener);
+	MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_highlightNodeListener);
 }
 
 
 void ApplicationPlayer::dettachApplication(void)
 {
 	MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_PlayerKeyListener);
+	MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_highlightNodeListener);
 	Inherited::dettachApplication();
 }
 
@@ -168,13 +172,16 @@ void ApplicationPlayer::createDebugInterface(void)
 
     BasicItem = MenuItem::create();				
     RenderItem = MenuItem::create();			
-    PhysicsItem = MenuItem::create();			
+    PhysicsItem = MenuItem::create();
     ParticleSystemItem = MenuItem::create();	
 	AnimationItem = MenuItem::create();
 	PauseActiveUpdatesItem = MenuItem::create();
 	DrawBoundingVolumesItem = MenuItem::create();
 	FrustrumCullingItem = MenuItem::create();
 	DrawPhysicsCharacteristicsItem = MenuItem::create();
+
+	ShowHideItem = MenuItem::create();
+	//HideItem = MenuItem::create();
 
 	// setting the fields of the menu items
 	beginEditCP(ResetItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
@@ -297,6 +304,60 @@ void ApplicationPlayer::createDebugInterface(void)
         DrawPhysicsCharacteristicsItem->setMnemonicKey(KeyEvent::KEY_P);
     endEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
+	// pop up menu items
+
+	beginEditCP(ShowHideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        ShowHideItem->setText("Hide");
+        //ShowItem->setAcceleratorKey(KeyEvent::KEY_S);
+        //ShowItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        //ShowItem->setMnemonicKey(KeyEvent::KEY_P);
+    endEditCP(ShowHideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+/*
+	beginEditCP(HideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        HideItem->setText("Hide Item");
+       // HideItem->setAcceleratorKey(KeyEvent::KEY_H);
+       // HideItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+       // HideItem->setMnemonicKey(KeyEvent::KEY_P);
+    endEditCP(HideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+*/	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// creation of the Tree
+
+    TheTree = Tree::create();
+	TheTreeModel = SceneGraphTreeModel::create();
+
+	beginEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
+        TheTree->setPreferredSize(Vec2f(100, 500));
+        TheTree->setModel(TheTreeModel);
+    endEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
+
+	NodePtr nodetohighlight;
+	Color4f colorofhightlight(Color4f(0.0, 0.0, 0.0, 0.5));
+
+
+	//NodePtr SelectedNode = NullFC;// MainApplication::the()->getProject()->getOverlayNode()->getChild(0);
+	//NodePtr SelectedNode = createHiglightNode(nodetohighlight,colorofhightlight);
+  //  _TheTreeSelectionListener.setParams(TheTree,SelectedNode);
+    TheTree->getSelectionModel()->addTreeSelectionListener(&_TheTreeSelectionListener);
+	
+	
+    // Create a ScrollPanel for easier viewing of the List (see 27ScrollPanel)
+    BorderLayoutConstraintsPtr SceneTreeConstraints = osg::BorderLayoutConstraints::create();
+    beginEditCP(SceneTreeConstraints, BorderLayoutConstraints::RegionFieldMask);
+        SceneTreeConstraints->setRegion(BorderLayoutConstraints::BORDER_WEST);
+    endEditCP(SceneTreeConstraints, BorderLayoutConstraints::RegionFieldMask);
+
+    TreeScrollPanel = ScrollPanel::create();
+    beginEditCP(TreeScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask | ScrollPanel::ConstraintsFieldMask);
+        TreeScrollPanel->setPreferredSize(Vec2s(350,300));
+        TreeScrollPanel->setConstraints(SceneTreeConstraints);
+        //TreeScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+        //TreeScrollPanel->setVerticalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(TreeScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask | ScrollPanel::ConstraintsFieldMask);
+    TreeScrollPanel->setViewComponent(TheTree);
+	/////////////////////////////////////////////////////////////////////////////////
+
 	// creation of menus and addition of menu items to them
 	ProjectMenu = Menu::create();
     ProjectMenu->addItem(ResetItem);
@@ -378,6 +439,9 @@ void ApplicationPlayer::createDebugInterface(void)
 	NavigatorMenu->addActionListener(&_BasicListener);
 	StatisticsMenu->addActionListener(&_BasicListener);
 	ToggleMenu->addActionListener(&_BasicListener);
+
+	ShowHideItem->addActionListener(&_BasicListener);
+	//HideItem->addActionListener(&_BasicListener);
 	
 	// Creation of the menubar and addition of the menus to it
 	MainMenuBar = MenuBar::create();
@@ -490,11 +554,151 @@ void ApplicationPlayer::createDebugInterface(void)
     // Add the StackTraceTextArea to the ScrollPanel so it is displayed
 	TabContentC->setViewComponent(StackTraceTextArea);
 
+	
+	TabContentD = osg::Panel::create();
+
+	NodeNameLabel = Label::create();
+    beginEditCP(NodeNameLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeNameLabel->setText("Name");
+        NodeNameLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeNameLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeNameValueLabel = Label::create();
+    beginEditCP(NodeNameValueLabel, Label::PreferredSizeFieldMask);
+        NodeNameValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeNameValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeCoreTypeLabel = Label::create();
+    beginEditCP(NodeCoreTypeLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeCoreTypeLabel->setText("Core Type");
+        NodeCoreTypeLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeCoreTypeLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeCoreTypeValueLabel = Label::create();
+    beginEditCP(NodeCoreTypeValueLabel, Label::PreferredSizeFieldMask);
+        NodeCoreTypeValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeCoreTypeValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeMinLabel = Label::create();
+    beginEditCP(NodeMinLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeMinLabel->setText("Min");
+        NodeMinLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeMinLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeMinValueLabel = Label::create();
+    beginEditCP(NodeMinValueLabel, Label::PreferredSizeFieldMask);
+        NodeMinValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeMinValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeMaxLabel = Label::create();
+    beginEditCP(NodeMaxLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeMaxLabel->setText("Max");
+        NodeMaxLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeMaxLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeMaxValueLabel = Label::create();
+    beginEditCP(NodeMaxValueLabel, Label::PreferredSizeFieldMask);
+        NodeMaxValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeMaxValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeCenterLabel = Label::create();
+    beginEditCP(NodeCenterLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeCenterLabel->setText("Center");
+        NodeCenterLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeCenterLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeCenterValueLabel = Label::create();
+    beginEditCP(NodeCenterValueLabel, Label::PreferredSizeFieldMask);
+        NodeCenterValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeCenterValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeTriCountLabel = Label::create();
+    beginEditCP(NodeTriCountLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeTriCountLabel->setText("TriCount");
+        NodeTriCountLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeTriCountLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeTriCountValueLabel = Label::create();
+    beginEditCP(NodeTriCountValueLabel, Label::PreferredSizeFieldMask);
+        NodeTriCountValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeTriCountValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeTravMaskLabel = Label::create();
+    beginEditCP(NodeTravMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeTravMaskLabel->setText("Traversal Mask");
+        NodeTravMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeTravMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeTravMaskValueLabel = Label::create();
+    beginEditCP(NodeTravMaskValueLabel, Label::PreferredSizeFieldMask);
+        NodeTravMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeTravMaskValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeOcclusionMaskLabel = Label::create();
+    beginEditCP(NodeOcclusionMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeOcclusionMaskLabel->setText("Occlusion Mask");
+        NodeOcclusionMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeOcclusionMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeOcclusionMaskValueLabel = Label::create();
+    beginEditCP(NodeOcclusionMaskValueLabel, Label::PreferredSizeFieldMask);
+        NodeOcclusionMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeOcclusionMaskValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeActiveLabel = Label::create();
+    beginEditCP(NodeActiveLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeActiveLabel->setText("Active");
+        NodeActiveLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeActiveLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeActiveValueLabel = Label::create();
+    beginEditCP(NodeActiveValueLabel, Label::PreferredSizeFieldMask);
+        NodeActiveValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeActiveValueLabel, Label::PreferredSizeFieldMask);
+    
+    GridLayoutPtr TabContentDLayout = osg::GridLayout::create();
+
+    beginEditCP(TabContentDLayout, GridLayout::RowsFieldMask | GridLayout::ColumnsFieldMask | 
+		GridLayout::HorizontalGapFieldMask | GridLayout::VerticalGapFieldMask);
+	    TabContentDLayout->setRows(9);
+        TabContentDLayout->setColumns(2);
+        TabContentDLayout->setHorizontalGap(2);
+        TabContentDLayout->setVerticalGap(2);
+    endEditCP(TabContentDLayout, GridLayout::RowsFieldMask | GridLayout::ColumnsFieldMask | 
+		GridLayout::HorizontalGapFieldMask | GridLayout::VerticalGapFieldMask);
+
+	beginEditCP(TabContentD,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
+
+        TabContentD->setPreferredSize(Vec2f(100.0f, 200.0f));
+        TabContentD->setLayout(TabContentDLayout);
+        TabContentD->getChildren().push_back(NodeNameLabel);
+        TabContentD->getChildren().push_back(NodeNameValueLabel);
+        TabContentD->getChildren().push_back(NodeCoreTypeLabel);
+        TabContentD->getChildren().push_back(NodeCoreTypeValueLabel);
+        TabContentD->getChildren().push_back(NodeMinLabel);
+        TabContentD->getChildren().push_back(NodeMinValueLabel);
+        TabContentD->getChildren().push_back(NodeMaxLabel);
+        TabContentD->getChildren().push_back(NodeMaxValueLabel);
+        TabContentD->getChildren().push_back(NodeCenterLabel);
+        TabContentD->getChildren().push_back(NodeCenterValueLabel);
+        TabContentD->getChildren().push_back(NodeTriCountLabel);
+        TabContentD->getChildren().push_back(NodeTriCountValueLabel);
+        TabContentD->getChildren().push_back(NodeTravMaskLabel);
+        TabContentD->getChildren().push_back(NodeTravMaskValueLabel);
+        TabContentD->getChildren().push_back(NodeOcclusionMaskLabel);
+        TabContentD->getChildren().push_back(NodeOcclusionMaskValueLabel);
+        TabContentD->getChildren().push_back(NodeActiveLabel);
+        TabContentD->getChildren().push_back(NodeActiveValueLabel);
+
+	endEditCP(TabContentD,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
+
+
 	// creating the labels for the various tabs
 	
 	TabPanel1 = osg::Label::create();
     TabPanel2 = osg::Label::create();
     TabPanel3 = osg::Label::create();
+	TabPanel4 = osg::Label::create();
 
 
 	// set the fields of the labels
@@ -517,6 +721,13 @@ void ApplicationPlayer::createDebugInterface(void)
         TabPanel3->setBackgrounds(NullFC);
     endEditCP(TabPanel3, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
     
+	beginEditCP(TabPanel4, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        TabPanel4->setText("Properties");
+        TabPanel4->setBorders(NullFC);
+        TabPanel4->setBackgrounds(NullFC);
+    endEditCP(TabPanel4, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+    
+
 	// creating the tab panel
 	InfoTabPanel= osg::TabPanel::create();
     beginEditCP(InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
@@ -525,6 +736,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	    InfoTabPanel->addTab(TabPanel1, TabContentA);
         InfoTabPanel->addTab(TabPanel2, TabContentB);
         InfoTabPanel->addTab(TabPanel3, TabContentC);
+		InfoTabPanel->addTab(TabPanel4, TabContentD);
 		InfoTabPanel->setTabAlignment(0.5f);
         InfoTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
 	endEditCP(InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
@@ -598,7 +810,8 @@ void ApplicationPlayer::createDebugInterface(void)
 	beginEditCP(PanelTopLeftConstraints2, BorderLayoutConstraints::RegionFieldMask);
         PanelTopLeftConstraints2->setRegion(BorderLayoutConstraints::BORDER_SOUTH);
     endEditCP(PanelTopLeftConstraints2, BorderLayoutConstraints::RegionFieldMask);
-    
+
+
 	TopLeftCardLayout = osg::CardLayout::create(); 
 	TopLeftTreePanel = osg::Panel::create();
 
@@ -613,10 +826,12 @@ void ApplicationPlayer::createDebugInterface(void)
         ExampleButton2->setText("Lua Graph");
     endEditCP(ExampleButton2, Button::TextFieldMask);
 
+
 	beginEditCP(TopLeftTreePanel, Panel::LayoutFieldMask | Panel::ChildrenFieldMask);
         TopLeftTreePanel->setLayout(TopLeftCardLayout);
         TopLeftTreePanel->getChildren().push_back(ExampleButton2);
-        TopLeftTreePanel->getChildren().push_back(ExampleButton1);
+		TopLeftTreePanel->getChildren().push_back(TreeScrollPanel);
+        //TopLeftTreePanel->getChildren().push_back(ExampleButton1);
         TopLeftTreePanel->setConstraints(PanelTopLeftConstraints1);
     endEditCP(TopLeftTreePanel, Panel::LayoutFieldMask | Panel::ChildrenFieldMask);
 
@@ -640,10 +855,21 @@ void ApplicationPlayer::createDebugInterface(void)
 	// Determine where the ComboBox starts
 	ComboBox->setSelectedIndex(0);
 
+	pop = PopupMenu::create();
+	//poptrigger = Button::create();
+
+	//beginEditCP(poptrigger);
+	//	poptrigger->setPopupMenu(pop);
+	//	poptrigger->setConstraints(PanelTopLeftConstraints3);
+	//endEditCP(poptrigger);
+
+	setupPopupMenu();
 
 	beginEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 		SplitPanelPaneltopleft->getChildren().push_back(TopLeftTreePanel);
 		SplitPanelPaneltopleft->getChildren().push_back(ComboBox);
+		//SplitPanelPaneltopleft->getChildren().push_back(poptrigger);
+		//SplitPanelPaneltopleft->setPopupMenu(pop);
 		SplitPanelPaneltopleft->setLayout(PanelFlowLayout2);
     endEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
@@ -861,6 +1087,30 @@ void ApplicationPlayer::createGotoSceneMenuItems(ProjectPtr TheProject)
 
 void ApplicationPlayer::attachDebugInterface(void)
 {
+
+	if( MainApplication::the()->getProject()->getActiveScene()->getMFViewports()->size() == 0 ||
+		MainApplication::the()->getProject()->getActiveScene()->getViewports(0) == NullFC)
+	{
+		SWARNING << "ApplicationPlayer::attachDebugInterface(): No Viewports in current scene.  There should be at least one defined." << std::endl;
+	}
+	else
+	{
+		if(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot() == NullFC)
+		{
+			SWARNING << "ApplicationPlayer::attachDebugInterface(): No root for current viewport!" << std::endl;
+		}
+		else
+		{
+			if(TheTreeModel->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
+			{
+				TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+			}
+		}
+		
+    }
+	
+    _TheTreeSelectionListener.setParams(TheTree);
+	_TheTreeSelectionListener.updateHighlight();
 	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     	DebuggerDrawingSurface->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
     endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
@@ -875,6 +1125,7 @@ void ApplicationPlayer::detachDebugInterface(void)
         DebuggerDrawingSurface->setEventProducer(NullFC);
     endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     
+
 	// if the debuginterface foreground is present in the list of foreground objects then delete it (the if condition if not mentioned would throw an exception)
 	if((find(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().begin(),MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().end(),DebuggerUIForeground))!=MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().end())
 	MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().erase(find(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().begin(),MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().end(),DebuggerUIForeground));
@@ -904,6 +1155,7 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
             MainApplication::the()->getMainWindowEventProducer()->setShowCursor(true);
         }
         _WasMouseAttached = !MainApplication::the()->getMainWindowEventProducer()->getAttachMouseToCursor();
+		
         if(_WasMouseAttached)
         {
             MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(true);
@@ -1062,6 +1314,21 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 		else TopLeftCardLayout->first(TopLeftTreePanel);
 
 	}
+	else if(e->getSource() == ShowHideItem)
+	{
+		//std::cout<<"Showing Item\n";
+		UInt32 maskval = SelectedNode->getTravMask();
+		if(!maskval)	SelectedNode->setTravMask(UInt32(-1));
+		else	SelectedNode->setTravMask(0);
+		invertShowHideCaption();
+
+	}
+	/*
+	else if(e->getSource() == HideItem)
+	{
+		std::cout<<"Hiding Item\n";
+		SelectedNode->setTravMask(0);
+	}*/
 	else
 	{
 		//do nothing
@@ -1397,6 +1664,9 @@ ApplicationPlayer::ApplicationPlayer(void) :
     Inherited(),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
 	_BasicListener(ApplicationPlayerPtr(this)),
+	_highlightNodeListener(ApplicationPlayerPtr(this)),
+	_ComboBoxListener(ApplicationPlayerPtr(this)),
+	_TheTreeSelectionListener(ApplicationPlayerPtr(this)),
 	_GotoSceneItemListener(ApplicationPlayerPtr(this)),
 	_ProjectListener(ApplicationPlayerPtr(this)),
 	_LuaErrorListener(ApplicationPlayerPtr(this)),
@@ -1413,6 +1683,9 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     Inherited(source),
 	_PlayerKeyListener(ApplicationPlayerPtr(this)),
 	_BasicListener(ApplicationPlayerPtr(this)),
+	_highlightNodeListener(ApplicationPlayerPtr(this)),
+	_ComboBoxListener(ApplicationPlayerPtr(this)),
+	_TheTreeSelectionListener(ApplicationPlayerPtr(this)),
 	_GotoSceneItemListener(ApplicationPlayerPtr(this)),
 	_ProjectListener(ApplicationPlayerPtr(this)),
 	_LuaErrorListener(ApplicationPlayerPtr(this)),
@@ -1426,7 +1699,6 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     _PhysDrawableNode(NullFC),
     _WasMouseHidden(false),
     _WasMouseAttached(false)
-
 {
 }
 
@@ -1474,6 +1746,50 @@ void ApplicationPlayer::ProjectListener::eventProduced(const EventPtr e, UInt32 
         case Project::SceneChangedMethodId:
             _ApplicationPlayer->updateDebugSceneChange();
             break;
+    }
+}
+
+ApplicationPlayer::highlightNodeListener::highlightNodeListener(ApplicationPlayerPtr TheApplicationPlayer)
+{
+	_ApplicationPlayer = TheApplicationPlayer;
+}
+
+void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
+{
+	if(_ApplicationPlayer->SelectedNode != NullFC)
+    {
+	 std::string coreName= _ApplicationPlayer->SelectedNode->getCore()->getTypeName();
+
+		// calc the world bbox of the highlight object
+		#ifndef OSG_2_PREP
+		DynamicVolume vol;
+		#else
+		BoxVolume      vol;
+		#endif
+		_ApplicationPlayer->SelectedNode->getWorldVolume(vol);
+
+		Pnt3f min,max;
+		vol.getBounds(min, max);
+
+		GeoPositions3fPtr temphighlightPoints = GeoPositions3f::create();
+
+		beginEditCP(temphighlightPoints);
+		temphighlightPoints->push_back(Pnt3f(min[0], min[1], min[2]));
+		temphighlightPoints->push_back(Pnt3f(max[0], min[1], min[2]));
+		temphighlightPoints->push_back(Pnt3f(min[0], max[1], min[2]));
+		temphighlightPoints->push_back(Pnt3f(max[0], max[1], min[2]));
+		temphighlightPoints->push_back(Pnt3f(min[0], min[1], max[2]));
+		temphighlightPoints->push_back(Pnt3f(max[0], min[1], max[2]));
+		temphighlightPoints->push_back(Pnt3f(min[0], max[1], max[2]));
+		temphighlightPoints->push_back(Pnt3f(max[0], max[1], max[2]));
+		endEditCP(temphighlightPoints);
+
+
+		beginEditCP(_ApplicationPlayer->highlightNode->getCore(), Geometry::PositionsFieldMask);
+		GeometryPtr::dcast(_ApplicationPlayer->highlightNode->getCore())->setPositions(temphighlightPoints);
+		endEditCP  (_ApplicationPlayer->highlightNode->getCore(), Geometry::PositionsFieldMask);
+
+
     }
 }
 
@@ -1552,3 +1868,312 @@ void ApplicationPlayer::updateListBox(void)
 	std::cout<<std::endl;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// newly added
+ApplicationPlayer::TheTreeSelectionListener::TheTreeSelectionListener(ApplicationPlayerPtr TheApplicationPlayer)
+{
+	_ApplicationPlayer = TheApplicationPlayer;
+	_highlight = NullFC;  /// added for highlight node
+	_highlightPoints = NullFC;
+}
+
+void ApplicationPlayer::TheTreeSelectionListener::setParams(TreePtr TheTree)//,NodePtr  SelectedNode)
+{
+	_TheTree=TheTree;
+}
+
+
+
+
+void ApplicationPlayer::TheTreeSelectionListener::setHighlight(NodePtr selectednode)
+{
+	_highlight = selectednode;
+	highlightChanged();
+}
+NodePtr ApplicationPlayer::TheTreeSelectionListener::getHighlight()
+{
+	return _highlight;
+}
+void ApplicationPlayer::TheTreeSelectionListener::highlightChanged(void)
+{
+ // to do...
+	SimpleMaterialPtr _highlightMaterial;
+	
+// FDEBUG (("SimpleSceneManager::updateHightlight() called\n"));
+
+	// init as needed
+	if(_highlightMaterial == NullFC)
+	{
+		_highlightMaterial = SimpleMaterial::create();
+		
+		beginEditCP(_highlightMaterial);
+		_highlightMaterial->setDiffuse (Color3f(0,1,0));
+		_highlightMaterial->setLit     (false);
+		endEditCP(_highlightMaterial);
+	}
+	if(_ApplicationPlayer->highlightNode == NullFC)
+	{
+		GeoPTypesPtr type = GeoPTypesUI8::create();
+		beginEditCP(type);
+		type->push_back(GL_LINE_STRIP);
+		type->push_back(GL_LINES);
+		endEditCP(type);
+
+		GeoPLengthsPtr lens = GeoPLengthsUI32::create();
+		beginEditCP(lens);
+		lens->push_back(10);
+		lens->push_back(6);
+		endEditCP(lens);
+
+		GeoIndicesUI32Ptr index = GeoIndicesUI32::create();
+		beginEditCP(index);
+		index->getFieldPtr()->push_back(0);
+		index->getFieldPtr()->push_back(1);
+		index->getFieldPtr()->push_back(3);
+		index->getFieldPtr()->push_back(2);
+		index->getFieldPtr()->push_back(0);
+		index->getFieldPtr()->push_back(4);
+		index->getFieldPtr()->push_back(5);
+		index->getFieldPtr()->push_back(7);
+		index->getFieldPtr()->push_back(6);
+		index->getFieldPtr()->push_back(4);
+
+		index->getFieldPtr()->push_back(1);
+		index->getFieldPtr()->push_back(5);
+		index->getFieldPtr()->push_back(2);
+		index->getFieldPtr()->push_back(6);
+		index->getFieldPtr()->push_back(3);
+		index->getFieldPtr()->push_back(7);
+		endEditCP(index);
+
+		_highlightPoints = GeoPositions3f::create();
+		beginEditCP(_highlightPoints);
+		_highlightPoints->push_back(Pnt3f(-1, -1, -1));
+		_highlightPoints->push_back(Pnt3f( 1, -1, -1));
+		_highlightPoints->push_back(Pnt3f(-1,  1, -1));
+		_highlightPoints->push_back(Pnt3f( 1,  1, -1));
+		_highlightPoints->push_back(Pnt3f(-1, -1,  1));
+		_highlightPoints->push_back(Pnt3f( 1, -1,  1));
+		_highlightPoints->push_back(Pnt3f(-1,  1,  1));
+		_highlightPoints->push_back(Pnt3f( 1,  1,  1));
+		endEditCP(_highlightPoints);
+		addRefCP(_highlightPoints);
+
+		GeometryPtr geo=Geometry::create();
+		beginEditCP(geo);
+		geo->setTypes     (type);
+		geo->setLengths   (lens);
+		geo->setIndices   (index);
+		geo->setPositions (_highlightPoints);
+		geo->setMaterial  (_highlightMaterial);  /// billa
+		endEditCP(geo);
+		addRefCP(geo);
+
+		_ApplicationPlayer->highlightNode = Node::create();
+		
+		beginEditCP(_ApplicationPlayer->highlightNode);
+		_ApplicationPlayer->highlightNode->setCore(geo);
+		endEditCP(_ApplicationPlayer->highlightNode);
+		addRefCP(_ApplicationPlayer->highlightNode);
+	}
+
+	
+	// attach the hightlight node to the root if the highlight is active
+	if(getHighlight() != NullFC)
+	{
+		if(_ApplicationPlayer->highlightNode->getParent() == NullFC)
+		{
+		beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->addChild(_ApplicationPlayer->highlightNode);
+		endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		}
+		
+	}
+	else
+	{
+		if(_ApplicationPlayer->highlightNode->getParent() != NullFC)
+		{
+		beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->subChild(_ApplicationPlayer->highlightNode);
+		endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		}
+	}
+	// update the highlight geometry
+	updateHighlight();
+}
+
+
+void ApplicationPlayer::TheTreeSelectionListener::updateHighlight(void)
+{
+	if(_highlight==NullFC)
+	return;
+
+	// calc the world bbox of the highlight object
+	#ifndef OSG_2_PREP
+	DynamicVolume vol;
+	#else
+	BoxVolume      vol;
+	#endif
+	_highlight->getWorldVolume(vol);
+
+	Pnt3f min,max;
+	vol.getBounds(min, max);
+
+	beginEditCP(_highlightPoints);
+	_highlightPoints->setValue(Pnt3f(min[0], min[1], min[2]), 0);
+	_highlightPoints->setValue(Pnt3f(max[0], min[1], min[2]), 1);
+	_highlightPoints->setValue(Pnt3f(min[0], max[1], min[2]), 2);
+	_highlightPoints->setValue(Pnt3f(max[0], max[1], min[2]), 3);
+	_highlightPoints->setValue(Pnt3f(min[0], min[1], max[2]), 4);
+	_highlightPoints->setValue(Pnt3f(max[0], min[1], max[2]), 5);
+	_highlightPoints->setValue(Pnt3f(min[0], max[1], max[2]), 6);
+	_highlightPoints->setValue(Pnt3f(max[0], max[1], max[2]), 7);
+	endEditCP(_highlightPoints);
+
+
+}
+
+
+void ApplicationPlayer::setLabelValuesToNull()
+{
+	    beginEditCP(NodeNameValueLabel, Label::TextFieldMask);
+            NodeNameValueLabel->setText("");
+        endEditCP(NodeNameValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+            NodeCoreTypeValueLabel->setText("");
+        endEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeMinValueLabel, Label::TextFieldMask);
+            NodeMinValueLabel->setText("");
+        endEditCP(NodeMinValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+            NodeMaxValueLabel->setText("");
+        endEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+            NodeCenterValueLabel->setText("");
+        endEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+            NodeTriCountValueLabel->setText("");
+        endEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+            NodeTravMaskValueLabel->setText("");
+        endEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+            NodeOcclusionMaskValueLabel->setText("");
+        endEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+            NodeActiveValueLabel->setText("");
+        endEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+}
+
+void ApplicationPlayer::setLabelValues(NodePtr SelectedNode)
+{
+		const Char8 *NodeName = getName(SelectedNode);
+
+		beginEditCP(NodeNameValueLabel, Label::TextFieldMask);
+            if(NodeName == NULL)
+            {
+                NodeNameValueLabel->setText("Unnamed Node");
+            }
+            else
+            {
+                NodeNameValueLabel->setText(NodeName);
+            }
+        endEditCP(NodeNameValueLabel, Label::TextFieldMask);
+	
+        beginEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+            NodeCoreTypeValueLabel->setText(SelectedNode->getCore()->getType().getCName());
+        endEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+		
+
+        DynamicVolume DyVol;
+        SelectedNode->getWorldVolume(DyVol);
+        Pnt3f Min,Max,Center;
+        DyVol.getBounds(Min,Max);
+        DyVol.getCenter(Center);
+
+        std::string TempText("");
+
+        TempText = boost::lexical_cast<std::string>(Min.x()) + ", " +boost::lexical_cast<std::string>(Min.x()) + ", " + boost::lexical_cast<std::string>(Min.x());
+        beginEditCP(NodeMinValueLabel, Label::TextFieldMask);
+            NodeMinValueLabel->setText(TempText);
+        endEditCP(NodeMinValueLabel, Label::TextFieldMask);
+
+        TempText = boost::lexical_cast<std::string>(Max.x()) + ", " +boost::lexical_cast<std::string>(Max.x()) + ", " + boost::lexical_cast<std::string>(Max.x());
+        beginEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+            NodeMaxValueLabel->setText(TempText);
+        endEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+
+        TempText = boost::lexical_cast<std::string>(Center.x()) + ", " +boost::lexical_cast<std::string>(Center.x()) + ", " + boost::lexical_cast<std::string>(Center.x());
+        beginEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+            NodeCenterValueLabel->setText(TempText);
+        endEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+
+        GeometryPrimitivesCounter PrimCounter;
+        PrimCounter(SelectedNode);
+        beginEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+            NodeTriCountValueLabel->setText(boost::lexical_cast<std::string>(PrimCounter.getTriCount()));
+        endEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+            NodeTravMaskValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getTravMask()));
+        endEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+            NodeOcclusionMaskValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getOcclusionMask()));
+        endEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+            NodeActiveValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getActive()));
+        endEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+}
+
+
+void ApplicationPlayer::TheTreeSelectionListener::selectedNodeChanged(void)
+{
+	
+	setHighlight(_SelectedNode);
+	
+    //Update Details Panel
+    if(_SelectedNode == NullFC)
+    {
+		
+		_ApplicationPlayer->setLabelValuesToNull();
+    }
+    else
+    {
+		_ApplicationPlayer->SelectedNode=_SelectedNode;
+		_ApplicationPlayer->setLabelValues(_SelectedNode);
+    }
+}
+
+void ApplicationPlayer::invertShowHideCaption()
+{
+		std::string caption(ShowHideItem->getText());
+		beginEditCP(ShowHideItem);
+		if(caption=="Show")
+			ShowHideItem->setText("Hide");
+		else
+			ShowHideItem->setText("Show");
+		endEditCP(ShowHideItem);
+}
+void ApplicationPlayer::setupPopupMenu()
+{
+
+		beginEditCP(pop);
+		pop->addItem(ShowHideItem);
+		//pop->addItem(HideItem);	
+		endEditCP(pop);
+}
+
+ApplicationPlayer::highlightNodeListener::~highlightNodeListener()
+{
+
+}
