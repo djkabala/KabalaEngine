@@ -45,8 +45,6 @@
 
 #include "Project/KEProjectFields.h"
 #include "Project/Scene/KESceneFields.h"
-
-
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/Toolbox/OSGEventListener.h>
 
@@ -115,14 +113,6 @@
 //cardlayout
 #include <OpenSG/UserInterface/OSGCardLayout.h>
 
- 
-#include "Player/HierarchyPanel/KEHierarchyPanelFields.h"
-#include "Player/HelperPanel/KEHelperPanelFields.h"
-#include "Player/ContentPanel/KEContentPanelFields.h"
-
-
-#include <vector>
-
 OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationPlayer class. See \ref 
@@ -163,38 +153,26 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     virtual void reset(void);
     virtual void gotoScene(ScenePtr TheScene);
 
-	NodePtr highlightNode;
-	NodePtr SelectedNode;
-
-	HierarchyPanelPtr _HierarchyPanel;
-	HelperPanelPtr _HelperPanel;
-	ContentPanelPtr _ContentPanel;
-
     /*=========================  PROTECTED  ===============================*/
   protected:
-
-
-
 
 	virtual void attachDebugInterface(void);
 	virtual void detachDebugInterface(void);
 	virtual void createDebugInterface(void);
 
-	SpringLayoutPtr HierarchyPanelLayout;
 
-	PanelPtr Toolbar;
-	SpringLayoutPtr ToolbarLayout;
+
 	
-	//FlowLayoutPtr ToolbarLayout;
+	// Declare the SelectionModel up front to allow for
+/*	// the ActionListeners
+	ListSelectionModelPtr HistoryListSelectionModel;
 
-	ButtonPtr OpenFileButton;
-	ButtonPtr SaveFileButton;
-	ButtonPtr CloseFileButton;
+	// Create ListModel   
+	ListPtr HistoryList;
+	DefaultListModelPtr HistoryListModel;
+	ScrollPanelPtr HistoryScrollPanel;
 
-
-	BorderLayoutConstraintsPtr ToolbarandContentConstraints;
-	SplitPanelPtr ToolbarandContentPanel;
-	
+*/
   	MenuItemPtr ResetItem ;				
     MenuItemPtr ForceQuitItem ;			
 
@@ -204,6 +182,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     MenuItemPtr LastItem ;				
     MenuPtr _SceneSubItem ;				
 
+	std::vector<std::string> list_of_commands;
 	MenuItemPtr FlyNavigatorItem ;		
     MenuItemPtr TrackballNavigatorItem ;
     MenuItemPtr BasicItem ;				
@@ -223,13 +202,59 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	MenuPtr StatisticsMenu;
 	MenuPtr ToggleMenu;
 	MenuBarPtr MainMenuBar;
+	TabPanelPtr InfoTabPanel;
+	ButtonPtr executeBtn;
+	TextAreaPtr CodeTextArea;
+	TextAreaPtr ErrorTextArea;
+	TextAreaPtr StackTraceTextArea;
 	BorderLayoutConstraintsPtr ButtonConstraints;
-	PanelPtr SplitPanelPaneltopleft;
-
+	///////////////^%#$^%$#^%#$^%#$^%#$%^#$^%$#%^#$^%#$%^#$%^$#%^#$%^#$^%#$%^$#%^$#^%#%$^#$^///////////////////////////[[[[[[[[[[[
+	//LabelPtr TabPanel1;
+	//LabelPtr TabPanel2;
+	//LabelPtr TabPanel3;
+	//LabelPtr TabPanel4;
+	//LabelPtr historyLabel;
+	//LabelPtr historyLabel2;
+	//ScrollPanelPtr TabContentA;
+	//ScrollPanelPtr TabContentB;
+	//ScrollPanelPtr TabContentC;
+	//PanelPtr TabContentD;
+	///////////////^%#$^%$#^%#$^%#$^%#$%^#$^%$#%^#$^%#$%^#$%^$#%^#$%^#$^%#$%^$#%^$#^%#%$^#$^///////////////////////////]]]]]]]]]]]
+	//PanelPtr SplitPanelPanel;
+	////PanelPtr SplitPanelPanel2;
+	//PanelPtr SplitPanelPaneltopleft;
+	//SpringLayoutPtr PanelFlowLayout;
 	BorderLayoutPtr PanelFlowLayout2;
+	//BorderLayoutConstraintsPtr PanelTopLeftConstraints1;
+	//BorderLayoutConstraintsPtr PanelTopLeftConstraints2;
 
-	BorderLayoutConstraintsPtr PanelTopLeftConstraints2;
 
+	//SceneGraphTreeModelPtr TheTreeModel;
+	//SceneGraphTreeModelPtr TempTreeModel;
+	//TreePtr TheTree;
+	//NodePtr SelectedNode;
+	//
+	/////////////////^%#$^%$#^%#$^%#$^%#$%^#$^%$#%^#$^%#$%^#$%^$#%^#$%^#$^%#$%^$#%^$#^%#%$^#$^///////////////////////////]]]]]]]]]]]
+	//LabelPtr NodeNameLabel;
+	//LabelPtr NodeCoreTypeLabel;
+	//LabelPtr NodeMinLabel;
+	//LabelPtr NodeMaxLabel;
+	//LabelPtr NodeCenterLabel;
+	//LabelPtr NodeTriCountLabel;
+	//LabelPtr NodeTravMaskLabel;
+	//LabelPtr NodeOcclusionMaskLabel;
+	//LabelPtr NodeActiveLabel;
+
+	//LabelPtr NodeNameValueLabel;
+	//LabelPtr NodeCoreTypeValueLabel;
+	//LabelPtr NodeMinValueLabel;
+	//LabelPtr NodeMaxValueLabel;
+	//LabelPtr NodeCenterValueLabel;
+	//LabelPtr NodeTriCountValueLabel;
+	//LabelPtr NodeTravMaskValueLabel;
+	//LabelPtr NodeOcclusionMaskValueLabel;
+	//LabelPtr NodeActiveValueLabel;
+	///////////////^%#$^%$#^%#$^%#$^%#$%^#$^%$#%^#$^%#$%^#$%^$#%^#$%^#$^%#$%^$#%^$#^%#%$^#$^///////////////////////////]]]]]]]]]]]
 
 	PopupMenuPtr pop;
 	MenuItemPtr ShowHideItem ;
@@ -240,21 +265,27 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	MenuPtr NewNode ;
 	
 
-	BorderLayoutConstraintsPtr SplitPanelConstraints;
-	BorderLayoutConstraintsPtr SplitPanelConstraints2;
+	//ScrollPanelPtr TreeScrollPanel;
+
+	NodePtr highlightNode;
+
+	//CardLayoutPtr TopLeftCardLayout;
+	//PanelPtr TopLeftTreePanel;
+
+	//BorderLayoutConstraintsPtr SplitPanelConstraints;
+	//BorderLayoutConstraintsPtr SplitPanelConstraints2;
 	SplitPanelPtr SplitPanel;
 	SplitPanelPtr TopHalfSplitPanel;
 	DefaultMutableComboBoxModelPtr ComboBoxModel;
-	ComboBoxPtr modeComboBox;
+	ComboBoxPtr ComboBox;
     
-	
-
     ViewportPtr _DebugViewport;
     ViewportPtr createDebugViewport(void);
 
 	void createGotoSceneMenuItems(ProjectPtr TheProject);
     void updateGotoSceneMenuItems(ProjectPtr TheProject);
-
+	void setLabelValuesToNull();
+	void setLabelValues(NodePtr SelectedNode);
 	void updateListBox(void);
 	void setupPopupMenu();
 	void invertShowHideCaption();
@@ -274,10 +305,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     virtual ~ApplicationPlayer(void); 
 
     /*! \}                                                                 */
-		
-
-
-
+    
 	class PlayerKeyListener : public KeyAdapter
 	{
 	public:
@@ -314,9 +342,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
         {
 			int index = _ComboBox->getSelectedIndex();
 			//std::cout<<"reaced"<<index<<std::endl;
-            if(index == 0)
+            if(index == 1)
 			{
-				_TopLeftCardLayout->first(_TopLeftTreePanel);
+				_TopLeftCardLayout->last(_TopLeftTreePanel);
 				beginEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
 					_ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(_ApplicationPlayer->pop);
 				endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
@@ -328,7 +356,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 					_ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(NullFC);
 				endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
 
-				_TopLeftCardLayout->last(_TopLeftTreePanel);
+				_TopLeftCardLayout->first(_TopLeftTreePanel);
 				//InfoTabPanel->setSelectedIndex(3);
 			}
 		}
@@ -406,7 +434,80 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	highlightNodeListener _highlightNodeListener;
 
 
-	
+/////////////////////////////////////asasasasasa
+ //   class LuaErrorListener : public LuaListener
+ //   {
+
+ //       public:
+ //           LuaErrorListener(ApplicationPlayerPtr TheApplicationPlayer);
+
+ //       protected :
+ //           ApplicationPlayerPtr _ApplicationPlayer;
+
+ //       public:
+
+ //           virtual void error(const LuaErrorEventPtr e);
+ //   };
+
+
+
+ //   friend class LuaErrorListener;
+
+	//LuaErrorListener  _LuaErrorListener;
+/////////////////////////////////////asasasasasa
+
+//////////////////////////////// tree selection listener///////////////////////////////////
+
+	//class TheTreeSelectionListener : public TreeSelectionListener
+	//{
+	//public:
+	//	TheTreeSelectionListener(ApplicationPlayerPtr TheApplicationPlayer);
+	//	//Called whenever elements are added to the selection
+	//	virtual void selectionAdded(const TreeSelectionEventPtr e)
+	//	{
+	//		//Get the selected Node
+	//		try
+	//		{
+	//			_SelectedNode = boost::any_cast<NodePtr>(_TheTree->getLastSelectedPathComponent());
+	//		}
+	//		catch (boost::bad_any_cast &)
+	//		{
+	//			_SelectedNode = NullFC;
+	//		}
+	//		selectedNodeChanged();
+	//	}
+
+	//	//Called whenever elements are removed to the selection
+	//	virtual void selectionRemoved(const TreeSelectionEventPtr e)
+	//	{
+	//		_SelectedNode = NullFC;
+	//		selectedNodeChanged();
+	//	}
+
+	//	virtual void selectedNodeChanged();
+	//	virtual void setParams(TreePtr);
+	//	virtual void updateHighlight(void);
+	//	virtual void highlightChanged(void);
+	//	virtual NodePtr getHighlight(void);
+	//	virtual void setHighlight(NodePtr selectednode);
+
+
+	//protected:
+	//	ApplicationPlayerPtr _ApplicationPlayer;
+	//	TreePtr _TheTree;
+	//	NodePtr _SelectedNode;
+	//	NodePtr  _highlight;
+	//	//NodePtr  _highlightNode;
+	//	GeoPositions3fPtr _highlightPoints;
+
+	//};
+
+	//friend class TheTreeSelectionListener;
+	//TheTreeSelectionListener _TheTreeSelectionListener;
+
+	//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	bool _IsDebugActive;
     void enableDebug(bool EnableDebug);
     void keyTyped(const KeyEventPtr e);

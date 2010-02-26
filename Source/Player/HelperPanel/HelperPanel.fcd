@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="HelperPanel"
+	parent="Panel"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+The HelperView.
+
+</FieldContainer>

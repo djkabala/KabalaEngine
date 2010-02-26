@@ -1,41 +1,4 @@
-/*---------------------------------------------------------------------------*\
- *                             Kabala Engine                                 *
- *                                                                           *
- *                         www.vrac.iastate.edu                              *
- *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                License                                    *
- *                                                                           *
- * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
- * by the Free Software Foundation, version 3.                               *
- *                                                                           *
- * This library is distributed in the hope that it will be useful, but       *
- * WITHOUT ANY WARRANTY; without even the implied warranty of                *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
- * Library General Public License for more details.                          *
- *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
- * License along with this library; if not, write to the Free Software       *
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
-//---------------------------------------------------------------------------
-//  Includes
-//---------------------------------------------------------------------------
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -53,21 +16,12 @@
 #include <OpenSG/Input/OSGStringUtils.h>
 #include <OpenSG/OSGSimpleMaterial.h>
 
-// the general scene file loading handler
-#include <OpenSG/OSGSceneFileHandler.h>
-
-//Input
-#include <OpenSG/Input/OSGWindowUtils.h>
 
 #include "KEApplicationPlayer.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
 #include "Application/KEMainApplication.h"
 #include <OpenSG/UserInterface/OSGFlowLayout.h>
-
-#include "Player/HierarchyPanel/KEHierarchyPanel.h"
-#include "Player/HelperPanel/KEHelperPanel.h"
-#include "Player/ContentPanel/KEContentPanel.h"
 
 OSG_USING_NAMESPACE
 
@@ -363,95 +317,36 @@ void ApplicationPlayer::createDebugInterface(void)
 */	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// creation of the Tree
-	_HelperPanel = HelperPanel::create();
 
-	_HelperPanel->setupInfoTabPanel();
-	_HelperPanel->setupHistoryList();
-	_HelperPanel->setupRest();
-//	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&(_HelperPanel->_PlayerKeyListener));
+    TheTree = Tree::create();
+	TheTreeModel = SceneGraphTreeModel::create();
 
+	beginEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
+        TheTree->setPreferredSize(Vec2f(100, 500));
+        TheTree->setModel(TheTreeModel);
+    endEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
 
-	_HierarchyPanel = HierarchyPanel::create();
-	_HierarchyPanel->setApplicationPlayer(ApplicationPlayerPtr(this));
-	_HierarchyPanel->createDefaultHierarchyPanel();
-
-	_ContentPanel = ContentPanel::create();
-	_ContentPanel->init();
-
-	OpenFileButton = Button::create();
-
-	beginEditCP(OpenFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
-	OpenFileButton->setText("Open File");
-	OpenFileButton->setPreferredSize(Vec2f(100,50));
-	endEditCP(OpenFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
+	//NodePtr SelectedNode = NullFC;// MainApplication::the()->getProject()->getOverlayNode()->getChild(0);
+	//NodePtr SelectedNode = createHiglightNode(nodetohighlight,colorofhightlight);
+  //  _TheTreeSelectionListener.setParams(TheTree,SelectedNode);
+    TheTree->getSelectionModel()->addTreeSelectionListener(&_TheTreeSelectionListener);
 	
-	OpenFileButton->addActionListener(&_BasicListener);
-		
-	SaveFileButton = Button::create();
-
-	beginEditCP(SaveFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
-	SaveFileButton->setText("Save File");
-	SaveFileButton->setPreferredSize(Vec2f(100,50));
-	endEditCP(SaveFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
-
-	SaveFileButton->addActionListener(&_BasicListener);
-
-	/*CloseFileButton = Button::create();
-
-	beginEditCP(CloseFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
-	CloseFileButton->setText("Close File");
-	CloseFileButton->setPreferredSize(Vec2f(100,50));
-	endEditCP(CloseFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
-
-	CloseFileButton->addActionListener(&_BasicListener);
-	*/
-
-	modeComboBox = ComboBox::create();
-
-	Toolbar = Panel::create();
 	
-	beginEditCP(Toolbar,Panel::PreferredSizeFieldMask);
-	Toolbar->setPreferredSize(Vec2f(200,60));
-	endEditCP(Toolbar,Panel::PreferredSizeFieldMask);
+    // Create a ScrollPanel for easier viewing of the List (see 27ScrollPanel)
+    BorderLayoutConstraintsPtr SceneTreeConstraints = osg::BorderLayoutConstraints::create();
+    beginEditCP(SceneTreeConstraints, BorderLayoutConstraints::RegionFieldMask);
+        SceneTreeConstraints->setRegion(BorderLayoutConstraints::BORDER_WEST);
+    endEditCP(SceneTreeConstraints, BorderLayoutConstraints::RegionFieldMask);
 
-
-	beginEditCP(ToolbarLayout);
-        // NOTHING : )
-	endEditCP(ToolbarLayout); 
-
-	ToolbarLayout = osg::SpringLayout::create();
-
-
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, modeComboBox, 5, SpringLayoutConstraints::NORTH_EDGE, Toolbar);  
-    ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, modeComboBox, -5, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, modeComboBox, -140, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, modeComboBox, -5, SpringLayoutConstraints::SOUTH_EDGE, Toolbar);
-
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, SaveFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, Toolbar);  
-    ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, SaveFileButton, -150, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, SaveFileButton, -285, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, SaveFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, Toolbar);
-    	
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, OpenFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, Toolbar);  
-    ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, OpenFileButton, -295, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, OpenFileButton, -430, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, OpenFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, Toolbar);
-   
-/*	ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, CloseFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, Toolbar);  
-    ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, CloseFileButton, -440, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, CloseFileButton, -575, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, CloseFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, Toolbar);
-  */  
-	//ToolbarLayout = osg::FlowLayout::create();
-
-	beginEditCP(Toolbar,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-	Toolbar->getChildren().push_back(modeComboBox);
-	Toolbar->getChildren().push_back(SaveFileButton);
-	Toolbar->getChildren().push_back(OpenFileButton);
-	//Toolbar->getChildren().push_back(CloseFileButton);
-	Toolbar->setLayout(ToolbarLayout);
-	endEditCP(Toolbar,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-
+    TreeScrollPanel = ScrollPanel::create();
+    beginEditCP(TreeScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask | ScrollPanel::ConstraintsFieldMask);
+        TreeScrollPanel->setPreferredSize(Vec2s(350,300));
+        TreeScrollPanel->setConstraints(SceneTreeConstraints);
+        //TreeScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+        //TreeScrollPanel->setVerticalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(TreeScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask | ScrollPanel::ConstraintsFieldMask);
+    TreeScrollPanel->setViewComponent(TheTree);
+	/////////////////////////////////////////////////////////////////////////////////
 
 	// creation of menus and addition of menu items to them
 	ProjectMenu = Menu::create();
@@ -548,87 +443,472 @@ void ApplicationPlayer::createDebugInterface(void)
 	MainMenuBar->addMenu(NavigatorMenu);
 	MainMenuBar->addMenu(StatisticsMenu);
 	MainMenuBar->addMenu(ToggleMenu);
-  
-	SplitPanelPaneltopleft = osg::Panel::create();
     
-	//ToolbarLayout2= osg::BorderLayout::create();
+	/*************************************************** END Menu creation *******************************************************************/
+	/*************************************************** Tab Panel creation *******************************************************************/
+	
+	// Create a CodeTextArea
+    CodeTextArea = osg::TextArea::create();
 
-/*	PanelTopLeftConstraints2 = osg::BorderLayoutConstraints::create();
+    beginEditCP(CodeTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask ); //| FocusedFieldMask
+        //CodeTextArea->setPreferredSize(Vec2f(300, 200));
+        //CodeTextArea->setMinSize(Vec2f(300, 100));
+        //CodeTextArea->setTextColor(Color4f(0.0, 0.0, 0.0, 1.0));
+        //CodeTextArea->setSelectionBoxColor(Color4f(0.0, 0.0, 1.0, 1.0));
+        //CodeTextArea->setSelectionTextColor(Color4f(1.0, 1.0, 1.0, 1.0));
+        // Determine the font and initial text
+        CodeTextArea->setText("");
+		//setFocused(true);
+//        CodeTextArea->setFont(ExampleFont);
+        // This will select the "a" from above
+        //CodeTextArea->setSelectionStart(2);
+        //CodeTextArea->setSelectionEnd(3);
+        //CodeTextArea->setCaretPosition(2);
+        //CodeTextArea->setLineWrap(false);
+		//CodeTextArea->setEditable(false);
+    endEditCP(CodeTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+	
+	
+    // Create a ScrollPanel
+    TabContentA = ScrollPanel::create();
+    beginEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        TabContentA->setPreferredSize(Vec2f(300,1200));
+        TabContentA->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+		endEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the CodeTextArea to the ScrollPanel so it is displayed
+	TabContentA->setViewComponent(CodeTextArea);
+	// Create an ErrorTextArea	
+	ErrorTextArea = osg::TextArea::create();
+
+    beginEditCP(ErrorTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        //ErrorTextArea->setPreferredSize(Vec2f(300, 1200));
+        //ErrorTextArea->setMinSize(Vec2f(300, 300));
+        //ErrorTextArea->setTextColor(Color4f(0.0, 0.0, 0.0, 1.0));
+        //ErrorTextArea->setSelectionBoxColor(Color4f(0.0, 0.0, 1.0, 1.0));
+        //ErrorTextArea->setSelectionTextColor(Color4f(1.0, 1.0, 1.0, 1.0));
+        // Determine the font and initial text
+        ErrorTextArea->setText("Error List");
+//        ErrorTextArea->setFont(ExampleFont);
+        // This will select the "a" from above
+        //ErrorTextArea->setSelectionStart(2);
+        //ErrorTextArea->setSelectionEnd(3);
+        //ErrorTextArea->setCaretPosition(2);
+        //ErrorTextArea->setLineWrap(false);
+		ErrorTextArea->setEditable(false);
+    endEditCP(ErrorTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        
+    // Create a ScrollPanel
+    TabContentB = ScrollPanel::create();
+    beginEditCP(TabContentB, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        TabContentB->setPreferredSize(Vec2f(200,1200));
+        TabContentB->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(TabContentB, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the ErrorTextArea to the ScrollPanel so it is displayed
+	TabContentB->setViewComponent(ErrorTextArea);
+
+	// Create a StackTraceTextArea
+	StackTraceTextArea = osg::TextArea::create();
+
+    beginEditCP(StackTraceTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        //StackTraceTextArea->setPreferredSize(Vec2f(300, 200));
+        //StackTraceTextArea->setMinSize(Vec2f(300, 300));
+        //StackTraceTextArea->setTextColor(Color4f(0.0, 0.0, 0.0, 1.0));
+        //StackTraceTextArea->setSelectionBoxColor(Color4f(0.0, 0.0, 1.0, 1.0));
+        //StackTraceTextArea->setSelectionTextColor(Color4f(1.0, 1.0, 1.0, 1.0));
+        // Determine the font and initial text
+        StackTraceTextArea->setText("Stack Trace");
+//        StackTraceTextArea->setFont(ExampleFont);
+        // This will select the "a" from above
+        //StackTraceTextArea->setSelectionStart(2);
+        //StackTraceTextArea->setSelectionEnd(3);
+        //StackTraceTextArea->setCaretPosition(2);
+        //StackTraceTextArea->setLineWrap(false);
+		StackTraceTextArea->setEditable(false);
+    endEditCP(StackTraceTextArea, TextArea::MinSizeFieldMask | TextArea::MaxSizeFieldMask | TextArea::PreferredSizeFieldMask | TextArea::MinSizeFieldMask 
+        | TextArea::TextColorFieldMask | TextArea::FontFieldMask 
+        | TextArea::SelectionBoxColorFieldMask | TextArea::SelectionTextColorFieldMask);
+        
+    // Create a ScrollPanel
+    TabContentC = ScrollPanel::create();
+    beginEditCP(TabContentC, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        TabContentC->setPreferredSize(Vec2f(200,1200));
+        TabContentC->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(TabContentC, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the StackTraceTextArea to the ScrollPanel so it is displayed
+	TabContentC->setViewComponent(StackTraceTextArea);
 
 	
+	TabContentD = osg::Panel::create();
+
+	NodeNameLabel = Label::create();
+    beginEditCP(NodeNameLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeNameLabel->setText("Name");
+        NodeNameLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeNameLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeNameValueLabel = Label::create();
+    beginEditCP(NodeNameValueLabel, Label::PreferredSizeFieldMask);
+        NodeNameValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeNameValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeCoreTypeLabel = Label::create();
+    beginEditCP(NodeCoreTypeLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeCoreTypeLabel->setText("Core Type");
+        NodeCoreTypeLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeCoreTypeLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeCoreTypeValueLabel = Label::create();
+    beginEditCP(NodeCoreTypeValueLabel, Label::PreferredSizeFieldMask);
+        NodeCoreTypeValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeCoreTypeValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeMinLabel = Label::create();
+    beginEditCP(NodeMinLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeMinLabel->setText("Min");
+        NodeMinLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeMinLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeMinValueLabel = Label::create();
+    beginEditCP(NodeMinValueLabel, Label::PreferredSizeFieldMask);
+        NodeMinValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeMinValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeMaxLabel = Label::create();
+    beginEditCP(NodeMaxLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeMaxLabel->setText("Max");
+        NodeMaxLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeMaxLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeMaxValueLabel = Label::create();
+    beginEditCP(NodeMaxValueLabel, Label::PreferredSizeFieldMask);
+        NodeMaxValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeMaxValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeCenterLabel = Label::create();
+    beginEditCP(NodeCenterLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeCenterLabel->setText("Center");
+        NodeCenterLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeCenterLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeCenterValueLabel = Label::create();
+    beginEditCP(NodeCenterValueLabel, Label::PreferredSizeFieldMask);
+        NodeCenterValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeCenterValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeTriCountLabel = Label::create();
+    beginEditCP(NodeTriCountLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeTriCountLabel->setText("TriCount");
+        NodeTriCountLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeTriCountLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeTriCountValueLabel = Label::create();
+    beginEditCP(NodeTriCountValueLabel, Label::PreferredSizeFieldMask);
+        NodeTriCountValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeTriCountValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeTravMaskLabel = Label::create();
+    beginEditCP(NodeTravMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeTravMaskLabel->setText("Traversal Mask");
+        NodeTravMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeTravMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeTravMaskValueLabel = Label::create();
+    beginEditCP(NodeTravMaskValueLabel, Label::PreferredSizeFieldMask);
+        NodeTravMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeTravMaskValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeOcclusionMaskLabel = Label::create();
+    beginEditCP(NodeOcclusionMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeOcclusionMaskLabel->setText("Occlusion Mask");
+        NodeOcclusionMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeOcclusionMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeOcclusionMaskValueLabel = Label::create();
+    beginEditCP(NodeOcclusionMaskValueLabel, Label::PreferredSizeFieldMask);
+        NodeOcclusionMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeOcclusionMaskValueLabel, Label::PreferredSizeFieldMask);
+
+    NodeActiveLabel = Label::create();
+    beginEditCP(NodeActiveLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        NodeActiveLabel->setText("Active");
+        NodeActiveLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(NodeActiveLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+
+    NodeActiveValueLabel = Label::create();
+    beginEditCP(NodeActiveValueLabel, Label::PreferredSizeFieldMask);
+        NodeActiveValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(NodeActiveValueLabel, Label::PreferredSizeFieldMask);
+    
+	////////////////////////// not addded
+    GridLayoutPtr TabContentDLayout = osg::GridLayout::create();
+
+    beginEditCP(TabContentDLayout, GridLayout::RowsFieldMask | GridLayout::ColumnsFieldMask | 
+		GridLayout::HorizontalGapFieldMask | GridLayout::VerticalGapFieldMask);
+	    TabContentDLayout->setRows(9);
+        TabContentDLayout->setColumns(2);
+        TabContentDLayout->setHorizontalGap(2);
+        TabContentDLayout->setVerticalGap(2);
+    endEditCP(TabContentDLayout, GridLayout::RowsFieldMask | GridLayout::ColumnsFieldMask | 
+		GridLayout::HorizontalGapFieldMask | GridLayout::VerticalGapFieldMask);
+	////////////////////////// not addded ended
+
+	beginEditCP(TabContentD,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
+
+        TabContentD->setPreferredSize(Vec2f(100.0f, 200.0f));
+        TabContentD->setLayout(TabContentDLayout);
+        TabContentD->getChildren().push_back(NodeNameLabel);
+        TabContentD->getChildren().push_back(NodeNameValueLabel);
+        TabContentD->getChildren().push_back(NodeCoreTypeLabel);
+        TabContentD->getChildren().push_back(NodeCoreTypeValueLabel);
+        TabContentD->getChildren().push_back(NodeMinLabel);
+        TabContentD->getChildren().push_back(NodeMinValueLabel);
+        TabContentD->getChildren().push_back(NodeMaxLabel);
+        TabContentD->getChildren().push_back(NodeMaxValueLabel);
+        TabContentD->getChildren().push_back(NodeCenterLabel);
+        TabContentD->getChildren().push_back(NodeCenterValueLabel);
+        TabContentD->getChildren().push_back(NodeTriCountLabel);
+        TabContentD->getChildren().push_back(NodeTriCountValueLabel);
+        TabContentD->getChildren().push_back(NodeTravMaskLabel);
+        TabContentD->getChildren().push_back(NodeTravMaskValueLabel);
+        TabContentD->getChildren().push_back(NodeOcclusionMaskLabel);
+        TabContentD->getChildren().push_back(NodeOcclusionMaskValueLabel);
+        TabContentD->getChildren().push_back(NodeActiveLabel);
+        TabContentD->getChildren().push_back(NodeActiveValueLabel);
+
+	endEditCP(TabContentD,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
+
+
+	// creating the labels for the various tabs
+	
+	TabPanel1 = osg::Label::create();
+    TabPanel2 = osg::Label::create();
+    TabPanel3 = osg::Label::create();
+	TabPanel4 = osg::Label::create();
+
+
+	// set the fields of the labels
+	beginEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        TabPanel1->setText("Lua Console");
+        TabPanel1->setBorders(NullFC);
+        TabPanel1->setBackgrounds(NullFC);
+	endEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+    
+	beginEditCP(TabPanel2, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        TabPanel2->setText("Error");
+        TabPanel2->setBorders(NullFC);
+        TabPanel2->setBackgrounds(NullFC);
+    endEditCP(TabPanel2, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	LuaManager::the()->addLuaListener(&_LuaErrorListener);
+        
+    beginEditCP(TabPanel3, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        TabPanel3->setText("Stack");
+        TabPanel3->setBorders(NullFC);
+        TabPanel3->setBackgrounds(NullFC);
+    endEditCP(TabPanel3, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+    
+	beginEditCP(TabPanel4, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        TabPanel4->setText("Properties");
+        TabPanel4->setBorders(NullFC);
+        TabPanel4->setBackgrounds(NullFC);
+    endEditCP(TabPanel4, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+    
+
+	// creating the tab panel
+	InfoTabPanel= osg::TabPanel::create();
+    beginEditCP(InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
+		//InfoTabPanel->setPreferredSize(MainApplication::the()->getMainWindowEventProducer()->getDesktopSize());
+		InfoTabPanel->setPreferredSize(Vec2f(1200,200));
+	    InfoTabPanel->addTab(TabPanel1, TabContentA);
+        InfoTabPanel->addTab(TabPanel2, TabContentB);
+        InfoTabPanel->addTab(TabPanel3, TabContentC);
+		InfoTabPanel->addTab(TabPanel4, TabContentD);
+		InfoTabPanel->setTabAlignment(0.5f);
+        InfoTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
+	endEditCP(InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
+    InfoTabPanel->setSelectedIndex(0);
+	
+	executeBtn=osg::Button::create();
+
+	beginEditCP(executeBtn,Button::TextFieldMask);// | Button::AcceleratorKeyFieldMask | Button::AcceleratorModifiersFieldMask | Button::MnemonicKeyFieldMask);
+		executeBtn->setText("EXECUTE");
+		executeBtn->setPreferredSize(Vec2f(100,30));
+		//executeBtn->setAcceleratorKey(KeyEvent::KEY_X);
+        //executeBtn->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+		//executeBtn->setMnemonicKey(KeyEvent::KEY_X);
+	endEditCP(executeBtn,Button::TextFieldMask);
+
+	executeBtn->addActionListener(&_BasicListener);
+
+	ListSelectionModelPtr HistoryListSelectionModel(new DefaultListSelectionModel);
+// 52
+	HistoryListModel = DefaultListModel::create();
+
+	updateListBox();
+	
+	HistoryList = List::create();
+	beginEditCP(HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
+	    HistoryList->setPreferredSize(Vec2f(100, 100));
+	    HistoryList->setOrientation(List::VERTICAL_ORIENTATION);
+		//HistoryList->setOrientation(List::HORIZONTAL_ORIENTATION);
+		HistoryList->setModel(HistoryListModel);
+	endEditCP(HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
+
+	//HistoryList.setMode(DefaultListSelectionModel::SINGLE_SELECTION);
+
+	HistoryList->setSelectionModel(HistoryListSelectionModel);
+
+	HistoryScrollPanel = ScrollPanel::create();
+	beginEditCP(HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+		HistoryScrollPanel->setPreferredSize(Vec2f(100,100));
+		HistoryScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+		//HistoryScrollPanel->setVerticalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+	endEditCP(HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+	HistoryScrollPanel->setViewComponent(HistoryList);
+	
+	historyLabel = osg::Label::create();
+	historyLabel2 = osg::Label::create();
+
+
+	// set the fields of the labels
+
+	beginEditCP(historyLabel, Label::TextFieldMask);
+        historyLabel->setText("History");
+   	endEditCP(historyLabel, Label::TextFieldMask);
+    beginEditCP(historyLabel2, Label::TextFieldMask);
+        historyLabel2->setText("History2");
+   	endEditCP(historyLabel2, Label::TextFieldMask);
+
+	// Creating a panel for adding the tabpanel to it and setting springlayout as the layout
+	SplitPanelPanel = osg::Panel::create();
+	SplitPanelPaneltopleft = osg::Panel::create();
+    
+	PanelFlowLayout = osg::SpringLayout::create();
+	PanelFlowLayout2= osg::BorderLayout::create();
+
+	PanelTopLeftConstraints1 = osg::BorderLayoutConstraints::create();
+	PanelTopLeftConstraints2 = osg::BorderLayoutConstraints::create();
+
+	beginEditCP(PanelTopLeftConstraints1, BorderLayoutConstraints::RegionFieldMask);
+        PanelTopLeftConstraints1->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    endEditCP(PanelTopLeftConstraints1, BorderLayoutConstraints::RegionFieldMask);
+
 	beginEditCP(PanelTopLeftConstraints2, BorderLayoutConstraints::RegionFieldMask);
         PanelTopLeftConstraints2->setRegion(BorderLayoutConstraints::BORDER_SOUTH);
     endEditCP(PanelTopLeftConstraints2, BorderLayoutConstraints::RegionFieldMask);
-*/
-	beginEditCP(_HierarchyPanel,Panel::PreferredSizeFieldMask);
-		_HierarchyPanel->setPreferredSize(Vec2f(400,700));
-	endEditCP(_HierarchyPanel,Panel::PreferredSizeFieldMask);
+
+
+	TopLeftCardLayout = osg::CardLayout::create(); 
+	TopLeftTreePanel = osg::Panel::create();
+
+	ButtonPtr ExampleButton1 = osg::Button::create();
+    ButtonPtr ExampleButton2 = osg::Button::create();
+
+	beginEditCP(ExampleButton1, Button::TextFieldMask);
+        ExampleButton1->setText("Scene Graph");
+    endEditCP(ExampleButton1, Button::TextFieldMask);
+
+	beginEditCP(ExampleButton2, Button::TextFieldMask);
+        ExampleButton2->setText("Lua Graph");
+    endEditCP(ExampleButton2, Button::TextFieldMask);
+
+
+	beginEditCP(TopLeftTreePanel, Panel::LayoutFieldMask | Panel::ChildrenFieldMask);
+        TopLeftTreePanel->setLayout(TopLeftCardLayout);
+        TopLeftTreePanel->getChildren().push_back(ExampleButton2);
+		TopLeftTreePanel->getChildren().push_back(TreeScrollPanel);
+        //TopLeftTreePanel->getChildren().push_back(ExampleButton1);
+        TopLeftTreePanel->setConstraints(PanelTopLeftConstraints1);
+    endEditCP(TopLeftTreePanel, Panel::LayoutFieldMask | Panel::ChildrenFieldMask);
+
 
 	// SplitPanelPaneltopleft panel elements creation
 	ComboBoxModel = DefaultMutableComboBoxModel::create();
-	ComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
 	ComboBoxModel->addElement(boost::any(std::string("Lua Graph")));
+	ComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
+	ComboBoxPtr ComboBox = ComboBox::create();
+	beginEditCP(ComboBox, ComboBox::ModelFieldMask | ComboBox::MinSizeFieldMask  | ComboBox::EditableFieldMask);
+		ComboBox->setConstraints(PanelTopLeftConstraints2);
+		ComboBox->setMinSize(Vec2f(100.0,20));
+		ComboBox->setEditable(false);
+		ComboBox->setModel(ComboBoxModel);
+	endEditCP(ComboBox, ComboBox::ModelFieldMask);
 	
-	beginEditCP(modeComboBox, ComboBox::ModelFieldMask | ComboBox::MinSizeFieldMask  | ComboBox::EditableFieldMask);
-//		modeComboBox->setConstraints(PanelTopLeftConstraints2);
-		modeComboBox->setMinSize(Vec2f(100.0,20));
-		modeComboBox->setEditable(false);
-		modeComboBox->setModel(ComboBoxModel);
-	endEditCP(modeComboBox, ComboBox::ModelFieldMask);
-	
-	//modeComboBox->addActionListener(&_BasicListener);
-	_ComboBoxListener.set(modeComboBox,_HierarchyPanel->TopLeftCardLayout,_HierarchyPanel);//->TopLeftTreePanel);
+	//ComboBox->addActionListener(&_BasicListener);
+	_ComboBoxListener.set(ComboBox,TopLeftCardLayout,TopLeftTreePanel);
 	ComboBoxModel->addSelectionListener(&_ComboBoxListener);
 			
-	// Determine where the modeComboBox starts
-	modeComboBox->setSelectedIndex(0);
-	
-	pop = PopupMenu::create();
-	
-	
-	HierarchyPanelLayout = osg::SpringLayout::create();
+	// Determine where the ComboBox starts
+	ComboBox->setSelectedIndex(0);
 
-	HierarchyPanelLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HierarchyPanel, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPaneltopleft);  
-    HierarchyPanelLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HierarchyPanel, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPaneltopleft);
-	HierarchyPanelLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _HierarchyPanel, 5, SpringLayoutConstraints::WEST_EDGE, SplitPanelPaneltopleft);
-	HierarchyPanelLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _HierarchyPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPaneltopleft);
-   
+	pop = PopupMenu::create();
+	//poptrigger = Button::create();
+
+	//beginEditCP(poptrigger);
+	//	poptrigger->setPopupMenu(pop);
+	//	poptrigger->setConstraints(PanelTopLeftConstraints3);
+	//endEditCP(poptrigger);
 
 	setupPopupMenu();
 
 	beginEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-		SplitPanelPaneltopleft->getChildren().push_back(_HierarchyPanel);//->TopLeftTreePanel);
-		//SplitPanelPaneltopleft->getChildren().push_back(modeComboBox);
+		SplitPanelPaneltopleft->getChildren().push_back(TopLeftTreePanel);
+		SplitPanelPaneltopleft->getChildren().push_back(ComboBox);
 		//SplitPanelPaneltopleft->getChildren().push_back(poptrigger);
-		SplitPanelPaneltopleft->setPopupMenu(pop);
-		SplitPanelPaneltopleft->setLayout(HierarchyPanelLayout);
+		//SplitPanelPaneltopleft->setPopupMenu(pop);
+		SplitPanelPaneltopleft->setLayout(PanelFlowLayout2);
     endEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
+
+	int SPACE_FOR_BUTTON = 200;
+
+    // OverlayLayout has no options to edit!
+    beginEditCP(PanelFlowLayout);
+        // NOTHING : )
+    endEditCP(PanelFlowLayout); 
+
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPanel); 
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, InfoTabPanel, -1*SPACE_FOR_BUTTON, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, SplitPanelPanel);  
+
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, historyLabel, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, historyLabel, 25, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPanel); 
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, historyLabel, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, historyLabel, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
+
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, HistoryScrollPanel, 5, SpringLayoutConstraints::SOUTH_EDGE, historyLabel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, HistoryScrollPanel, -5, SpringLayoutConstraints::NORTH_EDGE, executeBtn); 
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, HistoryScrollPanel, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, HistoryScrollPanel, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
+
+	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, executeBtn, 15, SpringLayoutConstraints::VERTICAL_CENTER_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, executeBtn, -15, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPanel);
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, executeBtn, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPanel);  
+    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, executeBtn, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
+    
+	
+	beginEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+		SplitPanelPanel->getChildren().push_back(InfoTabPanel);
+		SplitPanelPanel->getChildren().push_back(historyLabel);
+		SplitPanelPanel->getChildren().push_back(HistoryScrollPanel);		
+		SplitPanelPanel->getChildren().push_back(executeBtn);
+        SplitPanelPanel->setLayout(PanelFlowLayout);
+        //SplitPanelPanel->setLayout(PanelFlowLayout);
+    endEditCP(SplitPanelPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+
+
+	/*************************************************** END Tab Panel creation *******************************************************************/
 	/*************************************************** SplitPanel creation **********************************************************************/
-
-	ToolbarandContentConstraints = osg::BorderLayoutConstraints::create();
-
-	beginEditCP(ToolbarandContentConstraints, BorderLayoutConstraints::RegionFieldMask);
-        ToolbarandContentConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
-    endEditCP(ToolbarandContentConstraints, BorderLayoutConstraints::RegionFieldMask);
-
-	ToolbarandContentPanel = osg::SplitPanel::create();
-
-	beginEditCP(ToolbarandContentPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-        ToolbarandContentPanel->setConstraints(ToolbarandContentConstraints);
-        ToolbarandContentPanel->setMinComponent(Toolbar);
-		ToolbarandContentPanel->setMaxComponent(_ContentPanel);
-        ToolbarandContentPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
-        ToolbarandContentPanel->setDividerPosition(.05); 
-        // location from the left/top
-        ToolbarandContentPanel->setDividerSize(1);
-        ToolbarandContentPanel->setExpandable(false);
-        //ToolbarandContentPanel->setMaxDividerPosition(.25);
-        //ToolbarandContentPanel->setMinDividerPosition(.15);
-    endEditCP(ToolbarandContentPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-
 
 	SplitPanelConstraints2 = osg::BorderLayoutConstraints::create();
 	
@@ -642,7 +922,7 @@ void ApplicationPlayer::createDebugInterface(void)
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
         TopHalfSplitPanel->setConstraints(SplitPanelConstraints2);
         TopHalfSplitPanel->setMinComponent(SplitPanelPaneltopleft);
-		TopHalfSplitPanel->setMaxComponent(ToolbarandContentPanel);
+		//TopHalfSplitPanel->setMinComponent(SplitPanelPanel);
         TopHalfSplitPanel->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
         TopHalfSplitPanel->setDividerPosition(.25); 
         // location from the left/top
@@ -652,7 +932,16 @@ void ApplicationPlayer::createDebugInterface(void)
         TopHalfSplitPanel->setMinDividerPosition(.15);
     endEditCP(TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+	
+	// Creation of the splitpanel ,the only component of which is the SplitPanelPanel created previously
+/*	SplitPanelPanel2 = osg::Panel::create();
 
+	beginEditCP(SplitPanelPanel2, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+		SplitPanelPanel2->getChildren().push_back(TopHalfSplitPanel);
+		SplitPanelPanel2->setLayout(PanelFlowLayout2);
+        //SplitPanelPanel2->setLayout(PanelFlowLayout);
+    endEditCP(SplitPanelPanel2, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+*/
 	SplitPanelConstraints = osg::BorderLayoutConstraints::create();
 
 	beginEditCP(SplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
@@ -664,7 +953,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	beginEditCP(SplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
         SplitPanel->setConstraints(SplitPanelConstraints);
-        SplitPanel->setMaxComponent(_HelperPanel);//->SplitPanelPanel);
+        SplitPanel->setMaxComponent(SplitPanelPanel);
 		SplitPanel->setMinComponent(TopHalfSplitPanel);
         SplitPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
         SplitPanel->setDividerPosition(.75); 
@@ -705,7 +994,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	   MainInternalWindow->setResizable(false);
     endEditCP(MainInternalWindow, InternalWindow::ChildrenFieldMask | InternalWindow::MenuBarFieldMask | InternalWindow::LayoutFieldMask | InternalWindow::BackgroundsFieldMask | InternalWindow::AlignmentInDrawingSurfaceFieldMask | InternalWindow::ScalingInDrawingSurfaceFieldMask | InternalWindow::DrawTitlebarFieldMask | InternalWindow::ResizableFieldMask);
 
-	MainInternalWindow->setFocusedComponent(_HelperPanel->CodeTextArea);
+	MainInternalWindow->setFocusedComponent(CodeTextArea);
 
 	/*************************************************** END MainInternalWindow creation*************************************************************/
 	
@@ -807,16 +1096,16 @@ void ApplicationPlayer::attachDebugInterface(void)
 		}
 		else
 		{
-			if(_HierarchyPanel->TheTreeModel->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
+			if(TheTreeModel->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
 			{
-				_HierarchyPanel->TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+				TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
 			}
 		}
 		
     }
 	
-    _HierarchyPanel->_TheTreeSelectionListener.setParams(_HierarchyPanel->TheTree,ApplicationPlayerPtr(this));
-	_HierarchyPanel->_TheTreeSelectionListener.updateHighlight();
+    _TheTreeSelectionListener.setParams(TheTree);
+	_TheTreeSelectionListener.updateHighlight();
 	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     	DebuggerDrawingSurface->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
     endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
@@ -907,7 +1196,13 @@ void ApplicationPlayer::updateWindowTitle(void)
 
 void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 {
-	if(e->getSource() == ResetItem)
+	if(e->getSource() == executeBtn)
+	{
+		LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
+		list_of_commands.push_back(std::string(CodeTextArea->getText()));
+		updateListBox();
+	}
+	else if(e->getSource() == ResetItem)
 	{
 		//Reset the Project
             MainApplication::the()->getProject()->reset();
@@ -953,6 +1248,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 
 	}
 
+	
 	else if(e->getSource() == LastItem)
 	{
 
@@ -1005,12 +1301,12 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	{
 		toggleDrawPhysicsCharacteristics();
 	}
-	else if(e->getSource() == modeComboBox)
+	else if(e->getSource() == ComboBox)
 	{
 		std::cout<<"COMBOBOX CHANGED"<<std::endl;
-		int temp = modeComboBox->getSelectedIndex();
-		if(temp == 1)_HierarchyPanel->TopLeftCardLayout->last(_HierarchyPanel);//->TopLeftTreePanel);
-		else _HierarchyPanel->TopLeftCardLayout->first(_HierarchyPanel);//->TopLeftTreePanel);
+		int temp = ComboBox->getSelectedIndex();
+		if(temp == 1)TopLeftCardLayout->last(TopLeftTreePanel);
+		else TopLeftCardLayout->first(TopLeftTreePanel);
 
 	}
 	else if(e->getSource() == ShowHideItem)
@@ -1022,56 +1318,14 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 		invertShowHideCaption();
 
 	}
-	else if(e->getSource() == OpenFileButton)
-	{
-		
-		std::vector<WindowEventProducer::FileDialogFilter> Filters;
-		Filters.push_back(WindowEventProducer::FileDialogFilter("Lua Files","lua"));
-        Filters.push_back(WindowEventProducer::FileDialogFilter("All","*"));
-
-		
-		std::vector<Path> FilesToOpen;
-		FilesToOpen = MainApplication::the()->getMainWindowEventProducer()->openFileDialog("Open File Window",
-			Filters,
-			Path(".."),
-			true);
-
-        std::cout << "Files to Open: "<< std::endl;
-		
-
-        for(std::vector<Path>::iterator Itor(FilesToOpen.begin()) ; Itor != FilesToOpen.end(); ++Itor)
-        {
-            std::cout << Itor->string() << std::endl;
-			_ContentPanel->addTabWithText(*Itor);
-        }
-	}
-	else if(e->getSource() == SaveFileButton)
-	{
-		std::vector<WindowEventProducer::FileDialogFilter> Filters;
-        Filters.push_back(WindowEventProducer::FileDialogFilter("Lua Files","lua"));
-        Filters.push_back(WindowEventProducer::FileDialogFilter("All","*"));
-
-		Path SavePath = MainApplication::the()->getMainWindowEventProducer()->saveFileDialog("Save File Window",
-			Filters,
-			std::string("NewLuaFile.lua"),
-			Path(".."),
-			true);
-        
-        std::cout << "File to Save: " << SavePath.string() << std::endl;
-		_ContentPanel->saveTextFile(SavePath);
-	}
-/*	else if(e->getSource() == CloseFileButton)
-	{
-		_ContentPanel->closeCurrentWindow();
-	}*/
 	else if(e->getSource() == DeleteItem)
 	{
 		
 		NodePtr parent = SelectedNode->getParent();
 		if(parent!=NullFC)
 		{
-			std::cout<<_HierarchyPanel->TheTreeModel->getChildCount(parent)<<" - no of children of root of tree\n";
-			if(parent==MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot() && _HierarchyPanel->TheTreeModel->getChildCount(parent) == 1)
+			std::cout<<TheTreeModel->getChildCount(parent)<<" - no of children of root of tree\n";
+			if(parent==MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot() && TheTreeModel->getChildCount(parent) == 1)
 			{
 				std::cout<<"cant delete the only child.Tree becomes empty.\n";
 			}
@@ -1176,17 +1430,19 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
                 MainApplication::the()->getProject()->setActiveScene(*SearchItor);
             }
         }
-		
-		if(e->getKey() == KeyEvent::KEY_1 && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+		// shortcut to execute Lua code
+		if(e->getKey() == KeyEvent::KEY_X && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
 		{
-			MainInternalWindow->setFocusedComponent(_HelperPanel->CodeTextArea);
-			_HelperPanel->InfoTabPanel->setSelectedIndex(0);
-
+			LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
+			list_of_commands.push_back(std::string(CodeTextArea->getText()));
+			updateListBox();
+			
 		}
-
-		if(e->getKey() == KeyEvent::KEY_S && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+		if(e->getKey() == KeyEvent::KEY_C && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
 		{
-			_ContentPanel->setIsSplit(!_ContentPanel->getIsSplit());
+			MainInternalWindow->setFocusedComponent(CodeTextArea);
+			InfoTabPanel->setSelectedIndex(0);
+
 		}
 
         //Pause Active Updates
@@ -1253,7 +1509,6 @@ void ApplicationPlayer::toggleDrawPhysicsCharacteristics(void)
         }
     endEditCP(CurrentRoot, Node::ChildrenFieldMask);
 }
-
 
 NodePtr ApplicationPlayer::getPhysicsDrawableNode(void)
 {
@@ -1481,15 +1736,17 @@ ApplicationPlayer::ApplicationPlayer(void) :
 	_BasicListener(ApplicationPlayerPtr(this)),
 	_highlightNodeListener(ApplicationPlayerPtr(this)),
 	_ComboBoxListener(ApplicationPlayerPtr(this)),
+	_TheTreeSelectionListener(ApplicationPlayerPtr(this)),
 	_GotoSceneItemListener(ApplicationPlayerPtr(this)),
 	_ProjectListener(ApplicationPlayerPtr(this)),
+	_LuaErrorListener(ApplicationPlayerPtr(this)),
     _IsDebugActive(false),
     _PhysDrawable(NullFC),
     _PhysDrawableNode(NullFC),
     _WasMouseHidden(false),
     _WasMouseAttached(false)
 {
-	initDebugStatForegrounds();
+    initDebugStatForegrounds();
 }
 
 ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
@@ -1498,8 +1755,10 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
 	_BasicListener(ApplicationPlayerPtr(this)),
 	_highlightNodeListener(ApplicationPlayerPtr(this)),
 	_ComboBoxListener(ApplicationPlayerPtr(this)),
+	_TheTreeSelectionListener(ApplicationPlayerPtr(this)),
 	_GotoSceneItemListener(ApplicationPlayerPtr(this)),
 	_ProjectListener(ApplicationPlayerPtr(this)),
+	_LuaErrorListener(ApplicationPlayerPtr(this)),
     _IsDebugActive(false),
     _DebugBasicStatForeground(source._DebugBasicStatForeground),
     _DebugRenderStatForeground(source._DebugRenderStatForeground),
@@ -1567,8 +1826,8 @@ ApplicationPlayer::highlightNodeListener::highlightNodeListener(ApplicationPlaye
 
 void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
 {
-	if(_ApplicationPlayer->SelectedNode != NullFC)		// selected node is the node that is being selected.
-    {													// highlight node is the pointer to the bounding box for the selected node
+	if(_ApplicationPlayer->SelectedNode != NullFC)
+    {
 	 std::string coreName= _ApplicationPlayer->SelectedNode->getCore()->getTypeName();
 
 		// calc the world bbox of the highlight object
@@ -1604,6 +1863,366 @@ void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
     }
 }
 
+ApplicationPlayer::LuaErrorListener::LuaErrorListener(ApplicationPlayerPtr TheApplicationPlayer)
+{
+	_ApplicationPlayer=TheApplicationPlayer;
+}
+
+
+
+void ApplicationPlayer::LuaErrorListener::error(const LuaErrorEventPtr e)
+{
+    std::string ErrorType("");
+    switch(e->getStatus())
+    {
+        case LUA_ERRSYNTAX:
+            //Syntax Error
+            ErrorType = "Lua Syntax Error";
+            break;
+        case LUA_ERRMEM:
+            //Memory Allocation Error
+            ErrorType = "Lua Memory Allocation Error";
+            break;
+        case LUA_ERRRUN:
+            //Memory Allocation Error
+            ErrorType = "Lua Runtime Error";
+            break;
+        case LUA_ERRERR:
+            //Memory Allocation Error
+            ErrorType = "Lua Error in Error Handler";
+            break;
+        default:
+            //Unknown
+            ErrorType = "Lua Unknown Error";
+            break;
+    }
+    _ApplicationPlayer->ErrorTextArea->clear();
+    if(_ApplicationPlayer->ErrorTextArea->getText().size() != 0)
+    {
+        _ApplicationPlayer->ErrorTextArea->write("\n");
+    }
+    _ApplicationPlayer->ErrorTextArea->write(ErrorType + ":\n    " + e->getErrorString());
+
+    //Select the Error Tab
+    _ApplicationPlayer->InfoTabPanel->setSelectedIndex(1);
+
+    //Fill Stack Trace
+    if(e->getStackTraceEnabled() && 
+            (e->getStatus() == LUA_ERRMEM ||
+             e->getStatus() == LUA_ERRERR ||
+             e->getStatus() == LUA_ERRRUN))
+    {
+        std::stringstream ss;
+        ss << "Lua Stack Trace: " << std::endl;
+
+        MFString::StorageType::const_iterator ListItor(e->getMFStackTrace()->begin());
+        for(; ListItor != e->getMFStackTrace()->end() ; ++ListItor)
+        {
+            ss << "     " << (*ListItor) << std::endl;
+        }
+        _ApplicationPlayer->StackTraceTextArea->clear();
+        _ApplicationPlayer->StackTraceTextArea->write(ss.str());
+    }
+}
+
+void ApplicationPlayer::updateListBox(void)
+{
+	// clear off 
+	HistoryListModel->clear();
+	
+	for(int i=list_of_commands.size()-1;i>=0;i--)
+	{
+		HistoryListModel->pushBack(boost::any(list_of_commands[i]));
+		//std::cout<<list_of_commands[i]<<"***";
+	}
+	std::cout<<std::endl;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// newly added
+ApplicationPlayer::TheTreeSelectionListener::TheTreeSelectionListener(ApplicationPlayerPtr TheApplicationPlayer)
+{
+	_ApplicationPlayer = TheApplicationPlayer;
+	_highlight = NullFC;  /// added for highlight node
+	_highlightPoints = NullFC;
+}
+
+void ApplicationPlayer::TheTreeSelectionListener::setParams(TreePtr TheTree)//,NodePtr  SelectedNode)
+{
+	_TheTree=TheTree;
+}
+
+
+
+
+void ApplicationPlayer::TheTreeSelectionListener::setHighlight(NodePtr selectednode)
+{
+	_highlight = selectednode;
+	highlightChanged();
+}
+NodePtr ApplicationPlayer::TheTreeSelectionListener::getHighlight()
+{
+	return _highlight;
+}
+void ApplicationPlayer::TheTreeSelectionListener::highlightChanged(void)
+{
+ // to do...
+	SimpleMaterialPtr _highlightMaterial;
+	
+// FDEBUG (("SimpleSceneManager::updateHightlight() called\n"));
+
+	// init as needed
+	if(_highlightMaterial == NullFC)
+	{
+		_highlightMaterial = SimpleMaterial::create();
+		
+		beginEditCP(_highlightMaterial);
+		_highlightMaterial->setDiffuse (Color3f(0,1,0));
+		_highlightMaterial->setLit     (false);
+		endEditCP(_highlightMaterial);
+	}
+	if(_ApplicationPlayer->highlightNode == NullFC)
+	{
+		GeoPTypesPtr type = GeoPTypesUI8::create();
+		beginEditCP(type);
+		type->push_back(GL_LINE_STRIP);
+		type->push_back(GL_LINES);
+		endEditCP(type);
+
+		GeoPLengthsPtr lens = GeoPLengthsUI32::create();
+		beginEditCP(lens);
+		lens->push_back(10);
+		lens->push_back(6);
+		endEditCP(lens);
+
+		GeoIndicesUI32Ptr index = GeoIndicesUI32::create();
+		beginEditCP(index);
+		index->getFieldPtr()->push_back(0);
+		index->getFieldPtr()->push_back(1);
+		index->getFieldPtr()->push_back(3);
+		index->getFieldPtr()->push_back(2);
+		index->getFieldPtr()->push_back(0);
+		index->getFieldPtr()->push_back(4);
+		index->getFieldPtr()->push_back(5);
+		index->getFieldPtr()->push_back(7);
+		index->getFieldPtr()->push_back(6);
+		index->getFieldPtr()->push_back(4);
+
+		index->getFieldPtr()->push_back(1);
+		index->getFieldPtr()->push_back(5);
+		index->getFieldPtr()->push_back(2);
+		index->getFieldPtr()->push_back(6);
+		index->getFieldPtr()->push_back(3);
+		index->getFieldPtr()->push_back(7);
+		endEditCP(index);
+
+		_highlightPoints = GeoPositions3f::create();
+		beginEditCP(_highlightPoints);
+		_highlightPoints->push_back(Pnt3f(-1, -1, -1));
+		_highlightPoints->push_back(Pnt3f( 1, -1, -1));
+		_highlightPoints->push_back(Pnt3f(-1,  1, -1));
+		_highlightPoints->push_back(Pnt3f( 1,  1, -1));
+		_highlightPoints->push_back(Pnt3f(-1, -1,  1));
+		_highlightPoints->push_back(Pnt3f( 1, -1,  1));
+		_highlightPoints->push_back(Pnt3f(-1,  1,  1));
+		_highlightPoints->push_back(Pnt3f( 1,  1,  1));
+		endEditCP(_highlightPoints);
+		addRefCP(_highlightPoints);
+
+		GeometryPtr geo=Geometry::create();
+		beginEditCP(geo);
+		geo->setTypes     (type);
+		geo->setLengths   (lens);
+		geo->setIndices   (index);
+		geo->setPositions (_highlightPoints);
+		geo->setMaterial  (_highlightMaterial);  /// billa
+		endEditCP(geo);
+		addRefCP(geo);
+
+		_ApplicationPlayer->highlightNode = Node::create();
+		
+		beginEditCP(_ApplicationPlayer->highlightNode);
+		_ApplicationPlayer->highlightNode->setCore(geo);
+		endEditCP(_ApplicationPlayer->highlightNode);
+		addRefCP(_ApplicationPlayer->highlightNode);
+	}
+
+	
+	// attach the hightlight node to the root if the highlight is active
+	if(getHighlight() != NullFC)
+	{
+		if(_ApplicationPlayer->highlightNode->getParent() == NullFC)
+		{
+		beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->addChild(_ApplicationPlayer->highlightNode);
+		endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		}
+		
+	}
+	else
+	{
+		if(_ApplicationPlayer->highlightNode->getParent() != NullFC)
+		{
+		beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->subChild(_ApplicationPlayer->highlightNode);
+		endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		}
+	}
+	// update the highlight geometry
+	updateHighlight();
+}
+
+
+void ApplicationPlayer::TheTreeSelectionListener::updateHighlight(void)
+{
+	if(_highlight==NullFC)
+	return;
+
+	// calc the world bbox of the highlight object
+	#ifndef OSG_2_PREP
+	DynamicVolume vol;
+	#else
+	BoxVolume      vol;
+	#endif
+	_highlight->getWorldVolume(vol);
+
+	Pnt3f min,max;
+	vol.getBounds(min, max);
+
+	beginEditCP(_highlightPoints);
+	_highlightPoints->setValue(Pnt3f(min[0], min[1], min[2]), 0);
+	_highlightPoints->setValue(Pnt3f(max[0], min[1], min[2]), 1);
+	_highlightPoints->setValue(Pnt3f(min[0], max[1], min[2]), 2);
+	_highlightPoints->setValue(Pnt3f(max[0], max[1], min[2]), 3);
+	_highlightPoints->setValue(Pnt3f(min[0], min[1], max[2]), 4);
+	_highlightPoints->setValue(Pnt3f(max[0], min[1], max[2]), 5);
+	_highlightPoints->setValue(Pnt3f(min[0], max[1], max[2]), 6);
+	_highlightPoints->setValue(Pnt3f(max[0], max[1], max[2]), 7);
+	endEditCP(_highlightPoints);
+
+
+}
+
+
+void ApplicationPlayer::setLabelValuesToNull()
+{
+	    beginEditCP(NodeNameValueLabel, Label::TextFieldMask);
+            NodeNameValueLabel->setText("");
+        endEditCP(NodeNameValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+            NodeCoreTypeValueLabel->setText("");
+        endEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeMinValueLabel, Label::TextFieldMask);
+            NodeMinValueLabel->setText("");
+        endEditCP(NodeMinValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+            NodeMaxValueLabel->setText("");
+        endEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+            NodeCenterValueLabel->setText("");
+        endEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+            NodeTriCountValueLabel->setText("");
+        endEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+            NodeTravMaskValueLabel->setText("");
+        endEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+            NodeOcclusionMaskValueLabel->setText("");
+        endEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+            NodeActiveValueLabel->setText("");
+        endEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+}
+
+void ApplicationPlayer::setLabelValues(NodePtr SelectedNode)
+{
+		const Char8 *NodeName = getName(SelectedNode);
+
+		beginEditCP(NodeNameValueLabel, Label::TextFieldMask);
+            if(NodeName == NULL)
+            {
+                NodeNameValueLabel->setText("Unnamed Node");
+            }
+            else
+            {
+                NodeNameValueLabel->setText(NodeName);
+            }
+        endEditCP(NodeNameValueLabel, Label::TextFieldMask);
+	
+        beginEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+            NodeCoreTypeValueLabel->setText(SelectedNode->getCore()->getType().getCName());
+        endEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+		
+
+        DynamicVolume DyVol;
+        SelectedNode->getWorldVolume(DyVol);
+        Pnt3f Min,Max,Center;
+        DyVol.getBounds(Min,Max);
+        DyVol.getCenter(Center);
+
+        std::string TempText("");
+
+        TempText = boost::lexical_cast<std::string>(Min.x()) + ", " +boost::lexical_cast<std::string>(Min.x()) + ", " + boost::lexical_cast<std::string>(Min.x());
+        beginEditCP(NodeMinValueLabel, Label::TextFieldMask);
+            NodeMinValueLabel->setText(TempText);
+        endEditCP(NodeMinValueLabel, Label::TextFieldMask);
+
+        TempText = boost::lexical_cast<std::string>(Max.x()) + ", " +boost::lexical_cast<std::string>(Max.x()) + ", " + boost::lexical_cast<std::string>(Max.x());
+        beginEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+            NodeMaxValueLabel->setText(TempText);
+        endEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+
+        TempText = boost::lexical_cast<std::string>(Center.x()) + ", " +boost::lexical_cast<std::string>(Center.x()) + ", " + boost::lexical_cast<std::string>(Center.x());
+        beginEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+            NodeCenterValueLabel->setText(TempText);
+        endEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+
+        GeometryPrimitivesCounter PrimCounter;
+        PrimCounter(SelectedNode);
+        beginEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+            NodeTriCountValueLabel->setText(boost::lexical_cast<std::string>(PrimCounter.getTriCount()));
+        endEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+            NodeTravMaskValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getTravMask()));
+        endEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+            NodeOcclusionMaskValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getOcclusionMask()));
+        endEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+
+        beginEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+            NodeActiveValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getActive()));
+        endEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+}
+
+
+void ApplicationPlayer::TheTreeSelectionListener::selectedNodeChanged(void)
+{
+	
+	setHighlight(_SelectedNode);
+	
+    //Update Details Panel
+    if(_SelectedNode == NullFC)
+    {
+		
+		_ApplicationPlayer->setLabelValuesToNull();
+    }
+    else
+    {
+		_ApplicationPlayer->SelectedNode=_SelectedNode;
+		_ApplicationPlayer->setLabelValues(_SelectedNode);
+    }
+}
 
 void ApplicationPlayer::invertShowHideCaption()
 {
@@ -1619,13 +2238,19 @@ void ApplicationPlayer::invertShowHideCaption()
 
 void ApplicationPlayer::setupPopupMenu()
 {
+	
+
 		beginEditCP(pop);
+
 		pop->addItem(ShowHideItem);
+
 		pop->addSeparator();
+
 		pop->addItem(CutItem);	
 		pop->addItem(CopyItem);	
 		pop->addItem(PasteItem);	
 		pop->addItem(DeleteItem);	
+
 		endEditCP(pop);
 }
 
