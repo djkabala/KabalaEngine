@@ -47,6 +47,8 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KEContentPanel.h"
+#include <OpenSG/UserInterface/OSGInternalWindow.h>
+#include <OpenSG/UserInterface/OSGTitlebar.h>
 
 #include <boost/program_options.hpp>
 
@@ -82,14 +84,15 @@ void ContentPanel::initMethod (void)
 void ContentPanel::addTabWithText(Path file)
 {
 
-	PanelPtr newTabLabelPanel = Panel::create();
+	PanelPtr newTabLabelPanel = Panel::createEmpty();
 
-	ButtonPtr CloseButtonPtr = Button::create();
+	ButtonPtr CloseButtonPtr = ButtonPtr::dcast(InternalWindowPtr::dcast(InternalWindow::getClassType().getPrototype())->getTitlebar()->getCloseButton()->shallowCopy());
+	/*ButtonPtr CloseButtonPtr = Button::create();
 	
 	beginEditCP(CloseButtonPtr,Button::TextFieldMask | Button::PreferredSizeFieldMask);
 		CloseButtonPtr->setPreferredSize(Vec2f(100,20));
 		CloseButtonPtr->setText("X");
-	endEditCP(CloseButtonPtr,Button::TextFieldMask | Button::PreferredSizeFieldMask);
+	endEditCP(CloseButtonPtr,Button::TextFieldMask | Button::PreferredSizeFieldMask);*/
 
 	CloseButtonPtr->addActionListener(&_CloseButtonListener);
 
@@ -142,14 +145,14 @@ void ContentPanel::addTabWithText(Path file)
 	newTabContent->setViewComponent(newTextArea);
 
 	
-	PanelPtr newTabLabelPanel_r = Panel::create();
+	PanelPtr newTabLabelPanel_r = Panel::createEmpty();
 
-	ButtonPtr CloseButtonPtr_r = Button::create();
+	ButtonPtr CloseButtonPtr_r = ButtonPtr::dcast(InternalWindowPtr::dcast(InternalWindow::getClassType().getPrototype())->getTitlebar()->getCloseButton()->shallowCopy());
 	
-	beginEditCP(CloseButtonPtr_r,Button::TextFieldMask | Button::PreferredSizeFieldMask);
+	/*beginEditCP(CloseButtonPtr_r,Button::TextFieldMask | Button::PreferredSizeFieldMask);
 	CloseButtonPtr_r->setPreferredSize(Vec2f(20,10));
 	CloseButtonPtr_r->setText("X");
-	endEditCP(CloseButtonPtr_r,Button::TextFieldMask | Button::PreferredSizeFieldMask);
+	endEditCP(CloseButtonPtr_r,Button::TextFieldMask | Button::PreferredSizeFieldMask);*/
 	
 	CloseButtonPtr_r->addActionListener(&_CloseButtonListener);
 
@@ -263,11 +266,12 @@ void ContentPanel::tempcreateDefaultTabs()
 	TabPanel1 = osg::Label::create();
 
 	// set the fields of the labels
-	beginEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	beginEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask | Label::PreferredSizeFieldMask);
+		TabPanel1->setPreferredSize(Vec2f(120,20));
         TabPanel1->setText("Welcome!");
         TabPanel1->setBorders(NullFC);
         TabPanel1->setBackgrounds(NullFC);
-	endEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	endEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask | Label::PreferredSizeFieldMask);
     
 	// Create a StackTraceTextArea
 	TextArea1 = osg::TextArea::create();
@@ -384,9 +388,13 @@ void ContentPanel::actionPerformed(const osg::ActionEventPtr e)
 	UInt32 childindex = (temptabpanel->getChildIndex(tempPanel))/2;
 	std::cout<<"chldindex:"<<childindex<<std::endl;
 	
-	beginEditCP(temptabpanel,TabPanel::ChildrenFieldMask);
-		temptabpanel->removeTab(childindex);
-	endEditCP(temptabpanel,TabPanel::ChildrenFieldMask);
+	beginEditCP(leftTabPanel,TabPanel::ChildrenFieldMask);
+		leftTabPanel->removeTab(childindex);
+	endEditCP(leftTabPanel,TabPanel::ChildrenFieldMask);
+
+	beginEditCP(rightTabPanel,TabPanel::ChildrenFieldMask);
+		rightTabPanel->removeTab(childindex);
+	endEditCP(rightTabPanel,TabPanel::ChildrenFieldMask);
 
 	//}
 }
