@@ -327,6 +327,8 @@ void HelperPanel::updateListBox(void)
 	{
 		HistoryListModel->pushBack(boost::any(list_of_commands[i]));
 	}
+
+	
 	std::cout<<std::endl;
 }
 
@@ -334,6 +336,7 @@ void HelperPanel::setupHistoryList()
 {
 	ListSelectionModelPtr HistoryListSelectionModel(new DefaultListSelectionModel);
 
+	
 	HistoryListModel = DefaultListModel::create();
 
 	updateListBox();
@@ -346,13 +349,16 @@ void HelperPanel::setupHistoryList()
 	endEditCP(HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
 
 	HistoryList->setSelectionModel(HistoryListSelectionModel);
+	HistoryList->addMouseListener(&_PlayerMouseListener);
 
+	
 	HistoryScrollPanel = ScrollPanel::create();
 	beginEditCP(HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
 		HistoryScrollPanel->setPreferredSize(Vec2f(400,100));
 		HistoryScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
 	endEditCP(HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
 	HistoryScrollPanel->setViewComponent(HistoryList);
+	
 	
 	historyLabel = osg::Label::create();
 
@@ -411,7 +417,7 @@ void HelperPanel::setupRest()
     endEditCP(HelperPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener2);
- 
+	//MainApplication::the()->getMainWindowEventProducer()->addMouseListener(&_PlayerMouseListener);
 }
 
 void HelperPanel::viewTab(UInt32)
@@ -542,6 +548,7 @@ HelperPanel::HelperPanel(void) :
     Inherited(),
 	_BasicListener(HelperPanelPtr(this)),
 	_PlayerKeyListener2(HelperPanelPtr(this)),
+	_PlayerMouseListener(HelperPanelPtr(this)),
 	_LuaErrorListener(HelperPanelPtr(this))
 {
 	
@@ -551,6 +558,7 @@ HelperPanel::HelperPanel(const HelperPanel &source) :
     Inherited(source),
 	_BasicListener(HelperPanelPtr(this)),
 	_PlayerKeyListener2(HelperPanelPtr(this)),
+	_PlayerMouseListener(HelperPanelPtr(this)),
 	_LuaErrorListener(HelperPanelPtr(this))
 {
 }
@@ -559,6 +567,7 @@ HelperPanel::HelperPanel(const HelperPanel &source) :
 HelperPanel::~HelperPanel(void)
 {
 		MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_PlayerKeyListener2);
+		//MainApplication::the()->getMainWindowEventProducer()->removeMouseListener(&_PlayerMouseListener);
 }
 
 
@@ -571,7 +580,6 @@ void HelperPanel::actionPerformed(const ActionEventPtr e)
 {
 	if(e->getSource() == executeBtn)
 	{
-		std::cout<<"\n\nalso triggered\n";
 		LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
 		list_of_commands.push_back(std::string(CodeTextArea->getText()));
 		updateListBox();
@@ -581,6 +589,29 @@ void HelperPanel::actionPerformed(const ActionEventPtr e)
 void HelperPanel::PlayerKeyListener2::keyTyped(const KeyEventPtr e)
 {
     _HelperPanel->keyTyped2(e);
+}
+
+void HelperPanel::PlayerMouseListener::mouseClicked(const MouseEventPtr e)
+{
+   if(e->getClickCount() == 2)
+   {
+	   if(_HelperPanel->HistoryListModel->getSize()>0 && !_HelperPanel->HistoryList->getSelectionModel()->isSelectionEmpty())
+	   {
+		   
+		UInt32 SelectedItemIndex(_HelperPanel->HistoryList->getSelectionModel()->getMinSelectionIndex());
+		std::string temp = std::string(_HelperPanel->CodeTextArea->getText());
+		temp+="\n"+boost::any_cast<std::string>(_HelperPanel->HistoryListModel->getElementAt(SelectedItemIndex));
+		beginEditCP(_HelperPanel->CodeTextArea,TextArea::TextFieldMask);		
+		_HelperPanel->CodeTextArea->setText(temp);
+		endEditCP(_HelperPanel->CodeTextArea,TextArea::TextFieldMask);		
+		
+	   }
+	   else
+	   {
+		   std::cout<<"no item in list"<<std::endl;
+	   }
+		//std::cout<<"mouse was double clicked on:"<<e->getSource();
+   }
 }
 
 void HelperPanel::keyTyped2(const KeyEventPtr e)
@@ -610,6 +641,11 @@ HelperPanel::BasicListener::BasicListener(HelperPanelPtr TheHelperPanel)
 }
 
 HelperPanel::PlayerKeyListener2::PlayerKeyListener2(HelperPanelPtr TheHelperPanel)
+{
+	_HelperPanel=TheHelperPanel;
+}
+
+HelperPanel::PlayerMouseListener::PlayerMouseListener(HelperPanelPtr TheHelperPanel)
 {
 	_HelperPanel=TheHelperPanel;
 }

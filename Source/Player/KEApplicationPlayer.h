@@ -134,6 +134,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 {
   private:
 
+
     typedef ApplicationPlayerBase Inherited;
 
     /*==========================  PUBLIC  =================================*/
@@ -174,6 +175,13 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
   protected:
 
 
+	enum cActions{NONE,CUT,COPY};
+
+	UInt32 currentAction;
+
+	NodePtr nodeInCutClipboard;
+	NodePtr clonedNodeInCutClipboard;
+	NodePtr clonedNodeInCopyClipboard;
 
 
 	virtual void attachDebugInterface(void);
@@ -247,7 +255,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	DefaultMutableComboBoxModelPtr ComboBoxModel;
 	ComboBoxPtr modeComboBox;
     
-	
+
 
     ViewportPtr _DebugViewport;
     ViewportPtr createDebugViewport(void);

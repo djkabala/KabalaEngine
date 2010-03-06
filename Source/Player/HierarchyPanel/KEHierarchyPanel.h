@@ -55,6 +55,7 @@
 #include <OpenSG/UserInterface/OSGGridLayout.h>
 
 #include <OpenSG/OSGSimpleMaterial.h>
+#include <OpenSG/OSGSimpleAttachments.h> // FOR ATTACHING NAMES TO NODES ETC.
 
 #include <set>
 #include <vector>

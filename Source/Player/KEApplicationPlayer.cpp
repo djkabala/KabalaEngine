@@ -1068,82 +1068,102 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	{
 		
 		NodePtr parent = SelectedNode->getParent();
-		if(parent!=NullFC)
+/*		std::cout<<"before:"<<std::endl;
+		std::cout<<std::endl<<_HierarchyPanel->TheTreeModel->getChildCount(parent)<<" - _HierarchyPanel->TheTreeModel->getChildCount(parent)\n";
+		std::cout<<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()<<" _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()\n";
+
+		for(UInt32 i(0) ; i<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() ; ++i)
 		{
-			std::cout<<_HierarchyPanel->TheTreeModel->getChildCount(parent)<<" - no of children of root of tree\n";
-			if(parent==MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot() && _HierarchyPanel->TheTreeModel->getChildCount(parent) == 1)
+			std::cout<< "  Node:";
+			if(getName(_HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)))
 			{
-				std::cout<<"cant delete the only child.Tree becomes empty.\n";
+				std::cout<< getName(_HierarchyPanel->TheTreeModel->getRootNode()->getChild(i));
 			}
 			else
 			{
-//				parent->subChild(SelectedNode);
-//				TheTreeModel->removeNode(SelectedNode);
-
-				//TheTreeModel->getPath(
-
-
-				
-/*				beginEditCP(TheTreeModel);
-					TheTreeModel->setRoot(NullFC);
-				endEditCP(TheTreeModel);
-
-				beginEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
-					TheTree->setModel(TheTreeModel);
-				endEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
-
-
-				beginEditCP(TheTreeModel);
-					TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
-				endEditCP(TheTreeModel);
-
-				beginEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
-					TheTree->setModel(TheTreeModel);
-				endEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
-*/
-//				TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
-
-				 //  need to update the treemodel
-
-				//TheTreeModel->valueForPathChanged(SelectedNode,NullFC);
-				//TheTreeModel->changed(1,0);
-				//TheTreeModel->produceTreeStructureChanged(TheTreeModel->getPath(TheTreeModel->getInternalRoot()),std::vector<UInt32>(1, 0),std::vector<boost::any>(1, boost::any(TheTreeModel->getInternalRoot())));
-				//TheTreeModel->changed(UInt32(-1),0);
-				//TheTree->removeSelectionRow(1);
-				
-				//TheTreeModel->produceTreeNodesRemoved(parent,
-				/*TheTreeModel = NullFC;
-				TheTreeModel=SceneGraphTreeModel::create();
-				TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
-				beginEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
-					TheTree->setModel(TheTreeModel);
-				endEditCP(TheTree, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
-				*/
-							
+				std::cout<< "NONAME";
 			}
 
+			std::cout<< ", type: " << _HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)->getCore()->getType().getCName() << std::endl;
+		}
+*/
+		if(parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2) // 2 because the other child of root is bounding box
+		{
+			std::cout<<"cant delete the only child.Tree becomes empty.\n";
 		}
 		else
 		{
-				std::cout<<"parent is null\n";
+			_HierarchyPanel->TheTreeModel->removeNode(_HierarchyPanel->TheTree->getLastSelectedPathComponent());
 		}
+		
+		nodeInCutClipboard = NullFC;
+		clonedNodeInCutClipboard = NullFC;
+		clonedNodeInCopyClipboard = NullFC;
+
+
+/*		std::cout<<"after:"<<std::endl;
+		std::cout<<std::endl<<_HierarchyPanel->TheTreeModel->getChildCount(parent)<<" - _HierarchyPanel->TheTreeModel->getChildCount(parent)\n";
+		std::cout<<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()<<" _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()\n";
+
+		for(UInt32 i(0) ; i<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() ; ++i)
+		{
+			std::cout<< "  Node:";
+			if(getName(_HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)))
+			{
+				std::cout<< getName(_HierarchyPanel->TheTreeModel->getRootNode()->getChild(i));
+			}
+			else
+			{
+				std::cout<< "NONAME";
+			}
+
+			std::cout<< ", type: " << _HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)->getCore()->getType().getCName() << std::endl;
+		}
+*/
 
 	}
 	
 	else if(e->getSource() == CutItem)
 	{
-		std::cout<<"Cutting Item\n";
-		//SelectedNode->setTravMask(0);
+		NodePtr parent = SelectedNode->getParent();
+		if(parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2)
+		{
+			std::cout<<"\nCant cut the only remaining Item\n"<<std::endl;
+		}
+		else
+		{
+		//std::cout<<"Cutting Item\n";
+		currentAction = CUT;
+		nodeInCutClipboard = SelectedNode;
+		clonedNodeInCutClipboard = SelectedNode->clone();
+		setName(clonedNodeInCutClipboard,getName(SelectedNode));
+		}
 	}
 	else if(e->getSource() == CopyItem)
 	{
-		std::cout<<"Copying Item\n";
-		//SelectedNode->setTravMask(0);
+	//	std::cout<<"Copying Item\n";
+		currentAction = COPY;
+		clonedNodeInCopyClipboard = SelectedNode->clone();
+		std::string name=getName(SelectedNode);
+		name+=" copy";
+		std::cout<<std::endl<<name<<std::endl;
+		setName(clonedNodeInCopyClipboard,name);
 	}
 	else if(e->getSource() == PasteItem)
 	{
-		std::cout<<"Pasting Item\n";
-		//SelectedNode->setTravMask(0);
+	//	std::cout<<"Pasting Item\n";
+		if(currentAction == CUT && nodeInCutClipboard!=NullFC && clonedNodeInCutClipboard!=NullFC)
+		{
+			_HierarchyPanel->TheTreeModel->moveNode(boost::any(SelectedNode),boost::any(nodeInCutClipboard),boost::any(clonedNodeInCutClipboard));
+			nodeInCutClipboard = NullFC;
+			clonedNodeInCutClipboard = NullFC;
+		}
+		else if(currentAction == COPY && clonedNodeInCopyClipboard!=NullFC)
+		{
+			_HierarchyPanel->TheTreeModel->addNode(boost::any(SelectedNode),boost::any(clonedNodeInCopyClipboard));
+			clonedNodeInCopyClipboard = NullFC;
+		}
+		currentAction = NONE;
 	}
 	else
 	{

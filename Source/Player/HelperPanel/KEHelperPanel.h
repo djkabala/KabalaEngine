@@ -224,7 +224,21 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	PlayerKeyListener2 _PlayerKeyListener2;
 	/////////////////// Key Listener - end///////////////////
 	
+	/////////////////// Key Listener - begin///////////////////
+	class PlayerMouseListener : public MouseAdapter
+	{
+	public:
+		PlayerMouseListener(HelperPanelPtr TheHelperPanel);
 
+		virtual void mouseClicked(const MouseEventPtr e);
+	protected :
+		HelperPanelPtr _HelperPanel;
+	};
+	
+    friend class PlayerMouseListener;
+	PlayerMouseListener _PlayerMouseListener;
+	/////////////////// Key Listener - end///////////////////
+	
 
 	/////////////////// other function definitions - begin///////////////////
 	void viewTab(UInt32);

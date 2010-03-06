@@ -320,6 +320,7 @@ void HierarchyPanel::TheTreeSelectionListener::highlightChanged(void)
 		addRefCP(geo);
 
 		_ApplicationPlayer->highlightNode = Node::create();
+		setName(_ApplicationPlayer->highlightNode,"DEBUG_MODE_BOUNDING_BOX");
 		
 		beginEditCP(_ApplicationPlayer->highlightNode);
 		_ApplicationPlayer->highlightNode->setCore(geo);
@@ -335,6 +336,7 @@ void HierarchyPanel::TheTreeSelectionListener::highlightChanged(void)
 		{
 		beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
 		MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->addChild(_ApplicationPlayer->highlightNode);
+
 		endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
 		}
 		
