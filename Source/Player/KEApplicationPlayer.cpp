@@ -1157,11 +1157,17 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 			_HierarchyPanel->TheTreeModel->moveNode(boost::any(SelectedNode),boost::any(nodeInCutClipboard),boost::any(clonedNodeInCutClipboard));
 			nodeInCutClipboard = NullFC;
 			clonedNodeInCutClipboard = NullFC;
+			//currentAction = NONE;
 		}
 		else if(currentAction == COPY && clonedNodeInCopyClipboard!=NullFC)
 		{
 			_HierarchyPanel->TheTreeModel->addNode(boost::any(SelectedNode),boost::any(clonedNodeInCopyClipboard));
 			clonedNodeInCopyClipboard = NullFC;
+		/*	clonedNodeInCopyClipboard = SelectedNode->clone();
+			std::string name=getName(SelectedNode);
+			name+=" copy";
+			std::cout<<std::endl<<name<<std::endl;
+			setName(clonedNodeInCopyClipboard,name);*/
 		}
 		currentAction = NONE;
 	}

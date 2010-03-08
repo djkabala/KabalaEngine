@@ -136,6 +136,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ContentPanel : public ContentPanelBase
 	  CloseButtonListener _CloseButtonListener;
 	  friend class CloseButtonListener;
 
+	 
     // Variables should all be in ContentPanelBase.
 
     /*---------------------------------------------------------------------*/

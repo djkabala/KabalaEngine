@@ -48,13 +48,15 @@
 
 #include "Player/KEApplicationPlayer.h"
 #include "Player/HelperPanel/KEHelperPanel.h"
+#include "Player/ContentPanel/KEContentPanel.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
 
 #include "Application/KEMainApplication.h"
 
-
-
+#include <boost/filesystem/operations.hpp>
+#include <OpenSG/UserInterface/OSGTreePath.h>
+#include "boost/filesystem.hpp"
 
 
 OSG_BEGIN_NAMESPACE
@@ -113,11 +115,39 @@ void HierarchyPanel::createSceneGraphTree(void)
 
 void HierarchyPanel::createLuaGraphTree()
 {
-	ExampleButton2 = osg::Button::create();
 
-	beginEditCP(ExampleButton2, Button::TextFieldMask);
-        ExampleButton2->setText("Lua Graph");
-    endEditCP(ExampleButton2, Button::TextFieldMask);
+	TheTree2 = Tree::create();
+	TheTreeModel2 = LuaGraphTreeModel::create();
+	
+	TheTreeModel2->setRoot(Path("D:\\AC_Metablast\\VirtualCellData\\lua"));
+
+	beginEditCP(TheTree2, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
+        TheTree2->setPreferredSize(Vec2f(100, 500));
+        TheTree2->setModel(TheTreeModel2);
+    endEditCP(TheTree2, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
+
+	TheTree2->getSelectionModel()->addTreeSelectionListener(&_TheTreeSelectionListener2);
+
+	BorderLayoutConstraintsPtr SceneTreeConstraints2 = osg::BorderLayoutConstraints::create();
+    beginEditCP(SceneTreeConstraints2, BorderLayoutConstraints::RegionFieldMask);
+        SceneTreeConstraints2->setRegion(BorderLayoutConstraints::BORDER_WEST);
+    endEditCP(SceneTreeConstraints2, BorderLayoutConstraints::RegionFieldMask);
+
+    TreeScrollPanel2 = ScrollPanel::create();
+    beginEditCP(TreeScrollPanel2, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask | ScrollPanel::ConstraintsFieldMask);
+        TreeScrollPanel2->setPreferredSize(Vec2s(350,300));
+        TreeScrollPanel2->setConstraints(SceneTreeConstraints2);
+    endEditCP(TreeScrollPanel2, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask | ScrollPanel::ConstraintsFieldMask);
+    TreeScrollPanel2->setViewComponent(TheTree2);
+
+	
+	_TheTreeSelectionListener2.setParams(TheTree2,_ApplicationPlayer);
+
+	//_PlayerMouseListener2.setParams(_ApplicationPlayer);
+
+	TheTree2->addMouseListener(&_PlayerMouseListener2);
+
+	
 
 }
 
@@ -126,7 +156,7 @@ void HierarchyPanel::createPanel()
 	PanelTopLeftConstraints1 = osg::BorderLayoutConstraints::create();
 	
 	beginEditCP(PanelTopLeftConstraints1, BorderLayoutConstraints::RegionFieldMask);
-        PanelTopLeftConstraints1->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+        PanelTopLeftConstraints1->setRegion(BorderLayoutConstraints::BORDER_WEST);
     endEditCP(PanelTopLeftConstraints1, BorderLayoutConstraints::RegionFieldMask);
 
 
@@ -162,13 +192,13 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 		}
 		else if(tabno == LUA)
 		{
-			if (ExampleButton2 == NullFC)
+			if (TreeScrollPanel2 == NullFC)
 			{
 				std::cout<<"the luafile tree hasnt been created yet.. so creating tree";
 				createLuaGraphTree();
 			}
 			beginEditCP(HierarchyPanelPtr(this),  Panel::ChildrenFieldMask);
-				this->getChildren().push_back(ExampleButton2);
+				this->getChildren().push_back(TreeScrollPanel2);
 			endEditCP(HierarchyPanelPtr(this), Panel::ChildrenFieldMask);
 
 			TabsAdded.insert(LUA);
@@ -199,7 +229,7 @@ void HierarchyPanel::removeTab(UInt32 tabno)
 				this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(TreeScrollPanel)));
 				break;
 			case LUA:
-				this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(ExampleButton2)));
+				this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(TreeScrollPanel2)));
 				break;
 		}
 
@@ -219,6 +249,13 @@ void HierarchyPanel::createDefaultHierarchyPanel() // creates the panel with the
 	addTab(LUA);
 }
 
+HierarchyPanel::TheTreeSelectionListener2::TheTreeSelectionListener2(HierarchyPanelPtr TheHierarchyPanel)
+{
+	_HierarchyPanel = TheHierarchyPanel;
+	_ApplicationPlayer = NullFC;
+	_TheTree=NullFC;
+}
+
 HierarchyPanel::TheTreeSelectionListener::TheTreeSelectionListener(HierarchyPanelPtr TheHierarchyPanel)
 {
 	_HierarchyPanel = TheHierarchyPanel;
@@ -229,6 +266,12 @@ HierarchyPanel::TheTreeSelectionListener::TheTreeSelectionListener(HierarchyPane
 }
 
 void HierarchyPanel::TheTreeSelectionListener::setParams(TreePtr TheTree,ApplicationPlayerPtr TheApplicationPlayer)//,NodePtr  SelectedNode)
+{
+	_TheTree=TheTree;
+	_ApplicationPlayer = TheApplicationPlayer;
+}
+
+void HierarchyPanel::TheTreeSelectionListener2::setParams(TreePtr TheTree,ApplicationPlayerPtr TheApplicationPlayer)//,NodePtr  SelectedNode)
 {
 	_TheTree=TheTree;
 	_ApplicationPlayer = TheApplicationPlayer;
@@ -408,6 +451,30 @@ void HierarchyPanel::TheTreeSelectionListener::selectedNodeChanged(void)
     }
 }
 
+HierarchyPanel::PlayerMouseListener2::PlayerMouseListener2(HierarchyPanelPtr TheHierarchyPanel)
+{
+	_HierarchyPanel=TheHierarchyPanel;
+}
+
+
+void HierarchyPanel::PlayerMouseListener2::mouseClicked(const MouseEventPtr e)
+{
+   if(e->getClickCount() == 2)
+   {
+		//std::cout<<"mouse was double clicked on:"<<e->getSource();
+		Path path = boost::any_cast<Path>(_HierarchyPanel->TheTree2->getLastSelectedPathComponent());
+		
+		if(boost::filesystem::exists(path) && boost::filesystem::is_regular_file(path))
+		{
+			std::string filename(path.string());
+			std::cout<<"\nfile to open:"<<filename<<std::endl;
+			_HierarchyPanel->_ApplicationPlayer->_ContentPanel->addTabWithText(path);
+			//_ApplicationPlayer->_ContentPanel->addTabWithText(path);
+		}
+   }
+}
+
+
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
@@ -420,7 +487,9 @@ void HierarchyPanel::TheTreeSelectionListener::selectedNodeChanged(void)
 
 HierarchyPanel::HierarchyPanel() :
     Inherited(),
-	_TheTreeSelectionListener(HierarchyPanelPtr(this))
+	_TheTreeSelectionListener(HierarchyPanelPtr(this)),
+	_TheTreeSelectionListener2(HierarchyPanelPtr(this)),
+	_PlayerMouseListener2(HierarchyPanelPtr(this))
 {
 	_ApplicationPlayer = NullFC;
 	
@@ -428,7 +497,9 @@ HierarchyPanel::HierarchyPanel() :
 
 HierarchyPanel::HierarchyPanel(const HierarchyPanel &source) :
     Inherited(source),
-	_TheTreeSelectionListener(HierarchyPanelPtr(this))
+	_TheTreeSelectionListener(HierarchyPanelPtr(this)),
+	_TheTreeSelectionListener2(HierarchyPanelPtr(this)),
+	_PlayerMouseListener2(HierarchyPanelPtr(this))
 {
 }
 

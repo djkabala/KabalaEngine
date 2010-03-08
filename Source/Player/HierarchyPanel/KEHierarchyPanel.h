@@ -45,6 +45,7 @@
 
 #include <OpenSG/UserInterface/OSGTree.h>
 #include <OpenSG/UserInterface/OSGSceneGraphTreeModel.h>
+#include <OpenSG/UserInterface/OSGLuaGraphTreeModel.h>
 #include <OpenSG/UserInterface/OSGFixedHeightTreeModelLayout.h>
 #include <OpenSG/UserInterface/OSGTreeSelectionListener.h>
 #include <OpenSG/Toolbox/OSGGeometryUtils.h>
@@ -90,15 +91,17 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	std::set<UInt32> TabsAdded;
 	std::set<UInt32>::iterator TabsAddedItr;
 	SceneGraphTreeModelPtr TheTreeModel;
-	SceneGraphTreeModelPtr TempTreeModel;
+	LuaGraphTreeModelPtr TheTreeModel2;
+	//SceneGraphTreeModelPtr TempTreeModel;
 	TreePtr TheTree;
+	TreePtr TheTree2;
 	NodePtr SelectedNode;
 
 	ScrollPanelPtr TreeScrollPanel;
+	ScrollPanelPtr TreeScrollPanel2;
 	NodePtr highlightNode;
 	CardLayoutPtr TopLeftCardLayout;
 	BorderLayoutConstraintsPtr	PanelTopLeftConstraints1;
-	ButtonPtr ExampleButton2;
 
 	
 	
@@ -116,6 +119,42 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	void createDefaultHierarchyPanel();
 	void setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer);
 
+	class TheTreeSelectionListener2 : public TreeSelectionListener
+	{
+	public:
+
+		TheTreeSelectionListener2(HierarchyPanelPtr TheHierarchyPanel);
+		//Called whenever elements are added to the selection
+		virtual void selectionAdded(const TreeSelectionEventPtr e)
+		{
+			//Get the selected Node
+			try
+			{
+				_SelectedPath = boost::any_cast<Path>(_TheTree->getLastSelectedPathComponent());
+			}
+			catch (boost::bad_any_cast &)
+			{
+	//			_SelectedPath = boost::any_cast<Path>(boost::any(std::string(".")));
+			}
+		}
+
+		//Called whenever elements are removed to the selection
+		virtual void selectionRemoved(const TreeSelectionEventPtr e)
+		{
+	//		_SelectedPath = boost::any_cast<Path>(boost::any(std::string(".")));
+		}
+
+		void setParams(TreePtr,ApplicationPlayerPtr);
+
+	protected:
+		HierarchyPanelPtr _HierarchyPanel;
+		TreePtr _TheTree;
+		ApplicationPlayerPtr _ApplicationPlayer;
+		Path _SelectedPath;
+	};
+
+	friend class TheTreeSelectionListener2;
+	TheTreeSelectionListener2 _TheTreeSelectionListener2;
 
 	class TheTreeSelectionListener : public TreeSelectionListener
 	{
@@ -162,6 +201,22 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
 	friend class TheTreeSelectionListener;
 	TheTreeSelectionListener _TheTreeSelectionListener;
+
+	class PlayerMouseListener2 : public MouseAdapter
+	{
+	public:
+		PlayerMouseListener2(HierarchyPanelPtr TheHierarchyPanel);
+
+		virtual void mouseClicked(const MouseEventPtr e);
+
+	//	void setParams(ApplicationPlayerPtr);
+	protected :
+		HierarchyPanelPtr _HierarchyPanel;
+	//	ApplicationPlayerPtr _ApplicationPlayer;
+	};
+	
+    friend class PlayerMouseListener2;
+	PlayerMouseListener2 _PlayerMouseListener2;
 
 
     /*---------------------------------------------------------------------*/
