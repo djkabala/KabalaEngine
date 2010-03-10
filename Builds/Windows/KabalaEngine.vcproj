@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OSGBaseD.lib OSGSystemD.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib OSGToolboxD.lib OSGInputD.lib OSGUserInterfaceD.lib OSGAnimationD.lib OSGSoundD.lib OSGGameD.lib OSGParticleSystemD.lib OSGDynamicsD.lib OSGPhysicsD.lib OSGVideoD.lib OSGLuaD.lib OSGToolboxLuaBindingsD.lib lua51.lib ode_singled.lib"
+				AdditionalDependencies="OSGBaseD.lib OSGSystemD.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib OSGToolboxD.lib OSGInputD.lib OSGUserInterfaceD.lib OSGAnimationD.lib OSGSoundD.lib OSGGameD.lib OSGParticleSystemD.lib OSGPhysicsD.lib OSGVideoD.lib OSGLuaD.lib OSGToolboxLuaBindingsD.lib lua51.lib ode_singled.lib"
 				OutputFile="..\..\$(ProjectName)D.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -161,7 +161,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OSGBase.lib OSGSystem.lib OSGToolbox.lib OSGInput.lib OSGUserInterface.lib OSGAnimation.lib OSGParticleSystem.lib OSGDynamics.lib OSGGame.lib OSGLua.lib OSGPhysics.lib OSGVideo.lib OSGToolboxLuaBindings.lib OSGSound.lib lua51.lib ode_single.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib"
+				AdditionalDependencies="OSGBase.lib OSGSystem.lib OSGToolbox.lib OSGInput.lib OSGUserInterface.lib OSGAnimation.lib OSGParticleSystem.lib OSGGame.lib OSGLua.lib OSGPhysics.lib OSGVideo.lib OSGToolboxLuaBindings.lib OSGSound.lib lua51.lib ode_single.lib opengl32.lib glu32.lib tif32.lib libjpeg.lib libpng.lib Winmm.lib"
 				OutputFile="..\..\$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -1262,6 +1262,102 @@
 					RelativePath="..\..\Source\Player\KEApplicationPlayerFields.h"
 					>
 				</File>
+				<Filter
+					Name="HelperPanel"
+					>
+					<File
+						RelativePath="..\..\Source\Player\HelperPanel\KEHelperPanel.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HelperPanel\KEHelperPanel.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HelperPanel\KEHelperPanel.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HelperPanel\KEHelperPanelBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HelperPanel\KEHelperPanelBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HelperPanel\KEHelperPanelBase.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HelperPanel\KEHelperPanelFields.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="HierarchyPanel"
+					>
+					<File
+						RelativePath="..\..\Source\Player\HierarchyPanel\KEHierarchyPanel.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HierarchyPanel\KEHierarchyPanel.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HierarchyPanel\KEHierarchyPanel.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HierarchyPanel\KEHierarchyPanelBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HierarchyPanel\KEHierarchyPanelBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HierarchyPanel\KEHierarchyPanelBase.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\HierarchyPanel\KEHierarchyPanelFields.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="ContentPanel"
+					>
+					<File
+						RelativePath="..\..\Source\Player\ContentPanel\KEContentPanel.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\ContentPanel\KEContentPanel.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\ContentPanel\KEContentPanel.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\ContentPanel\KEContentPanelBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\ContentPanel\KEContentPanelBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\ContentPanel\KEContentPanelBase.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\ContentPanel\KEContentPanelFields.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="StartScreen"
@@ -1308,6 +1404,10 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
