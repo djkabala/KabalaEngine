@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="Capability"
+	parent="AttachmentContainer"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+The SceneObject.
+	<Field
+		name="SceneObject"
+		type="SceneObjectPtr"
+		cardinality="single"
+		visibility="external"
+		header="Project/SceneObject/KESceneObjectFields.h"
+		access="protected"
+	>
+	</Field>
+	<Field
+		name="Dependencies"
+		type="std::string"
+		cardinality="multi"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+</FieldContainer>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="SceneObjectContainer"
+	parent="SceneObject"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+The SceneObjectContainer.
+	<Field
+		name="SceneObjects"
+		type="SceneObjectPtr"
+		cardinality="multi"
+		visibility="external"
+		header="Project/SceneObject/KESceneObjectFields.h"
+		access="protected"
+	>
+	</Field>
+</FieldContainer>

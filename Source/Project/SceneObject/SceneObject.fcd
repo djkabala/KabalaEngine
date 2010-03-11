@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="SceneObject"
+	parent="AttachmentContainer"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+The SceneObject.
+	<Field
+		name="Capabilities"
+		type="CapabilityPtr"
+		cardinality="multi"
+		visibility="external"
+		header="Project/SceneObject/KECapabilityFields.h"
+		access="protected"
+	>
+	</Field>
+	<Field
+		name="Node"
+		type="NodePtr"
+		cardinality="single"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+</FieldContainer>
