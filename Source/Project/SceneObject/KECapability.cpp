@@ -62,15 +62,26 @@ The SceneObject.
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
-
 void Capability::initMethod (void)
 {
+	
 }
-
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
+
+void Capability::update()
+{
+}
+
+void Capability::activate()
+{
+}
+
+void Capability::deactivate()
+{
+}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -78,9 +89,15 @@ void Capability::initMethod (void)
 
 /*----------------------- constructors & destructors ----------------------*/
 
+void Capability::setupCapability()
+{
+	setSceneObject(NullFC);
+}
+
 Capability::Capability(void) :
     Inherited()
 {
+	setupCapability();
 }
 
 Capability::Capability(const Capability &source) :

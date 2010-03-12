@@ -57,6 +57,11 @@ class KE_KABALAENGINELIB_DLLMAPPING Capability : public CapabilityBase
     /*==========================  PUBLIC  =================================*/
   public:
 
+	  void update();
+	  void activate();
+	  void deactivate();
+
+
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
@@ -75,6 +80,9 @@ class KE_KABALAENGINELIB_DLLMAPPING Capability : public CapabilityBase
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
   protected:
+
+	  void setupCapability();
+
 
     // Variables should all be in CapabilityBase.
 
@@ -96,6 +104,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Capability : public CapabilityBase
     
     /*==========================  PRIVATE  ================================*/
   private:
+
+	  
 
     friend class FieldContainer;
     friend class CapabilityBase;

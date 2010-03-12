@@ -63,6 +63,10 @@ The Scene.
  *                           Class methods                                 *
 \***************************************************************************/
 
+void SceneObject::update()
+{
+}
+
 void SceneObject::initMethod (void)
 {
 }

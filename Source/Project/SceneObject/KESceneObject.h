@@ -57,6 +57,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneObject : public SceneObjectBase
     /*==========================  PUBLIC  =================================*/
   public:
 
+	void update();
+
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
