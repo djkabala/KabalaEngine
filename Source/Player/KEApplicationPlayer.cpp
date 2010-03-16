@@ -169,6 +169,9 @@ void ApplicationPlayer::createDebugInterface(void)
 	// the menu items
 	ResetItem = MenuItem::create();				
     ForceQuitItem = MenuItem::create();			
+	
+	UndoItem = MenuItem::create();				
+    RedoItem = MenuItem::create();			
 
     NextItem = MenuItem::create();				
     PrevItem = MenuItem::create();				
@@ -210,6 +213,20 @@ void ApplicationPlayer::createDebugInterface(void)
         ForceQuitItem ->setMnemonicKey(KeyEvent::KEY_Q);
     endEditCP(ForceQuitItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
+	beginEditCP(UndoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        UndoItem->setText("Undo");
+		UndoItem->setAcceleratorKey(KeyEvent::KEY_U);
+        UndoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        UndoItem->setMnemonicKey(KeyEvent::KEY_U);
+    endEditCP(UndoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+ 
+	beginEditCP(RedoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        RedoItem->setText("Redo");
+		RedoItem->setAcceleratorKey(KeyEvent::KEY_R);
+        RedoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        RedoItem->setMnemonicKey(KeyEvent::KEY_R);
+    endEditCP(RedoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+ 
     beginEditCP(NextItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         NextItem ->setText("Next");
 		NextItem ->setAcceleratorKey(KeyEvent::KEY_TAB);
@@ -459,6 +476,11 @@ void ApplicationPlayer::createDebugInterface(void)
 	ProjectMenu->addSeparator();
     ProjectMenu->addItem(ForceQuitItem);
     
+	EditMenu = Menu::create();
+    EditMenu->addItem(UndoItem);
+	EditMenu->addItem(RedoItem);
+    
+	
 	SceneMenu = Menu::create();
     SceneMenu->addItem(NextItem);
     SceneMenu->addItem(PrevItem);
@@ -490,6 +512,11 @@ void ApplicationPlayer::createDebugInterface(void)
         ProjectMenu->setText("Project");
         ProjectMenu->setMnemonicKey(KeyEvent::KEY_P);
 	endEditCP(ProjectMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+	beginEditCP(EditMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        EditMenu->setText("Edit");
+        EditMenu->setMnemonicKey(KeyEvent::KEY_D);
+	endEditCP(EditMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
     
 	beginEditCP(SceneMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
         SceneMenu->setText("Scene");
@@ -514,6 +541,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	// adding actionlisteners to each of the menuitems
 	ResetItem->addActionListener(&_BasicListener);
 	ForceQuitItem->addActionListener(&_BasicListener);
+	
 	NextItem->addActionListener(&_BasicListener);
 	PrevItem->addActionListener(&_BasicListener);
 	FirstItem->addActionListener(&_BasicListener);
@@ -530,10 +558,20 @@ void ApplicationPlayer::createDebugInterface(void)
 	FrustrumCullingItem->addActionListener(&_BasicListener);
 	DrawPhysicsCharacteristicsItem->addActionListener(&_BasicListener);
 	ProjectMenu->addActionListener(&_BasicListener);
+	EditMenu->addActionListener(&_BasicListener);
 	SceneMenu->addActionListener(&_BasicListener);	
 	NavigatorMenu->addActionListener(&_BasicListener);
 	StatisticsMenu->addActionListener(&_BasicListener);
 	ToggleMenu->addActionListener(&_BasicListener);
+
+//	_CutActionListener = CommandActionListenerForPlayer(CutCommand::create(), _TheCommandManager);
+//	_CopyActionListener = CommandActionListenerForPlayer(CopyCommand::create(), _TheCommandManager);
+//	_PasteActionListener = CommandActionListenerForPlayer(PasteCommand::create(), _TheCommandManager);
+//	_DeleteActionListener = CommandActionListenerForPlayer(DeleteCommand::create(), _TheCommandManager);
+//	_ShowHideActionListener = CommandActionListenerForPlayer(ShowHideCommand::create(_HierarchyPanel,ApplicationPlayerPtr(this)), _TheCommandManager);
+	_UndoActionListener = CommandActionListenerForPlayer(UndoCommandOfPlayer::create(ApplicationPlayerPtr(this)), _TheCommandManager);
+	_RedoActionListener = CommandActionListenerForPlayer(RedoCommandOfPlayer::create(ApplicationPlayerPtr(this)), _TheCommandManager);
+
 
 	ShowHideItem->addActionListener(&_BasicListener);
 	DeleteItem->addActionListener(&_BasicListener);
@@ -541,9 +579,13 @@ void ApplicationPlayer::createDebugInterface(void)
 	CopyItem->addActionListener(&_BasicListener);
 	PasteItem->addActionListener(&_BasicListener);
 	
+	UndoItem->addActionListener(&_UndoActionListener);
+	RedoItem->addActionListener(&_RedoActionListener);
+
 	// Creation of the menubar and addition of the menus to it
 	MainMenuBar = MenuBar::create();
     MainMenuBar->addMenu(ProjectMenu);
+	MainMenuBar->addMenu(EditMenu);
 	MainMenuBar->addMenu(SceneMenu);
 	MainMenuBar->addMenu(NavigatorMenu);
 	MainMenuBar->addMenu(StatisticsMenu);
@@ -848,7 +890,9 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
 
         //Attach Listeners to the project
         MainApplication::the()->getProject()->editEventProducer()->attachEventListener(&_ProjectListener, Project::SceneChangedMethodId);
-		
+		_CommandManagerListener.setApplicationPlayer(ApplicationPlayerPtr(this));
+		updateUndoRedoInterfaces(_TheUndoManager);
+
         //Update Title
         updateWindowTitle();
 
@@ -917,6 +961,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	{
 			MainApplication::the()->exit();
 	}
+
 	else if(e->getSource() == NextItem)
 	{
 			MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
@@ -1013,15 +1058,6 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 		else _HierarchyPanel->TopLeftCardLayout->first(_HierarchyPanel);//->TopLeftTreePanel);
 
 	}
-	else if(e->getSource() == ShowHideItem)
-	{
-		//std::cout<<"Showing Item\n";
-		UInt32 maskval = SelectedNode->getTravMask();
-		if(!maskval)	SelectedNode->setTravMask(UInt32(-1));
-		else	SelectedNode->setTravMask(0);
-		invertShowHideCaption();
-
-	}
 	else if(e->getSource() == OpenFileButton)
 	{
 		
@@ -1060,14 +1096,21 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
         std::cout << "File to Save: " << SavePath.string() << std::endl;
 		_ContentPanel->saveTextFile(SavePath);
 	}
+	else if(e->getSource() == ShowHideItem)
+	{
+		 CommandPtr ShowHideItemCommand = ShowHideCommand::create(_HierarchyPanel,ApplicationPlayerPtr(this));
+        _TheCommandManager->executeCommand(ShowHideItemCommand);
+	}
 /*	else if(e->getSource() == CloseFileButton)
 	{
 		_ContentPanel->closeCurrentWindow();
 	}*/
 	else if(e->getSource() == DeleteItem)
 	{
+		CommandPtr DeleteCommandPtr = DeleteCommand::create(ApplicationPlayerPtr(this),_HierarchyPanel);
+        _TheCommandManager->executeCommand(DeleteCommandPtr);
 		
-		NodePtr parent = SelectedNode->getParent();
+		//NodePtr parent = SelectedNode->getParent();
 /*		std::cout<<"before:"<<std::endl;
 		std::cout<<std::endl<<_HierarchyPanel->TheTreeModel->getChildCount(parent)<<" - _HierarchyPanel->TheTreeModel->getChildCount(parent)\n";
 		std::cout<<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()<<" _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()\n";
@@ -1087,18 +1130,18 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 			std::cout<< ", type: " << _HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)->getCore()->getType().getCName() << std::endl;
 		}
 */
-		if(parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2) // 2 because the other child of root is bounding box
-		{
-			std::cout<<"cant delete the only child.Tree becomes empty.\n";
-		}
-		else
-		{
-			_HierarchyPanel->TheTreeModel->removeNode(_HierarchyPanel->TheTree->getLastSelectedPathComponent());
-		}
-		
-		nodeInCutClipboard = NullFC;
-		clonedNodeInCutClipboard = NullFC;
-		clonedNodeInCopyClipboard = NullFC;
+		//if(parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2) // 2 because the other child of root is bounding box
+		//{
+	//		std::cout<<"cant delete the only child.Tree becomes empty.\n";
+	//	}
+	//	else
+	//	{
+	//		_HierarchyPanel->TheTreeModel->removeNode(_HierarchyPanel->TheTree->getLastSelectedPathComponent());
+	//	}
+	//	
+	//	nodeInCutClipboard = NullFC;
+	//	clonedNodeInCutClipboard = NullFC;
+	//	clonedNodeInCopyClipboard = NullFC;
 
 
 /*		std::cout<<"after:"<<std::endl;
@@ -1125,51 +1168,25 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	
 	else if(e->getSource() == CutItem)
 	{
-		NodePtr parent = SelectedNode->getParent();
-		if(parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2)
-		{
-			std::cout<<"\nCant cut the only remaining Item\n"<<std::endl;
-		}
-		else
-		{
-		//std::cout<<"Cutting Item\n";
-		currentAction = CUT;
-		nodeInCutClipboard = SelectedNode;
-		clonedNodeInCutClipboard = SelectedNode->clone();
-		setName(clonedNodeInCutClipboard,getName(SelectedNode));
-		}
+
+		CommandPtr CutCommandPtr = CutCommand::create(ApplicationPlayerPtr(this),_HierarchyPanel);
+        _TheCommandManager->executeCommand(CutCommandPtr);
+	
 	}
+
 	else if(e->getSource() == CopyItem)
 	{
-	//	std::cout<<"Copying Item\n";
-		currentAction = COPY;
-		clonedNodeInCopyClipboard = SelectedNode->clone();
-		std::string name=getName(SelectedNode);
-		name+=" copy";
-		std::cout<<std::endl<<name<<std::endl;
-		setName(clonedNodeInCopyClipboard,name);
+	
+		CommandPtr CopyCommandPtr = CopyCommand::create(ApplicationPlayerPtr(this));
+        _TheCommandManager->executeCommand(CopyCommandPtr);
+
 	}
 	else if(e->getSource() == PasteItem)
 	{
-	//	std::cout<<"Pasting Item\n";
-		if(currentAction == CUT && nodeInCutClipboard!=NullFC && clonedNodeInCutClipboard!=NullFC)
-		{
-			_HierarchyPanel->TheTreeModel->moveNode(boost::any(SelectedNode),boost::any(nodeInCutClipboard),boost::any(clonedNodeInCutClipboard));
-			nodeInCutClipboard = NullFC;
-			clonedNodeInCutClipboard = NullFC;
-			//currentAction = NONE;
-		}
-		else if(currentAction == COPY && clonedNodeInCopyClipboard!=NullFC)
-		{
-			_HierarchyPanel->TheTreeModel->addNode(boost::any(SelectedNode),boost::any(clonedNodeInCopyClipboard));
-			clonedNodeInCopyClipboard = NullFC;
-		/*	clonedNodeInCopyClipboard = SelectedNode->clone();
-			std::string name=getName(SelectedNode);
-			name+=" copy";
-			std::cout<<std::endl<<name<<std::endl;
-			setName(clonedNodeInCopyClipboard,name);*/
-		}
-		currentAction = NONE;
+
+		CommandPtr PasteCommandPtr = PasteCommand::create(ApplicationPlayerPtr(this),_HierarchyPanel);
+        _TheCommandManager->executeCommand(PasteCommandPtr);
+
 	}
 	else
 	{
@@ -1495,6 +1512,34 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
     return DebugViewport;
 }
 
+void ApplicationPlayer::updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager)
+{
+	
+	beginEditCP(UndoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
+		UndoItem->setEnabled(_TheUndoManager->canUndo());
+		if(_TheUndoManager->canUndo())
+		{
+			UndoItem->setText(TheUndoManager->getUndoPresentationName());
+		}
+		else
+		{
+			UndoItem->setText("Undo");
+		}
+	endEditCP(UndoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
+	
+	beginEditCP(RedoItem, MenuItem::EnabledFieldMask);
+		RedoItem->setEnabled(TheUndoManager->canRedo());
+		if(_TheUndoManager->canRedo())
+		{
+			RedoItem->setText(_TheUndoManager->getRedoPresentationName());
+		}
+		else
+		{
+			RedoItem->setText("Redo");
+		}
+	endEditCP(RedoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -1513,8 +1558,18 @@ ApplicationPlayer::ApplicationPlayer(void) :
     _PhysDrawable(NullFC),
     _PhysDrawableNode(NullFC),
     _WasMouseHidden(false),
-    _WasMouseAttached(false)
+    _WasMouseAttached(false),
+//	_CutActionListener(NULL,NULL),
+//	_CopyActionListener(NULL,NULL),
+//	_PasteActionListener(NULL,NULL),
+	//_DeleteActionListener(NULL,NULL),
+	//_ShowHideActionListener(NULL,NULL),
+	_UndoActionListener(NULL,NULL),
+	_RedoActionListener(NULL,NULL),
+	_CommandManagerListener(ApplicationPlayerPtr(this))
 {
+	_TheUndoManager = UndoManager::create();
+	_TheCommandManager = CommandManager::create(_TheUndoManager);
 	initDebugStatForegrounds();
 }
 
@@ -1535,8 +1590,19 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     _PhysDrawable(NullFC),
     _PhysDrawableNode(NullFC),
     _WasMouseHidden(false),
-    _WasMouseAttached(false)
+    _WasMouseAttached(false),
+//	_CutActionListener(NULL,NULL),
+//	_CopyActionListener(NULL,NULL),
+//	_PasteActionListener(NULL,NULL),
+//	_DeleteActionListener(NULL,NULL),
+//	_ShowHideActionListener(NULL,NULL),
+	_UndoActionListener(NULL,NULL),
+	_RedoActionListener(NULL,NULL),
+	_CommandManagerListener(ApplicationPlayerPtr(this))
 {
+	_TheUndoManager = UndoManager::create();
+	//_TheUndoManager->addChangeListener(_CommandManagerListener);
+	_TheCommandManager = CommandManager::create(_TheUndoManager);
 }
 
 ApplicationPlayer::~ApplicationPlayer(void)
@@ -1555,6 +1621,23 @@ void ApplicationPlayer::dump(      ::osg::UInt32    ,
 {
     SLOG << "Dump ApplicationPlayer NI" << std::endl;
 }
+
+ApplicationPlayer::CommandManagerListener::CommandManagerListener(ApplicationPlayerPtr ApplicationPlayer)
+{
+	_ApplicationPlayer = ApplicationPlayer;
+}
+
+void ApplicationPlayer::CommandManagerListener::stateChanged(const ChangeEventPtr e)
+{
+	_ApplicationPlayer->updateUndoRedoInterfaces(_ApplicationPlayer->_TheUndoManager);
+}
+
+void ApplicationPlayer::CommandManagerListener::setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer)
+{
+    _ApplicationPlayer = TheApplicationPlayer;
+	_ApplicationPlayer->_TheUndoManager->addChangeListener(this);
+}
+
 
 void ApplicationPlayer::PlayerKeyListener::keyTyped(const KeyEventPtr e)
 {
@@ -1628,18 +1711,6 @@ void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
 
 
     }
-}
-
-
-void ApplicationPlayer::invertShowHideCaption()
-{
-		std::string caption(ShowHideItem->getText());
-		beginEditCP(ShowHideItem);
-		if(caption=="Show")
-			ShowHideItem->setText("Hide");
-		else
-			ShowHideItem->setText("Show");
-		endEditCP(ShowHideItem);
 }
 
 

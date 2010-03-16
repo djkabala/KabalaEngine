@@ -115,11 +115,24 @@
 //cardlayout
 #include <OpenSG/UserInterface/OSGCardLayout.h>
 
+#include <OpenSG/UserInterface/OSGCommand.h>
+#include <OpenSG/UserInterface/OSGUndoManager.h>
+#include <OpenSG/UserInterface/OSGCommandManager.h>
  
 #include "Player/HierarchyPanel/KEHierarchyPanelFields.h"
 #include "Player/HelperPanel/KEHelperPanelFields.h"
 #include "Player/ContentPanel/KEContentPanelFields.h"
 
+
+#include "Player/Commands/KECommandActionListenerForPlayer.h"
+
+#include "Player/Commands/KECutCommand.h"
+#include "Player/Commands/KECopyCommand.h"
+#include "Player/Commands/KEPasteCommand.h"
+#include "Player/Commands/KEDeleteCommand.h"
+#include "Player/Commands/KEShowHideCommand.h"
+#include "Player/Commands/KEUndoCommandOfPlayer.h"
+#include "Player/Commands/KERedoCommandOfPlayer.h"
 
 #include <vector>
 
@@ -164,6 +177,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     virtual void reset(void);
     virtual void gotoScene(ScenePtr TheScene);
 
+	MenuItemPtr ShowHideItem ;
+
 	NodePtr highlightNode;
 	NodePtr SelectedNode;
 
@@ -180,9 +195,18 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	UInt32 currentAction;
 
 	NodePtr nodeInCutClipboard;
-	NodePtr clonedNodeInCutClipboard;
+	//NodePtr clonedNodeInCutClipboard;
 	NodePtr clonedNodeInCopyClipboard;
 
+	CommandManagerPtr _TheCommandManager;
+	UndoManagerPtr _TheUndoManager;
+	//CommandActionListenerForPlayer _CutActionListener;
+	//CommandActionListenerForPlayer _CopyActionListener;
+	//CommandActionListenerForPlayer _PasteActionListener;
+	//CommandActionListenerForPlayer _DeleteActionListener;
+	//CommandActionListenerForPlayer _ShowHideActionListener;
+	CommandActionListenerForPlayer _UndoActionListener;
+	CommandActionListenerForPlayer _RedoActionListener;
 
 	virtual void attachDebugInterface(void);
 	virtual void detachDebugInterface(void);
@@ -206,6 +230,10 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
   	MenuItemPtr ResetItem ;				
     MenuItemPtr ForceQuitItem ;			
 
+	MenuItemPtr UndoItem ;				
+    MenuItemPtr RedoItem ;				
+    
+
     MenuItemPtr NextItem ;				
     MenuItemPtr PrevItem ;				
     MenuItemPtr FirstItem;				
@@ -224,7 +252,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	MenuItemPtr FrustrumCullingItem  ;
 	MenuItemPtr DrawPhysicsCharacteristicsItem  ;
 
-	
+
+	MenuPtr EditMenu;
 	MenuPtr ProjectMenu;
 	MenuPtr SceneMenu;
 	MenuPtr NavigatorMenu;
@@ -240,7 +269,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
 
 	PopupMenuPtr pop;
-	MenuItemPtr ShowHideItem ;
+	
 	MenuItemPtr CutItem ;
 	MenuItemPtr CopyItem ;
 	MenuItemPtr PasteItem ;
@@ -260,6 +289,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     ViewportPtr _DebugViewport;
     ViewportPtr createDebugViewport(void);
 
+	void updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager);
 	void createGotoSceneMenuItems(ProjectPtr TheProject);
     void updateGotoSceneMenuItems(ProjectPtr TheProject);
 
@@ -284,6 +314,31 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     /*! \}                                                                 */
 		
 
+	friend class ShowHideCommand;
+	friend class DeleteCommand;
+	friend class CutCommand;
+	friend class CopyCommand;
+	friend class PasteCommand;
+	friend class UndoCommandOfPlayer;
+	friend class RedoCommandOfPlayer;
+
+
+	class CommandManagerListener: public ChangeListener
+	{
+	  public:
+		CommandManagerListener(ApplicationPlayerPtr ApplicationPlayer);
+
+		virtual void stateChanged(const ChangeEventPtr e);
+
+		void setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer);
+
+	  protected :
+        ApplicationPlayerPtr _ApplicationPlayer;
+	};
+
+	friend class CommandManagerListener;
+
+	CommandManagerListener _CommandManagerListener;
 
 
 	class PlayerKeyListener : public KeyAdapter
@@ -315,6 +370,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	friend class BasicListener;
 	BasicListener _BasicListener;
 
+
 	class ComboBoxListener: public ComboBoxSelectionListener
     {
     public:
@@ -335,6 +391,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 				beginEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
 					_ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(NullFC);
 				endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
+				
 
 				_TopLeftCardLayout->last(_TopLeftTreePanel);
 				//InfoTabPanel->setSelectedIndex(3);

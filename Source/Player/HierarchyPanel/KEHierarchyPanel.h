@@ -72,6 +72,13 @@
 #include "Application/KEMainApplication.h"
 
 #include "Player/HelperPanel/KEHelperPanelFields.h"
+
+#include "Player/Commands/KEShowHideCommand.h"
+#include "Player/Commands/KEDeleteCommand.h"
+#include "Player/Commands/KECutCommand.h"
+#include "Player/Commands/KECopyCommand.h"
+#include "Player/Commands/KEPasteCommand.h"
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief HierarchyPanel class. See \ref 
@@ -118,6 +125,11 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	void removeTab(UInt32 tabno);
 	void createDefaultHierarchyPanel();
 	void setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer);
+
+	friend class DeleteCommand;
+	friend class CutCommand;
+	friend class CopyCommand;
+	friend class PasteCommand;
 
 	class TheTreeSelectionListener2 : public TreeSelectionListener
 	{
@@ -167,6 +179,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 			try
 			{
 				_SelectedNode = boost::any_cast<NodePtr>(_TheTree->getLastSelectedPathComponent());
+				std::cout<<std::endl<<"selection changed"<<std::endl;
+				changeShowHideMenuItem();
 			}
 			catch (boost::bad_any_cast &)
 			{
@@ -181,7 +195,7 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 			_SelectedNode = NullFC;
 			selectedNodeChanged();
 		}
-
+		void changeShowHideMenuItem(void);
 		void selectedNodeChanged();
 		void setParams(TreePtr,ApplicationPlayerPtr);
 		void updateHighlight(void);
@@ -189,6 +203,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 		NodePtr getHighlight(void);
 		void setHighlight(NodePtr selectednode);
 
+		friend class ShowHideCommand;
+		
 
 	protected:
 		HierarchyPanelPtr _HierarchyPanel;

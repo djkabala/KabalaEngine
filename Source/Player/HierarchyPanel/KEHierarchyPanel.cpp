@@ -111,6 +111,8 @@ void HierarchyPanel::createSceneGraphTree(void)
 	_TheTreeSelectionListener.setParams(TheTree,_ApplicationPlayer);
 	_TheTreeSelectionListener.updateHighlight();
 
+//	TheTree->addMouseListener(&_PlayerMouseListener2);
+
 }
 
 void HierarchyPanel::createLuaGraphTree()
@@ -249,6 +251,45 @@ void HierarchyPanel::createDefaultHierarchyPanel() // creates the panel with the
 	addTab(LUA);
 }
 
+
+void HierarchyPanel::TheTreeSelectionListener::changeShowHideMenuItem(void)
+{
+
+	if(_ApplicationPlayer!=NullFC && _SelectedNode!=NullFC && _ApplicationPlayer->ShowHideItem!=NullFC)
+	{
+		UInt32 maskval = _SelectedNode->getTravMask();
+		//std::cout<<"maskval:"<<maskval<<std::endl;	
+		if(!maskval)
+		{
+			if(_ApplicationPlayer->ShowHideItem->getText()== "Hide")
+			{
+				//std::cout<<"changing from hide to show"<<std::endl;
+				beginEditCP(_ApplicationPlayer->ShowHideItem,MenuItem::TextFieldMask);
+				_ApplicationPlayer->ShowHideItem->setText("Show");
+				endEditCP(_ApplicationPlayer->ShowHideItem,MenuItem::TextFieldMask);
+			}
+			else
+			{
+				//std::cout<<"its already 'show'";
+			}
+		}
+		else 
+		{
+			if(_ApplicationPlayer->ShowHideItem->getText()== "Show")
+			{
+				//std::cout<<"changing from show to hide"<<std::endl;
+				beginEditCP(_ApplicationPlayer->ShowHideItem,MenuItem::TextFieldMask);
+				_ApplicationPlayer->ShowHideItem->setText("Hide");
+				endEditCP(_ApplicationPlayer->ShowHideItem,MenuItem::TextFieldMask);
+			}
+			else
+			{
+				//std::cout<<"its already 'hide'";
+			}
+		}
+	}
+}
+
 HierarchyPanel::TheTreeSelectionListener2::TheTreeSelectionListener2(HierarchyPanelPtr TheHierarchyPanel)
 {
 	_HierarchyPanel = TheHierarchyPanel;
@@ -279,6 +320,7 @@ void HierarchyPanel::TheTreeSelectionListener2::setParams(TreePtr TheTree,Applic
 
 void HierarchyPanel::TheTreeSelectionListener::setHighlight(NodePtr selectednode)
 {
+	
 	_highlight = selectednode;
 	highlightChanged();
 }
@@ -289,6 +331,8 @@ NodePtr HierarchyPanel::TheTreeSelectionListener::getHighlight()
 void HierarchyPanel::TheTreeSelectionListener::highlightChanged(void)
 {
  
+	// change the ShowHideMenuItem's text 
+	
 	SimpleMaterialPtr _highlightMaterial;
 	
 	
@@ -459,9 +503,12 @@ HierarchyPanel::PlayerMouseListener2::PlayerMouseListener2(HierarchyPanelPtr The
 
 void HierarchyPanel::PlayerMouseListener2::mouseClicked(const MouseEventPtr e)
 {
+   if(e->getButton() == e->BUTTON3)
+   {
+	   std::cout<<"right clicked!!!"<<std::endl;
+   }
    if(e->getClickCount() == 2)
    {
-		//std::cout<<"mouse was double clicked on:"<<e->getSource();
 		Path path = boost::any_cast<Path>(_HierarchyPanel->TheTree2->getLastSelectedPathComponent());
 		
 		if(boost::filesystem::exists(path) && boost::filesystem::is_regular_file(path))
