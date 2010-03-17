@@ -135,6 +135,9 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void clearViewports(void);
     UInt32 numViewports(void) const;
     ViewportPtr getViewport(UInt32 index) const;
+
+    Path getProjectFilePath(void) const;
+    Path getLuaModulePath(void) const;
     /*=========================  PROTECTED  ===============================*/
   protected:
 

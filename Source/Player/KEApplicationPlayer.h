@@ -374,42 +374,13 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	class ComboBoxListener: public ComboBoxSelectionListener
     {
     public:
-        void selectionChanged(const ComboBoxSelectionEventPtr e)
-        {
-			int index = _ComboBox->getSelectedIndex();
-			//std::cout<<"reaced"<<index<<std::endl;
-            if(index == 0)
-			{
-				_TopLeftCardLayout->first(_TopLeftTreePanel);
-				beginEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
-					_ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(_ApplicationPlayer->pop);
-				endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
+        void selectionChanged(const ComboBoxSelectionEventPtr e);
 
-			}
-			else 
-			{
-				beginEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
-					_ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(NullFC);
-				endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
-				
-
-				_TopLeftCardLayout->last(_TopLeftTreePanel);
-				//InfoTabPanel->setSelectedIndex(3);
-			}
-		}
-		void set(ComboBoxPtr ComboBoxP,CardLayoutPtr TopLeftCardLayout,PanelPtr TopLeftTreePanel)
-        {
-        	_ComboBox = ComboBoxP;
-			_TopLeftCardLayout = TopLeftCardLayout;
-			_TopLeftTreePanel = TopLeftTreePanel;
-        }
-		ComboBoxListener(ApplicationPlayerPtr TheApplicationPlayer)
-		{
-			_ApplicationPlayer = TheApplicationPlayer;
-			_ComboBox = NullFC;
-			_TopLeftCardLayout = NullFC;
-			_TopLeftTreePanel = NullFC;
-		}
+		void set(ComboBoxPtr ComboBoxP,
+                 CardLayoutPtr TopLeftCardLayout,
+                 PanelPtr TopLeftTreePanel);
+		
+        ComboBoxListener(ApplicationPlayerPtr TheApplicationPlayer);
 	protected:
 			 ApplicationPlayerPtr _ApplicationPlayer;
 	         ComboBoxPtr _ComboBox;

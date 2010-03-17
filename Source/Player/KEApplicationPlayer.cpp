@@ -740,7 +740,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	   MainInternalWindow->getChildren().push_back(SplitPanel);
 	   MainInternalWindow->setLayout(MainInternalWindowLayout);
        MainInternalWindow->setBackgrounds(MainInternalWindowBackground);
-	   MainInternalWindow->setAlignmentInDrawingSurface(Vec2f(1.0f,1.0f));
+	   MainInternalWindow->setAlignmentInDrawingSurface(Vec2f(0.5f,0.5f));
 	   MainInternalWindow->setMenuBar(MainMenuBar);
 	   MainInternalWindow->setScalingInDrawingSurface(Vec2f(1.0f,1.0f));
 	   MainInternalWindow->setDrawTitlebar(false);
@@ -1052,11 +1052,15 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	}
 	else if(e->getSource() == modeComboBox)
 	{
-		std::cout<<"COMBOBOX CHANGED"<<std::endl;
 		int temp = modeComboBox->getSelectedIndex();
-		if(temp == 1)_HierarchyPanel->TopLeftCardLayout->last(_HierarchyPanel);//->TopLeftTreePanel);
-		else _HierarchyPanel->TopLeftCardLayout->first(_HierarchyPanel);//->TopLeftTreePanel);
-
+		if(temp == 1)
+        {
+            _HierarchyPanel->TopLeftCardLayout->last(_HierarchyPanel);//->TopLeftTreePanel);
+        }
+        else
+        {
+            _HierarchyPanel->TopLeftCardLayout->first(_HierarchyPanel);//->TopLeftTreePanel);
+        }
 	}
 	else if(e->getSource() == OpenFileButton)
 	{
@@ -1072,12 +1076,8 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 			Path(".."),
 			true);
 
-        std::cout << "Files to Open: "<< std::endl;
-		
-
         for(std::vector<Path>::iterator Itor(FilesToOpen.begin()) ; Itor != FilesToOpen.end(); ++Itor)
         {
-            std::cout << Itor->string() << std::endl;
 			_ContentPanel->addTabWithText(*Itor);
         }
 	}
@@ -1093,7 +1093,6 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 			Path(".."),
 			true);
         
-        std::cout << "File to Save: " << SavePath.string() << std::endl;
 		_ContentPanel->saveTextFile(SavePath);
 	}
 	else if(e->getSource() == ShowHideItem)
@@ -1109,61 +1108,6 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	{
 		CommandPtr DeleteCommandPtr = DeleteCommand::create(ApplicationPlayerPtr(this),_HierarchyPanel);
         _TheCommandManager->executeCommand(DeleteCommandPtr);
-		
-		//NodePtr parent = SelectedNode->getParent();
-/*		std::cout<<"before:"<<std::endl;
-		std::cout<<std::endl<<_HierarchyPanel->TheTreeModel->getChildCount(parent)<<" - _HierarchyPanel->TheTreeModel->getChildCount(parent)\n";
-		std::cout<<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()<<" _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()\n";
-
-		for(UInt32 i(0) ; i<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() ; ++i)
-		{
-			std::cout<< "  Node:";
-			if(getName(_HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)))
-			{
-				std::cout<< getName(_HierarchyPanel->TheTreeModel->getRootNode()->getChild(i));
-			}
-			else
-			{
-				std::cout<< "NONAME";
-			}
-
-			std::cout<< ", type: " << _HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)->getCore()->getType().getCName() << std::endl;
-		}
-*/
-		//if(parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2) // 2 because the other child of root is bounding box
-		//{
-	//		std::cout<<"cant delete the only child.Tree becomes empty.\n";
-	//	}
-	//	else
-	//	{
-	//		_HierarchyPanel->TheTreeModel->removeNode(_HierarchyPanel->TheTree->getLastSelectedPathComponent());
-	//	}
-	//	
-	//	nodeInCutClipboard = NullFC;
-	//	clonedNodeInCutClipboard = NullFC;
-	//	clonedNodeInCopyClipboard = NullFC;
-
-
-/*		std::cout<<"after:"<<std::endl;
-		std::cout<<std::endl<<_HierarchyPanel->TheTreeModel->getChildCount(parent)<<" - _HierarchyPanel->TheTreeModel->getChildCount(parent)\n";
-		std::cout<<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()<<" _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren()\n";
-
-		for(UInt32 i(0) ; i<_HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() ; ++i)
-		{
-			std::cout<< "  Node:";
-			if(getName(_HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)))
-			{
-				std::cout<< getName(_HierarchyPanel->TheTreeModel->getRootNode()->getChild(i));
-			}
-			else
-			{
-				std::cout<< "NONAME";
-			}
-
-			std::cout<< ", type: " << _HierarchyPanel->TheTreeModel->getRootNode()->getChild(i)->getCore()->getType().getCName() << std::endl;
-		}
-*/
-
 	}
 	
 	else if(e->getSource() == CutItem)
@@ -1729,4 +1673,42 @@ void ApplicationPlayer::setupPopupMenu()
 ApplicationPlayer::highlightNodeListener::~highlightNodeListener()
 {
 
+}
+
+void ApplicationPlayer::ComboBoxListener::selectionChanged(const ComboBoxSelectionEventPtr e)
+{
+    int index = _ComboBox->getSelectedIndex();
+    if(index == 0)
+    {
+        _TopLeftCardLayout->first(_TopLeftTreePanel);
+        beginEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
+            _ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(_ApplicationPlayer->pop);
+        endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
+        _ApplicationPlayer->_ContentPanel->setVisible(false);
+
+    }
+    else 
+    {
+        beginEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
+            _ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(NullFC);
+        endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
+
+        _TopLeftCardLayout->last(_TopLeftTreePanel);
+        _ApplicationPlayer->_ContentPanel->setVisible(true);
+    }
+}
+
+void ApplicationPlayer::ComboBoxListener::set(ComboBoxPtr ComboBoxP,CardLayoutPtr TopLeftCardLayout,PanelPtr TopLeftTreePanel)
+{
+    _ComboBox = ComboBoxP;
+    _TopLeftCardLayout = TopLeftCardLayout;
+    _TopLeftTreePanel = TopLeftTreePanel;
+}
+
+ApplicationPlayer::ComboBoxListener::ComboBoxListener(ApplicationPlayerPtr TheApplicationPlayer)
+{
+    _ApplicationPlayer = TheApplicationPlayer;
+    _ComboBox = NullFC;
+    _TopLeftCardLayout = NullFC;
+    _TopLeftTreePanel = NullFC;
 }

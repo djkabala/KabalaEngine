@@ -76,7 +76,6 @@ RedoCommandOfPlayerPtr RedoCommandOfPlayer::create(ApplicationPlayerPtr Applicat
 
 void RedoCommandOfPlayer::execute(void)
 {
-	std::cout << getCommandDescription() << std::endl;
 	_ApplicationPlayer->_TheUndoManager->redo();
 }
 

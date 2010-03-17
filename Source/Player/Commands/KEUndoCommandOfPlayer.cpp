@@ -76,7 +76,6 @@ UndoCommandOfPlayerPtr UndoCommandOfPlayer::create(ApplicationPlayerPtr Applicat
 
 void UndoCommandOfPlayer::execute(void)
 {
-	std::cout << getCommandDescription() << std::endl;
 	_ApplicationPlayer->_TheUndoManager->undo();
 }
 

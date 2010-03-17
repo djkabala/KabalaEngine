@@ -78,12 +78,11 @@ DeleteCommandPtr DeleteCommand::create(ApplicationPlayerPtr ApplicationPlayer,Hi
 
 void DeleteCommand::execute(void)
 {
-//	std::cout<<"trying to execute the delete command!! kool"<<std::endl;
 	_parent = _ApplicationPlayer->SelectedNode->getParent();
 
 	if(_parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2) // 2 because the other child of root is bounding box
 	{
-		std::cout<<"cant delete the only child.Tree becomes empty.\n";
+		//std::cout<<"cant delete the only child.Tree becomes empty.\n";
 	}
 	else
 	{
@@ -128,7 +127,6 @@ std::string DeleteCommand::getPresentationName(void) const
 void DeleteCommand::redo(void)
 {
     Inherited::redo();
-	std::cout<<"trying to redo "<<std::endl;
     //_TheModel->removeBackground(_TheIndex);
 	if(_LastSelectedPathComponentNode!=NullFC)
 	{
@@ -146,7 +144,6 @@ void DeleteCommand::undo(void)
 {
     Inherited::undo();
 	//_TheIndex = _TheModel->addBackground(_RemovedBackground);
-	//std::cout<<"trying to undo "<<std::endl;
 
 	if(_LastSelectedPathComponentNode!=NullFC)
 	{

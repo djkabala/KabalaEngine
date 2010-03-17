@@ -82,7 +82,7 @@ void CutCommand::execute(void)
 	NodePtr parent = _ApplicationPlayer->SelectedNode->getParent();
 	if(parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2)
 	{
-		std::cout<<"\nCant cut the only remaining Item\n"<<std::endl;
+		//std::cout<<"\nCant cut the only remaining Item\n"<<std::endl;
 	}
 	else
 	{

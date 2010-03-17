@@ -78,7 +78,6 @@ ShowHideCommandPtr ShowHideCommand::create(HierarchyPanelPtr HierarchyPanel,Appl
 
 void ShowHideCommand::execute(void)
 {
-//	std::cout<<"changing the travmask"<<std::endl;
 	_SelectedNode = _HierarchyPanel->_TheTreeSelectionListener._SelectedNode;
 	maskval = _SelectedNode->getTravMask();
 	if(!maskval)
@@ -124,7 +123,6 @@ void ShowHideCommand::redo(void)
 	if(_SelectedNode != NullFC)
 	{
 		Inherited::redo();
-		std::cout<<"trying to redo "<<std::endl;
 		UInt32 maskval = _SelectedNode->getTravMask();
 		if(!maskval)
 		{
@@ -144,7 +142,6 @@ void ShowHideCommand::undo(void)
     if(_SelectedNode != NullFC)
 	{
 		Inherited::undo();
-		std::cout<<"trying to redo "<<std::endl;
 		UInt32 maskval = _SelectedNode->getTravMask();
 		if(!maskval)
 		{

@@ -82,7 +82,6 @@ void CopyCommand::execute(void)
 	_ApplicationPlayer->clonedNodeInCopyClipboard = _ApplicationPlayer->SelectedNode->clone();
 	std::string name=getName(_ApplicationPlayer->SelectedNode);
 	name+=" copy";
-//	std::cout<<std::endl<<name<<std::endl;
 	setName(_ApplicationPlayer->clonedNodeInCopyClipboard,name);
 }
 

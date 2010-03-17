@@ -121,7 +121,7 @@ void HierarchyPanel::createLuaGraphTree()
 	TheTree2 = Tree::create();
 	TheTreeModel2 = LuaGraphTreeModel::create();
 	
-	TheTreeModel2->setRoot(Path("D:\\AC_Metablast\\VirtualCellData\\lua"));
+	TheTreeModel2->setRoot(MainApplication::the()->getProject()->getLuaModulePath());
 
 	beginEditCP(TheTree2, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
         TheTree2->setPreferredSize(Vec2f(100, 500));

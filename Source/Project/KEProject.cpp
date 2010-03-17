@@ -269,9 +269,8 @@ void Project::stop(void)
     produceProjectStopped(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
 }
 
-void Project::loadScripts(void)
+Path Project::getProjectFilePath(void) const
 {
-    //Get the directory that the project is located in
     Path ProjectBaseDir("");
     const Path* ProjectFilePath = FilePathAttachment::getFilePath(ProjectPtr(this));
     if(ProjectFilePath != NULL)
@@ -279,19 +278,31 @@ void Project::loadScripts(void)
         ProjectBaseDir = ProjectFilePath->parent_path();
     }
 
+    return ProjectBaseDir;
+}
+
+Path Project::getLuaModulePath(void) const
+{
+    return getProjectFilePath() / getLuaModulesDirectory();
+}
+
+void Project::loadScripts(void)
+{
+    //Get the directory that the project is located in
+
     //Set the Path used for finding modules by lua
     std::string PackagePath("?;"
-            + (ProjectBaseDir / getLuaModulesDirectory() / "?" ).file_string() + ";"
-            + (ProjectBaseDir / getLuaModulesDirectory() / "?.lua" ).file_string() + ";"
-            + (ProjectBaseDir / getLuaModulesDirectory() / "?" /  "init.lua").file_string());
+            + (getLuaModulePath() / "?" ).file_string() + ";"
+            + (getLuaModulePath() / "?.lua" ).file_string() + ";"
+            + (getLuaModulePath() / "?" /  "init.lua").file_string());
 
     LuaManager::the()->setPackagePath(PackagePath);
 
     std::string PackageCPath("?;"
-            + (ProjectBaseDir / getLuaModulesDirectory() / "?" ).file_string() + ";"
-            + (ProjectBaseDir / getLuaModulesDirectory() / "?.so" ).file_string() + ";"
-            + (ProjectBaseDir / getLuaModulesDirectory() / "?.dylib" ).file_string() + ";"
-            + (ProjectBaseDir / getLuaModulesDirectory() / "?.dll" ).file_string());
+            + (getLuaModulePath() / "?" ).file_string() + ";"
+            + (getLuaModulePath() / "?.so" ).file_string() + ";"
+            + (getLuaModulePath() / "?.dylib" ).file_string() + ";"
+            + (getLuaModulePath() / "?.dll" ).file_string());
     LuaManager::the()->setPackageCPath(PackageCPath);
 
     //If I have a Lua Module then load it
