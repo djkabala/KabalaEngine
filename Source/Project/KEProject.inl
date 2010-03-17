@@ -109,10 +109,17 @@ Project::ProjectUpdateListener::ProjectUpdateListener(ProjectPtr TheProject) : _
 }
 
 inline
+bool Project::getPauseActiveUpdates(void) const
+{
+    return _PauseActiveUpdates;
+}
+
+inline
 void Project::pauseActiveUpdates(void)
 {
     _PauseActiveUpdates = true;
 }
+
 inline
 void Project::unpauseActiveUpdates(void)
 {

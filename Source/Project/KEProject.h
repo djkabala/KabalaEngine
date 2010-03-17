@@ -118,6 +118,7 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     void pauseActiveUpdates(void);
     void unpauseActiveUpdates(void);
     void togglePauseActiveUpdates(void);
+    bool getPauseActiveUpdates(void) const;
 
     void attachFlyNavigation(void);
     void dettachFlyNavigation(void);

@@ -320,7 +320,7 @@ void ApplicationPlayer::createDebugInterface(void)
     endEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	beginEditCP(FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        FrustrumCullingItem->setText("Frustrum Culling ");
+        FrustrumCullingItem->setText("Disable Frustrum Culling ");
         FrustrumCullingItem->setAcceleratorKey(KeyEvent::KEY_F);
         FrustrumCullingItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         FrustrumCullingItem->setMnemonicKey(KeyEvent::KEY_F);
@@ -1037,18 +1037,67 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	else if(e->getSource() == PauseActiveUpdatesItem)
 	{
 		MainApplication::the()->getProject()->togglePauseActiveUpdates();
+        
+        //Update the Menu Item
+        beginEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask);
+        if(MainApplication::the()->getProject()->getPauseActiveUpdates())
+        {
+            PauseActiveUpdatesItem->setText("Unpause Active Updates");
+        }
+        else
+        {
+            PauseActiveUpdatesItem->setText("Pause Active Updates");
+        }
+        endEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask);
 	}
 	else if(e->getSource() == DrawBoundingVolumesItem)
 	{
 		toggleDrawBoundingVolumes();
+
+        //Update the Menu Item
+        beginEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask);
+        if(MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->getVolumeDrawing())
+        {
+            DrawBoundingVolumesItem->setText("Hide Bounding Volumes");
+        }
+        else
+        {
+            DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
+        }
+        endEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask);
 	}
 	else if(e->getSource() == FrustrumCullingItem)
 	{
 		toggleFrustumCulling();
+
+        //Update the Menu Item
+        beginEditCP(FrustrumCullingItem, MenuItem::TextFieldMask);
+        if(MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->getFrustumCulling())
+        {
+            FrustrumCullingItem->setText("Disable Frustrum Culling");
+        }
+        else
+        {
+            FrustrumCullingItem->setText("Enable Frustrum Culling");
+        }
+        endEditCP(FrustrumCullingItem, MenuItem::TextFieldMask);
 	}
 	else if(e->getSource() == DrawPhysicsCharacteristicsItem)
 	{
 		toggleDrawPhysicsCharacteristics();
+
+        //Update the Menu Item
+        //Add the Physics Drawable Node to the project
+        beginEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask);
+        if(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->findChild(getPhysicsDrawableNode()) < 0)
+        {
+            DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics");
+        }
+        else
+        {
+            DrawPhysicsCharacteristicsItem->setText("Hide Physics Characteristics");
+        }
+        endEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask);
 	}
 	else if(e->getSource() == modeComboBox)
 	{
@@ -1220,7 +1269,7 @@ void ApplicationPlayer::toggleDrawBoundingVolumes(void)
 
 void ApplicationPlayer::toggleDrawPhysicsCharacteristics(void)
 {
-    NodePtr CurrentRoot(MainApplication::the()->getProject()->getActiveNode());
+    NodePtr CurrentRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
     NodePtr PhysNode(getPhysicsDrawableNode());
 
     //Get the Root Node of the Project
