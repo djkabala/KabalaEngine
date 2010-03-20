@@ -406,7 +406,63 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactory.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactory.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactory.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactoryBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactoryBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactoryBase.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactoryFields.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFields.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityType.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityType.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityType.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityTypeBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityTypeBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityTypeBase.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Project\SceneObject\KECapabilityTypeFields.h"
 						>
 					</File>
 					<File
