@@ -79,7 +79,7 @@ CopyCommandPtr CopyCommand::create(ApplicationPlayerPtr ApplicationPlayer)
 void CopyCommand::execute(void)
 {
 	_ApplicationPlayer->currentAction = COPY;
-	_ApplicationPlayer->clonedNodeInCopyClipboard = _ApplicationPlayer->SelectedNode->clone();
+	_ApplicationPlayer->clonedNodeInCopyClipboard = osg::deepCloneTree(_ApplicationPlayer->SelectedNode);
 	std::string name=getName(_ApplicationPlayer->SelectedNode);
 	name+=" copy";
 	setName(_ApplicationPlayer->clonedNodeInCopyClipboard,name);
