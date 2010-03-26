@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="LuaGraphTreeModel"
+	parent="AbstractTreeModel"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="true"
+>
+A UI LuaGraphTreeModel.
+	<Field
+		name="InternalRoot"
+		type="Path"
+		cardinality="single"
+        visibility="external"
+		defaultValue=""
+        header="OpenSG/Toolbox/OSGPathType.h"
+		access="protected"
+	>
+   </Field>
+</FieldContainer>

@@ -45,7 +45,7 @@
 
 #include <OpenSG/UserInterface/OSGTree.h>
 #include <OpenSG/UserInterface/OSGSceneGraphTreeModel.h>
-#include <OpenSG/UserInterface/OSGLuaGraphTreeModel.h>
+#include "Player/LuaGraphTreeModel/OSGLuaGraphTreeModel.h"
 #include <OpenSG/UserInterface/OSGFixedHeightTreeModelLayout.h>
 #include <OpenSG/UserInterface/OSGTreeSelectionListener.h>
 #include <OpenSG/Toolbox/OSGGeometryUtils.h>
