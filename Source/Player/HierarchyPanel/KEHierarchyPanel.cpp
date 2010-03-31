@@ -58,6 +58,8 @@
 #include <OpenSG/UserInterface/OSGTreePath.h>
 #include "boost/filesystem.hpp"
 
+#include <OpenSG/UserInterface/OSGComboBox.h>
+#include <OpenSG/UserInterface/OSGDerivedFieldContainerComboBoxModel.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -97,7 +99,7 @@ void HierarchyPanel::createSceneGraphTree(void)
 	
     BorderLayoutConstraintsPtr SceneTreeConstraints = osg::BorderLayoutConstraints::create();
     beginEditCP(SceneTreeConstraints, BorderLayoutConstraints::RegionFieldMask);
-        SceneTreeConstraints->setRegion(BorderLayoutConstraints::BORDER_WEST);
+	SceneTreeConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
     endEditCP(SceneTreeConstraints, BorderLayoutConstraints::RegionFieldMask);
 
     TreeScrollPanel = ScrollPanel::create();
@@ -111,13 +113,81 @@ void HierarchyPanel::createSceneGraphTree(void)
 	_TheTreeSelectionListener.setParams(TheTree,_ApplicationPlayer);
 	_TheTreeSelectionListener.updateHighlight();
 
+
+	NewNodeMenuModel = DerivedFieldContainerComboBoxModel::create();
+    beginEditCP(NewNodeMenuModel, DerivedFieldContainerComboBoxModel::DerivedFieldContainerTypesFieldMask);
+	NewNodeMenuModel->getDerivedFieldContainerTypes().push_back(std::string(osg::NodeCore::getClassType().getCName()));
+    endEditCP(NewNodeMenuModel, DerivedFieldContainerComboBoxModel::DerivedFieldContainerTypesFieldMask);
+
+	CreateNewNodeMenuButton = MenuButton::create();
+
+	CreateNewButtonConstraints = osg::BorderLayoutConstraints::create();
+
+	beginEditCP(CreateNewButtonConstraints, BorderLayoutConstraints::RegionFieldMask);
+	CreateNewButtonConstraints->setRegion(BorderLayoutConstraints::BORDER_NORTH);
+    endEditCP(CreateNewButtonConstraints, BorderLayoutConstraints::RegionFieldMask);
+
+	beginEditCP(CreateNewNodeMenuButton, MenuButton::TextFieldMask | MenuButton::PreferredSizeFieldMask | MenuButton::ModelFieldMask | MenuButton::ConstraintsFieldMask);
+        CreateNewNodeMenuButton->setText("Create New Node");
+        CreateNewNodeMenuButton->setPreferredSize(Vec2f(120, 20));
+        CreateNewNodeMenuButton->setModel(NewNodeMenuModel);
+		CreateNewNodeMenuButton->setConstraints(CreateNewButtonConstraints);
+    endEditCP(CreateNewNodeMenuButton, MenuButton::TextFieldMask | MenuButton::PreferredSizeFieldMask | MenuButton::ModelFieldMask | MenuButton::ConstraintsFieldMask);
+    
+	CreateNewNodeMenuButton->addMenuActionListener(&_TheMenuButtonActionListener);
+
+	BorderLayoutPtr SceneGraphTreeLayout = osg::BorderLayout::create();
+
+    beginEditCP(SceneGraphTreeLayout);
+        // Nothing
+    endEditCP(SceneGraphTreeLayout);
+
+	SceneGraphPanel = Panel::create();
+	beginEditCP(SceneGraphPanel,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+	SceneGraphPanel->getChildren().push_back(TreeScrollPanel);
+	SceneGraphPanel->getChildren().push_back(CreateNewNodeMenuButton);
+	SceneGraphPanel->setLayout(SceneGraphTreeLayout);
+	endEditCP(SceneGraphPanel,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+
+
+
+/*	UInt32 NumFieldContainersFound(0);
+    FieldContainerType* FoundType = NULL;
+    FieldContainerEditorPtr DefaultEditor;
+    for(UInt32 j(0) ; NumFieldContainersFound<FieldContainerFactory::the()->getNumTypes(); ++j)
+    {
+        FoundType = FieldContainerFactory::the()->findType(j);
+        if(FoundType != NULL)
+        {
+			if(FoundType->isDerivedFrom(osg::NodeCore::getClassType())  && !FoundType->isAbstract())
+            {
+                //Add Editor
+
+				std::cout<<"foundtype name:"<<FoundType->getName()<<std::endl;
+				std::string ftname = (FoundType->getName()).str();
+				NodeCorePtr core = FieldContainerFactory::the()->createNodeCore(ftname.c_str());
+				NodePtr temp = Node::create();
+				beginEditCP(temp,Node::CoreFieldMask);
+				temp->setCore(core);	
+				endEditCP(temp,Node::CoreFieldMask);
+			
+				setName(temp,ftname);
+			
+            }
+            ++NumFieldContainersFound;
+        }
+
+
+
+    }
+
+*/
 //	TheTree->addMouseListener(&_PlayerMouseListener2);
 
 }
 
 void HierarchyPanel::createLuaGraphTree()
 {
-
 	TheTree2 = Tree::create();
 	TheTreeModel2 = LuaGraphTreeModel::create();
 	
@@ -148,9 +218,6 @@ void HierarchyPanel::createLuaGraphTree()
 	//_PlayerMouseListener2.setParams(_ApplicationPlayer);
 
 	TheTree2->addMouseListener(&_PlayerMouseListener2);
-
-	
-
 }
 
 void HierarchyPanel::createPanel()
@@ -186,7 +253,7 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 				createSceneGraphTree();
 			}
 			beginEditCP(HierarchyPanelPtr(this),Panel::ChildrenFieldMask);
-				this->getChildren().push_back(TreeScrollPanel);
+				this->getChildren().push_back(SceneGraphPanel);
 			endEditCP(HierarchyPanelPtr(this), Panel::ChildrenFieldMask);
 
 			TabsAdded.insert(SCENEGRAPH);
@@ -228,7 +295,7 @@ void HierarchyPanel::removeTab(UInt32 tabno)
 		{
 
 			case SCENEGRAPH:	
-				this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(TreeScrollPanel)));
+				this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(SceneGraphPanel)));
 				break;
 			case LUA:
 				this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(TreeScrollPanel2)));
@@ -500,6 +567,10 @@ HierarchyPanel::PlayerMouseListener2::PlayerMouseListener2(HierarchyPanelPtr The
 	_HierarchyPanel=TheHierarchyPanel;
 }
 
+HierarchyPanel::MenuButtonActionListener::MenuButtonActionListener(HierarchyPanelPtr TheHierarchyPanel)
+{
+	_HierarchyPanel=TheHierarchyPanel;
+}
 
 void HierarchyPanel::PlayerMouseListener2::mouseClicked(const MouseEventPtr e)
 {
@@ -536,7 +607,8 @@ HierarchyPanel::HierarchyPanel() :
     Inherited(),
 	_TheTreeSelectionListener(HierarchyPanelPtr(this)),
 	_TheTreeSelectionListener2(HierarchyPanelPtr(this)),
-	_PlayerMouseListener2(HierarchyPanelPtr(this))
+	_PlayerMouseListener2(HierarchyPanelPtr(this)),
+	_TheMenuButtonActionListener(HierarchyPanelPtr(this))
 {
 	_ApplicationPlayer = NullFC;
 	
@@ -546,7 +618,8 @@ HierarchyPanel::HierarchyPanel(const HierarchyPanel &source) :
     Inherited(source),
 	_TheTreeSelectionListener(HierarchyPanelPtr(this)),
 	_TheTreeSelectionListener2(HierarchyPanelPtr(this)),
-	_PlayerMouseListener2(HierarchyPanelPtr(this))
+	_PlayerMouseListener2(HierarchyPanelPtr(this)),
+	_TheMenuButtonActionListener(HierarchyPanelPtr(this))
 {
 }
 

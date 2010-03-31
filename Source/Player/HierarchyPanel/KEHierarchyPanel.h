@@ -79,6 +79,10 @@
 #include "Player/Commands/KECopyCommand.h"
 #include "Player/Commands/KEPasteCommand.h"
 
+#include <OpenSG/UserInterface/OSGDerivedFieldContainerComboBoxModel.h>
+#include <OpenSG/UserInterface/OSGFlowLayout.h>
+#include <OpenSG/UserInterface/OSGMenuButton.h>
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief HierarchyPanel class. See \ref 
@@ -109,6 +113,7 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	NodePtr highlightNode;
 	CardLayoutPtr TopLeftCardLayout;
 	BorderLayoutConstraintsPtr	PanelTopLeftConstraints1;
+
 
 	
 	
@@ -218,6 +223,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	friend class TheTreeSelectionListener;
 	TheTreeSelectionListener _TheTreeSelectionListener;
 
+	
+
 	class PlayerMouseListener2 : public MouseAdapter
 	{
 	public:
@@ -234,6 +241,40 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     friend class PlayerMouseListener2;
 	PlayerMouseListener2 _PlayerMouseListener2;
 
+	class MenuButtonActionListener : public ActionListener
+	{
+	public:
+		MenuButtonActionListener(HierarchyPanelPtr TheHierearchyPanel);
+		virtual void actionPerformed(const ActionEventPtr e)
+		{
+			std::cout<<e->getSource()<<std::endl;
+			MenuButtonPtr TheMenuButton(MenuButtonPtr::dcast(e->getSource()));
+			if(TheMenuButton != NullFC)
+			{
+				try
+				{
+					
+					//NodeCorePtr SelectedNodeCore = NodeCorePtr::dcast(boost::any_cast<osg::FieldContainerType>(TheMenuButton->getSelectionValue()));
+					//std::cout << "Selected: " << boost::any_cast<>(TheMenuButton->getSelectionValue());
+					//std::string StrValue = boost::any_cast<std::string>(TheMenuButton->getSelectionValue());
+					//std::cout << "Selected: " << SelectedNodeCore->getClassType().getCName() << std::endl;
+				}
+				catch(boost::bad_any_cast &)
+				{
+					std::cout << "badcast: " << std::endl;
+				}
+			}
+			else
+			{
+				std::cout << "TheMenuButton is null " << std::endl;
+			}
+		}
+	protected:
+		HierarchyPanelPtr _HierarchyPanel;
+	};
+
+	friend class MenuButtonActionListener;
+	MenuButtonActionListener _TheMenuButtonActionListener;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -253,6 +294,12 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
   protected:
+
+	DerivedFieldContainerComboBoxModelPtr NewNodeMenuModel;
+	MenuButtonPtr CreateNewNodeMenuButton;
+	PanelPtr SceneGraphPanel;
+	BorderLayoutConstraintsPtr CreateNewButtonConstraints;
+
 
     // Variables should all be in HierarchyPanelBase.
 
