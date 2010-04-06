@@ -126,6 +126,9 @@ const OSG::BitVector  SceneBase::PhysicsHandlerFieldMask =
 const OSG::BitVector  SceneBase::PhysicsWorldFieldMask = 
     (TypeTraits<BitVector>::One << SceneBase::PhysicsWorldFieldId);
 
+const OSG::BitVector  SceneBase::GenericMethodIDsFieldMask = 
+    (TypeTraits<BitVector>::One << SceneBase::GenericMethodIDsFieldId);
+
 const OSG::BitVector  SceneBase::EventProducerFieldMask =
     (TypeTraits<BitVector>::One << SceneBase::EventProducerFieldId);
 
@@ -200,6 +203,9 @@ const OSG::BitVector SceneBase::MTInfluenceMask =
     
 */
 /*! \var PhysicsWorldPtr SceneBase::_sfPhysicsWorld
+    
+*/
+/*! \var UInt32          SceneBase::_sfGenericMethodIDs
     
 */
 
@@ -316,7 +322,12 @@ FieldDescription *SceneBase::_desc[] =
                      "PhysicsWorld", 
                      PhysicsWorldFieldId, PhysicsWorldFieldMask,
                      false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFPhysicsWorld))
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFPhysicsWorld)),
+    new FieldDescription(SFUInt32::getClassType(), 
+                     "GenericMethodIDs", 
+                     GenericMethodIDsFieldId, GenericMethodIDsFieldMask,
+                     false,
+                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFGenericMethodIDs))
     , 
     new FieldDescription(SFEventProducerPtr::getClassType(), 
                      "EventProducer", 
@@ -556,6 +567,7 @@ SceneBase::SceneBase(void) :
     _sfLuaModule              (), 
     _sfPhysicsHandler         (PhysicsHandlerPtr(NullFC)), 
     _sfPhysicsWorld           (PhysicsWorldPtr(NullFC)), 
+    _sfGenericMethodIDs       (), 
     _sfEventProducer(&_Producer),
     Inherited() 
 {
@@ -589,6 +601,7 @@ SceneBase::SceneBase(const SceneBase &source) :
     _sfLuaModule              (source._sfLuaModule              ), 
     _sfPhysicsHandler         (source._sfPhysicsHandler         ), 
     _sfPhysicsWorld           (source._sfPhysicsWorld           ), 
+    _sfGenericMethodIDs       (source._sfGenericMethodIDs       ), 
     _sfEventProducer(&_Producer),
     Inherited                 (source)
 {
@@ -716,6 +729,11 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
         returnValue += _sfPhysicsWorld.getBinSize();
     }
 
+    if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
+    {
+        returnValue += _sfGenericMethodIDs.getBinSize();
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         returnValue += _sfEventProducer.getBinSize();
@@ -838,6 +856,11 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
     if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
     {
         _sfPhysicsWorld.copyToBin(pMem);
+    }
+
+    if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
+    {
+        _sfGenericMethodIDs.copyToBin(pMem);
     }
 
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
@@ -963,6 +986,11 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
         _sfPhysicsWorld.copyFromBin(pMem);
     }
 
+    if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
+    {
+        _sfGenericMethodIDs.copyFromBin(pMem);
+    }
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyFromBin(pMem);
@@ -1044,6 +1072,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
     if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
         _sfPhysicsWorld.syncWith(pOther->_sfPhysicsWorld);
 
+    if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
+        _sfGenericMethodIDs.syncWith(pOther->_sfGenericMethodIDs);
+
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
         _sfEventProducer.syncWith(pOther->_sfEventProducer);
 
@@ -1086,6 +1117,9 @@ void SceneBase::executeSyncImpl(      SceneBase *pOther,
 
     if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
         _sfPhysicsWorld.syncWith(pOther->_sfPhysicsWorld);
+
+    if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
+        _sfGenericMethodIDs.syncWith(pOther->_sfGenericMethodIDs);
 
 
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))

@@ -206,6 +206,15 @@ The Scene.
         defaultValue="NullFC"
 	>
 	</Field>
+	<Field
+		name="GenericMethodIDs"
+		type="UInt32"
+		cardinality="single"
+		visibility="external"
+		access="protected"
+	>
+	</Field>
+	
 	<ProducedMethod
 		name="SceneEntered"
 		producedEventType="SceneEventPtr"

@@ -85,6 +85,7 @@
 #include <OpenSG/Toolbox/OSGPathType.h> // LuaModule type
 #include <OpenSG/Physics/OSGPhysicsHandler.h> // PhysicsHandler type
 #include <OpenSG/Physics/OSGPhysicsWorld.h> // PhysicsWorld type
+#include <OpenSG/OSGUInt32Fields.h> // GenericMethodIDs type
 
 #include "KESceneFields.h"
 #include <OpenSG/Toolbox/OSGEventProducer.h>
@@ -134,7 +135,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
         LuaModuleFieldId               = InitialParticleSystemsFieldId  + 1,
         PhysicsHandlerFieldId          = LuaModuleFieldId               + 1,
         PhysicsWorldFieldId            = PhysicsHandlerFieldId          + 1,
-        EventProducerFieldId           = PhysicsWorldFieldId            + 1,
+        GenericMethodIDsFieldId        = PhysicsWorldFieldId            + 1,
+        EventProducerFieldId           = GenericMethodIDsFieldId        + 1,
         NextFieldId                    = EventProducerFieldId           + 1
     };
 
@@ -160,6 +162,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     static const OSG::BitVector LuaModuleFieldMask;
     static const OSG::BitVector PhysicsHandlerFieldMask;
     static const OSG::BitVector PhysicsWorldFieldMask;
+    static const OSG::BitVector GenericMethodIDsFieldMask;
     static const OSG::BitVector EventProducerFieldMask;
 
 
@@ -222,6 +225,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
+     const SFProjectPtr        *getSFInternalParentProject(void) const;
 
            MFViewportPtr       *editMFViewports      (void);
      const MFViewportPtr       *getMFViewports      (void) const;
@@ -275,6 +279,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
      const SFPhysicsWorldPtr   *getSFPhysicsWorld   (void) const;
 
 
+     const ProjectPtr          &getInternalParentProject(void) const;
 
            BackgroundPtr       &editInitialBackground(void);
      const BackgroundPtr       &getInitialBackground(void) const;
@@ -294,6 +299,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
 
            PhysicsWorldPtr     &editPhysicsWorld   (void);
      const PhysicsWorldPtr     &getPhysicsWorld   (void) const;
+
 
            ViewportPtr         &editViewports      (const UInt32 index);
      const ViewportPtr         &getViewports      (const UInt32 index) const;
@@ -406,9 +412,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     const MethodDescription *getProducedEventDescription(UInt32 ProducedEventId) const;
     UInt32 getProducedEventId(const Char8 *ProducedEventName) const;
 
-    SFEventProducerPtr *editSFEventProducer(void);
-    EventProducerPtr &editEventProducer(void);
-
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
@@ -447,6 +450,9 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
   protected:
     EventProducer _Producer;
 
+    SFEventProducerPtr *editSFEventProducer(void);
+    EventProducerPtr &editEventProducer(void);
+
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
@@ -473,6 +479,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     SFPath              _sfLuaModule;
     SFPhysicsHandlerPtr   _sfPhysicsHandler;
     SFPhysicsWorldPtr   _sfPhysicsWorld;
+    SFUInt32            _sfGenericMethodIDs;
 
     /*! \}                                                                 */
     SFEventProducerPtr _sfEventProducer;
@@ -496,7 +503,6 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \{                                                                 */
 
            SFProjectPtr        *editSFInternalParentProject(void);
-     const SFProjectPtr        *getSFInternalParentProject(void) const;
            SFNodePtr           *editSFRoot           (void);
      const SFNodePtr           *getSFRoot           (void) const;
            SFTransformPtr      *editSFRootCore       (void);
@@ -505,9 +511,10 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
      const SFNodePtr           *getSFDefaultCameraBeacon(void) const;
            SFTransformPtr      *editSFDefaultCameraBeaconCore(void);
      const SFTransformPtr      *getSFDefaultCameraBeaconCore(void) const;
+           SFUInt32            *editSFGenericMethodIDs(void);
+     const SFUInt32            *getSFGenericMethodIDs(void) const;
 
            ProjectPtr          &editInternalParentProject(void);
-     const ProjectPtr          &getInternalParentProject(void) const;
            NodePtr             &editRoot           (void);
      const NodePtr             &getRoot           (void) const;
            TransformPtr        &editRootCore       (void);
@@ -516,6 +523,8 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
      const NodePtr             &getDefaultCameraBeacon(void) const;
            TransformPtr        &editDefaultCameraBeaconCore(void);
      const TransformPtr        &getDefaultCameraBeaconCore(void) const;
+           UInt32              &editGenericMethodIDs(void);
+     const UInt32              &getGenericMethodIDs(void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -527,6 +536,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneBase : public AttachmentContainer
      void setRootCore       (const TransformPtr &value);
      void setDefaultCameraBeacon(const NodePtr &value);
      void setDefaultCameraBeaconCore(const TransformPtr &value);
+     void setGenericMethodIDs(const UInt32 &value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

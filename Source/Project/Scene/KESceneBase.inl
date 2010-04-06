@@ -416,6 +416,20 @@ SFPhysicsWorldPtr *SceneBase::editSFPhysicsWorld(void)
     return &_sfPhysicsWorld;
 }
 
+//! Get the Scene::_sfGenericMethodIDs field.
+inline
+const SFUInt32 *SceneBase::getSFGenericMethodIDs(void) const
+{
+    return &_sfGenericMethodIDs;
+}
+
+//! Get the Scene::_sfGenericMethodIDs field.
+inline
+SFUInt32 *SceneBase::editSFGenericMethodIDs(void)
+{
+    return &_sfGenericMethodIDs;
+}
+
 
 //! Get the value of the Scene::_sfInternalParentProject field.
 inline
@@ -625,6 +639,27 @@ inline
 void SceneBase::setPhysicsWorld(const PhysicsWorldPtr &value)
 {
     _sfPhysicsWorld.setValue(value);
+}
+
+//! Get the value of the Scene::_sfGenericMethodIDs field.
+inline
+UInt32 &SceneBase::editGenericMethodIDs(void)
+{
+    return _sfGenericMethodIDs.getValue();
+}
+
+//! Get the value of the Scene::_sfGenericMethodIDs field.
+inline
+const UInt32 &SceneBase::getGenericMethodIDs(void) const
+{
+    return _sfGenericMethodIDs.getValue();
+}
+
+//! Set the value of the Scene::_sfGenericMethodIDs field.
+inline
+void SceneBase::setGenericMethodIDs(const UInt32 &value)
+{
+    _sfGenericMethodIDs.setValue(value);
 }
 
 

@@ -55,6 +55,8 @@
 #include <OpenSG/Physics/OSGPhysicsWorld.h>
 #include <OpenSG/Physics/OSGPhysicsHandler.h>
 #include <OpenSG/Physics/OSGPhysicsUtils.h>
+#include <OpenSG/Toolbox/OSGGenericEvent.h>
+#include <OpenSG/Lua/OSGLuaActivity.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -63,7 +65,7 @@ OSG_BEGIN_NAMESPACE
 \***************************************************************************/
 
 /*! \class osg::Scene
-The Scene. 	
+The Scene.     
 */
 
 /***************************************************************************\
@@ -85,11 +87,11 @@ void Scene::initMethod (void)
 
 void Scene::enter(void)
 {
-	if(getRoot() == NullFC)
-	{
-		createDefaults();
-		initDefaults();
-	}
+    if(getRoot() == NullFC)
+    {
+        createDefaults();
+        initDefaults();
+    }
 
     //Attach the listeners
     MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_SceneUpdateListener);
@@ -99,42 +101,41 @@ void Scene::enter(void)
     MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_SceneUpdateListener);
     MainApplication::the()->getMainWindowEventProducer()->addWindowListener(&_SceneUpdateListener);
 
+    //Set up Initial Model Nodes
+    beginEditCP(getRoot(), Node::ChildrenFieldMask);
+        for(::osg::UInt32 i(0) ; i<getInitialModelNodes().size() ; ++i)
+        {
+            getRoot()->addChild(getInitialModelNodes()[i]);
+        }
+    endEditCP(getRoot(), Node::ChildrenFieldMask);
 
-	//Set up Initial Model Nodes
-	beginEditCP(getRoot(), Node::ChildrenFieldMask);
-		for(::osg::UInt32 i(0) ; i<getInitialModelNodes().size() ; ++i)
-		{
-			getRoot()->addChild(getInitialModelNodes()[i]);
-		}
-	endEditCP(getRoot(), Node::ChildrenFieldMask);
+    //Root Node
+    getInternalParentProject()->setActiveNode(getRoot());
 
-	//Root Node
-	getInternalParentProject()->setActiveNode(getRoot());
+    //Attach the User Interface Drawing Surfaces to the Window Event Producer
+    for(::osg::UInt32 i(0) ; i<getUIDrawingSurfaces().size() ; ++i)
+    {
+        beginEditCP(getUIDrawingSurfaces(i), UIDrawingSurface::EventProducerFieldMask);
+            getUIDrawingSurfaces(i)->setEventProducer(getInternalParentProject()->getEventProducer());
+        endEditCP(getUIDrawingSurfaces(i), UIDrawingSurface::EventProducerFieldMask);
+    }
 
-	//Attach the User Interface Drawing Surfaces to the Window Event Producer
-	for(::osg::UInt32 i(0) ; i<getUIDrawingSurfaces().size() ; ++i)
-	{
-		beginEditCP(getUIDrawingSurfaces(i), UIDrawingSurface::EventProducerFieldMask);
-			getUIDrawingSurfaces(i)->setEventProducer(getInternalParentProject()->getEventProducer());
-		endEditCP(getUIDrawingSurfaces(i), UIDrawingSurface::EventProducerFieldMask);
-	}
-
-	//Attach the viewports
-	for(::osg::UInt32 i(0) ; i<getViewports().size() ; ++i)
-	{
+    //Attach the viewports
+    for(::osg::UInt32 i(0) ; i<getViewports().size() ; ++i)
+    {
         getInternalParentProject()->addViewport(getViewports(i));
     }
 
-	//Attach the initial animations
-	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
-	{
+    //Attach the initial animations
+    for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
+    {
         getInitialAnimations(i)->attachUpdateProducer(editEventProducer());
         getInitialAnimations(i)->start();
     }
 
     //Attach the initial particle systems
-	for(::osg::UInt32 i(0) ; i<getInitialParticleSystems().size() ; ++i)
-	{
+    for(::osg::UInt32 i(0) ; i<getInitialParticleSystems().size() ; ++i)
+    {
         getInitialParticleSystems(i)->attachUpdateProducer(editEventProducer());
     }
     
@@ -224,30 +225,30 @@ void Scene::reset(void)
 
 void Scene::exit(void)
 {
-	//Dettach the viewports
-	for(::osg::UInt32 i(0) ; i<getViewports().size() ; ++i)
-	{
+    //Dettach the viewports
+    for(::osg::UInt32 i(0) ; i<getViewports().size() ; ++i)
+    {
         getInternalParentProject()->removeViewport(getViewports(i));
     }
 
-	//Dettach the initial animations
-	for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
-	{
+    //Dettach the initial animations
+    for(::osg::UInt32 i(0) ; i<getInitialAnimations().size() ; ++i)
+    {
         //getInitialAnimations(i)->stop();
         getInitialAnimations(i)->detachUpdateProducer();
     }
 
     //Dettach the initial particle systems
-	for(::osg::UInt32 i(0) ; i<getInitialParticleSystems().size() ; ++i)
-	{
+    for(::osg::UInt32 i(0) ; i<getInitialParticleSystems().size() ; ++i)
+    {
         getInitialParticleSystems(i)->detachUpdateProducer();
     }
     
-	//Detach the User Interface Drawing Surfaces from the Window Event Producer
-	for(::osg::UInt32 i(0) ; i<getUIDrawingSurfaces().size() ; ++i)
-	{
+    //Detach the User Interface Drawing Surfaces from the Window Event Producer
+    for(::osg::UInt32 i(0) ; i<getUIDrawingSurfaces().size() ; ++i)
+    {
         getUIDrawingSurfaces(i)->detachFromEventProducer();
-	}
+    }
     
     //Detach the listeners
     MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_SceneUpdateListener);
@@ -276,112 +277,178 @@ void Scene::exit(void)
 
 void Scene::createDefaults(void)
 {
-	if(getDefaultCameraBeaconCore() == NullFC)
-	{
-		TransformPtr TheDefaultCameraBeaconCore = Transform::create();
+    if(getDefaultCameraBeaconCore() == NullFC)
+    {
+        TransformPtr TheDefaultCameraBeaconCore = Transform::create();
 
-		beginEditCP(ScenePtr(this), Scene::DefaultCameraBeaconCoreFieldMask);
-			setDefaultCameraBeaconCore(TheDefaultCameraBeaconCore);
-		endEditCP(ScenePtr(this), Scene::DefaultCameraBeaconCoreFieldMask);
-	}
+        beginEditCP(ScenePtr(this), Scene::DefaultCameraBeaconCoreFieldMask);
+            setDefaultCameraBeaconCore(TheDefaultCameraBeaconCore);
+        endEditCP(ScenePtr(this), Scene::DefaultCameraBeaconCoreFieldMask);
+    }
 
-	if(getDefaultCameraBeacon() == NULL)
-	{
-		NodePtr TheDefaultCameraBeacon = Node::create();
+    if(getDefaultCameraBeacon() == NULL)
+    {
+        NodePtr TheDefaultCameraBeacon = Node::create();
 
-		beginEditCP(ScenePtr(this), Scene::DefaultCameraBeaconFieldMask);
-			setDefaultCameraBeacon(TheDefaultCameraBeacon);
-		endEditCP(ScenePtr(this), Scene::DefaultCameraBeaconFieldMask);
-	}
+        beginEditCP(ScenePtr(this), Scene::DefaultCameraBeaconFieldMask);
+            setDefaultCameraBeacon(TheDefaultCameraBeacon);
+        endEditCP(ScenePtr(this), Scene::DefaultCameraBeaconFieldMask);
+    }
 
-	if(getRootCore() == NullFC)
-	{
-		TransformPtr TheRootCore = Transform::create();
+    if(getRootCore() == NullFC)
+    {
+        TransformPtr TheRootCore = Transform::create();
 
-		beginEditCP(ScenePtr(this), Scene::RootCoreFieldMask);
-			setRootCore(TheRootCore);
-		endEditCP(ScenePtr(this), Scene::RootCoreFieldMask);
-	}
+        beginEditCP(ScenePtr(this), Scene::RootCoreFieldMask);
+            setRootCore(TheRootCore);
+        endEditCP(ScenePtr(this), Scene::RootCoreFieldMask);
+    }
 
-	if(getRoot() == NULL)
-	{
-		NodePtr TheRoot = Node::create();
+    if(getRoot() == NULL)
+    {
+        NodePtr TheRoot = Node::create();
 
-		beginEditCP(ScenePtr(this), Scene::RootFieldMask);
-			setRoot(TheRoot);
-		endEditCP(ScenePtr(this), Scene::RootFieldMask);
-	}
+        beginEditCP(ScenePtr(this), Scene::RootFieldMask);
+            setRoot(TheRoot);
+        endEditCP(ScenePtr(this), Scene::RootFieldMask);
+    }
 
-	if(getViewports().size() == 0)
-	{
+    if(getViewports().size() == 0)
+    {
         std::cout << "getViewports().size(): " << getViewports().size()<< std::endl;
-		ViewportPtr TheViewport = Viewport::create();
+        ViewportPtr TheViewport = Viewport::create();
 
-		beginEditCP(ScenePtr(this), Scene::ViewportsFieldMask);
-			getViewports().push_back(TheViewport);
-		endEditCP(ScenePtr(this), Scene::ViewportsFieldMask);
-	}
+        beginEditCP(ScenePtr(this), Scene::ViewportsFieldMask);
+            getViewports().push_back(TheViewport);
+        endEditCP(ScenePtr(this), Scene::ViewportsFieldMask);
+    }
 }
 
 void Scene::initDefaults(void)
 {
-	Matrix Mat;
-	Mat.setIdentity();
+    Matrix Mat;
+    Mat.setIdentity();
 
-	beginEditCP(getDefaultCameraBeaconCore() , Transform::MatrixFieldMask);
-		getDefaultCameraBeaconCore()->setMatrix(Mat);
-	endEditCP(getDefaultCameraBeaconCore() , Transform::MatrixFieldMask);
+    beginEditCP(getDefaultCameraBeaconCore() , Transform::MatrixFieldMask);
+        getDefaultCameraBeaconCore()->setMatrix(Mat);
+    endEditCP(getDefaultCameraBeaconCore() , Transform::MatrixFieldMask);
 
-	beginEditCP(getDefaultCameraBeacon(), Node::CoreFieldMask);
-		getDefaultCameraBeacon()->setCore(getDefaultCameraBeaconCore());
-	endEditCP(getDefaultCameraBeacon(), Node::CoreFieldMask);
+    beginEditCP(getDefaultCameraBeacon(), Node::CoreFieldMask);
+        getDefaultCameraBeacon()->setCore(getDefaultCameraBeaconCore());
+    endEditCP(getDefaultCameraBeacon(), Node::CoreFieldMask);
 
-	beginEditCP(getRootCore() , Transform::MatrixFieldMask);
-		getRootCore()->setMatrix(Mat);
-	endEditCP(getRootCore() , Transform::MatrixFieldMask);
+    beginEditCP(getRootCore() , Transform::MatrixFieldMask);
+        getRootCore()->setMatrix(Mat);
+    endEditCP(getRootCore() , Transform::MatrixFieldMask);
 
-	beginEditCP(getRoot(), Node::CoreFieldMask | Node::ChildrenFieldMask);
-		getRoot()->setCore(getRootCore());
-		while(getRoot()->getNChildren() > 0)
-		{
-			getRoot()->subChild(getRoot()->getNChildren()-1);
-		}
-		getRoot()->addChild(getDefaultCameraBeacon());
-	endEditCP(getRoot(), Node::ChildrenFieldMask | Node::ChildrenFieldMask);
+    beginEditCP(getRoot(), Node::CoreFieldMask | Node::ChildrenFieldMask);
+        getRoot()->setCore(getRootCore());
+        while(getRoot()->getNChildren() > 0)
+        {
+            getRoot()->subChild(getRoot()->getNChildren()-1);
+        }
+        getRoot()->addChild(getDefaultCameraBeacon());
+    endEditCP(getRoot(), Node::ChildrenFieldMask | Node::ChildrenFieldMask);
 
 }
 
 void Scene::attachNames(void)
 {
-	//Backgrounds
-	for(::osg::UInt32 i(0); i<getBackgrounds().size() ; ++i)
-	{
-		attachName(getBackgrounds(i));
-	}
+    //Backgrounds
+    for(::osg::UInt32 i(0); i<getBackgrounds().size() ; ++i)
+    {
+        attachName(getBackgrounds(i));
+    }
 
-	//Foregrounds
-	for(::osg::UInt32 i(0); i<getForegrounds().size() ; ++i)
-	{
-		attachName(getForegrounds(i));
-	}
+    //Foregrounds
+    for(::osg::UInt32 i(0); i<getForegrounds().size() ; ++i)
+    {
+        attachName(getForegrounds(i));
+    }
 
-	//Cameras
-	for(::osg::UInt32 i(0); i<getCameras().size() ; ++i)
-	{
-		attachName(getCameras(i));
-	}
+    //Cameras
+    for(::osg::UInt32 i(0); i<getCameras().size() ; ++i)
+    {
+        attachName(getCameras(i));
+    }
 
-	//ModelNodes
-	for(::osg::UInt32 i(0); i<getModelNodes().size() ; ++i)
-	{
+    //ModelNodes
+    for(::osg::UInt32 i(0); i<getModelNodes().size() ; ++i)
+    {
         if(getModelNodes(i) != NullFC)
         {
-		    attachName(getModelNodes(i));
+            attachName(getModelNodes(i));
         }
-	}
-
+    }
 }
 
+/*****************************************************************
+* COMPILES, BUT IS UNTESTED.
+******************************************************************/
+UInt32 Scene::registerNewGenericMethod(const std::string& MethodName)
+{
+    UInt32 Id = _sfGenericMethodIDs.getValue();
+    Id++;
+
+    _sfGenericMethodIDs.setValue(Id);
+    
+    const MethodDescription newGenericDescription = MethodDescription(MethodName.c_str(),
+                                                                Id,
+                                                                SFEventPtr::getClassType(),
+                                                                FunctorAccessMethod());
+    
+    EventProducerType producerType = _Producer.getProducerType();
+    producerType.addDescription(newGenericDescription);
+
+    return Id;
+}
+
+bool Scene::unregisterNewGenericMethod(UInt32 Id)
+{
+    EventProducerType producerType = _Producer.getProducerType();
+    return producerType.subDescription(Id);
+}
+
+bool Scene::unregisterNewGenericMethod(const std::string& MethodName)
+{
+    UInt32 Id = getGenericMethodId(MethodName);
+    return unregisterNewGenericMethod(Id);
+}
+
+bool Scene::isGenericMethodDefined(UInt32 Id) const
+{
+    if(_Producer.getProducerType().getMethodDescription(Id)==NULL)
+        return false;
+    else
+        return true;
+}
+
+bool Scene::isGenericMethodDefined(const std::string& MethodName) const
+{
+    UInt32 Id = getGenericMethodId(MethodName);
+    return isGenericMethodDefined(Id);
+}
+
+//const mismatch?
+UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
+{
+    EventProducerType p = _Producer.getProducerType();
+    MethodDescription* desc = p.findMethodDescription(MethodName.c_str());
+    UInt32 Id = desc->getMethodId();
+    return Id;
+}
+
+void Scene::produceGenericEvent(UInt32 GenericEventId, const GenericEventPtr e)
+{
+    if(isGenericMethodDefined(GenericEventId))
+    {
+        _Producer.produceEvent(GenericEventId, e);
+    }
+    else
+    {
+        SWARNING << "Generic Event ID" << GenericEventId << "Not Found.";
+    }
+}
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -409,7 +476,6 @@ void Scene::producerSceneReset(const SceneEventPtr e)
 {
     _Producer.produceEvent(SceneResetMethodId, e);
 }
-
 
 /*----------------------- constructors & destructors ----------------------*/
 
