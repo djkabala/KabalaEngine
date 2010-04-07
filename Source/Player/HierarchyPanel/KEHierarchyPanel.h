@@ -78,10 +78,18 @@
 #include "Player/Commands/KECutCommand.h"
 #include "Player/Commands/KECopyCommand.h"
 #include "Player/Commands/KEPasteCommand.h"
+#include "Player/Commands/KENewCommand.h"
 
 #include <OpenSG/UserInterface/OSGDerivedFieldContainerComboBoxModel.h>
 #include <OpenSG/UserInterface/OSGFlowLayout.h>
 #include <OpenSG/UserInterface/OSGMenuButton.h>
+
+
+#include <OpenSG/OSGCamera.h>
+#include <OpenSG/OSGPerspectiveCamera.h>
+#include <OpenSG/OSGMatrixUtility.h>
+
+#include "Player/KEApplicationPlayer.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -97,7 +105,7 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
 	enum tabs{LUA=1,SCENEGRAPH};
 
-	ApplicationPlayerPtr _ApplicationPlayer;
+	
 	
 	std::set<UInt32> TabsAdded;
 	std::set<UInt32>::iterator TabsAddedItr;
@@ -120,6 +128,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
     /*==========================  PUBLIC  =================================*/
   public:
+
+	ApplicationPlayerPtr _ApplicationPlayer;
 
 	friend class ApplicationPlayer;
 
@@ -153,7 +163,9 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 			{
 	//			_SelectedPath = boost::any_cast<Path>(boost::any(std::string(".")));
 			}
+			
 		}
+		
 
 		//Called whenever elements are removed to the selection
 		virtual void selectionRemoved(const TreeSelectionEventPtr e)
@@ -184,6 +196,10 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 			try
 			{
 				_SelectedNode = boost::any_cast<NodePtr>(_TheTree->getLastSelectedPathComponent());
+				
+				//std::cout<<std::endl<<"changeDebugCameraPosition calling"<<std::endl;
+				//changeDebugCameraPosition();
+				//std::cout<<std::endl<<"changeDebugCameraPosition called"<<std::endl;
 				std::cout<<std::endl<<"selection changed"<<std::endl;
 				changeShowHideMenuItem();
 			}
@@ -201,10 +217,12 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 			selectedNodeChanged();
 		}
 		void changeShowHideMenuItem(void);
-		void selectedNodeChanged();
+		void selectedNodeChanged(void);
 		void setParams(TreePtr,ApplicationPlayerPtr);
 		void updateHighlight(void);
 		void highlightChanged(void);
+		void changeDebugCameraPosition(void);
+		void showAll(CameraPtr TheCamera, NodePtr Scene, Vec3f Up = Vec3f(0.0,1.0,0.0));
 		NodePtr getHighlight(void);
 		void setHighlight(NodePtr selectednode);
 
@@ -241,41 +259,24 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     friend class PlayerMouseListener2;
 	PlayerMouseListener2 _PlayerMouseListener2;
 
+
 	class MenuButtonActionListener : public ActionListener
 	{
 	public:
 		MenuButtonActionListener(HierarchyPanelPtr TheHierearchyPanel);
 		virtual void actionPerformed(const ActionEventPtr e)
 		{
-			std::cout<<e->getSource()<<std::endl;
-			MenuButtonPtr TheMenuButton(MenuButtonPtr::dcast(e->getSource()));
-			if(TheMenuButton != NullFC)
-			{
-				try
-				{
-					
-					//NodeCorePtr SelectedNodeCore = NodeCorePtr::dcast(boost::any_cast<osg::FieldContainerType>(TheMenuButton->getSelectionValue()));
-					//std::cout << "Selected: " << boost::any_cast<>(TheMenuButton->getSelectionValue());
-					//std::string StrValue = boost::any_cast<std::string>(TheMenuButton->getSelectionValue());
-					//std::cout << "Selected: " << SelectedNodeCore->getClassType().getCName() << std::endl;
-				}
-				catch(boost::bad_any_cast &)
-				{
-					std::cout << "badcast: " << std::endl;
-				}
-			}
-			else
-			{
-				std::cout << "TheMenuButton is null " << std::endl;
-			}
+			createNewNode(e);
 		}
 	protected:
+		void createNewNode(const ActionEventPtr e);
 		HierarchyPanelPtr _HierarchyPanel;
 	};
 
 	friend class MenuButtonActionListener;
 	MenuButtonActionListener _TheMenuButtonActionListener;
-
+	
+	friend class NewCommand;
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */

@@ -1554,6 +1554,18 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\Source\Player\Commands\KENewCommand.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\Commands\KENewCommand.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Source\Player\Commands\KENewCommand.inl"
+						>
+					</File>
+					<File
 						RelativePath="..\..\Source\Player\Commands\KEPasteCommand.cpp"
 						>
 					</File>

@@ -131,6 +131,7 @@
 #include "Player/Commands/KEPasteCommand.h"
 #include "Player/Commands/KEDeleteCommand.h"
 #include "Player/Commands/KEShowHideCommand.h"
+#include "Player/Commands/KENewCommand.h"
 #include "Player/Commands/KEUndoCommandOfPlayer.h"
 #include "Player/Commands/KERedoCommandOfPlayer.h"
 
@@ -195,16 +196,10 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	UInt32 currentAction;
 
 	NodePtr nodeInCutClipboard;
-	//NodePtr clonedNodeInCutClipboard;
 	NodePtr clonedNodeInCopyClipboard;
 
 	CommandManagerPtr _TheCommandManager;
 	UndoManagerPtr _TheUndoManager;
-	//CommandActionListenerForPlayer _CutActionListener;
-	//CommandActionListenerForPlayer _CopyActionListener;
-	//CommandActionListenerForPlayer _PasteActionListener;
-	//CommandActionListenerForPlayer _DeleteActionListener;
-	//CommandActionListenerForPlayer _ShowHideActionListener;
 	CommandActionListenerForPlayer _UndoActionListener;
 	CommandActionListenerForPlayer _RedoActionListener;
 
@@ -285,13 +280,16 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	ComboBoxPtr modeComboBox;
     
 
-
+public:
     ViewportPtr _DebugViewport;
+protected:
     ViewportPtr createDebugViewport(void);
+	NodePtr DebugBeacon;
 
 	void updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager);
 	void createGotoSceneMenuItems(ProjectPtr TheProject);
     void updateGotoSceneMenuItems(ProjectPtr TheProject);
+	void updateDebugUI(void);
 
 	void updateListBox(void);
 	void setupPopupMenu();
@@ -319,9 +317,12 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	friend class CutCommand;
 	friend class CopyCommand;
 	friend class PasteCommand;
+	friend class NewCommand;
 	friend class UndoCommandOfPlayer;
 	friend class RedoCommandOfPlayer;
 
+
+	friend class HierarchyPanel;
 
 	class CommandManagerListener: public ChangeListener
 	{

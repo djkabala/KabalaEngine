@@ -877,18 +877,13 @@ void ApplicationPlayer::detachDebugInterface(void)
         DebuggerDrawingSurface->setEventProducer(NullFC);
     endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     
-
-	if(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size()>1) // implies the existence of the debug viewport
+	osg::MFViewportPtr::iterator SearchItor(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().find(_DebugViewport));
+	if(SearchItor != MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().end())
 	{
 		// remove viewport
-		MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().erase(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().begin()+1,MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().end());
+		MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().erase(SearchItor);
 	}
 
-	/*
-	// if the debuginterface foreground is present in the list of foreground objects then delete it (the if condition if not mentioned would throw an exception)
-	if((find(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(1)->getForegrounds().begin(),MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(1)->getForegrounds().end(),DebuggerUIForeground))!=MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(1)->getForegrounds().end())
-	MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(1)->getForegrounds().erase(find(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(1)->getForegrounds().begin(),MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(1)->getForegrounds().end(),DebuggerUIForeground));
-	*/
 }
 
 void ApplicationPlayer::enableDebug(bool EnableDebug)
@@ -1464,15 +1459,48 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     addRefCP(_DebugAnimationStatForeground);
 }
 
-void ApplicationPlayer::updateDebugSceneChange(void)
+void ApplicationPlayer::updateDebugUI(void)
 {
     updateGotoSceneMenuItems(MainApplication::the()->getProject());
+	//TODO: Update the Scene Node Tree
+	if(_HierarchyPanel->TheTreeModel->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
+	{
+		_HierarchyPanel->TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+	}
+	
+	//_HierarchyPanel->_TheTreeSelectionListener.setParams(_HierarchyPanel->TheTree,ApplicationPlayerPtr(this));
+	_HierarchyPanel->_TheTreeSelectionListener.updateHighlight();
+	
+}
 
-	_DebugViewport = createDebugViewport();
-
+void ApplicationPlayer::updateDebugSceneChange(void)
+{
+	//Make sure the Debug Viewport is on top
+	MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(_DebugViewport);
 	MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(_DebugViewport);
 
-	//MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(1)->getForegrounds().push_back(DebuggerUIForeground);
+
+	//Update the UI for the debug interface
+	updateDebugUI();
+
+	_WasMouseHidden = !MainApplication::the()->getMainWindowEventProducer()->getShowCursor();
+	if(_WasMouseHidden)
+	{
+		MainApplication::the()->getMainWindowEventProducer()->setShowCursor(true);
+	}
+	_WasMouseAttached = !MainApplication::the()->getMainWindowEventProducer()->getAttachMouseToCursor();
+
+	if(_WasMouseAttached)
+	{
+		MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(true);
+	}
+
+	if(_IsDebugActive)
+	{
+		setSceneInputBlocking(true);
+		SWARNING<<"Just blocked the input"<<std::endl;
+	}
+
 }
 
 ViewportPtr ApplicationPlayer::createDebugViewport(void)
@@ -1480,13 +1508,14 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
 
 	CameraPtr OriginalCamera = MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getCamera();
 
-	CameraPtr DebugCamera = CameraPtr::dcast(osg::deepClone(OriginalCamera));
-	NodePtr DebugBeacon = DebugCamera->getBeacon();
+	CameraPtr DebugCamera = CameraPtr::dcast(OriginalCamera->shallowCopy());
+	DebugBeacon = DebugCamera->getBeacon();
 	
     //Camera Transformation Node
 	/*Matrix CameraTransformMatrix;
 	CameraTransformMatrix.setTranslate(0.0f,0.0f, 5.0f);
 	TransformPtr CameraBeaconTransform = Transform::create();
+	
 	beginEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
 		CameraBeaconTransform->setMatrix(CameraTransformMatrix);
 	endEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
@@ -1517,7 +1546,7 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
 
     ViewportPtr DebugViewport = Viewport::create();
 	
-    beginEditCP(DebugViewport);
+	beginEditCP(DebugViewport);
         DebugViewport->setCamera                  (DebugCamera);
         DebugViewport->setRoot                    (DefaultRootNode);
         DebugViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);

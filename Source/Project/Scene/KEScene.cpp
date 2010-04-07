@@ -56,7 +56,6 @@
 #include <OpenSG/Physics/OSGPhysicsHandler.h>
 #include <OpenSG/Physics/OSGPhysicsUtils.h>
 #include <OpenSG/Toolbox/OSGGenericEvent.h>
-#include <OpenSG/Lua/OSGLuaActivity.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -509,7 +508,7 @@ void Scene::changed(BitVector whichField, UInt32 origin)
        getInternalParentProject() != NullFC &&
        getInternalParentProject()->getActiveScene() == ScenePtr(this))
     {
-        getInternalParentProject()->clearViewports();
+        //getInternalParentProject()->clearViewports();
 
         //Add The Viewports
         for(::osg::UInt32 i(0) ; i<getViewports().size() ; ++i)

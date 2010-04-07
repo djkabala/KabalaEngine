@@ -52,6 +52,8 @@
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
 
+#include <OpenSG/OSGTransform.h>
+
 #include "Application/KEMainApplication.h"
 
 #include <boost/filesystem/operations.hpp>
@@ -508,6 +510,114 @@ void HierarchyPanel::TheTreeSelectionListener::highlightChanged(void)
 	updateHighlight();
 }
 
+void HierarchyPanel::TheTreeSelectionListener::changeDebugCameraPosition(void)
+{
+	
+	showAll(_ApplicationPlayer->_DebugViewport->getCamera(),_SelectedNode);
+
+	/*
+	if(_highlight==NullFC)
+	return;
+
+	// calc the world bbox of the highlight object
+	#ifndef OSG_2_PREP
+	DynamicVolume vol;
+	#else
+	BoxVolume      vol;
+	#endif
+	_highlight->getWorldVolume(vol);
+
+	Pnt3f min,max;
+	vol.getBounds(min, max);
+
+	
+	NodePtr DebugBeacon = _ApplicationPlayer->DebugBeacon;
+	TransformPtr DebugCameraTransform = osg::TransformPtr::dcast(DebugBeacon->getCore());
+
+	Matrix CameraTransformMatrix;
+	CameraTransformMatrix.setTranslate(0.0f,25.0f, 105.0f);
+	
+	beginEditCP(DebugCameraTransform, Transform::MatrixFieldMask);
+		DebugCameraTransform->setMatrix(CameraTransformMatrix);
+	endEditCP(DebugCameraTransform, Transform::MatrixFieldMask);
+	
+	
+	beginEditCP(DebugBeacon, Node::CoreFieldMask);
+		DebugBeacon->setCore(DebugCameraTransform);
+	endEditCP(DebugBeacon, Node::CoreFieldMask);
+
+	beginEditCP(_ApplicationPlayer->DebugBeacon, Node::CoreFieldMask);
+		_ApplicationPlayer->DebugBeacon->setCore(DebugCameraTransform);
+	endEditCP(_ApplicationPlayer->DebugBeacon, Node::CoreFieldMask);
+	
+	*/
+}
+
+
+
+void HierarchyPanel::TheTreeSelectionListener::showAll(CameraPtr TheCameraOrig, NodePtr Scene, Vec3f Up)
+{
+	std::string coreType = Scene->getCore()->getTypeName();
+//	SWARNING <<"\ncore type is "<< coreType <<std::endl; 
+	if(coreType == "Geometry")
+	{
+
+	PerspectiveCameraPtr TheCamera;
+	if(TheCameraOrig->getType() == PerspectiveCamera::getClassType())
+    {
+        TheCamera = PerspectiveCamera::Ptr::dcast(TheCameraOrig);
+    }
+
+    //Make sure the volume is up to date for the Scene
+    Scene->updateVolume();
+
+    //Get the Minimum and Maximum bounds of the volume
+    Vec3f min,max;
+    Scene->getVolume().getBounds( min, max );
+    Vec3f d = max - min;
+
+    if(d.length() < Eps) //The volume is 0
+    {
+        //Default to a 1x1x1 box volume
+        min.setValues(-0.5f,-0.5f,-0.5f);
+        max.setValues( 0.5f, 0.5f, 0.5f);
+        d = max - min;
+    }
+
+    Real32 dist = osgMax(d[0],d[1]) / (2 * osgtan(TheCamera->getFov() / 2.f));
+
+    Pnt3f at((min[0] + max[0]) * .5f,(min[1] + max[1]) * .5f,(min[2] + max[2]) * .5f);
+    Pnt3f from=at;
+    from[2]+=(dist+fabs(max[2]-min[2])*0.5f); 
+
+    //If the Camera Beacon is a node with a transfrom core
+    if(TheCamera->getBeacon() != NullFC &&
+        TheCamera->getBeacon()->getCore() != NullFC &&
+        TheCamera->getBeacon()->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+    {
+        Matrix m;
+
+		if(!MatrixLookAt(m, from, at, Up))
+        {
+            beginEditCP(TheCamera->getBeacon()->getCore(), Transform::MatrixFieldMask);
+                Transform::Ptr::dcast(TheCamera->getBeacon()->getCore())->setMatrix(m);
+            endEditCP(TheCamera->getBeacon()->getCore(), Transform::MatrixFieldMask);
+        }
+    }
+
+    //Set the camera to go from 1% of the object to 10 times its size
+    Real32 diag = osgMax(osgMax(d[0], d[1]), d[2]);
+    beginEditCP(TheCamera,  PerspectiveCamera::NearFieldMask | PerspectiveCamera::FarFieldMask);
+        TheCamera->setNear (diag / 100.f);
+        TheCamera->setFar  (10 * diag);
+    endEditCP(TheCamera, PerspectiveCamera::NearFieldMask | PerspectiveCamera::FarFieldMask);
+	}
+	else
+	{
+		SWARNING << "Selected node not a geometry node"<<std::endl;
+	}
+}
+
 
 void HierarchyPanel::TheTreeSelectionListener::updateHighlight(void)
 {
@@ -592,6 +702,39 @@ void HierarchyPanel::PlayerMouseListener2::mouseClicked(const MouseEventPtr e)
    }
 }
 
+void HierarchyPanel::MenuButtonActionListener::createNewNode(const ActionEventPtr e)
+{
+	MenuButtonPtr TheMenuButton(MenuButtonPtr::dcast(e->getSource()));
+	if(TheMenuButton != NullFC)
+	{
+		try
+		{	
+			if(_HierarchyPanel->_ApplicationPlayer->SelectedNode != NullFC)
+			{
+				FieldContainerType* FCType;
+
+				FCType = boost::any_cast<FieldContainerType*>(TheMenuButton->getSelectionValue());
+				
+				CommandPtr NewCommandPtr = NewCommand::create(_HierarchyPanel,FCType);
+				_HierarchyPanel->_ApplicationPlayer->_TheCommandManager->executeCommand(NewCommandPtr);
+			
+			
+			}
+			else
+			{
+				SWARNING << "_HierarchyPanel->_ApplicationPlayer->SelectedNode == NullFC" << std::endl;
+			}
+		}	
+		catch(boost::bad_any_cast &)
+		{
+			SWARNING << "badcast: " << std::endl;
+		}
+	}
+	else
+	{
+		SWARNING << "TheMenuButton is null " << std::endl;
+	}
+}
 
 /***************************************************************************\
  *                           Instance methods                              *
