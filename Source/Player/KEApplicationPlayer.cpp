@@ -1509,32 +1509,19 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
 	CameraPtr OriginalCamera = MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getCamera();
 
 	CameraPtr DebugCamera = CameraPtr::dcast(OriginalCamera->shallowCopy());
-	DebugBeacon = DebugCamera->getBeacon();
 	
-    //Camera Transformation Node
-	/*Matrix CameraTransformMatrix;
-	CameraTransformMatrix.setTranslate(0.0f,0.0f, 5.0f);
-	TransformPtr CameraBeaconTransform = Transform::create();
-	
-	beginEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
-		CameraBeaconTransform->setMatrix(CameraTransformMatrix);
-	endEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
+    //Camera Transformation Node	
+	TransformPtr DebugBeaconTransform = Transform::create();
+    beginEditCP(DebugBeaconTransform, Transform::MatrixFieldMask);
+		DebugBeaconTransform->setMatrix(OriginalCamera->getBeacon()->getToWorld());
+    endEditCP(DebugBeaconTransform, Transform::MatrixFieldMask);
 
-	NodePtr CameraBeaconNode = Node::create();
-	beginEditCP(CameraBeaconNode, Node::CoreFieldMask);
-		CameraBeaconNode->setCore(CameraBeaconTransform);
-	endEditCP(CameraBeaconNode, Node::CoreFieldMask);
+	NodePtr DebugBeacon = osg::Node::create();
+    beginEditCP(DebugBeacon, Node::CoreFieldMask);
+        DebugBeacon->setCore(DebugBeaconTransform);
+    endEditCP(DebugBeacon, Node::CoreFieldMask);
 
-	//Camera
-    PerspectiveCameraPtr DefaultCamera = PerspectiveCamera::create();
-    beginEditCP(DefaultCamera);
-        DefaultCamera->setBeacon(CameraBeaconNode);
-        DefaultCamera->setFov   (deg2rad(60.f));
-        DefaultCamera->setNear  (0.1f);
-        DefaultCamera->setFar   (10000.f);
-    endEditCP(DefaultCamera);
-*/
-    // Make Main Scene Node and add the Torus
+    //Debug Root Node
     NodePtr DefaultRootNode = osg::Node::create();
     beginEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
         DefaultRootNode->setCore(osg::Group::create());
