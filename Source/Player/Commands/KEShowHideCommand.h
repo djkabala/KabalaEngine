@@ -51,7 +51,7 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef ShowHideCommandPtr Ptr;
 
-	ShowHideCommand(HierarchyPanelPtr HierarchyPanel,ApplicationPlayerPtr ApplicationPlayer);
+	ShowHideCommand(NodePtr SelectedNode,ApplicationPlayerPtr ApplicationPlayer);
 
 	ShowHideCommand(const ShowHideCommand& source);
 
@@ -68,7 +68,6 @@ protected:
 
 	UInt32 maskval;
 	NodePtr _SelectedNode;
-	HierarchyPanelPtr _HierarchyPanel;
 	ApplicationPlayerPtr _ApplicationPlayer;
 	/*MenuItemPtr _ShowHideItem;
 	NodePtr _SelectedNode;*/
@@ -83,7 +82,7 @@ public:
 
 	virtual ~ShowHideCommand(void);
 	
-	static ShowHideCommandPtr create(HierarchyPanelPtr HierarchyPanel,ApplicationPlayerPtr ApplicationPlayer);
+	static ShowHideCommandPtr create(NodePtr SelectedNode,ApplicationPlayerPtr ApplicationPlayer);
 };
 
 OSG_END_NAMESPACE

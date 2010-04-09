@@ -3,17 +3,15 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-ShowHideCommand::ShowHideCommand(HierarchyPanelPtr HierarchyPanel,ApplicationPlayerPtr ApplicationPlayer) : Inherited(),
-_HierarchyPanel(HierarchyPanel),
+ShowHideCommand::ShowHideCommand(NodePtr SelectedNode,ApplicationPlayerPtr ApplicationPlayer) : Inherited(),
 _ApplicationPlayer(ApplicationPlayer),
-_SelectedNode(NullFC)
+_SelectedNode(SelectedNode)
 {
 }
 
 inline
 ShowHideCommand::ShowHideCommand(const ShowHideCommand& source) : Inherited(source)
 {
-	_HierarchyPanel = source._HierarchyPanel;
 	_ApplicationPlayer = source._ApplicationPlayer;
 	_SelectedNode = source._SelectedNode;
 }

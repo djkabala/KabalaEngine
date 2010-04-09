@@ -110,6 +110,7 @@ MainApplication *MainApplication::the(void)
 		    ("project-file,f", boost::program_options::value<std::string>(), "The Project file to use.")
 		    ("builder,b", "Start the world builder.")
 		    ("play,p", "Play the project file.")
+		    ("debug,d", "Only relevant if -p option is used.  Startup with the dubugger attached.")
 		    ;
 
 	    _PositionalOptions.add("project-file", -1);
@@ -252,6 +253,10 @@ Int32 MainApplication::run(int argc, char **argv)
 	else if(OptionsVariableMap.count("play"))
 	{
 		attachPlayer();
+	    if(OptionsVariableMap.count("debug"))
+		{
+			ApplicationPlayer::Ptr::dcast(getPlayerMode())->enableDebug(true);
+		}
 	}
 	else
 	{

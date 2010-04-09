@@ -1153,7 +1153,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	}
 	else if(e->getSource() == ShowHideItem)
 	{
-		 CommandPtr ShowHideItemCommand = ShowHideCommand::create(_HierarchyPanel,ApplicationPlayerPtr(this));
+		 CommandPtr ShowHideItemCommand = ShowHideCommand::create(_HierarchyPanel->_TheTreeSelectionListener._SelectedNode,ApplicationPlayerPtr(this));
         _TheCommandManager->executeCommand(ShowHideItemCommand);
 	}
 /*	else if(e->getSource() == CloseFileButton)

@@ -177,6 +177,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	virtual void stop(void);
     virtual void reset(void);
     virtual void gotoScene(ScenePtr TheScene);
+    void enableDebug(bool EnableDebug);
 
 	MenuItemPtr ShowHideItem ;
 
@@ -445,7 +446,6 @@ protected:
 
 	
 	bool _IsDebugActive;
-    void enableDebug(bool EnableDebug);
     void keyTyped(const KeyEventPtr e);
 	void actionPerformed(const ActionEventPtr e);
 

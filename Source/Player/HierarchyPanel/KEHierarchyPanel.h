@@ -196,12 +196,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 			try
 			{
 				_SelectedNode = boost::any_cast<NodePtr>(_TheTree->getLastSelectedPathComponent());
-				
-				//std::cout<<std::endl<<"changeDebugCameraPosition calling"<<std::endl;
-				//changeDebugCameraPosition();
-				//std::cout<<std::endl<<"changeDebugCameraPosition called"<<std::endl;
-				std::cout<<std::endl<<"selection changed"<<std::endl;
-				changeShowHideMenuItem();
 			}
 			catch (boost::bad_any_cast &)
 			{
@@ -216,7 +210,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 			_SelectedNode = NullFC;
 			selectedNodeChanged();
 		}
-		void changeShowHideMenuItem(void);
 		void selectedNodeChanged(void);
 		void setParams(TreePtr,ApplicationPlayerPtr);
 		void updateHighlight(void);
@@ -229,10 +222,10 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 		friend class ShowHideCommand;
 		
 
+		NodePtr _SelectedNode;
 	protected:
 		HierarchyPanelPtr _HierarchyPanel;
 		TreePtr _TheTree;
-		NodePtr _SelectedNode;
 		NodePtr  _highlight;
 		GeoPositions3fPtr _highlightPoints;
 		ApplicationPlayerPtr _ApplicationPlayer;
@@ -319,6 +312,9 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     virtual ~HierarchyPanel(void); 
 
     /*! \}                                                                 */
+
+	void updatePopupMenu(void);
+	void changeShowHideMenuItem(void);
     
     /*==========================  PRIVATE  ================================*/
   private:

@@ -67,9 +67,9 @@ CommandType ShowHideCommand::_Type("ShowHideCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-ShowHideCommandPtr ShowHideCommand::create(HierarchyPanelPtr HierarchyPanel,ApplicationPlayerPtr ApplicationPlayer)
+ShowHideCommandPtr ShowHideCommand::create(NodePtr SelectedNode,ApplicationPlayerPtr ApplicationPlayer)
 {
-	return Ptr(new ShowHideCommand(HierarchyPanel,ApplicationPlayer));
+	return Ptr(new ShowHideCommand(SelectedNode,ApplicationPlayer));
 }
 
 /***************************************************************************\
@@ -78,7 +78,6 @@ ShowHideCommandPtr ShowHideCommand::create(HierarchyPanelPtr HierarchyPanel,Appl
 
 void ShowHideCommand::execute(void)
 {
-	_SelectedNode = _HierarchyPanel->_TheTreeSelectionListener._SelectedNode;
 	maskval = _SelectedNode->getTravMask();
 	if(!maskval)
 	{
@@ -176,11 +175,8 @@ void ShowHideCommand::operator =(const ShowHideCommand& source)
     if(this != &source)
     {
 	    Inherited::operator=(source);
-		_HierarchyPanel = source._HierarchyPanel;
 		_ApplicationPlayer = source._ApplicationPlayer;
 		_SelectedNode = source._SelectedNode;
-	 /*   _TheModel = source._TheModel;
-	    _TheIndex = source._TheIndex;*/
     }
 }
 /*------------------------------------------------------------------------*/

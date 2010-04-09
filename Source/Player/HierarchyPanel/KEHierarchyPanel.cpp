@@ -320,13 +320,40 @@ void HierarchyPanel::createDefaultHierarchyPanel() // creates the panel with the
 	addTab(LUA);
 }
 
+void HierarchyPanel::updatePopupMenu(void)
+{
+	changeShowHideMenuItem();
+	beginEditCP(_ApplicationPlayer->ShowHideItem, MenuItem::EnabledFieldMask);
+		_ApplicationPlayer->ShowHideItem->setEnabled(_TheTreeSelectionListener._SelectedNode != NullFC);
+    endEditCP(_ApplicationPlayer->ShowHideItem, MenuItem::EnabledFieldMask);
 
-void HierarchyPanel::TheTreeSelectionListener::changeShowHideMenuItem(void)
+	//Update Paste
+	beginEditCP(_ApplicationPlayer->PasteItem, MenuItem::EnabledFieldMask);
+		_ApplicationPlayer->PasteItem->setEnabled(_TheTreeSelectionListener._SelectedNode != NullFC);
+    endEditCP(_ApplicationPlayer->PasteItem, MenuItem::EnabledFieldMask);
+
+	//Update Copy
+	beginEditCP(_ApplicationPlayer->CopyItem, MenuItem::EnabledFieldMask);
+		_ApplicationPlayer->CopyItem->setEnabled(_TheTreeSelectionListener._SelectedNode != NullFC);
+    endEditCP(_ApplicationPlayer->CopyItem, MenuItem::EnabledFieldMask);
+
+	//Update Cut
+	beginEditCP(_ApplicationPlayer->CutItem, MenuItem::EnabledFieldMask);
+		_ApplicationPlayer->CutItem->setEnabled(_TheTreeSelectionListener._SelectedNode != NullFC);
+    endEditCP(_ApplicationPlayer->CutItem, MenuItem::EnabledFieldMask);
+
+	//Update Delete
+	beginEditCP(_ApplicationPlayer->DeleteItem, MenuItem::EnabledFieldMask);
+		_ApplicationPlayer->DeleteItem->setEnabled(_TheTreeSelectionListener._SelectedNode != NullFC);
+    endEditCP(_ApplicationPlayer->DeleteItem, MenuItem::EnabledFieldMask);
+}
+
+void HierarchyPanel::changeShowHideMenuItem(void)
 {
 
-	if(_ApplicationPlayer!=NullFC && _SelectedNode!=NullFC && _ApplicationPlayer->ShowHideItem!=NullFC)
+	if(_ApplicationPlayer!=NullFC && SelectedNode!=NullFC && _ApplicationPlayer->ShowHideItem!=NullFC)
 	{
-		UInt32 maskval = _SelectedNode->getTravMask();
+		UInt32 maskval = SelectedNode->getTravMask();
 		//std::cout<<"maskval:"<<maskval<<std::endl;	
 		if(!maskval)
 		{
@@ -656,6 +683,8 @@ void HierarchyPanel::setApplicationPlayer(ApplicationPlayerPtr TheApplicationPla
 
 void HierarchyPanel::TheTreeSelectionListener::selectedNodeChanged(void)
 {
+	//Update Right Click Menu
+	_HierarchyPanel->updatePopupMenu();
 	
 	setHighlight(_SelectedNode);
 	
@@ -709,21 +738,18 @@ void HierarchyPanel::MenuButtonActionListener::createNewNode(const ActionEventPt
 	{
 		try
 		{	
-			if(_HierarchyPanel->_ApplicationPlayer->SelectedNode != NullFC)
+			NodePtr SelectedNode(_HierarchyPanel->_ApplicationPlayer->SelectedNode);
+			if(SelectedNode == NullFC)
 			{
-				FieldContainerType* FCType;
+				SelectedNode = _HierarchyPanel->TheTreeModel->getRootNode();
+			}
 
-				FCType = boost::any_cast<FieldContainerType*>(TheMenuButton->getSelectionValue());
-				
-				CommandPtr NewCommandPtr = NewCommand::create(_HierarchyPanel,FCType);
-				_HierarchyPanel->_ApplicationPlayer->_TheCommandManager->executeCommand(NewCommandPtr);
+			FieldContainerType* FCType;
+
+			FCType = boost::any_cast<FieldContainerType*>(TheMenuButton->getSelectionValue());
 			
-			
-			}
-			else
-			{
-				SWARNING << "_HierarchyPanel->_ApplicationPlayer->SelectedNode == NullFC" << std::endl;
-			}
+			CommandPtr NewCommandPtr = NewCommand::create(_HierarchyPanel,FCType);
+			_HierarchyPanel->_ApplicationPlayer->_TheCommandManager->executeCommand(NewCommandPtr);
 		}	
 		catch(boost::bad_any_cast &)
 		{
