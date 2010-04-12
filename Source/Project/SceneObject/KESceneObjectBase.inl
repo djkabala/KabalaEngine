@@ -94,18 +94,18 @@ SceneObjectPtr SceneObjectBase::createEmpty(void)
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the SceneObject::_mfCapabilities field.
+//! Get the SceneObject::_mfBehaviors field.
 inline
-const MFCapabilityPtr *SceneObjectBase::getMFCapabilities(void) const
+const MFBehaviorPtr *SceneObjectBase::getMFBehaviors(void) const
 {
-    return &_mfCapabilities;
+    return &_mfBehaviors;
 }
 
-//! Get the SceneObject::_mfCapabilities field.
+//! Get the SceneObject::_mfBehaviors field.
 inline
-MFCapabilityPtr *SceneObjectBase::editMFCapabilities(void)
+MFBehaviorPtr *SceneObjectBase::editMFBehaviors(void)
 {
-    return &_mfCapabilities;
+    return &_mfBehaviors;
 }
 
 //! Get the SceneObject::_sfNode field.
@@ -145,33 +145,33 @@ void SceneObjectBase::setNode(const NodePtr &value)
 }
 
 
-//! Get the value of the \a index element the SceneObject::_mfCapabilities field.
+//! Get the value of the \a index element the SceneObject::_mfBehaviors field.
 inline
-CapabilityPtr &SceneObjectBase::editCapabilities(const UInt32 index)
+BehaviorPtr &SceneObjectBase::editBehaviors(const UInt32 index)
 {
-    return _mfCapabilities[index];
+    return _mfBehaviors[index];
 }
 
-//! Get the value of the \a index element the SceneObject::_mfCapabilities field.
+//! Get the value of the \a index element the SceneObject::_mfBehaviors field.
 inline
-const CapabilityPtr &SceneObjectBase::getCapabilities(const UInt32 index) const
+const BehaviorPtr &SceneObjectBase::getBehaviors(const UInt32 index) const
 {
-    return _mfCapabilities[index];
+    return _mfBehaviors[index];
 }
 
 #ifndef OSG_2_PREP
-//! Get the SceneObject::_mfCapabilities field.
+//! Get the SceneObject::_mfBehaviors field.
 inline
-MFCapabilityPtr &SceneObjectBase::getCapabilities(void)
+MFBehaviorPtr &SceneObjectBase::getBehaviors(void)
 {
-    return _mfCapabilities;
+    return _mfBehaviors;
 }
 
-//! Get the SceneObject::_mfCapabilities field.
+//! Get the SceneObject::_mfBehaviors field.
 inline
-const MFCapabilityPtr &SceneObjectBase::getCapabilities(void) const
+const MFBehaviorPtr &SceneObjectBase::getBehaviors(void) const
 {
-    return _mfCapabilities;
+    return _mfBehaviors;
 }
 
 #endif

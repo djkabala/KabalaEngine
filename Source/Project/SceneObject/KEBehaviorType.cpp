@@ -43,7 +43,7 @@
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KESceneObject.h"
+#include "KEBehaviorType.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -51,8 +51,8 @@ OSG_BEGIN_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::SceneObject
-The Scene. 	
+/*! \class osg::BehaviorType
+The SceneObject. 	
 */
 
 /***************************************************************************\
@@ -63,11 +63,7 @@ The Scene.
  *                           Class methods                                 *
 \***************************************************************************/
 
-void SceneObject::update()
-{
-}
-
-void SceneObject::initMethod (void)
+void BehaviorType::initMethod (void)
 {
 }
 
@@ -76,41 +72,37 @@ void SceneObject::initMethod (void)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void SceneObject::getToWorld()
-{
-}
-
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
 /*----------------------- constructors & destructors ----------------------*/
 
-SceneObject::SceneObject(void) :
+BehaviorType::BehaviorType(void) :
     Inherited()
 {
 }
 
-SceneObject::SceneObject(const SceneObject &source) :
+BehaviorType::BehaviorType(const BehaviorType &source) :
     Inherited(source)
 {
 }
 
-SceneObject::~SceneObject(void)
+BehaviorType::~BehaviorType(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void SceneObject::changed(BitVector whichField, UInt32 origin)
+void BehaviorType::changed(BitVector whichField, UInt32 origin)
 {
     Inherited::changed(whichField, origin);
 }
 
-void SceneObject::dump(      UInt32    , 
+void BehaviorType::dump(      UInt32    , 
                          const BitVector ) const
 {
-    SLOG << "Dump SceneObject NI" << std::endl;
+    SLOG << "Dump BehaviorType NI" << std::endl;
 }
 
 

@@ -43,7 +43,7 @@
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KECapability.h"
+#include "KEBehavior.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -51,7 +51,7 @@ OSG_BEGIN_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::Capability
+/*! \class osg::Behavior
 The SceneObject. 	
 */
 
@@ -62,26 +62,15 @@ The SceneObject.
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
-void Capability::initMethod (void)
+
+void Behavior::initMethod (void)
 {
-	
 }
+
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
-
-void Capability::update()
-{
-}
-
-void Capability::activate()
-{
-}
-
-void Capability::deactivate()
-{
-}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -89,37 +78,31 @@ void Capability::deactivate()
 
 /*----------------------- constructors & destructors ----------------------*/
 
-void Capability::setupCapability()
-{
-	setSceneObject(NullFC);
-}
-
-Capability::Capability(void) :
+Behavior::Behavior(void) :
     Inherited()
 {
-	setupCapability();
 }
 
-Capability::Capability(const Capability &source) :
+Behavior::Behavior(const Behavior &source) :
     Inherited(source)
 {
 }
 
-Capability::~Capability(void)
+Behavior::~Behavior(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void Capability::changed(BitVector whichField, UInt32 origin)
+void Behavior::changed(BitVector whichField, UInt32 origin)
 {
     Inherited::changed(whichField, origin);
 }
 
-void Capability::dump(      UInt32    , 
+void Behavior::dump(      UInt32    , 
                          const BitVector ) const
 {
-    SLOG << "Dump Capability NI" << std::endl;
+    SLOG << "Dump Behavior NI" << std::endl;
 }
 
 

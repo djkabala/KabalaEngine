@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <FieldContainer
-	name="CapabilityType"
+	name="BehaviorFactory"
 	parent="AttachmentContainer"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
@@ -11,28 +11,13 @@
 	decoratable="false"
 	useLocalIncludes="true"
 >
-The SceneObject.
+The Capability Factory.
 	<Field
-		name="Name"
-		type="std::string"
-		cardinality="single"
-		visibility="external"
-		access="protected"
-	>
-	</Field>
-	<Field
-		name="Description"
-		type="std::string"
+		name="BehaviorTypes"
+		type="BehaviorTypePtr"
 		cardinality="multi"
 		visibility="external"
-		access="public"
-	>
-	</Field>
-	<Field
-		name="ID"
-		type="UInt32"
-		cardinality="single"
-		visibility="external"
+		header="Project/SceneObject/KEBehaviorTypeFields.h"
 		access="public"
 	>
 	</Field>

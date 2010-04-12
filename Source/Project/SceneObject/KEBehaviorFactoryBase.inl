@@ -40,86 +40,104 @@
  **          Any changes made to this file WILL be lost when it is          **
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
+ **     Do not change this file, changes should be done in the derived      **
+ **     class BehaviorFactory!
+ **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
-
-#ifndef _KECAPABILITYTYPEFIELDS_H_
-#define _KECAPABILITYTYPEFIELDS_H_
-#ifdef __sgi
-#pragma once
-#endif
-
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
-#include "KEKabalaEngineDef.h"
-
-#include <OpenSG/OSGAttachmentContainerFields.h>
 
 OSG_BEGIN_NAMESPACE
 
-class CapabilityType;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! CapabilityTypePtr
-
-typedef FCPtr<AttachmentContainerPtr, CapabilityType> CapabilityTypePtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
-/*! \ingroup GrpKabalaEngineFieldTraits
- */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
-template <>
-struct FieldDataTraits<CapabilityTypePtr> : 
-    public FieldTraitsRecurseMapper<CapabilityTypePtr, true>
+//! access the type of the class
+inline
+OSG::FieldContainerType &BehaviorFactoryBase::getClassType(void)
 {
-    static DataType             _type;                       
+    return _type; 
+} 
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+//! access the numerical type of the class
+inline
+OSG::UInt32 BehaviorFactoryBase::getClassTypeId(void) 
+{
+    return _type.getId(); 
+} 
 
-    static DataType   &getType (void) { return _type;        }
+//! create a new instance of the class
+inline
+BehaviorFactoryPtr BehaviorFactoryBase::create(void) 
+{
+    BehaviorFactoryPtr fc; 
 
-    static const char *getSName(void) { return "SFCapabilityTypePtr"; }
-    static const char *getMName(void) { return "MFCapabilityTypePtr"; }
-};
+    if(getClassType().getPrototype() != OSG::NullFC) 
+    {
+        fc = BehaviorFactoryPtr::dcast(
+            getClassType().getPrototype()-> shallowCopy()); 
+    }
+    
+    return fc; 
+}
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<CapabilityTypePtr, true>
-    \hideinhierarchy
- */
+//! create an empty new instance of the class, do not copy the prototype
+inline
+BehaviorFactoryPtr BehaviorFactoryBase::createEmpty(void) 
+{ 
+    BehaviorFactoryPtr returnValue; 
+    
+    newPtr(returnValue); 
+
+    return returnValue; 
+}
+
+
+/*------------------------------ get -----------------------------------*/
+
+//! Get the BehaviorFactory::_mfBehaviorTypes field.
+inline
+const MFBehaviorTypePtr *BehaviorFactoryBase::getMFBehaviorTypes(void) const
+{
+    return &_mfBehaviorTypes;
+}
+
+//! Get the BehaviorFactory::_mfBehaviorTypes field.
+inline
+MFBehaviorTypePtr *BehaviorFactoryBase::editMFBehaviorTypes(void)
+{
+    return &_mfBehaviorTypes;
+}
+
+
+
+//! Get the value of the \a index element the BehaviorFactory::_mfBehaviorTypes field.
+inline
+BehaviorTypePtr &BehaviorFactoryBase::editBehaviorTypes(const UInt32 index)
+{
+    return _mfBehaviorTypes[index];
+}
+
+//! Get the value of the \a index element the BehaviorFactory::_mfBehaviorTypes field.
+inline
+const BehaviorTypePtr &BehaviorFactoryBase::getBehaviorTypes(const UInt32 index) const
+{
+    return _mfBehaviorTypes[index];
+}
+
+#ifndef OSG_2_PREP
+//! Get the BehaviorFactory::_mfBehaviorTypes field.
+inline
+MFBehaviorTypePtr &BehaviorFactoryBase::getBehaviorTypes(void)
+{
+    return _mfBehaviorTypes;
+}
+
+//! Get the BehaviorFactory::_mfBehaviorTypes field.
+inline
+const MFBehaviorTypePtr &BehaviorFactoryBase::getBehaviorTypes(void) const
+{
+    return _mfBehaviorTypes;
+}
+
 #endif
-
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
-
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
-
-typedef SField<CapabilityTypePtr> SFCapabilityTypePtr;
-#endif
-
-#ifndef KE_COMPILECAPABILITYTYPEINST
-OSG_DLLEXPORT_DECL1(SField, CapabilityTypePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
-
-typedef MField<CapabilityTypePtr> MFCapabilityTypePtr;
-#endif
-
-#ifndef KE_COMPILECAPABILITYTYPEINST
-OSG_DLLEXPORT_DECL1(MField, CapabilityTypePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
-
 OSG_END_NAMESPACE
-
-#endif /* _KECAPABILITYTYPEFIELDS_H_ */

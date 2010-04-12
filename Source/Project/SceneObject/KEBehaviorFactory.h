@@ -32,27 +32,27 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KECAPABILITYFACTORY_H_
-#define _KECAPABILITYFACTORY_H_
+#ifndef _KEBEHAVIORFACTORY_H_
+#define _KEBEHAVIORFACTORY_H_
 #ifdef __sgi
 #pragma once
 #endif
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KECapabilityFactoryBase.h"
+#include "KEBehaviorFactoryBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief CapabilityFactory class. See \ref 
-           PageKabalaEngineCapabilityFactory for a description.
+/*! \brief BehaviorFactory class. See \ref 
+           PageKabalaEngineBehaviorFactory for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactory : public CapabilityFactoryBase
+class KE_KABALAENGINELIB_DLLMAPPING BehaviorFactory : public BehaviorFactoryBase
 {
   private:
 
-    typedef CapabilityFactoryBase Inherited;
+    typedef BehaviorFactoryBase Inherited;
 
     /*==========================  PUBLIC  =================================*/
   public:
@@ -76,21 +76,21 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactory : public CapabilityFactory
     /*=========================  PROTECTED  ===============================*/
   protected:
 
-    // Variables should all be in CapabilityFactoryBase.
+    // Variables should all be in BehaviorFactoryBase.
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    CapabilityFactory(void);
-    CapabilityFactory(const CapabilityFactory &source);
+    BehaviorFactory(void);
+    BehaviorFactory(const BehaviorFactory &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~CapabilityFactory(void); 
+    virtual ~BehaviorFactory(void); 
 
     /*! \}                                                                 */
     
@@ -98,20 +98,20 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactory : public CapabilityFactory
   private:
 
     friend class FieldContainer;
-    friend class CapabilityFactoryBase;
+    friend class BehaviorFactoryBase;
 
     static void initMethod(void);
 
     // prohibit default functions (move to 'public' if you need one)
 
-    void operator =(const CapabilityFactory &source);
+    void operator =(const BehaviorFactory &source);
 };
 
-typedef CapabilityFactory *CapabilityFactoryP;
+typedef BehaviorFactory *BehaviorFactoryP;
 
 OSG_END_NAMESPACE
 
-#include "KECapabilityFactoryBase.inl"
-#include "KECapabilityFactory.inl"
+#include "KEBehaviorFactoryBase.inl"
+#include "KEBehaviorFactory.inl"
 
-#endif /* _KECAPABILITYFACTORY_H_ */
+#endif /* _KEBEHAVIORFACTORY_H_ */

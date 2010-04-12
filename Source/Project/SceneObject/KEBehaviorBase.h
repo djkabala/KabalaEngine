@@ -41,14 +41,14 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class Capability
+ **     class Behavior
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#ifndef _KECAPABILITYBASE_H_
-#define _KECAPABILITYBASE_H_
+#ifndef _KEBEHAVIORBASE_H_
+#define _KEBEHAVIORBASE_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -66,15 +66,15 @@
 #include <Project/SceneObject/KESceneObjectFields.h> // SceneObject type
 #include <OpenSG/OSGStringFields.h> // Dependencies type
 
-#include "KECapabilityFields.h"
+#include "KEBehaviorFields.h"
 OSG_BEGIN_NAMESPACE
 
-class Capability;
+class Behavior;
 class BinaryDataHandler;
 
-//! \brief Capability Base Class.
+//! \brief Behavior Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING CapabilityBase : public AttachmentContainer
+class KE_KABALAENGINELIB_DLLMAPPING BehaviorBase : public AttachmentContainer
 {
   private:
 
@@ -83,7 +83,7 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityBase : public AttachmentContainer
     /*==========================  PUBLIC  =================================*/
   public:
 
-    typedef CapabilityPtr  Ptr;
+    typedef BehaviorPtr  Ptr;
 
     enum
     {
@@ -163,8 +163,8 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityBase : public AttachmentContainer
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  CapabilityPtr      create          (void); 
-    static  CapabilityPtr      createEmpty     (void); 
+    static  BehaviorPtr      create          (void); 
+    static  BehaviorPtr      createEmpty     (void); 
 
     /*! \}                                                                 */
 
@@ -190,15 +190,15 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityBase : public AttachmentContainer
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    CapabilityBase(void);
-    CapabilityBase(const CapabilityBase &source);
+    BehaviorBase(void);
+    BehaviorBase(const BehaviorBase &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~CapabilityBase(void); 
+    virtual ~BehaviorBase(void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -222,13 +222,13 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityBase : public AttachmentContainer
     /*! \{                                                                 */
 
 #if !defined(OSG_FIXED_MFIELDSYNC)
-    void executeSyncImpl(      CapabilityBase *pOther,
+    void executeSyncImpl(      BehaviorBase *pOther,
                          const BitVector         &whichField);
 
     virtual void   executeSync(      FieldContainer    &other,
                                const BitVector         &whichField);
 #else
-    void executeSyncImpl(      CapabilityBase *pOther,
+    void executeSyncImpl(      BehaviorBase *pOther,
                          const BitVector         &whichField,
                          const SyncInfo          &sInfo     );
 
@@ -258,7 +258,7 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityBase : public AttachmentContainer
 
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const CapabilityBase &source);
+    void operator =(const BehaviorBase &source);
 };
 
 //---------------------------------------------------------------------------
@@ -266,15 +266,15 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityBase : public AttachmentContainer
 //---------------------------------------------------------------------------
 
 
-typedef CapabilityBase *CapabilityBaseP;
+typedef BehaviorBase *BehaviorBaseP;
 
-typedef osgIF<CapabilityBase::isNodeCore,
-              CoredNodePtr<Capability>,
+typedef osgIF<BehaviorBase::isNodeCore,
+              CoredNodePtr<Behavior>,
               FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-              >::_IRet CapabilityNodePtr;
+              >::_IRet BehaviorNodePtr;
 
-typedef RefPtr<CapabilityPtr> CapabilityRefPtr;
+typedef RefPtr<BehaviorPtr> BehaviorRefPtr;
 
 OSG_END_NAMESPACE
 
-#endif /* _KECAPABILITYBASE_H_ */
+#endif /* _KEBEHAVIORBASE_H_ */

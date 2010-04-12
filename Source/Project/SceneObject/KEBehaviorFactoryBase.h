@@ -41,14 +41,14 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class CapabilityFactory
+ **     class BehaviorFactory
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#ifndef _KECAPABILITYFACTORYBASE_H_
-#define _KECAPABILITYFACTORYBASE_H_
+#ifndef _KEBEHAVIORFACTORYBASE_H_
+#define _KEBEHAVIORFACTORYBASE_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -63,17 +63,17 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <Project/SceneObject/KECapabilityTypeFields.h> // CapabilityTypes type
+#include <Project/SceneObject/KEBehaviorTypeFields.h> // BehaviorTypes type
 
-#include "KECapabilityFactoryFields.h"
+#include "KEBehaviorFactoryFields.h"
 OSG_BEGIN_NAMESPACE
 
-class CapabilityFactory;
+class BehaviorFactory;
 class BinaryDataHandler;
 
-//! \brief CapabilityFactory Base Class.
+//! \brief BehaviorFactory Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactoryBase : public AttachmentContainer
+class KE_KABALAENGINELIB_DLLMAPPING BehaviorFactoryBase : public AttachmentContainer
 {
   private:
 
@@ -82,15 +82,15 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactoryBase : public AttachmentCon
     /*==========================  PUBLIC  =================================*/
   public:
 
-    typedef CapabilityFactoryPtr  Ptr;
+    typedef BehaviorFactoryPtr  Ptr;
 
     enum
     {
-        CapabilityTypesFieldId = Inherited::NextFieldId,
-        NextFieldId            = CapabilityTypesFieldId + 1
+        BehaviorTypesFieldId = Inherited::NextFieldId,
+        NextFieldId          = BehaviorTypesFieldId + 1
     };
 
-    static const OSG::BitVector CapabilityTypesFieldMask;
+    static const OSG::BitVector BehaviorTypesFieldMask;
 
 
     static const OSG::BitVector MTInfluenceMask;
@@ -118,15 +118,15 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactoryBase : public AttachmentCon
     /*! \{                                                                 */
 
 
-           MFCapabilityTypePtr *editMFCapabilityTypes(void);
-     const MFCapabilityTypePtr *getMFCapabilityTypes(void) const;
+           MFBehaviorTypePtr   *editMFBehaviorTypes  (void);
+     const MFBehaviorTypePtr   *getMFBehaviorTypes  (void) const;
 
 
-           CapabilityTypePtr   &editCapabilityTypes(const UInt32 index);
-     const CapabilityTypePtr   &getCapabilityTypes(const UInt32 index) const;
+           BehaviorTypePtr     &editBehaviorTypes  (const UInt32 index);
+     const BehaviorTypePtr     &getBehaviorTypes  (const UInt32 index) const;
 #ifndef OSG_2_PREP
-           MFCapabilityTypePtr &getCapabilityTypes(void);
-     const MFCapabilityTypePtr &getCapabilityTypes(void) const;
+           MFBehaviorTypePtr   &getBehaviorTypes  (void);
+     const MFBehaviorTypePtr   &getBehaviorTypes  (void) const;
 #endif
 
     /*! \}                                                                 */
@@ -157,8 +157,8 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactoryBase : public AttachmentCon
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  CapabilityFactoryPtr      create          (void); 
-    static  CapabilityFactoryPtr      createEmpty     (void); 
+    static  BehaviorFactoryPtr      create          (void); 
+    static  BehaviorFactoryPtr      createEmpty     (void); 
 
     /*! \}                                                                 */
 
@@ -176,22 +176,22 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactoryBase : public AttachmentCon
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    MFCapabilityTypePtr   _mfCapabilityTypes;
+    MFBehaviorTypePtr   _mfBehaviorTypes;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    CapabilityFactoryBase(void);
-    CapabilityFactoryBase(const CapabilityFactoryBase &source);
+    BehaviorFactoryBase(void);
+    BehaviorFactoryBase(const BehaviorFactoryBase &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~CapabilityFactoryBase(void); 
+    virtual ~BehaviorFactoryBase(void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -199,13 +199,13 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactoryBase : public AttachmentCon
     /*! \{                                                                 */
 
 #if !defined(OSG_FIXED_MFIELDSYNC)
-    void executeSyncImpl(      CapabilityFactoryBase *pOther,
+    void executeSyncImpl(      BehaviorFactoryBase *pOther,
                          const BitVector         &whichField);
 
     virtual void   executeSync(      FieldContainer    &other,
                                const BitVector         &whichField);
 #else
-    void executeSyncImpl(      CapabilityFactoryBase *pOther,
+    void executeSyncImpl(      BehaviorFactoryBase *pOther,
                          const BitVector         &whichField,
                          const SyncInfo          &sInfo     );
 
@@ -235,7 +235,7 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactoryBase : public AttachmentCon
 
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const CapabilityFactoryBase &source);
+    void operator =(const BehaviorFactoryBase &source);
 };
 
 //---------------------------------------------------------------------------
@@ -243,15 +243,15 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityFactoryBase : public AttachmentCon
 //---------------------------------------------------------------------------
 
 
-typedef CapabilityFactoryBase *CapabilityFactoryBaseP;
+typedef BehaviorFactoryBase *BehaviorFactoryBaseP;
 
-typedef osgIF<CapabilityFactoryBase::isNodeCore,
-              CoredNodePtr<CapabilityFactory>,
+typedef osgIF<BehaviorFactoryBase::isNodeCore,
+              CoredNodePtr<BehaviorFactory>,
               FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-              >::_IRet CapabilityFactoryNodePtr;
+              >::_IRet BehaviorFactoryNodePtr;
 
-typedef RefPtr<CapabilityFactoryPtr> CapabilityFactoryRefPtr;
+typedef RefPtr<BehaviorFactoryPtr> BehaviorFactoryRefPtr;
 
 OSG_END_NAMESPACE
 
-#endif /* _KECAPABILITYFACTORYBASE_H_ */
+#endif /* _KEBEHAVIORFACTORYBASE_H_ */

@@ -32,35 +32,30 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KECAPABILITY_H_
-#define _KECAPABILITY_H_
+#ifndef _KEBEHAVIORTYPE_H_
+#define _KEBEHAVIORTYPE_H_
 #ifdef __sgi
 #pragma once
 #endif
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KECapabilityBase.h"
+#include "KEBehaviorTypeBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief Capability class. See \ref 
-           PageKabalaEngineCapability for a description.
+/*! \brief BehaviorType class. See \ref 
+           PageKabalaEngineBehaviorType for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING Capability : public CapabilityBase
+class KE_KABALAENGINELIB_DLLMAPPING BehaviorType : public BehaviorTypeBase
 {
   private:
 
-    typedef CapabilityBase Inherited;
+    typedef BehaviorTypeBase Inherited;
 
     /*==========================  PUBLIC  =================================*/
   public:
-
-	  void update();
-	  void activate();
-	  void deactivate();
-
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -81,47 +76,42 @@ class KE_KABALAENGINELIB_DLLMAPPING Capability : public CapabilityBase
     /*=========================  PROTECTED  ===============================*/
   protected:
 
-	  void setupCapability();
-
-
-    // Variables should all be in CapabilityBase.
+    // Variables should all be in BehaviorTypeBase.
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    Capability(void);
-    Capability(const Capability &source);
+    BehaviorType(void);
+    BehaviorType(const BehaviorType &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~Capability(void); 
+    virtual ~BehaviorType(void); 
 
     /*! \}                                                                 */
     
     /*==========================  PRIVATE  ================================*/
   private:
 
-	  
-
     friend class FieldContainer;
-    friend class CapabilityBase;
+    friend class BehaviorTypeBase;
 
     static void initMethod(void);
 
     // prohibit default functions (move to 'public' if you need one)
 
-    void operator =(const Capability &source);
+    void operator =(const BehaviorType &source);
 };
 
-typedef Capability *CapabilityP;
+typedef BehaviorType *BehaviorTypeP;
 
 OSG_END_NAMESPACE
 
-#include "KECapabilityBase.inl"
-#include "KECapability.inl"
+#include "KEBehaviorTypeBase.inl"
+#include "KEBehaviorType.inl"
 
-#endif /* _KECAPABILITY_H_ */
+#endif /* _KEBEHAVIORTYPE_H_ */

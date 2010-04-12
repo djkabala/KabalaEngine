@@ -63,7 +63,7 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <Project/SceneObject/KECapabilityFields.h> // Capabilities type
+#include <Project/SceneObject/KEBehaviorFields.h> // Behaviors type
 #include <OpenSG/OSGNodeFields.h> // Node type
 
 #include "KESceneObjectFields.h"
@@ -87,12 +87,12 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneObjectBase : public AttachmentContainer
 
     enum
     {
-        CapabilitiesFieldId = Inherited::NextFieldId,
-        NodeFieldId         = CapabilitiesFieldId + 1,
-        NextFieldId         = NodeFieldId         + 1
+        BehaviorsFieldId = Inherited::NextFieldId,
+        NodeFieldId      = BehaviorsFieldId + 1,
+        NextFieldId      = NodeFieldId      + 1
     };
 
-    static const OSG::BitVector CapabilitiesFieldMask;
+    static const OSG::BitVector BehaviorsFieldMask;
     static const OSG::BitVector NodeFieldMask;
 
 
@@ -120,7 +120,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-     const MFCapabilityPtr     *getMFCapabilities   (void) const;
+     const MFBehaviorPtr       *getMFBehaviors      (void) const;
 
            SFNodePtr           *editSFNode           (void);
      const SFNodePtr           *getSFNode           (void) const;
@@ -129,7 +129,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneObjectBase : public AttachmentContainer
            NodePtr             &editNode           (void);
      const NodePtr             &getNode           (void) const;
 
-     const CapabilityPtr       &getCapabilities   (const UInt32 index) const;
+     const BehaviorPtr         &getBehaviors      (const UInt32 index) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -179,7 +179,7 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    MFCapabilityPtr     _mfCapabilities;
+    MFBehaviorPtr       _mfBehaviors;
     SFNodePtr           _sfNode;
 
     /*! \}                                                                 */
@@ -202,12 +202,12 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-           MFCapabilityPtr     *editMFCapabilities   (void);
+           MFBehaviorPtr       *editMFBehaviors      (void);
 
-           CapabilityPtr       &editCapabilities   (UInt32 index);
+           BehaviorPtr         &editBehaviors      (UInt32 index);
 #ifndef OSG_2_PREP
-           MFCapabilityPtr     &getCapabilities   (void);
-     const MFCapabilityPtr     &getCapabilities   (void) const;
+           MFBehaviorPtr       &getBehaviors      (void);
+     const MFBehaviorPtr       &getBehaviors      (void) const;
 #endif
 
     /*! \}                                                                 */

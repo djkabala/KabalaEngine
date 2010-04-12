@@ -41,137 +41,126 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class CapabilityType!
+ **     class Behavior!
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#define KE_COMPILECAPABILITYTYPEINST
+#define KE_COMPILEBEHAVIORINST
 
 #include <stdlib.h>
 #include <stdio.h>
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KECapabilityTypeBase.h"
-#include "KECapabilityType.h"
+#include "KEBehaviorBase.h"
+#include "KEBehavior.h"
 
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  CapabilityTypeBase::NameFieldMask = 
-    (TypeTraits<BitVector>::One << CapabilityTypeBase::NameFieldId);
+const OSG::BitVector  BehaviorBase::SceneObjectFieldMask = 
+    (TypeTraits<BitVector>::One << BehaviorBase::SceneObjectFieldId);
 
-const OSG::BitVector  CapabilityTypeBase::DescriptionFieldMask = 
-    (TypeTraits<BitVector>::One << CapabilityTypeBase::DescriptionFieldId);
+const OSG::BitVector  BehaviorBase::DependenciesFieldMask = 
+    (TypeTraits<BitVector>::One << BehaviorBase::DependenciesFieldId);
 
-const OSG::BitVector  CapabilityTypeBase::IDFieldMask = 
-    (TypeTraits<BitVector>::One << CapabilityTypeBase::IDFieldId);
-
-const OSG::BitVector CapabilityTypeBase::MTInfluenceMask = 
+const OSG::BitVector BehaviorBase::MTInfluenceMask = 
     (Inherited::MTInfluenceMask) | 
     (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
 
 
 // Field descriptions
 
-/*! \var std::string     CapabilityTypeBase::_sfName
+/*! \var SceneObjectPtr  BehaviorBase::_sfSceneObject
     
 */
-/*! \var std::string     CapabilityTypeBase::_mfDescription
-    
-*/
-/*! \var UInt32          CapabilityTypeBase::_sfID
+/*! \var std::string     BehaviorBase::_mfDependencies
     
 */
 
-//! CapabilityType description
+//! Behavior description
 
-FieldDescription *CapabilityTypeBase::_desc[] = 
+FieldDescription *BehaviorBase::_desc[] = 
 {
-    new FieldDescription(SFString::getClassType(), 
-                     "Name", 
-                     NameFieldId, NameFieldMask,
+    new FieldDescription(SFSceneObjectPtr::getClassType(), 
+                     "SceneObject", 
+                     SceneObjectFieldId, SceneObjectFieldMask,
                      false,
-                     reinterpret_cast<FieldAccessMethod>(&CapabilityTypeBase::editSFName)),
+                     reinterpret_cast<FieldAccessMethod>(&BehaviorBase::editSFSceneObject)),
     new FieldDescription(MFString::getClassType(), 
-                     "Description", 
-                     DescriptionFieldId, DescriptionFieldMask,
+                     "Dependencies", 
+                     DependenciesFieldId, DependenciesFieldMask,
                      false,
-                     reinterpret_cast<FieldAccessMethod>(&CapabilityTypeBase::editMFDescription)),
-    new FieldDescription(SFUInt32::getClassType(), 
-                     "ID", 
-                     IDFieldId, IDFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&CapabilityTypeBase::editSFID))
+                     reinterpret_cast<FieldAccessMethod>(&BehaviorBase::editMFDependencies))
 };
 
 
-FieldContainerType CapabilityTypeBase::_type(
-    "CapabilityType",
+FieldContainerType BehaviorBase::_type(
+    "Behavior",
     "AttachmentContainer",
     NULL,
-    reinterpret_cast<PrototypeCreateF>(&CapabilityTypeBase::createEmpty),
-    CapabilityType::initMethod,
+    reinterpret_cast<PrototypeCreateF>(&BehaviorBase::createEmpty),
+    Behavior::initMethod,
     _desc,
     sizeof(_desc));
 
-//OSG_FIELD_CONTAINER_DEF(CapabilityTypeBase, CapabilityTypePtr)
+//OSG_FIELD_CONTAINER_DEF(BehaviorBase, BehaviorPtr)
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &CapabilityTypeBase::getType(void) 
+FieldContainerType &BehaviorBase::getType(void) 
 {
     return _type; 
 } 
 
-const FieldContainerType &CapabilityTypeBase::getType(void) const 
+const FieldContainerType &BehaviorBase::getType(void) const 
 {
     return _type;
 } 
 
 
-FieldContainerPtr CapabilityTypeBase::shallowCopy(void) const 
+FieldContainerPtr BehaviorBase::shallowCopy(void) const 
 { 
-    CapabilityTypePtr returnValue; 
+    BehaviorPtr returnValue; 
 
-    newPtr(returnValue, dynamic_cast<const CapabilityType *>(this)); 
+    newPtr(returnValue, dynamic_cast<const Behavior *>(this)); 
 
     return returnValue; 
 }
 
-UInt32 CapabilityTypeBase::getContainerSize(void) const 
+UInt32 BehaviorBase::getContainerSize(void) const 
 { 
-    return sizeof(CapabilityType); 
+    return sizeof(Behavior); 
 }
 
 
 #if !defined(OSG_FIXED_MFIELDSYNC)
-void CapabilityTypeBase::executeSync(      FieldContainer &other,
+void BehaviorBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField)
 {
-    this->executeSyncImpl(static_cast<CapabilityTypeBase *>(&other),
+    this->executeSyncImpl(static_cast<BehaviorBase *>(&other),
                           whichField);
 }
 #else
-void CapabilityTypeBase::executeSync(      FieldContainer &other,
+void BehaviorBase::executeSync(      FieldContainer &other,
                                     const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
 {
-    this->executeSyncImpl((CapabilityTypeBase *) &other, whichField, sInfo);
+    this->executeSyncImpl((BehaviorBase *) &other, whichField, sInfo);
 }
-void CapabilityTypeBase::execBeginEdit(const BitVector &whichField, 
+void BehaviorBase::execBeginEdit(const BitVector &whichField, 
                                             UInt32     uiAspect,
                                             UInt32     uiContainerSize) 
 {
     this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
 
-void CapabilityTypeBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+void BehaviorBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
-    _mfDescription.terminateShare(uiAspect, this->getContainerSize());
+    _mfDependencies.terminateShare(uiAspect, this->getContainerSize());
 }
 #endif
 
@@ -181,10 +170,9 @@ void CapabilityTypeBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 #pragma warning (disable : 383)
 #endif
 
-CapabilityTypeBase::CapabilityTypeBase(void) :
-    _sfName                   (), 
-    _mfDescription            (), 
-    _sfID                     (), 
+BehaviorBase::BehaviorBase(void) :
+    _sfSceneObject            (), 
+    _mfDependencies           (), 
     Inherited() 
 {
 }
@@ -193,138 +181,116 @@ CapabilityTypeBase::CapabilityTypeBase(void) :
 #pragma warning (default : 383)
 #endif
 
-CapabilityTypeBase::CapabilityTypeBase(const CapabilityTypeBase &source) :
-    _sfName                   (source._sfName                   ), 
-    _mfDescription            (source._mfDescription            ), 
-    _sfID                     (source._sfID                     ), 
+BehaviorBase::BehaviorBase(const BehaviorBase &source) :
+    _sfSceneObject            (source._sfSceneObject            ), 
+    _mfDependencies           (source._mfDependencies           ), 
     Inherited                 (source)
 {
 }
 
 /*-------------------------- destructors ----------------------------------*/
 
-CapabilityTypeBase::~CapabilityTypeBase(void)
+BehaviorBase::~BehaviorBase(void)
 {
 }
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 CapabilityTypeBase::getBinSize(const BitVector &whichField)
+UInt32 BehaviorBase::getBinSize(const BitVector &whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
+    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
     {
-        returnValue += _sfName.getBinSize();
+        returnValue += _sfSceneObject.getBinSize();
     }
 
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
     {
-        returnValue += _mfDescription.getBinSize();
-    }
-
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-    {
-        returnValue += _sfID.getBinSize();
+        returnValue += _mfDependencies.getBinSize();
     }
 
 
     return returnValue;
 }
 
-void CapabilityTypeBase::copyToBin(      BinaryDataHandler &pMem,
+void BehaviorBase::copyToBin(      BinaryDataHandler &pMem,
                                   const BitVector         &whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
+    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
     {
-        _sfName.copyToBin(pMem);
+        _sfSceneObject.copyToBin(pMem);
     }
 
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
     {
-        _mfDescription.copyToBin(pMem);
-    }
-
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-    {
-        _sfID.copyToBin(pMem);
+        _mfDependencies.copyToBin(pMem);
     }
 
 
 }
 
-void CapabilityTypeBase::copyFromBin(      BinaryDataHandler &pMem,
+void BehaviorBase::copyFromBin(      BinaryDataHandler &pMem,
                                     const BitVector    &whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
+    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
     {
-        _sfName.copyFromBin(pMem);
+        _sfSceneObject.copyFromBin(pMem);
     }
 
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
     {
-        _mfDescription.copyFromBin(pMem);
-    }
-
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-    {
-        _sfID.copyFromBin(pMem);
+        _mfDependencies.copyFromBin(pMem);
     }
 
 
 }
 
 #if !defined(OSG_FIXED_MFIELDSYNC)
-void CapabilityTypeBase::executeSyncImpl(      CapabilityTypeBase *pOther,
+void BehaviorBase::executeSyncImpl(      BehaviorBase *pOther,
                                         const BitVector         &whichField)
 {
 
     Inherited::executeSyncImpl(pOther, whichField);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pOther->_sfName);
+    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
+        _sfSceneObject.syncWith(pOther->_sfSceneObject);
 
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
-        _mfDescription.syncWith(pOther->_mfDescription);
-
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-        _sfID.syncWith(pOther->_sfID);
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
+        _mfDependencies.syncWith(pOther->_mfDependencies);
 
 
 }
 #else
-void CapabilityTypeBase::executeSyncImpl(      CapabilityTypeBase *pOther,
+void BehaviorBase::executeSyncImpl(      BehaviorBase *pOther,
                                         const BitVector         &whichField,
                                         const SyncInfo          &sInfo      )
 {
 
     Inherited::executeSyncImpl(pOther, whichField, sInfo);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pOther->_sfName);
-
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-        _sfID.syncWith(pOther->_sfID);
+    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
+        _sfSceneObject.syncWith(pOther->_sfSceneObject);
 
 
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
-        _mfDescription.syncWith(pOther->_mfDescription, sInfo);
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
+        _mfDependencies.syncWith(pOther->_mfDependencies, sInfo);
 
 
 }
 
-void CapabilityTypeBase::execBeginEditImpl (const BitVector &whichField, 
+void BehaviorBase::execBeginEditImpl (const BitVector &whichField, 
                                                  UInt32     uiAspect,
                                                  UInt32     uiContainerSize)
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
-        _mfDescription.beginEdit(uiAspect, uiContainerSize);
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
+        _mfDependencies.beginEdit(uiAspect, uiContainerSize);
 
 }
 #endif
@@ -339,11 +305,11 @@ OSG_END_NAMESPACE
 OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<CapabilityTypePtr>::_type("CapabilityTypePtr", "AttachmentContainerPtr");
+DataType FieldDataTraits<BehaviorPtr>::_type("BehaviorPtr", "AttachmentContainerPtr");
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(CapabilityTypePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(CapabilityTypePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+OSG_DLLEXPORT_SFIELD_DEF1(BehaviorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+OSG_DLLEXPORT_MFIELD_DEF1(BehaviorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
 
 OSG_END_NAMESPACE

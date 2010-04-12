@@ -44,8 +44,8 @@
 \*****************************************************************************/
 
 
-#ifndef _KECAPABILITYFIELDS_H_
-#define _KECAPABILITYFIELDS_H_
+#ifndef _KEBEHAVIORFACTORYFIELDS_H_
+#define _KEBEHAVIORFACTORYFIELDS_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -60,12 +60,12 @@
 
 OSG_BEGIN_NAMESPACE
 
-class Capability;
+class BehaviorFactory;
 
 #if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! CapabilityPtr
+//! BehaviorFactoryPtr
 
-typedef FCPtr<AttachmentContainerPtr, Capability> CapabilityPtr;
+typedef FCPtr<AttachmentContainerPtr, BehaviorFactory> BehaviorFactoryPtr;
 
 #endif
 
@@ -77,8 +77,8 @@ typedef FCPtr<AttachmentContainerPtr, Capability> CapabilityPtr;
 #endif
 
 template <>
-struct FieldDataTraits<CapabilityPtr> : 
-    public FieldTraitsRecurseMapper<CapabilityPtr, true>
+struct FieldDataTraits<BehaviorFactoryPtr> : 
+    public FieldTraitsRecurseMapper<BehaviorFactoryPtr, true>
 {
     static DataType             _type;                       
 
@@ -87,12 +87,12 @@ struct FieldDataTraits<CapabilityPtr> :
 
     static DataType   &getType (void) { return _type;        }
 
-    static const char *getSName(void) { return "SFCapabilityPtr"; }
-    static const char *getMName(void) { return "MFCapabilityPtr"; }
+    static const char *getSName(void) { return "SFBehaviorFactoryPtr"; }
+    static const char *getMName(void) { return "MFBehaviorFactoryPtr"; }
 };
 
 #if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<CapabilityPtr, true>
+/*! \class  FieldTraitsRecurseMapper<BehaviorFactoryPtr, true>
     \hideinhierarchy
  */
 #endif
@@ -103,23 +103,23 @@ struct FieldDataTraits<CapabilityPtr> :
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
 /*! \ingroup GrpKabalaEngineFieldSingle */
 
-typedef SField<CapabilityPtr> SFCapabilityPtr;
+typedef SField<BehaviorFactoryPtr> SFBehaviorFactoryPtr;
 #endif
 
-#ifndef KE_COMPILECAPABILITYINST
-OSG_DLLEXPORT_DECL1(SField, CapabilityPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
+#ifndef KE_COMPILEBEHAVIORFACTORYINST
+OSG_DLLEXPORT_DECL1(SField, BehaviorFactoryPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
 #endif
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
 /*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<CapabilityPtr> MFCapabilityPtr;
+typedef MField<BehaviorFactoryPtr> MFBehaviorFactoryPtr;
 #endif
 
-#ifndef KE_COMPILECAPABILITYINST
-OSG_DLLEXPORT_DECL1(MField, CapabilityPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
+#ifndef KE_COMPILEBEHAVIORFACTORYINST
+OSG_DLLEXPORT_DECL1(MField, BehaviorFactoryPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
 #endif
 
 OSG_END_NAMESPACE
 
-#endif /* _KECAPABILITYFIELDS_H_ */
+#endif /* _KEBEHAVIORFACTORYFIELDS_H_ */

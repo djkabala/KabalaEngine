@@ -43,7 +43,7 @@
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KECapabilityFactory.h"
+#include "KEBehaviorFactory.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -51,7 +51,7 @@ OSG_BEGIN_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::CapabilityFactory
+/*! \class osg::BehaviorFactory
 The Capability Factory. 	
 */
 
@@ -63,7 +63,7 @@ The Capability Factory.
  *                           Class methods                                 *
 \***************************************************************************/
 
-void CapabilityFactory::initMethod (void)
+void BehaviorFactory::initMethod (void)
 {
 }
 
@@ -78,31 +78,31 @@ void CapabilityFactory::initMethod (void)
 
 /*----------------------- constructors & destructors ----------------------*/
 
-CapabilityFactory::CapabilityFactory(void) :
+BehaviorFactory::BehaviorFactory(void) :
     Inherited()
 {
 }
 
-CapabilityFactory::CapabilityFactory(const CapabilityFactory &source) :
+BehaviorFactory::BehaviorFactory(const BehaviorFactory &source) :
     Inherited(source)
 {
 }
 
-CapabilityFactory::~CapabilityFactory(void)
+BehaviorFactory::~BehaviorFactory(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void CapabilityFactory::changed(BitVector whichField, UInt32 origin)
+void BehaviorFactory::changed(BitVector whichField, UInt32 origin)
 {
     Inherited::changed(whichField, origin);
 }
 
-void CapabilityFactory::dump(      UInt32    , 
+void BehaviorFactory::dump(      UInt32    , 
                          const BitVector ) const
 {
-    SLOG << "Dump CapabilityFactory NI" << std::endl;
+    SLOG << "Dump BehaviorFactory NI" << std::endl;
 }
 
 

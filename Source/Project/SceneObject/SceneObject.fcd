@@ -13,11 +13,11 @@
 >
 The SceneObject.
 	<Field
-		name="Capabilities"
-		type="CapabilityPtr"
+		name="Behaviors"
+		type="BehaviorPtr"
 		cardinality="multi"
 		visibility="external"
-		header="Project/SceneObject/KECapabilityFields.h"
+		header="Project/SceneObject/KEBehaviorFields.h"
 		access="protected"
 	>
 	</Field>

@@ -191,16 +191,16 @@ void HierarchyPanel::createSceneGraphTree(void)
 void HierarchyPanel::createLuaGraphTree()
 {
 	TheTree2 = Tree::create();
-	TheTreeModel2 = LuaGraphTreeModel::create();
+	//TheTreeModel2 = FileSystemTreeModel::create();//LuaGraphTreeModel::create();
 	
 	TheTreeModel2->setRoot(MainApplication::the()->getProject()->getLuaModulePath());
 
 	beginEditCP(TheTree2, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
         TheTree2->setPreferredSize(Vec2f(100, 500));
-        TheTree2->setModel(TheTreeModel2);
+      //  TheTree2->setModel(TheTreeModel2);
     endEditCP(TheTree2, Tree::PreferredSizeFieldMask | Tree::ModelFieldMask);
 
-	TheTree2->getSelectionModel()->addTreeSelectionListener(&_TheTreeSelectionListener2);
+	//TheTree2->getSelectionModel()->addTreeSelectionListener(&_TheTreeSelectionListener2);
 
 	BorderLayoutConstraintsPtr SceneTreeConstraints2 = osg::BorderLayoutConstraints::create();
     beginEditCP(SceneTreeConstraints2, BorderLayoutConstraints::RegionFieldMask);
@@ -263,7 +263,7 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 		}
 		else if(tabno == LUA)
 		{
-			if (TreeScrollPanel2 == NullFC)
+		/*	if (TreeScrollPanel2 == NullFC)
 			{
 				std::cout<<"the luafile tree hasnt been created yet.. so creating tree";
 				createLuaGraphTree();
@@ -272,7 +272,7 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 				this->getChildren().push_back(TreeScrollPanel2);
 			endEditCP(HierarchyPanelPtr(this), Panel::ChildrenFieldMask);
 
-			TabsAdded.insert(LUA);
+			TabsAdded.insert(LUA);*/
 		}
 		else
 		{
@@ -300,7 +300,7 @@ void HierarchyPanel::removeTab(UInt32 tabno)
 				this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(SceneGraphPanel)));
 				break;
 			case LUA:
-				this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(TreeScrollPanel2)));
+				//this->getChildren().erase(this->getChildren().find(ComponentPtr::dcast(TreeScrollPanel2)));
 				break;
 		}
 

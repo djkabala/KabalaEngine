@@ -32,27 +32,27 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KECAPABILITYTYPE_H_
-#define _KECAPABILITYTYPE_H_
+#ifndef _KEBEHAVIOR_H_
+#define _KEBEHAVIOR_H_
 #ifdef __sgi
 #pragma once
 #endif
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KECapabilityTypeBase.h"
+#include "KEBehaviorBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief CapabilityType class. See \ref 
-           PageKabalaEngineCapabilityType for a description.
+/*! \brief Behavior class. See \ref 
+           PageKabalaEngineBehavior for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING CapabilityType : public CapabilityTypeBase
+class KE_KABALAENGINELIB_DLLMAPPING Behavior : public BehaviorBase
 {
   private:
 
-    typedef CapabilityTypeBase Inherited;
+    typedef BehaviorBase Inherited;
 
     /*==========================  PUBLIC  =================================*/
   public:
@@ -76,21 +76,21 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityType : public CapabilityTypeBase
     /*=========================  PROTECTED  ===============================*/
   protected:
 
-    // Variables should all be in CapabilityTypeBase.
+    // Variables should all be in BehaviorBase.
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    CapabilityType(void);
-    CapabilityType(const CapabilityType &source);
+    Behavior(void);
+    Behavior(const Behavior &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~CapabilityType(void); 
+    virtual ~Behavior(void); 
 
     /*! \}                                                                 */
     
@@ -98,20 +98,20 @@ class KE_KABALAENGINELIB_DLLMAPPING CapabilityType : public CapabilityTypeBase
   private:
 
     friend class FieldContainer;
-    friend class CapabilityTypeBase;
+    friend class BehaviorBase;
 
     static void initMethod(void);
 
     // prohibit default functions (move to 'public' if you need one)
 
-    void operator =(const CapabilityType &source);
+    void operator =(const Behavior &source);
 };
 
-typedef CapabilityType *CapabilityTypeP;
+typedef Behavior *BehaviorP;
 
 OSG_END_NAMESPACE
 
-#include "KECapabilityTypeBase.inl"
-#include "KECapabilityType.inl"
+#include "KEBehaviorBase.inl"
+#include "KEBehavior.inl"
 
-#endif /* _KECAPABILITYTYPE_H_ */
+#endif /* _KEBEHAVIOR_H_ */

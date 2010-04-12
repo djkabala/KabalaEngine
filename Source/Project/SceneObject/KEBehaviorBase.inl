@@ -41,7 +41,7 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class CapabilityFactory!
+ **     class Behavior!
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
@@ -53,27 +53,27 @@ OSG_BEGIN_NAMESPACE
 
 //! access the type of the class
 inline
-OSG::FieldContainerType &CapabilityFactoryBase::getClassType(void)
+OSG::FieldContainerType &BehaviorBase::getClassType(void)
 {
     return _type; 
 } 
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 CapabilityFactoryBase::getClassTypeId(void) 
+OSG::UInt32 BehaviorBase::getClassTypeId(void) 
 {
     return _type.getId(); 
 } 
 
 //! create a new instance of the class
 inline
-CapabilityFactoryPtr CapabilityFactoryBase::create(void) 
+BehaviorPtr BehaviorBase::create(void) 
 {
-    CapabilityFactoryPtr fc; 
+    BehaviorPtr fc; 
 
     if(getClassType().getPrototype() != OSG::NullFC) 
     {
-        fc = CapabilityFactoryPtr::dcast(
+        fc = BehaviorPtr::dcast(
             getClassType().getPrototype()-> shallowCopy()); 
     }
     
@@ -82,9 +82,9 @@ CapabilityFactoryPtr CapabilityFactoryBase::create(void)
 
 //! create an empty new instance of the class, do not copy the prototype
 inline
-CapabilityFactoryPtr CapabilityFactoryBase::createEmpty(void) 
+BehaviorPtr BehaviorBase::createEmpty(void) 
 { 
-    CapabilityFactoryPtr returnValue; 
+    BehaviorPtr returnValue; 
     
     newPtr(returnValue); 
 
@@ -94,49 +94,84 @@ CapabilityFactoryPtr CapabilityFactoryBase::createEmpty(void)
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the CapabilityFactory::_mfCapabilityTypes field.
+//! Get the Behavior::_sfSceneObject field.
 inline
-const MFCapabilityTypePtr *CapabilityFactoryBase::getMFCapabilityTypes(void) const
+const SFSceneObjectPtr *BehaviorBase::getSFSceneObject(void) const
 {
-    return &_mfCapabilityTypes;
+    return &_sfSceneObject;
 }
 
-//! Get the CapabilityFactory::_mfCapabilityTypes field.
+//! Get the Behavior::_sfSceneObject field.
 inline
-MFCapabilityTypePtr *CapabilityFactoryBase::editMFCapabilityTypes(void)
+SFSceneObjectPtr *BehaviorBase::editSFSceneObject(void)
 {
-    return &_mfCapabilityTypes;
+    return &_sfSceneObject;
+}
+
+//! Get the Behavior::_mfDependencies field.
+inline
+const MFString *BehaviorBase::getMFDependencies(void) const
+{
+    return &_mfDependencies;
+}
+
+//! Get the Behavior::_mfDependencies field.
+inline
+MFString *BehaviorBase::editMFDependencies(void)
+{
+    return &_mfDependencies;
 }
 
 
-
-//! Get the value of the \a index element the CapabilityFactory::_mfCapabilityTypes field.
+//! Get the value of the Behavior::_sfSceneObject field.
 inline
-CapabilityTypePtr &CapabilityFactoryBase::editCapabilityTypes(const UInt32 index)
+SceneObjectPtr &BehaviorBase::editSceneObject(void)
 {
-    return _mfCapabilityTypes[index];
+    return _sfSceneObject.getValue();
 }
 
-//! Get the value of the \a index element the CapabilityFactory::_mfCapabilityTypes field.
+//! Get the value of the Behavior::_sfSceneObject field.
 inline
-const CapabilityTypePtr &CapabilityFactoryBase::getCapabilityTypes(const UInt32 index) const
+const SceneObjectPtr &BehaviorBase::getSceneObject(void) const
 {
-    return _mfCapabilityTypes[index];
+    return _sfSceneObject.getValue();
+}
+
+//! Set the value of the Behavior::_sfSceneObject field.
+inline
+void BehaviorBase::setSceneObject(const SceneObjectPtr &value)
+{
+    _sfSceneObject.setValue(value);
+}
+
+
+//! Get the value of the \a index element the Behavior::_mfDependencies field.
+inline
+std::string &BehaviorBase::editDependencies(const UInt32 index)
+{
+    return _mfDependencies[index];
+}
+
+//! Get the value of the \a index element the Behavior::_mfDependencies field.
+inline
+const std::string &BehaviorBase::getDependencies(const UInt32 index) const
+{
+    return _mfDependencies[index];
 }
 
 #ifndef OSG_2_PREP
-//! Get the CapabilityFactory::_mfCapabilityTypes field.
+//! Get the Behavior::_mfDependencies field.
 inline
-MFCapabilityTypePtr &CapabilityFactoryBase::getCapabilityTypes(void)
+MFString &BehaviorBase::getDependencies(void)
 {
-    return _mfCapabilityTypes;
+    return _mfDependencies;
 }
 
-//! Get the CapabilityFactory::_mfCapabilityTypes field.
+//! Get the Behavior::_mfDependencies field.
 inline
-const MFCapabilityTypePtr &CapabilityFactoryBase::getCapabilityTypes(void) const
+const MFString &BehaviorBase::getDependencies(void) const
 {
-    return _mfCapabilityTypes;
+    return _mfDependencies;
 }
 
 #endif

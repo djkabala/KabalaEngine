@@ -382,87 +382,87 @@
 					Name="SceneObject"
 					>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapability.cpp"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehavior.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapability.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehavior.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapability.inl"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehavior.inl"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityBase.cpp"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorBase.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityBase.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorBase.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityBase.inl"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorBase.inl"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactory.cpp"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorFactory.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactory.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorFactory.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactory.inl"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorFactory.inl"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactoryBase.cpp"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorFactoryBase.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactoryBase.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorFactoryBase.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactoryBase.inl"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorFactoryBase.inl"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFactoryFields.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorFactoryFields.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityFields.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorFields.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityType.cpp"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityType.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityType.inl"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorType.inl"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityTypeBase.cpp"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorTypeBase.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityTypeBase.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorTypeBase.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityTypeBase.inl"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorTypeBase.inl"
 						>
 					</File>
 					<File
-						RelativePath="..\..\Source\Project\SceneObject\KECapabilityTypeFields.h"
+						RelativePath="..\..\Source\Project\SceneObject\KEBehaviorTypeFields.h"
 						>
 					</File>
 					<File

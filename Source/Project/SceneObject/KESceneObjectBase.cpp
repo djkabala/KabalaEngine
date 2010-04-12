@@ -60,8 +60,8 @@
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  SceneObjectBase::CapabilitiesFieldMask = 
-    (TypeTraits<BitVector>::One << SceneObjectBase::CapabilitiesFieldId);
+const OSG::BitVector  SceneObjectBase::BehaviorsFieldMask = 
+    (TypeTraits<BitVector>::One << SceneObjectBase::BehaviorsFieldId);
 
 const OSG::BitVector  SceneObjectBase::NodeFieldMask = 
     (TypeTraits<BitVector>::One << SceneObjectBase::NodeFieldId);
@@ -73,7 +73,7 @@ const OSG::BitVector SceneObjectBase::MTInfluenceMask =
 
 // Field descriptions
 
-/*! \var CapabilityPtr   SceneObjectBase::_mfCapabilities
+/*! \var BehaviorPtr     SceneObjectBase::_mfBehaviors
     
 */
 /*! \var NodePtr         SceneObjectBase::_sfNode
@@ -84,11 +84,11 @@ const OSG::BitVector SceneObjectBase::MTInfluenceMask =
 
 FieldDescription *SceneObjectBase::_desc[] = 
 {
-    new FieldDescription(MFCapabilityPtr::getClassType(), 
-                     "Capabilities", 
-                     CapabilitiesFieldId, CapabilitiesFieldMask,
+    new FieldDescription(MFBehaviorPtr::getClassType(), 
+                     "Behaviors", 
+                     BehaviorsFieldId, BehaviorsFieldMask,
                      false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneObjectBase::editMFCapabilities)),
+                     reinterpret_cast<FieldAccessMethod>(&SceneObjectBase::editMFBehaviors)),
     new FieldDescription(SFNodePtr::getClassType(), 
                      "Node", 
                      NodeFieldId, NodeFieldMask,
@@ -160,7 +160,7 @@ void SceneObjectBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 {
     Inherited::onDestroyAspect(uiId, uiAspect);
 
-    _mfCapabilities.terminateShare(uiAspect, this->getContainerSize());
+    _mfBehaviors.terminateShare(uiAspect, this->getContainerSize());
 }
 #endif
 
@@ -171,7 +171,7 @@ void SceneObjectBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 #endif
 
 SceneObjectBase::SceneObjectBase(void) :
-    _mfCapabilities           (), 
+    _mfBehaviors              (), 
     _sfNode                   (), 
     Inherited() 
 {
@@ -182,7 +182,7 @@ SceneObjectBase::SceneObjectBase(void) :
 #endif
 
 SceneObjectBase::SceneObjectBase(const SceneObjectBase &source) :
-    _mfCapabilities           (source._mfCapabilities           ), 
+    _mfBehaviors              (source._mfBehaviors              ), 
     _sfNode                   (source._sfNode                   ), 
     Inherited                 (source)
 {
@@ -200,9 +200,9 @@ UInt32 SceneObjectBase::getBinSize(const BitVector &whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
-    if(FieldBits::NoField != (CapabilitiesFieldMask & whichField))
+    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
     {
-        returnValue += _mfCapabilities.getBinSize();
+        returnValue += _mfBehaviors.getBinSize();
     }
 
     if(FieldBits::NoField != (NodeFieldMask & whichField))
@@ -219,9 +219,9 @@ void SceneObjectBase::copyToBin(      BinaryDataHandler &pMem,
 {
     Inherited::copyToBin(pMem, whichField);
 
-    if(FieldBits::NoField != (CapabilitiesFieldMask & whichField))
+    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
     {
-        _mfCapabilities.copyToBin(pMem);
+        _mfBehaviors.copyToBin(pMem);
     }
 
     if(FieldBits::NoField != (NodeFieldMask & whichField))
@@ -237,9 +237,9 @@ void SceneObjectBase::copyFromBin(      BinaryDataHandler &pMem,
 {
     Inherited::copyFromBin(pMem, whichField);
 
-    if(FieldBits::NoField != (CapabilitiesFieldMask & whichField))
+    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
     {
-        _mfCapabilities.copyFromBin(pMem);
+        _mfBehaviors.copyFromBin(pMem);
     }
 
     if(FieldBits::NoField != (NodeFieldMask & whichField))
@@ -257,8 +257,8 @@ void SceneObjectBase::executeSyncImpl(      SceneObjectBase *pOther,
 
     Inherited::executeSyncImpl(pOther, whichField);
 
-    if(FieldBits::NoField != (CapabilitiesFieldMask & whichField))
-        _mfCapabilities.syncWith(pOther->_mfCapabilities);
+    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
+        _mfBehaviors.syncWith(pOther->_mfBehaviors);
 
     if(FieldBits::NoField != (NodeFieldMask & whichField))
         _sfNode.syncWith(pOther->_sfNode);
@@ -277,8 +277,8 @@ void SceneObjectBase::executeSyncImpl(      SceneObjectBase *pOther,
         _sfNode.syncWith(pOther->_sfNode);
 
 
-    if(FieldBits::NoField != (CapabilitiesFieldMask & whichField))
-        _mfCapabilities.syncWith(pOther->_mfCapabilities, sInfo);
+    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
+        _mfBehaviors.syncWith(pOther->_mfBehaviors, sInfo);
 
 
 }
@@ -289,8 +289,8 @@ void SceneObjectBase::execBeginEditImpl (const BitVector &whichField,
 {
     Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 
-    if(FieldBits::NoField != (CapabilitiesFieldMask & whichField))
-        _mfCapabilities.beginEdit(uiAspect, uiContainerSize);
+    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
+        _mfBehaviors.beginEdit(uiAspect, uiContainerSize);
 
 }
 #endif
