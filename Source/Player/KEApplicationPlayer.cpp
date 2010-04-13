@@ -74,10 +74,11 @@ OSG_USING_NAMESPACE
 
 //  the ptrs for the debug interface
 
-InternalWindowPtr MainInternalWindow;		
-GraphicsPtr DebuggerGraphics;				
-UIForegroundPtr DebuggerUIForeground;		
-UIDrawingSurfacePtr DebuggerDrawingSurface;	
+/// MAKE THESE AS DATA VARIABLES ***********************************************************
+
+
+
+/// MAKE THESE AS DATA VARIABLES ***********************************************************END
 
 /***************************************************************************\
  *                            Description                                  *
@@ -167,208 +168,167 @@ void ApplicationPlayer::createDebugInterface(void)
 
 	/*************************************************** Menu creation *******************************************************************/
 	// the menu items
-	ResetItem = MenuItem::create();				
-    ForceQuitItem = MenuItem::create();			
+	_ResetItem = MenuItem::create();				
+    _ForceQuitItem = MenuItem::create();			
 	
-	UndoItem = MenuItem::create();				
-    RedoItem = MenuItem::create();			
+	_UndoItem = MenuItem::create();				
+    _RedoItem = MenuItem::create();			
 
-    NextItem = MenuItem::create();				
-    PrevItem = MenuItem::create();				
-    FirstItem = MenuItem::create();				
-    LastItem = MenuItem::create();				
+    _NextItem = MenuItem::create();				
+    _PrevItem = MenuItem::create();				
+    _FirstItem = MenuItem::create();				
+    _LastItem = MenuItem::create();				
     _SceneSubItem = Menu::create();				
 
-	FlyNavigatorItem = MenuItem::create();		
-    TrackballNavigatorItem = MenuItem::create();
+	_FlyNavigatorItem = MenuItem::create();		
+    _TrackballNavigatorItem = MenuItem::create();
 
-    BasicItem = MenuItem::create();				
-    RenderItem = MenuItem::create();			
-    PhysicsItem = MenuItem::create();
-    ParticleSystemItem = MenuItem::create();	
-	AnimationItem = MenuItem::create();
-	PauseActiveUpdatesItem = MenuItem::create();
-	DrawBoundingVolumesItem = MenuItem::create();
-	FrustrumCullingItem = MenuItem::create();
-	DrawPhysicsCharacteristicsItem = MenuItem::create();
+    _BasicItem = MenuItem::create();				
+    _RenderItem = MenuItem::create();			
+    _PhysicsItem = MenuItem::create();
+    _ParticleSystemItem = MenuItem::create();	
+	_AnimationItem = MenuItem::create();
+	_PauseActiveUpdatesItem = MenuItem::create();
+	_DrawBoundingVolumesItem = MenuItem::create();
+	_FrustrumCullingItem = MenuItem::create();
+	_DrawPhysicsCharacteristicsItem = MenuItem::create();
 
-	ShowHideItem = MenuItem::create();
-	DeleteItem = MenuItem::create();
-	CutItem = MenuItem::create();
-	CopyItem = MenuItem::create();
-	PasteItem = MenuItem::create();
 
 	// setting the fields of the menu items
-	beginEditCP(ResetItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        ResetItem->setText("Reset");
-		ResetItem->setAcceleratorKey(KeyEvent::KEY_E);
-        ResetItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        ResetItem->setMnemonicKey(KeyEvent::KEY_E);
-    endEditCP(ResetItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_ResetItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _ResetItem->setText("Reset");
+		_ResetItem->setAcceleratorKey(KeyEvent::KEY_E);
+        _ResetItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _ResetItem->setMnemonicKey(KeyEvent::KEY_E);
+    endEditCP(_ResetItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-    beginEditCP(ForceQuitItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        ForceQuitItem ->setText("Force Quit");
-		ForceQuitItem ->setAcceleratorKey(KeyEvent::KEY_Q);
-        ForceQuitItem ->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        ForceQuitItem ->setMnemonicKey(KeyEvent::KEY_Q);
-    endEditCP(ForceQuitItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    beginEditCP(_ForceQuitItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _ForceQuitItem ->setText("Force Quit");
+		_ForceQuitItem ->setAcceleratorKey(KeyEvent::KEY_Q);
+        _ForceQuitItem ->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _ForceQuitItem ->setMnemonicKey(KeyEvent::KEY_Q);
+    endEditCP(_ForceQuitItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(UndoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        UndoItem->setText("Undo");
-		UndoItem->setAcceleratorKey(KeyEvent::KEY_U);
-        UndoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        UndoItem->setMnemonicKey(KeyEvent::KEY_U);
-    endEditCP(UndoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_UndoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _UndoItem->setText("Undo");
+		_UndoItem->setAcceleratorKey(KeyEvent::KEY_U);
+        _UndoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _UndoItem->setMnemonicKey(KeyEvent::KEY_U);
+    endEditCP(_UndoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
  
-	beginEditCP(RedoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        RedoItem->setText("Redo");
-		RedoItem->setAcceleratorKey(KeyEvent::KEY_R);
-        RedoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        RedoItem->setMnemonicKey(KeyEvent::KEY_R);
-    endEditCP(RedoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_RedoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _RedoItem->setText("Redo");
+		_RedoItem->setAcceleratorKey(KeyEvent::KEY_R);
+        _RedoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _RedoItem->setMnemonicKey(KeyEvent::KEY_R);
+    endEditCP(_RedoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
  
-    beginEditCP(NextItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        NextItem ->setText("Next");
-		NextItem ->setAcceleratorKey(KeyEvent::KEY_TAB);
-		//NextItem ->setAcceleratorModifiers(!KeyEvent::KEY_MODIFIER_SHIFT);
-	endEditCP(NextItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    beginEditCP(_NextItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _NextItem ->setText("Next");
+		_NextItem ->setAcceleratorKey(KeyEvent::KEY_TAB);
+		//_NextItem ->setAcceleratorModifiers(!KeyEvent::KEY_MODIFIER_SHIFT);
+	endEditCP(_NextItem , MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-    beginEditCP(PrevItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        PrevItem->setText("Previous");
-	    PrevItem->setAcceleratorKey(KeyEvent::KEY_TAB);
-        PrevItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_SHIFT);
-    endEditCP(PrevItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    beginEditCP(_PrevItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _PrevItem->setText("Previous");
+	    _PrevItem->setAcceleratorKey(KeyEvent::KEY_TAB);
+        _PrevItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_SHIFT);
+    endEditCP(_PrevItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-    beginEditCP(FirstItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        FirstItem->setText("First");
-		FirstItem->setAcceleratorKey(KeyEvent::KEY_F);
-        FirstItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        FirstItem->setMnemonicKey(KeyEvent::KEY_F);
-    endEditCP(FirstItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+    beginEditCP(_FirstItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _FirstItem->setText("First");
+		_FirstItem->setAcceleratorKey(KeyEvent::KEY_F);
+        _FirstItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _FirstItem->setMnemonicKey(KeyEvent::KEY_F);
+    endEditCP(_FirstItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(LastItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        LastItem->setText("Last");
-		LastItem->setAcceleratorKey(KeyEvent::KEY_L);
-        LastItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        LastItem->setMnemonicKey(KeyEvent::KEY_L);
-    endEditCP(LastItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_LastItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _LastItem->setText("Last");
+		_LastItem->setAcceleratorKey(KeyEvent::KEY_L);
+        _LastItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _LastItem->setMnemonicKey(KeyEvent::KEY_L);
+    endEditCP(_LastItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
 	beginEditCP(_SceneSubItem, Menu::TextFieldMask);
         _SceneSubItem->setText("Scenes");
     endEditCP(_SceneSubItem, Menu::TextFieldMask);
     
-	beginEditCP(FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        FlyNavigatorItem->setText("FlyNavigator ");
-		FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_N);
-        FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_N);
-    endEditCP(FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _FlyNavigatorItem->setText("FlyNavigator ");
+		_FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_N);
+        _FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_N);
+    endEditCP(_FlyNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(TrackballNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        TrackballNavigatorItem->setText("TrackballNavigator ");
-		TrackballNavigatorItem->setAcceleratorKey(KeyEvent::KEY_T);
-        TrackballNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        TrackballNavigatorItem->setMnemonicKey(KeyEvent::KEY_T);
-    endEditCP(TrackballNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_TrackballNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _TrackballNavigatorItem->setText("TrackballNavigator ");
+		_TrackballNavigatorItem->setAcceleratorKey(KeyEvent::KEY_T);
+        _TrackballNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _TrackballNavigatorItem->setMnemonicKey(KeyEvent::KEY_T);
+    endEditCP(_TrackballNavigatorItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(BasicItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        BasicItem->setText("Basic ");
-	    BasicItem->setAcceleratorKey(KeyEvent::KEY_B);
-        BasicItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        BasicItem->setMnemonicKey(KeyEvent::KEY_B);
-    endEditCP(BasicItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_BasicItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _BasicItem->setText("Basic ");
+	    _BasicItem->setAcceleratorKey(KeyEvent::KEY_B);
+        _BasicItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _BasicItem->setMnemonicKey(KeyEvent::KEY_B);
+    endEditCP(_BasicItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(RenderItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        RenderItem->setText("Render ");
-	    RenderItem->setAcceleratorKey(KeyEvent::KEY_R);
-        RenderItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        RenderItem->setMnemonicKey(KeyEvent::KEY_R);
-    endEditCP(RenderItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_RenderItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _RenderItem->setText("Render ");
+	    _RenderItem->setAcceleratorKey(KeyEvent::KEY_R);
+        _RenderItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _RenderItem->setMnemonicKey(KeyEvent::KEY_R);
+    endEditCP(_RenderItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(PhysicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        PhysicsItem->setText("Physics ");
-        PhysicsItem->setAcceleratorKey(KeyEvent::KEY_Y);
-        PhysicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        PhysicsItem->setMnemonicKey(KeyEvent::KEY_Y);
-    endEditCP(PhysicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_PhysicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _PhysicsItem->setText("Physics ");
+        _PhysicsItem->setAcceleratorKey(KeyEvent::KEY_Y);
+        _PhysicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _PhysicsItem->setMnemonicKey(KeyEvent::KEY_Y);
+    endEditCP(_PhysicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        ParticleSystemItem->setText("ParticleSystem ");
-        ParticleSystemItem->setAcceleratorKey(KeyEvent::KEY_Z);
-        ParticleSystemItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_Z);
-    endEditCP(ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _ParticleSystemItem->setText("ParticleSystem ");
+        _ParticleSystemItem->setAcceleratorKey(KeyEvent::KEY_Z);
+        _ParticleSystemItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_Z);
+    endEditCP(_ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-	beginEditCP(AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        AnimationItem->setText("Animation ");
-        AnimationItem->setAcceleratorKey(KeyEvent::KEY_A);
-        AnimationItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        AnimationItem->setMnemonicKey(KeyEvent::KEY_A);
-    endEditCP(AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _AnimationItem->setText("Animation ");
+        _AnimationItem->setAcceleratorKey(KeyEvent::KEY_A);
+        _AnimationItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _AnimationItem->setMnemonicKey(KeyEvent::KEY_A);
+    endEditCP(_AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-		beginEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        PauseActiveUpdatesItem->setText("Pause Active Updates");
-        PauseActiveUpdatesItem->setAcceleratorKey(KeyEvent::KEY_SPACE);
-        //PauseActiveUpdatesItem->setMnemonicKey(KeyEvent::KEY_SPACE);
-    endEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+		beginEditCP(_PauseActiveUpdatesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _PauseActiveUpdatesItem->setText("Pause Active Updates");
+        _PauseActiveUpdatesItem->setAcceleratorKey(KeyEvent::KEY_SPACE);
+        //_PauseActiveUpdatesItem->setMnemonicKey(KeyEvent::KEY_SPACE);
+    endEditCP(_PauseActiveUpdatesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-	beginEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
-        DrawBoundingVolumesItem->setAcceleratorKey(KeyEvent::KEY_V);
-        DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL | KeyEvent::KEY_MODIFIER_SHIFT);
-        DrawBoundingVolumesItem->setMnemonicKey(KeyEvent::KEY_V);
-    endEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
+        _DrawBoundingVolumesItem->setAcceleratorKey(KeyEvent::KEY_V);
+        _DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL | KeyEvent::KEY_MODIFIER_SHIFT);
+        _DrawBoundingVolumesItem->setMnemonicKey(KeyEvent::KEY_V);
+    endEditCP(_DrawBoundingVolumesItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-	beginEditCP(FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        FrustrumCullingItem->setText("Disable Frustrum Culling ");
-        FrustrumCullingItem->setAcceleratorKey(KeyEvent::KEY_F);
-        FrustrumCullingItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        FrustrumCullingItem->setMnemonicKey(KeyEvent::KEY_F);
-    endEditCP(FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _FrustrumCullingItem->setText("Disable Frustrum Culling ");
+        _FrustrumCullingItem->setAcceleratorKey(KeyEvent::KEY_F);
+        _FrustrumCullingItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _FrustrumCullingItem->setMnemonicKey(KeyEvent::KEY_F);
+    endEditCP(_FrustrumCullingItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-	beginEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics ");
-        DrawPhysicsCharacteristicsItem->setAcceleratorKey(KeyEvent::KEY_P);
-        DrawPhysicsCharacteristicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        DrawPhysicsCharacteristicsItem->setMnemonicKey(KeyEvent::KEY_P);
-    endEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics ");
+        _DrawPhysicsCharacteristicsItem->setAcceleratorKey(KeyEvent::KEY_P);
+        _DrawPhysicsCharacteristicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _DrawPhysicsCharacteristicsItem->setMnemonicKey(KeyEvent::KEY_P);
+    endEditCP(_DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-	// pop up menu items
-
-	beginEditCP(ShowHideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        ShowHideItem->setText("Hide");
-        //ShowItem->setAcceleratorKey(KeyEvent::KEY_S);
-        //ShowItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        //ShowItem->setMnemonicKey(KeyEvent::KEY_P);
-    endEditCP(ShowHideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-
-	beginEditCP(DeleteItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        DeleteItem->setText("Delete");
-        //ShowItem->setAcceleratorKey(KeyEvent::KEY_S);
-        //ShowItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        //ShowItem->setMnemonicKey(KeyEvent::KEY_P);
-    endEditCP(DeleteItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-
-	beginEditCP(CutItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        CutItem->setText("Cut");
-        //ShowItem->setAcceleratorKey(KeyEvent::KEY_S);
-        //ShowItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        //ShowItem->setMnemonicKey(KeyEvent::KEY_P);
-    endEditCP(CutItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-
-	beginEditCP(CopyItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        CopyItem->setText("Copy");
-        //ShowItem->setAcceleratorKey(KeyEvent::KEY_S);
-        //ShowItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        //ShowItem->setMnemonicKey(KeyEvent::KEY_P);
-    endEditCP(CopyItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-
-	beginEditCP(PasteItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
-        PasteItem->setText("Paste");
-        //ShowItem->setAcceleratorKey(KeyEvent::KEY_S);
-        //ShowItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
-        //ShowItem->setMnemonicKey(KeyEvent::KEY_P);
-    endEditCP(PasteItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 /*
 	beginEditCP(HideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
@@ -395,329 +355,310 @@ void ApplicationPlayer::createDebugInterface(void)
 	_ContentPanel = ContentPanel::create();
 	_ContentPanel->init();
 
-	OpenFileButton = Button::create();
+	_OpenFileButton = Button::create();
 
-	beginEditCP(OpenFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
-	OpenFileButton->setText("Open File");
-	OpenFileButton->setPreferredSize(Vec2f(100,50));
-	endEditCP(OpenFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
+	beginEditCP(_OpenFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
+	_OpenFileButton->setText("Open File");
+	_OpenFileButton->setPreferredSize(Vec2f(100,50));
+	endEditCP(_OpenFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
 	
-	OpenFileButton->addActionListener(&_BasicListener);
+	_OpenFileButton->addActionListener(&_BasicListener);
 		
-	SaveFileButton = Button::create();
+	_SaveFileButton = Button::create();
 
-	beginEditCP(SaveFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
-	SaveFileButton->setText("Save File");
-	SaveFileButton->setPreferredSize(Vec2f(100,50));
-	endEditCP(SaveFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
+	beginEditCP(_SaveFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
+	_SaveFileButton->setText("Save File");
+	_SaveFileButton->setPreferredSize(Vec2f(100,50));
+	endEditCP(_SaveFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
 
-	SaveFileButton->addActionListener(&_BasicListener);
+	_SaveFileButton->addActionListener(&_BasicListener);
 
-	/*CloseFileButton = Button::create();
+	/*_CloseFileButton = Button::create();
 
-	beginEditCP(CloseFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
-	CloseFileButton->setText("Close File");
-	CloseFileButton->setPreferredSize(Vec2f(100,50));
-	endEditCP(CloseFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
+	beginEditCP(_CloseFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
+	_CloseFileButton->setText("Close File");
+	_CloseFileButton->setPreferredSize(Vec2f(100,50));
+	endEditCP(_CloseFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
 
-	CloseFileButton->addActionListener(&_BasicListener);
+	_CloseFileButton->addActionListener(&_BasicListener);
 	*/
 
-	modeComboBox = ComboBox::create();
+	_ModeComboBox = ComboBox::create();
 
-	Toolbar = Panel::create();
+	_Toolbar = Panel::create();
 	
-	beginEditCP(Toolbar,Panel::PreferredSizeFieldMask);
-	Toolbar->setPreferredSize(Vec2f(200,60));
-	endEditCP(Toolbar,Panel::PreferredSizeFieldMask);
+	beginEditCP(_Toolbar,Panel::PreferredSizeFieldMask);
+	_Toolbar->setPreferredSize(Vec2f(200,60));
+	endEditCP(_Toolbar,Panel::PreferredSizeFieldMask);
 
 
-	beginEditCP(ToolbarLayout);
+	beginEditCP(_ToolbarLayout);
         // NOTHING : )
-	endEditCP(ToolbarLayout); 
+	endEditCP(_ToolbarLayout); 
 
-	ToolbarLayout = osg::SpringLayout::create();
+	_ToolbarLayout = osg::SpringLayout::create();
 
 
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, modeComboBox, 5, SpringLayoutConstraints::NORTH_EDGE, Toolbar);  
-    ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, modeComboBox, -5, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, modeComboBox, -140, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, modeComboBox, -5, SpringLayoutConstraints::SOUTH_EDGE, Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _ModeComboBox, 5, SpringLayoutConstraints::NORTH_EDGE, _Toolbar);  
+    _ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _ModeComboBox, -5, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _ModeComboBox, -140, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _ModeComboBox, -5, SpringLayoutConstraints::SOUTH_EDGE, _Toolbar);
 
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, SaveFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, Toolbar);  
-    ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, SaveFileButton, -150, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, SaveFileButton, -285, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, SaveFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _SaveFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, _Toolbar);  
+    _ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _SaveFileButton, -150, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _SaveFileButton, -285, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _SaveFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, _Toolbar);
     	
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, OpenFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, Toolbar);  
-    ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, OpenFileButton, -295, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, OpenFileButton, -430, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, OpenFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _OpenFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, _Toolbar);  
+    _ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _OpenFileButton, -295, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _OpenFileButton, -430, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _OpenFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, _Toolbar);
    
-/*	ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, CloseFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, Toolbar);  
-    ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, CloseFileButton, -440, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, CloseFileButton, -575, SpringLayoutConstraints::EAST_EDGE, Toolbar);
-	ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, CloseFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, Toolbar);
+/*	_ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _CloseFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, _Toolbar);  
+    _ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _CloseFileButton, -440, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _CloseFileButton, -575, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
+	_ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _CloseFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, _Toolbar);
   */  
-	//ToolbarLayout = osg::FlowLayout::create();
+	//_ToolbarLayout = osg::FlowLayout::create();
 
-	beginEditCP(Toolbar,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-	Toolbar->getChildren().push_back(modeComboBox);
-	Toolbar->getChildren().push_back(SaveFileButton);
-	Toolbar->getChildren().push_back(OpenFileButton);
-	//Toolbar->getChildren().push_back(CloseFileButton);
-	Toolbar->setLayout(ToolbarLayout);
-	endEditCP(Toolbar,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+	beginEditCP(_Toolbar,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+	_Toolbar->getChildren().push_back(_ModeComboBox);
+	_Toolbar->getChildren().push_back(_SaveFileButton);
+	_Toolbar->getChildren().push_back(_OpenFileButton);
+	//_Toolbar->getChildren().push_back(_CloseFileButton);
+	_Toolbar->setLayout(_ToolbarLayout);
+	endEditCP(_Toolbar,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 
 	// creation of menus and addition of menu items to them
-	ProjectMenu = Menu::create();
-    ProjectMenu->addItem(ResetItem);
-	ProjectMenu->addSeparator();
-    ProjectMenu->addItem(ForceQuitItem);
+	_ProjectMenu = Menu::create();
+    _ProjectMenu->addItem(_ResetItem);
+	_ProjectMenu->addSeparator();
+    _ProjectMenu->addItem(_ForceQuitItem);
     
-	EditMenu = Menu::create();
-    EditMenu->addItem(UndoItem);
-	EditMenu->addItem(RedoItem);
+	_EditMenu = Menu::create();
+    _EditMenu->addItem(_UndoItem);
+	_EditMenu->addItem(_RedoItem);
     
 	
-	SceneMenu = Menu::create();
-    SceneMenu->addItem(NextItem);
-    SceneMenu->addItem(PrevItem);
-	SceneMenu->addItem(FirstItem);
-	SceneMenu->addItem(LastItem);
-	SceneMenu->addSeparator();
-	SceneMenu->addItem(_SceneSubItem);
+	_SceneMenu = Menu::create();
+    _SceneMenu->addItem(_NextItem);
+    _SceneMenu->addItem(_PrevItem);
+	_SceneMenu->addItem(_FirstItem);
+	_SceneMenu->addItem(_LastItem);
+	_SceneMenu->addSeparator();
+	_SceneMenu->addItem(_SceneSubItem);
 	
 
-	NavigatorMenu = Menu::create();
-    NavigatorMenu->addItem(FlyNavigatorItem);
-    NavigatorMenu->addItem(TrackballNavigatorItem);
+	_NavigatorMenu = Menu::create();
+    _NavigatorMenu->addItem(_FlyNavigatorItem);
+    _NavigatorMenu->addItem(_TrackballNavigatorItem);
 
-	StatisticsMenu = Menu::create();
-    StatisticsMenu->addItem(BasicItem);
-    StatisticsMenu->addItem(RenderItem);
-	StatisticsMenu->addItem(PhysicsItem);
-	StatisticsMenu->addItem(ParticleSystemItem);
-	StatisticsMenu->addItem(AnimationItem);
+	_StatisticsMenu = Menu::create();
+    _StatisticsMenu->addItem(_BasicItem);
+    _StatisticsMenu->addItem(_RenderItem);
+	_StatisticsMenu->addItem(_PhysicsItem);
+	_StatisticsMenu->addItem(_ParticleSystemItem);
+	_StatisticsMenu->addItem(_AnimationItem);
 
-	ToggleMenu = Menu::create();
-	ToggleMenu->addItem(PauseActiveUpdatesItem);
-	ToggleMenu->addItem(DrawBoundingVolumesItem);
-	ToggleMenu->addItem(FrustrumCullingItem);
-	ToggleMenu->addItem(DrawPhysicsCharacteristicsItem);
+	_ToggleMenu = Menu::create();
+	_ToggleMenu->addItem(_PauseActiveUpdatesItem);
+	_ToggleMenu->addItem(_DrawBoundingVolumesItem);
+	_ToggleMenu->addItem(_FrustrumCullingItem);
+	_ToggleMenu->addItem(_DrawPhysicsCharacteristicsItem);
 
 	// setting the fields for the menus 
-	beginEditCP(ProjectMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
-        ProjectMenu->setText("Project");
-        ProjectMenu->setMnemonicKey(KeyEvent::KEY_P);
-	endEditCP(ProjectMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_ProjectMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _ProjectMenu->setText("Project");
+        _ProjectMenu->setMnemonicKey(KeyEvent::KEY_P);
+	endEditCP(_ProjectMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-	beginEditCP(EditMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
-        EditMenu->setText("Edit");
-        EditMenu->setMnemonicKey(KeyEvent::KEY_D);
-	endEditCP(EditMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_EditMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _EditMenu->setText("Edit");
+        _EditMenu->setMnemonicKey(KeyEvent::KEY_D);
+	endEditCP(_EditMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(SceneMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
-        SceneMenu->setText("Scene");
-        SceneMenu->setMnemonicKey(KeyEvent::KEY_S);
-	endEditCP(SceneMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_SceneMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _SceneMenu->setText("Scene");
+        _SceneMenu->setMnemonicKey(KeyEvent::KEY_C);
+	endEditCP(_SceneMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(NavigatorMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
-        NavigatorMenu->setText("Navigator");
-        NavigatorMenu->setMnemonicKey(KeyEvent::KEY_N);
-	endEditCP(NavigatorMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_NavigatorMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _NavigatorMenu->setText("Navigator");
+        _NavigatorMenu->setMnemonicKey(KeyEvent::KEY_N);
+	endEditCP(_NavigatorMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
     
-	beginEditCP(StatisticsMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
-        StatisticsMenu->setText("Statistics");
-        StatisticsMenu->setMnemonicKey(KeyEvent::KEY_S);
-	endEditCP(StatisticsMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_StatisticsMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _StatisticsMenu->setText("Statistics");
+        _StatisticsMenu->setMnemonicKey(KeyEvent::KEY_T);
+	endEditCP(_StatisticsMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
 
-	beginEditCP(ToggleMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
-        ToggleMenu->setText("Toggle");
-        ToggleMenu->setMnemonicKey(KeyEvent::KEY_S);
-	endEditCP(ToggleMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+	beginEditCP(_ToggleMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _ToggleMenu->setText("Toggle");
+        _ToggleMenu->setMnemonicKey(KeyEvent::KEY_G);
+	endEditCP(_ToggleMenu, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	// adding actionlisteners to each of the menuitems
-	ResetItem->addActionListener(&_BasicListener);
-	ForceQuitItem->addActionListener(&_BasicListener);
+	_ResetItem->addActionListener(&_BasicListener);
+	_ForceQuitItem->addActionListener(&_BasicListener);
 	
-	NextItem->addActionListener(&_BasicListener);
-	PrevItem->addActionListener(&_BasicListener);
-	FirstItem->addActionListener(&_BasicListener);
-	LastItem->addActionListener(&_BasicListener);
-	FlyNavigatorItem->addActionListener(&_BasicListener);
-	TrackballNavigatorItem->addActionListener(&_BasicListener);
-	BasicItem->addActionListener(&_BasicListener);
-    RenderItem->addActionListener(&_BasicListener);
-    PhysicsItem->addActionListener(&_BasicListener);
-	ParticleSystemItem->addActionListener(&_BasicListener);
-	AnimationItem->addActionListener(&_BasicListener);
-	PauseActiveUpdatesItem->addActionListener(&_BasicListener);
-	DrawBoundingVolumesItem->addActionListener(&_BasicListener);
-	FrustrumCullingItem->addActionListener(&_BasicListener);
-	DrawPhysicsCharacteristicsItem->addActionListener(&_BasicListener);
-	ProjectMenu->addActionListener(&_BasicListener);
-	EditMenu->addActionListener(&_BasicListener);
-	SceneMenu->addActionListener(&_BasicListener);	
-	NavigatorMenu->addActionListener(&_BasicListener);
-	StatisticsMenu->addActionListener(&_BasicListener);
-	ToggleMenu->addActionListener(&_BasicListener);
+	_NextItem->addActionListener(&_BasicListener);
+	_PrevItem->addActionListener(&_BasicListener);
+	_FirstItem->addActionListener(&_BasicListener);
+	_LastItem->addActionListener(&_BasicListener);
+	_FlyNavigatorItem->addActionListener(&_BasicListener);
+	_TrackballNavigatorItem->addActionListener(&_BasicListener);
+	_BasicItem->addActionListener(&_BasicListener);
+    _RenderItem->addActionListener(&_BasicListener);
+    _PhysicsItem->addActionListener(&_BasicListener);
+	_ParticleSystemItem->addActionListener(&_BasicListener);
+	_AnimationItem->addActionListener(&_BasicListener);
+	_PauseActiveUpdatesItem->addActionListener(&_BasicListener);
+	_DrawBoundingVolumesItem->addActionListener(&_BasicListener);
+	_FrustrumCullingItem->addActionListener(&_BasicListener);
+	_DrawPhysicsCharacteristicsItem->addActionListener(&_BasicListener);
+	_ProjectMenu->addActionListener(&_BasicListener);
+	_EditMenu->addActionListener(&_BasicListener);
+	_SceneMenu->addActionListener(&_BasicListener);	
+	_NavigatorMenu->addActionListener(&_BasicListener);
+	_StatisticsMenu->addActionListener(&_BasicListener);
+	_ToggleMenu->addActionListener(&_BasicListener);
 
-//	_CutActionListener = CommandActionListenerForPlayer(CutCommand::create(), _TheCommandManager);
-//	_CopyActionListener = CommandActionListenerForPlayer(CopyCommand::create(), _TheCommandManager);
-//	_PasteActionListener = CommandActionListenerForPlayer(PasteCommand::create(), _TheCommandManager);
-//	_DeleteActionListener = CommandActionListenerForPlayer(DeleteCommand::create(), _TheCommandManager);
-//	_ShowHideActionListener = CommandActionListenerForPlayer(ShowHideCommand::create(_HierarchyPanel,ApplicationPlayerPtr(this)), _TheCommandManager);
 	_UndoActionListener = CommandActionListenerForPlayer(UndoCommandOfPlayer::create(ApplicationPlayerPtr(this)), _TheCommandManager);
 	_RedoActionListener = CommandActionListenerForPlayer(RedoCommandOfPlayer::create(ApplicationPlayerPtr(this)), _TheCommandManager);
 
-
-	ShowHideItem->addActionListener(&_BasicListener);
-	DeleteItem->addActionListener(&_BasicListener);
-	CutItem->addActionListener(&_BasicListener);
-	CopyItem->addActionListener(&_BasicListener);
-	PasteItem->addActionListener(&_BasicListener);
 	
-	UndoItem->addActionListener(&_UndoActionListener);
-	RedoItem->addActionListener(&_RedoActionListener);
+	_UndoItem->addActionListener(&_UndoActionListener);
+	_RedoItem->addActionListener(&_RedoActionListener);
 
 	// Creation of the menubar and addition of the menus to it
-	MainMenuBar = MenuBar::create();
-    MainMenuBar->addMenu(ProjectMenu);
-	MainMenuBar->addMenu(EditMenu);
-	MainMenuBar->addMenu(SceneMenu);
-	MainMenuBar->addMenu(NavigatorMenu);
-	MainMenuBar->addMenu(StatisticsMenu);
-	MainMenuBar->addMenu(ToggleMenu);
+	_MainMenuBar = MenuBar::create();
+    _MainMenuBar->addMenu(_ProjectMenu);
+	_MainMenuBar->addMenu(_EditMenu);
+	_MainMenuBar->addMenu(_SceneMenu);
+	_MainMenuBar->addMenu(_NavigatorMenu);
+	_MainMenuBar->addMenu(_StatisticsMenu);
+	_MainMenuBar->addMenu(_ToggleMenu);
   
-	SplitPanelPaneltopleft = osg::Panel::create();
+	_TopLeftPanel = osg::Panel::create();
     
 	//ToolbarLayout2= osg::BorderLayout::create();
 
-/*	PanelTopLeftConstraints2 = osg::BorderLayoutConstraints::create();
-
-	
-	beginEditCP(PanelTopLeftConstraints2, BorderLayoutConstraints::RegionFieldMask);
-        PanelTopLeftConstraints2->setRegion(BorderLayoutConstraints::BORDER_SOUTH);
-    endEditCP(PanelTopLeftConstraints2, BorderLayoutConstraints::RegionFieldMask);
-*/
 	beginEditCP(_HierarchyPanel,Panel::PreferredSizeFieldMask);
 		_HierarchyPanel->setPreferredSize(Vec2f(400,700));
 	endEditCP(_HierarchyPanel,Panel::PreferredSizeFieldMask);
 
-	// SplitPanelPaneltopleft panel elements creation
-	ComboBoxModel = DefaultMutableComboBoxModel::create();
-	ComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
-	ComboBoxModel->addElement(boost::any(std::string("Lua Graph")));
+	// _TopLeftPanel panel elements creation
+	_ModeComboBoxModel = DefaultMutableComboBoxModel::create();
+	_ModeComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
+	_ModeComboBoxModel->addElement(boost::any(std::string("Lua Graph")));
 	
-	beginEditCP(modeComboBox, ComboBox::ModelFieldMask | ComboBox::MinSizeFieldMask  | ComboBox::EditableFieldMask);
-//		modeComboBox->setConstraints(PanelTopLeftConstraints2);
-		modeComboBox->setMinSize(Vec2f(100.0,20));
-		modeComboBox->setEditable(false);
-		modeComboBox->setModel(ComboBoxModel);
-	endEditCP(modeComboBox, ComboBox::ModelFieldMask);
+	beginEditCP(_ModeComboBox, ComboBox::ModelFieldMask | ComboBox::MinSizeFieldMask  | ComboBox::EditableFieldMask);
+		_ModeComboBox->setMinSize(Vec2f(100.0,20));
+		_ModeComboBox->setEditable(false);
+		_ModeComboBox->setModel(_ModeComboBoxModel);
+	endEditCP(_ModeComboBox, ComboBox::ModelFieldMask);
 	
-	//modeComboBox->addActionListener(&_BasicListener);
-	_ComboBoxListener.set(modeComboBox,_HierarchyPanel->TopLeftCardLayout,_HierarchyPanel);//->TopLeftTreePanel);
-	ComboBoxModel->addSelectionListener(&_ComboBoxListener);
+	//_ModeComboBox->addActionListener(&_BasicListener);
+	_ComboBoxListener.set(_ModeComboBox,_HierarchyPanel->getCardLayout(),_HierarchyPanel);//->TopLeftTreePanel);
+	_ModeComboBoxModel->addSelectionListener(&_ComboBoxListener);
 			
-	// Determine where the modeComboBox starts
-	modeComboBox->setSelectedIndex(0);
-	
-	pop = PopupMenu::create();
+	// Determine where the _ModeComboBox starts
+	_ModeComboBox->setSelectedIndex(0);
 	
 	
-	HierarchyPanelLayout = osg::SpringLayout::create();
+	
+	
+	_TopLeftPanelLayout = osg::SpringLayout::create();
 
-	HierarchyPanelLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HierarchyPanel, 5, SpringLayoutConstraints::NORTH_EDGE, SplitPanelPaneltopleft);  
-    HierarchyPanelLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HierarchyPanel, -5, SpringLayoutConstraints::EAST_EDGE, SplitPanelPaneltopleft);
-	HierarchyPanelLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _HierarchyPanel, 5, SpringLayoutConstraints::WEST_EDGE, SplitPanelPaneltopleft);
-	HierarchyPanelLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _HierarchyPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, SplitPanelPaneltopleft);
+	_TopLeftPanelLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HierarchyPanel, 5, SpringLayoutConstraints::NORTH_EDGE, _TopLeftPanel);  
+    _TopLeftPanelLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HierarchyPanel, -5, SpringLayoutConstraints::EAST_EDGE, _TopLeftPanel);
+	_TopLeftPanelLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _HierarchyPanel, 5, SpringLayoutConstraints::WEST_EDGE, _TopLeftPanel);
+	_TopLeftPanelLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _HierarchyPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, _TopLeftPanel);
    
 
 	setupPopupMenu();
 
-	beginEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-		SplitPanelPaneltopleft->getChildren().push_back(_HierarchyPanel);//->TopLeftTreePanel);
-		//SplitPanelPaneltopleft->getChildren().push_back(modeComboBox);
-		//SplitPanelPaneltopleft->getChildren().push_back(poptrigger);
-		SplitPanelPaneltopleft->setPopupMenu(pop);
-		SplitPanelPaneltopleft->setLayout(HierarchyPanelLayout);
-    endEditCP(SplitPanelPaneltopleft, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+	beginEditCP(_TopLeftPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+		_TopLeftPanel->getChildren().push_back(_HierarchyPanel);//->TopLeftTreePanel);
+		//_TopLeftPanel->getChildren().push_back(_ModeComboBox);
+		//_TopLeftPanel->getChildren().push_back(poptrigger);
+		//_TopLeftPanel->setPopupMenu(_HierarchyPanelPopupMenu);
+		_TopLeftPanel->setLayout(_TopLeftPanelLayout);
+    endEditCP(_TopLeftPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
-	/*************************************************** SplitPanel creation **********************************************************************/
+	/*************************************************** _DebugWindowSplitPanel creation **********************************************************************/
 
-	ToolbarandContentConstraints = osg::BorderLayoutConstraints::create();
+	_ToolbarAndContentConstraints = osg::BorderLayoutConstraints::create();
 
-	beginEditCP(ToolbarandContentConstraints, BorderLayoutConstraints::RegionFieldMask);
-        ToolbarandContentConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
-    endEditCP(ToolbarandContentConstraints, BorderLayoutConstraints::RegionFieldMask);
+	beginEditCP(_ToolbarAndContentConstraints, BorderLayoutConstraints::RegionFieldMask);
+        _ToolbarAndContentConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    endEditCP(_ToolbarAndContentConstraints, BorderLayoutConstraints::RegionFieldMask);
 
-	ToolbarandContentPanel = osg::SplitPanel::create();
+	_ToolbarAndContentPanel = osg::SplitPanel::create();
 
-	beginEditCP(ToolbarandContentPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+	beginEditCP(_ToolbarAndContentPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-        ToolbarandContentPanel->setConstraints(ToolbarandContentConstraints);
-        ToolbarandContentPanel->setMinComponent(Toolbar);
-		ToolbarandContentPanel->setMaxComponent(_ContentPanel);
-        ToolbarandContentPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
-        ToolbarandContentPanel->setDividerPosition(.05); 
+        _ToolbarAndContentPanel->setConstraints(_ToolbarAndContentConstraints);
+        _ToolbarAndContentPanel->setMinComponent(_Toolbar);
+		_ToolbarAndContentPanel->setMaxComponent(_ContentPanel);
+        _ToolbarAndContentPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
+        _ToolbarAndContentPanel->setDividerPosition(.05); 
         // location from the left/top
-        ToolbarandContentPanel->setDividerSize(1);
-        ToolbarandContentPanel->setExpandable(false);
-        //ToolbarandContentPanel->setMaxDividerPosition(.25);
-        //ToolbarandContentPanel->setMinDividerPosition(.15);
-    endEditCP(ToolbarandContentPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+        _ToolbarAndContentPanel->setDividerSize(1);
+        _ToolbarAndContentPanel->setExpandable(false);
+        //_ToolbarAndContentPanel->setMaxDividerPosition(.25);
+        //_ToolbarAndContentPanel->setMinDividerPosition(.15);
+    endEditCP(_ToolbarAndContentPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
 
 
-	SplitPanelConstraints2 = osg::BorderLayoutConstraints::create();
-	
-	beginEditCP(SplitPanelConstraints2, BorderLayoutConstraints::RegionFieldMask);
-        SplitPanelConstraints2->setRegion(BorderLayoutConstraints::BORDER_CENTER);
-    endEditCP(SplitPanelConstraints2, BorderLayoutConstraints::RegionFieldMask);
+	_TopHalfSplitPanelConstraints = osg::BorderLayoutConstraints::create();
 
-	TopHalfSplitPanel = osg::SplitPanel::create();
-
-	beginEditCP(TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-        TopHalfSplitPanel->setConstraints(SplitPanelConstraints2);
-        TopHalfSplitPanel->setMinComponent(SplitPanelPaneltopleft);
-		TopHalfSplitPanel->setMaxComponent(ToolbarandContentPanel);
-        TopHalfSplitPanel->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
-        TopHalfSplitPanel->setDividerPosition(.25); 
-        // location from the left/top
-        TopHalfSplitPanel->setDividerSize(1);
-        TopHalfSplitPanel->setExpandable(true);
-        TopHalfSplitPanel->setMaxDividerPosition(.25);
-        TopHalfSplitPanel->setMinDividerPosition(.15);
-    endEditCP(TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-
-	SplitPanelConstraints = osg::BorderLayoutConstraints::create();
-
-	beginEditCP(SplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
-        SplitPanelConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
-    endEditCP(SplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
+	beginEditCP(_TopHalfSplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
+        _TopHalfSplitPanelConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    endEditCP(_TopHalfSplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
     
-	SplitPanel = osg::SplitPanel::create();
+	_TopHalfSplitPanel = osg::SplitPanel::create();
 
-	beginEditCP(SplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+	beginEditCP(_TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-        SplitPanel->setConstraints(SplitPanelConstraints);
-        SplitPanel->setMaxComponent(_HelperPanel);//->SplitPanelPanel);
-		SplitPanel->setMinComponent(TopHalfSplitPanel);
-        SplitPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
-        SplitPanel->setDividerPosition(.75); 
+		_TopHalfSplitPanel->setConstraints(_TopHalfSplitPanelConstraints);
+        _TopHalfSplitPanel->setMinComponent(_TopLeftPanel);
+		_TopHalfSplitPanel->setMaxComponent(_ToolbarAndContentPanel);
+        _TopHalfSplitPanel->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
+        _TopHalfSplitPanel->setDividerPosition(.25); 
         // location from the left/top
-        SplitPanel->setDividerSize(5);
-        // SplitPanel->setExpandable(false);
-        SplitPanel->setMaxDividerPosition(.95);
-        SplitPanel->setMinDividerPosition(.15);
-    endEditCP(SplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+        _TopHalfSplitPanel->setDividerSize(1);
+        _TopHalfSplitPanel->setExpandable(true);
+        _TopHalfSplitPanel->setMaxDividerPosition(.25);
+        _TopHalfSplitPanel->setMinDividerPosition(.15);
+    endEditCP(_TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-	/*************************************************** END SplitPanel creation **********************************************************************/
+
+	_DebugWindowSplitPanelConstraints = osg::BorderLayoutConstraints::create();
+
+	beginEditCP(_DebugWindowSplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
+        _DebugWindowSplitPanelConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    endEditCP(_DebugWindowSplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
+    
+	_DebugWindowSplitPanel = osg::SplitPanel::create();
+
+	beginEditCP(_DebugWindowSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+        _DebugWindowSplitPanel->setConstraints(_DebugWindowSplitPanelConstraints);
+        _DebugWindowSplitPanel->setMaxComponent(_HelperPanel);//->SplitPanelPanel);
+		_DebugWindowSplitPanel->setMinComponent(_TopHalfSplitPanel);
+        _DebugWindowSplitPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
+        _DebugWindowSplitPanel->setDividerPosition(.75); 
+        // location from the left/top
+        _DebugWindowSplitPanel->setDividerSize(5);
+        // _DebugWindowSplitPanel->setExpandable(false);
+        _DebugWindowSplitPanel->setMaxDividerPosition(.95);
+        _DebugWindowSplitPanel->setMinDividerPosition(.15);
+    endEditCP(_DebugWindowSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+	/*************************************************** END _DebugWindowSplitPanel creation **********************************************************************/
 	
 	/*************************************************** MainInternalWindow creation*************************************************************/
 	
@@ -737,17 +678,17 @@ void ApplicationPlayer::createDebugInterface(void)
 
     MainInternalWindow = osg::InternalWindow::create();
 	beginEditCP(MainInternalWindow, InternalWindow::ChildrenFieldMask | InternalWindow::MenuBarFieldMask | InternalWindow::LayoutFieldMask | InternalWindow::BackgroundsFieldMask | InternalWindow::AlignmentInDrawingSurfaceFieldMask | InternalWindow::ScalingInDrawingSurfaceFieldMask | InternalWindow::DrawTitlebarFieldMask | InternalWindow::ResizableFieldMask);
-	   MainInternalWindow->getChildren().push_back(SplitPanel);
+	   MainInternalWindow->getChildren().push_back(_DebugWindowSplitPanel);
 	   MainInternalWindow->setLayout(MainInternalWindowLayout);
        MainInternalWindow->setBackgrounds(MainInternalWindowBackground);
 	   MainInternalWindow->setAlignmentInDrawingSurface(Vec2f(0.5f,0.5f));
-	   MainInternalWindow->setMenuBar(MainMenuBar);
+	   MainInternalWindow->setMenuBar(_MainMenuBar);
 	   MainInternalWindow->setScalingInDrawingSurface(Vec2f(1.0f,1.0f));
 	   MainInternalWindow->setDrawTitlebar(false);
 	   MainInternalWindow->setResizable(false);
     endEditCP(MainInternalWindow, InternalWindow::ChildrenFieldMask | InternalWindow::MenuBarFieldMask | InternalWindow::LayoutFieldMask | InternalWindow::BackgroundsFieldMask | InternalWindow::AlignmentInDrawingSurfaceFieldMask | InternalWindow::ScalingInDrawingSurfaceFieldMask | InternalWindow::DrawTitlebarFieldMask | InternalWindow::ResizableFieldMask);
 
-	MainInternalWindow->setFocusedComponent(_HelperPanel->CodeTextArea);
+	MainInternalWindow->setFocusedComponent(_HelperPanel->_CodeTextArea);
 
 	/*************************************************** END MainInternalWindow creation*************************************************************/
 	
@@ -849,16 +790,16 @@ void ApplicationPlayer::attachDebugInterface(void)
 		}
 		else
 		{
-			if(_HierarchyPanel->TheTreeModel->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
+			if(_HierarchyPanel->getSceneGraphTreeModel()->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
 			{
-				_HierarchyPanel->TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+				_HierarchyPanel->getSceneGraphTreeModel()->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
 			}
 		}
 		
     }
 	
-    _HierarchyPanel->_TheTreeSelectionListener.setParams(_HierarchyPanel->TheTree,ApplicationPlayerPtr(this));
-	_HierarchyPanel->_TheTreeSelectionListener.updateHighlight();
+    _HierarchyPanel->_SceneGraphTreeSelectionListener.setParams(_HierarchyPanel->getSceneGraphTree(),ApplicationPlayerPtr(this));
+	_HierarchyPanel->_SceneGraphTreeSelectionListener.updateHighlight();
 	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     	DebuggerDrawingSurface->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
     endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
@@ -958,18 +899,18 @@ void ApplicationPlayer::updateWindowTitle(void)
 
 void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 {
-	if(e->getSource() == ResetItem)
+	if(e->getSource() == _ResetItem)
 	{
 		//Reset the Project
             MainApplication::the()->getProject()->reset();
             MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
 	}
-	else if(e->getSource() == ForceQuitItem)
+	else if(e->getSource() == _ForceQuitItem)
 	{
 			MainApplication::the()->exit();
 	}
 
-	else if(e->getSource() == NextItem)
+	else if(e->getSource() == _NextItem)
 	{
 			MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
 			SearchItor++;
@@ -978,7 +919,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 			MainApplication::the()->getProject()->setActiveScene(*SearchItor);
     
 	}
-	else if(e->getSource() == PrevItem)
+	else if(e->getSource() == _PrevItem)
 	{
 			MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().find(MainApplication::the()->getProject()->getActiveScene()));
             if(SearchItor != MainApplication::the()->getProject()->getScenes().end())
@@ -998,14 +939,14 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
             }
             MainApplication::the()->getProject()->setActiveScene(*SearchItor);
 	}
-	else if(e->getSource() == FirstItem)
+	else if(e->getSource() == _FirstItem)
 	{
 		MFScenePtr::iterator SearchItor(MainApplication::the()->getProject()->getScenes().begin());
         MainApplication::the()->getProject()->setActiveScene(*SearchItor);
 
 	}
 
-	else if(e->getSource() == LastItem)
+	else if(e->getSource() == _LastItem)
 	{
 
 		UInt32 SceneNumber = MainApplication::the()->getProject()->getScenes().size();
@@ -1013,112 +954,112 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
         SearchItor = SearchItor + SceneNumber - 1;
 		MainApplication::the()->getProject()->setActiveScene(*SearchItor);
 	}
-	else if(e->getSource() == FlyNavigatorItem )
+	else if(e->getSource() == _FlyNavigatorItem )
 	{
 		MainApplication::the()->getProject()->toggleFlyNavigation();
 	}
-	else if(e->getSource() == TrackballNavigatorItem )
+	else if(e->getSource() == _TrackballNavigatorItem )
 	{
 	
 	}
-	else if(e->getSource() == BasicItem)
+	else if(e->getSource() == _BasicItem)
 	{
 		toggleStatForeground(_DebugBasicStatForeground);
 	}
-	else if(e->getSource() == RenderItem)
+	else if(e->getSource() == _RenderItem)
 	{
 		toggleStatForeground(_DebugRenderStatForeground);
 	}
-	else if(e->getSource() == PhysicsItem)
+	else if(e->getSource() == _PhysicsItem)
 	{
 		toggleStatForeground(_DebugPhysicsStatForeground);
 	}
-	else if(e->getSource() == ParticleSystemItem)
+	else if(e->getSource() == _ParticleSystemItem)
 	{
 		toggleStatForeground(_DebugParticleSystemStatForeground);
 	}
-	else if(e->getSource() == AnimationItem)
+	else if(e->getSource() == _AnimationItem)
 	{
 		toggleStatForeground(_DebugAnimationStatForeground);
 	}
-	else if(e->getSource() == PauseActiveUpdatesItem)
+	else if(e->getSource() == _PauseActiveUpdatesItem)
 	{
 		MainApplication::the()->getProject()->togglePauseActiveUpdates();
         
         //Update the Menu Item
-        beginEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask);
+        beginEditCP(_PauseActiveUpdatesItem, MenuItem::TextFieldMask);
         if(MainApplication::the()->getProject()->getPauseActiveUpdates())
         {
-            PauseActiveUpdatesItem->setText("Unpause Active Updates");
+            _PauseActiveUpdatesItem->setText("Unpause Active Updates");
         }
         else
         {
-            PauseActiveUpdatesItem->setText("Pause Active Updates");
+            _PauseActiveUpdatesItem->setText("Pause Active Updates");
         }
-        endEditCP(PauseActiveUpdatesItem, MenuItem::TextFieldMask);
+        endEditCP(_PauseActiveUpdatesItem, MenuItem::TextFieldMask);
 	}
-	else if(e->getSource() == DrawBoundingVolumesItem)
+	else if(e->getSource() == _DrawBoundingVolumesItem)
 	{
 		toggleDrawBoundingVolumes();
 
         //Update the Menu Item
-        beginEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask);
+        beginEditCP(_DrawBoundingVolumesItem, MenuItem::TextFieldMask);
         if(MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->getVolumeDrawing())
         {
-            DrawBoundingVolumesItem->setText("Hide Bounding Volumes");
+            _DrawBoundingVolumesItem->setText("Hide Bounding Volumes");
         }
         else
         {
-            DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
+            _DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
         }
-        endEditCP(DrawBoundingVolumesItem, MenuItem::TextFieldMask);
+        endEditCP(_DrawBoundingVolumesItem, MenuItem::TextFieldMask);
 	}
-	else if(e->getSource() == FrustrumCullingItem)
+	else if(e->getSource() == _FrustrumCullingItem)
 	{
 		toggleFrustumCulling();
 
         //Update the Menu Item
-        beginEditCP(FrustrumCullingItem, MenuItem::TextFieldMask);
+        beginEditCP(_FrustrumCullingItem, MenuItem::TextFieldMask);
         if(MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->getFrustumCulling())
         {
-            FrustrumCullingItem->setText("Disable Frustrum Culling");
+            _FrustrumCullingItem->setText("Disable Frustrum Culling");
         }
         else
         {
-            FrustrumCullingItem->setText("Enable Frustrum Culling");
+            _FrustrumCullingItem->setText("Enable Frustrum Culling");
         }
-        endEditCP(FrustrumCullingItem, MenuItem::TextFieldMask);
+        endEditCP(_FrustrumCullingItem, MenuItem::TextFieldMask);
 	}
-	else if(e->getSource() == DrawPhysicsCharacteristicsItem)
+	else if(e->getSource() == _DrawPhysicsCharacteristicsItem)
 	{
 		toggleDrawPhysicsCharacteristics();
 
         //Update the Menu Item
         //Add the Physics Drawable Node to the project
-        beginEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask);
+        beginEditCP(_DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask);
         if(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->findChild(getPhysicsDrawableNode()) < 0)
         {
-            DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics");
+            _DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics");
         }
         else
         {
-            DrawPhysicsCharacteristicsItem->setText("Hide Physics Characteristics");
+            _DrawPhysicsCharacteristicsItem->setText("Hide Physics Characteristics");
         }
-        endEditCP(DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask);
+        endEditCP(_DrawPhysicsCharacteristicsItem, MenuItem::TextFieldMask);
 	}
-	else if(e->getSource() == modeComboBox)
+	else if(e->getSource() == _ModeComboBox)
 	{
-		int temp = modeComboBox->getSelectedIndex();
-		if(temp == 1)
+		int _Temp = _ModeComboBox->getSelectedIndex();
+		if(_Temp == 1)
         {
-            _HierarchyPanel->TopLeftCardLayout->last(_HierarchyPanel);//->TopLeftTreePanel);
+            _HierarchyPanel->getCardLayout()->last(_HierarchyPanel);//->TopLeftTreePanel);
         }
         else
         {
-            _HierarchyPanel->TopLeftCardLayout->first(_HierarchyPanel);//->TopLeftTreePanel);
+            _HierarchyPanel->getCardLayout()->first(_HierarchyPanel);//->TopLeftTreePanel);
         }
 	}
-	else if(e->getSource() == OpenFileButton)
+	else if(e->getSource() == _OpenFileButton)
 	{
 		
 		std::vector<WindowEventProducer::FileDialogFilter> Filters;
@@ -1137,7 +1078,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 			_ContentPanel->addTabWithText(*Itor);
         }
 	}
-	else if(e->getSource() == SaveFileButton)
+	else if(e->getSource() == _SaveFileButton)
 	{
 		std::vector<WindowEventProducer::FileDialogFilter> Filters;
         Filters.push_back(WindowEventProducer::FileDialogFilter("Lua Files","lua"));
@@ -1150,43 +1091,6 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 			true);
         
 		_ContentPanel->saveTextFile(SavePath);
-	}
-	else if(e->getSource() == ShowHideItem)
-	{
-		 CommandPtr ShowHideItemCommand = ShowHideCommand::create(_HierarchyPanel->_TheTreeSelectionListener._SelectedNode,ApplicationPlayerPtr(this));
-        _TheCommandManager->executeCommand(ShowHideItemCommand);
-	}
-/*	else if(e->getSource() == CloseFileButton)
-	{
-		_ContentPanel->closeCurrentWindow();
-	}*/
-	else if(e->getSource() == DeleteItem)
-	{
-		CommandPtr DeleteCommandPtr = DeleteCommand::create(ApplicationPlayerPtr(this),_HierarchyPanel);
-        _TheCommandManager->executeCommand(DeleteCommandPtr);
-	}
-	
-	else if(e->getSource() == CutItem)
-	{
-
-		CommandPtr CutCommandPtr = CutCommand::create(ApplicationPlayerPtr(this),_HierarchyPanel);
-        _TheCommandManager->executeCommand(CutCommandPtr);
-	
-	}
-
-	else if(e->getSource() == CopyItem)
-	{
-	
-		CommandPtr CopyCommandPtr = CopyCommand::create(ApplicationPlayerPtr(this));
-        _TheCommandManager->executeCommand(CopyCommandPtr);
-
-	}
-	else if(e->getSource() == PasteItem)
-	{
-
-		CommandPtr PasteCommandPtr = PasteCommand::create(ApplicationPlayerPtr(this),_HierarchyPanel);
-        _TheCommandManager->executeCommand(PasteCommandPtr);
-
 	}
 	else
 	{
@@ -1222,12 +1126,12 @@ void ApplicationPlayer::keyTyped(const KeyEventPtr e)
 		
 		if(e->getKey() == KeyEvent::KEY_1 && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
 		{
-			MainInternalWindow->setFocusedComponent(_HelperPanel->CodeTextArea);
-			_HelperPanel->InfoTabPanel->setSelectedIndex(0);
+			MainInternalWindow->setFocusedComponent(_HelperPanel->_CodeTextArea);
+			_HelperPanel->_InfoTabPanel->setSelectedIndex(0);
 
 		}
 
-		if(e->getKey() == KeyEvent::KEY_S && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+		if(e->getKey() == KeyEvent::KEY_T && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
 		{
 			_ContentPanel->setIsSplit(!_ContentPanel->getIsSplit());
 		}
@@ -1463,13 +1367,13 @@ void ApplicationPlayer::updateDebugUI(void)
 {
     updateGotoSceneMenuItems(MainApplication::the()->getProject());
 	//TODO: Update the Scene Node Tree
-	if(_HierarchyPanel->TheTreeModel->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
+	if(_HierarchyPanel->getSceneGraphTreeModel()->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
 	{
-		_HierarchyPanel->TheTreeModel->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+		_HierarchyPanel->getSceneGraphTreeModel()->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
 	}
 	
-	//_HierarchyPanel->_TheTreeSelectionListener.setParams(_HierarchyPanel->TheTree,ApplicationPlayerPtr(this));
-	_HierarchyPanel->_TheTreeSelectionListener.updateHighlight();
+	//_HierarchyPanel->_SceneGraphTreeSelectionListener.setParams(_HierarchyPanel->_TheSceneGraphTree,ApplicationPlayerPtr(this));
+	_HierarchyPanel->_SceneGraphTreeSelectionListener.updateHighlight();
 	
 }
 
@@ -1499,6 +1403,14 @@ void ApplicationPlayer::updateDebugSceneChange(void)
 	{
 		setSceneInputBlocking(true);
 		SWARNING<<"Just blocked the input"<<std::endl;
+		if(MainApplication::the()->getProject()->isInputBlocked())
+		{
+			SWARNING<<"input is blocked"<<std::endl;
+		}
+		else
+		{
+			SWARNING<<"input is NOT blocked"<<std::endl;
+		}
 	}
 
 }
@@ -1516,16 +1428,16 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
 		DebugBeaconTransform->setMatrix(OriginalCamera->getBeacon()->getToWorld());
     endEditCP(DebugBeaconTransform, Transform::MatrixFieldMask);
 
-	NodePtr DebugBeacon = osg::Node::create();
-    beginEditCP(DebugBeacon, Node::CoreFieldMask);
-        DebugBeacon->setCore(DebugBeaconTransform);
-    endEditCP(DebugBeacon, Node::CoreFieldMask);
+	NodePtr _DebugBeacon = osg::Node::create();
+    beginEditCP(_DebugBeacon, Node::CoreFieldMask);
+        _DebugBeacon->setCore(DebugBeaconTransform);
+    endEditCP(_DebugBeacon, Node::CoreFieldMask);
 
     //Debug Root Node
     NodePtr DefaultRootNode = osg::Node::create();
     beginEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
         DefaultRootNode->setCore(osg::Group::create());
-        DefaultRootNode->addChild(DebugBeacon);//CameraBeaconNode);
+        DefaultRootNode->addChild(_DebugBeacon);//CameraBeaconNode);
     endEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
 
 	//Background
@@ -1547,30 +1459,33 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
 void ApplicationPlayer::updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager)
 {
 	
-	beginEditCP(UndoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
-		UndoItem->setEnabled(_TheUndoManager->canUndo());
+	beginEditCP(_UndoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
+		_UndoItem->setEnabled(_TheUndoManager->canUndo());
 		if(_TheUndoManager->canUndo())
 		{
-			UndoItem->setText(TheUndoManager->getUndoPresentationName());
+			_UndoItem->setText(TheUndoManager->getUndoPresentationName());
 		}
 		else
 		{
-			UndoItem->setText("Undo");
+			_UndoItem->setText("Undo");
 		}
-	endEditCP(UndoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
+	endEditCP(_UndoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
 	
-	beginEditCP(RedoItem, MenuItem::EnabledFieldMask);
-		RedoItem->setEnabled(TheUndoManager->canRedo());
+	beginEditCP(_RedoItem, MenuItem::EnabledFieldMask);
+		_RedoItem->setEnabled(TheUndoManager->canRedo());
 		if(_TheUndoManager->canRedo())
 		{
-			RedoItem->setText(_TheUndoManager->getRedoPresentationName());
+			_RedoItem->setText(_TheUndoManager->getRedoPresentationName());
 		}
 		else
 		{
-			RedoItem->setText("Redo");
+			_RedoItem->setText("Redo");
 		}
-	endEditCP(RedoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
+	endEditCP(_RedoItem, MenuItem::EnabledFieldMask | MenuItem::TextFieldMask);
 }
+
+
+
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -1591,11 +1506,6 @@ ApplicationPlayer::ApplicationPlayer(void) :
     _PhysDrawableNode(NullFC),
     _WasMouseHidden(false),
     _WasMouseAttached(false),
-//	_CutActionListener(NULL,NULL),
-//	_CopyActionListener(NULL,NULL),
-//	_PasteActionListener(NULL,NULL),
-	//_DeleteActionListener(NULL,NULL),
-	//_ShowHideActionListener(NULL,NULL),
 	_UndoActionListener(NULL,NULL),
 	_RedoActionListener(NULL,NULL),
 	_CommandManagerListener(ApplicationPlayerPtr(this))
@@ -1623,17 +1533,11 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     _PhysDrawableNode(NullFC),
     _WasMouseHidden(false),
     _WasMouseAttached(false),
-//	_CutActionListener(NULL,NULL),
-//	_CopyActionListener(NULL,NULL),
-//	_PasteActionListener(NULL,NULL),
-//	_DeleteActionListener(NULL,NULL),
-//	_ShowHideActionListener(NULL,NULL),
 	_UndoActionListener(NULL,NULL),
 	_RedoActionListener(NULL,NULL),
 	_CommandManagerListener(ApplicationPlayerPtr(this))
 {
 	_TheUndoManager = UndoManager::create();
-	//_TheUndoManager->addChangeListener(_CommandManagerListener);
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
 }
 
@@ -1708,9 +1612,9 @@ ApplicationPlayer::highlightNodeListener::highlightNodeListener(ApplicationPlaye
 
 void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
 {
-	if(_ApplicationPlayer->SelectedNode != NullFC)		// selected node is the node that is being selected.
+	if(_ApplicationPlayer->_SelectedNode != NullFC)		// selected node is the node that is being selected.
     {													// highlight node is the pointer to the bounding box for the selected node
-	 std::string coreName= _ApplicationPlayer->SelectedNode->getCore()->getTypeName();
+	 std::string coreName= _ApplicationPlayer->_SelectedNode->getCore()->getTypeName();
 
 		// calc the world bbox of the highlight object
 		#ifndef OSG_2_PREP
@@ -1718,7 +1622,7 @@ void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
 		#else
 		BoxVolume      vol;
 		#endif
-		_ApplicationPlayer->SelectedNode->getWorldVolume(vol);
+		_ApplicationPlayer->_SelectedNode->getWorldVolume(vol);
 
 		Pnt3f min,max;
 		vol.getBounds(min, max);
@@ -1737,9 +1641,9 @@ void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
 		endEditCP(temphighlightPoints);
 
 
-		beginEditCP(_ApplicationPlayer->highlightNode->getCore(), Geometry::PositionsFieldMask);
-		GeometryPtr::dcast(_ApplicationPlayer->highlightNode->getCore())->setPositions(temphighlightPoints);
-		endEditCP  (_ApplicationPlayer->highlightNode->getCore(), Geometry::PositionsFieldMask);
+		beginEditCP(_ApplicationPlayer->_HighlightNode->getCore(), Geometry::PositionsFieldMask);
+		GeometryPtr::dcast(_ApplicationPlayer->_HighlightNode->getCore())->setPositions(temphighlightPoints);
+		endEditCP  (_ApplicationPlayer->_HighlightNode->getCore(), Geometry::PositionsFieldMask);
 
 
     }
@@ -1748,14 +1652,7 @@ void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
 
 void ApplicationPlayer::setupPopupMenu()
 {
-		beginEditCP(pop);
-		pop->addItem(ShowHideItem);
-		pop->addSeparator();
-		pop->addItem(CutItem);	
-		pop->addItem(CopyItem);	
-		pop->addItem(PasteItem);	
-		pop->addItem(DeleteItem);	
-		endEditCP(pop);
+	
 }
 
 ApplicationPlayer::highlightNodeListener::~highlightNodeListener()
@@ -1769,27 +1666,26 @@ void ApplicationPlayer::ComboBoxListener::selectionChanged(const ComboBoxSelecti
     if(index == 0)
     {
         _TopLeftCardLayout->first(_TopLeftTreePanel);
-        beginEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
-            _ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(_ApplicationPlayer->pop);
-        endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
+        /*beginEditCP(_ApplicationPlayer->_TopLeftPanel);
+            _ApplicationPlayer->_TopLeftPanel->setPopupMenu(_ApplicationPlayer->_HierarchyPanelPopupMenu);
+        endEditCP(_ApplicationPlayer->_TopLeftPanel);*/
         _ApplicationPlayer->_ContentPanel->setVisible(false);
-
     }
     else 
     {
-        beginEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
-            _ApplicationPlayer->SplitPanelPaneltopleft->setPopupMenu(NullFC);
-        endEditCP(_ApplicationPlayer->SplitPanelPaneltopleft);
+        /*beginEditCP(_ApplicationPlayer->_TopLeftPanel);
+            _ApplicationPlayer->_TopLeftPanel->setPopupMenu(NullFC);
+        endEditCP(_ApplicationPlayer->_TopLeftPanel);*/
 
         _TopLeftCardLayout->last(_TopLeftTreePanel);
         _ApplicationPlayer->_ContentPanel->setVisible(true);
     }
 }
 
-void ApplicationPlayer::ComboBoxListener::set(ComboBoxPtr ComboBoxP,CardLayoutPtr TopLeftCardLayout,PanelPtr TopLeftTreePanel)
+void ApplicationPlayer::ComboBoxListener::set(ComboBoxPtr ComboBoxP,CardLayoutPtr _CardLayout,PanelPtr TopLeftTreePanel)
 {
     _ComboBox = ComboBoxP;
-    _TopLeftCardLayout = TopLeftCardLayout;
+    _TopLeftCardLayout = _CardLayout;
     _TopLeftTreePanel = TopLeftTreePanel;
 }
 

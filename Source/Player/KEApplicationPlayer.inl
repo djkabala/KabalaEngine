@@ -38,6 +38,7 @@
 //---------------------------------------------------------------------------
 
 #include <OpenSG/OSGConfig.h>
+#include "KEApplicationPlayer.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -75,6 +76,114 @@ ApplicationPlayer::ProjectListener::ProjectListener(ApplicationPlayerPtr TheAppl
 inline
 ApplicationPlayer::ProjectListener::~ProjectListener()
 {
+}
+
+inline 
+CommandManagerPtr ApplicationPlayer::getCommandManager(void)
+{
+	return _TheCommandManager;
+}
+
+inline
+void ApplicationPlayer::setCurrentAction(UInt32 action)
+{
+	currentAction = action;
+}
+
+inline
+UInt32 ApplicationPlayer::getCurrentAction(void)
+{
+	return currentAction;
+}
+
+inline
+void ApplicationPlayer::setClonedNodeInCopyClipboard(NodePtr node)
+{
+	_ClonedNodeInCopyClipboard = node;
+}
+
+inline
+NodePtr ApplicationPlayer::getClonedNodeInCopyClipboard(void)
+{
+	return _ClonedNodeInCopyClipboard;
+}
+
+inline
+void ApplicationPlayer::setNodeInCutClipboard(NodePtr node)
+{
+	_NodeInCutClipboard = node;
+}
+
+inline
+NodePtr ApplicationPlayer::getNodeInCutClipboard(void)
+{
+	return _NodeInCutClipboard;
+}
+
+inline 
+UndoManagerPtr ApplicationPlayer::getUndoManager(void)
+{
+	return _TheUndoManager;
+}
+
+inline 
+NodePtr ApplicationPlayer::getHighlightNode(void)
+{
+	return _HighlightNode;
+}
+
+inline 
+void ApplicationPlayer::setHighlightNode(NodePtr selectedNode)
+{
+	_HighlightNode = selectedNode;
+}
+
+inline 
+ViewportPtr ApplicationPlayer::getDebugViewport(void)
+{
+	return _DebugViewport;
+}
+
+inline 
+void ApplicationPlayer::setDebugViewport(ViewportPtr viewport)
+{
+	_DebugViewport = viewport;
+}
+
+inline 
+HelperPanelPtr ApplicationPlayer::getHelperPanel(void)
+{
+	return _HelperPanel;
+}
+
+inline 
+void ApplicationPlayer::setHelperPanel(HelperPanelPtr helperPanel)
+{
+	_HelperPanel = helperPanel;
+}
+
+inline 
+NodePtr ApplicationPlayer::getSelectedNode(void)
+{
+	return _SelectedNode;
+}
+
+inline 
+void ApplicationPlayer::setSelectedNode(NodePtr selectedNode)
+{
+	_SelectedNode = selectedNode;
+}
+
+inline 
+ContentPanelPtr ApplicationPlayer::getContentPanel(void)
+{
+	return _ContentPanel;
+}
+
+inline 
+void ApplicationPlayer::setContentPanel(ContentPanelPtr contentPanel)
+{
+	_ContentPanel = contentPanel;
 }
 
 OSG_END_NAMESPACE

@@ -179,122 +179,32 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     virtual void gotoScene(ScenePtr TheScene);
     void enableDebug(bool EnableDebug);
 
-	MenuItemPtr ShowHideItem ;
+	// inline functions 
 
-	NodePtr highlightNode;
-	NodePtr SelectedNode;
-
-	HierarchyPanelPtr _HierarchyPanel;
-	HelperPanelPtr _HelperPanel;
-	ContentPanelPtr _ContentPanel;
+	CommandManagerPtr getCommandManager(void);
+	void setCurrentAction(UInt32 action);
+	UInt32 getCurrentAction(void);
+	void setClonedNodeInCopyClipboard(NodePtr node);
+	NodePtr getClonedNodeInCopyClipboard(void);
+	void setNodeInCutClipboard(NodePtr node);
+	NodePtr getNodeInCutClipboard(void);
+	UndoManagerPtr getUndoManager(void);
+	NodePtr getHighlightNode(void);
+	void setHighlightNode(NodePtr);
+	ViewportPtr getDebugViewport(void);
+	void setDebugViewport(ViewportPtr);
+	HelperPanelPtr getHelperPanel(void);
+	void setHelperPanel(HelperPanelPtr);
+	NodePtr getSelectedNode(void);
+	void setSelectedNode(NodePtr);
+	ContentPanelPtr getContentPanel(void);
+	void setContentPanel(ContentPanelPtr);
 
     /*=========================  PROTECTED  ===============================*/
   protected:
 
 
-	enum cActions{NONE,CUT,COPY};
 
-	UInt32 currentAction;
-
-	NodePtr nodeInCutClipboard;
-	NodePtr clonedNodeInCopyClipboard;
-
-	CommandManagerPtr _TheCommandManager;
-	UndoManagerPtr _TheUndoManager;
-	CommandActionListenerForPlayer _UndoActionListener;
-	CommandActionListenerForPlayer _RedoActionListener;
-
-	virtual void attachDebugInterface(void);
-	virtual void detachDebugInterface(void);
-	virtual void createDebugInterface(void);
-
-	SpringLayoutPtr HierarchyPanelLayout;
-
-	PanelPtr Toolbar;
-	SpringLayoutPtr ToolbarLayout;
-	
-	//FlowLayoutPtr ToolbarLayout;
-
-	ButtonPtr OpenFileButton;
-	ButtonPtr SaveFileButton;
-	ButtonPtr CloseFileButton;
-
-
-	BorderLayoutConstraintsPtr ToolbarandContentConstraints;
-	SplitPanelPtr ToolbarandContentPanel;
-	
-  	MenuItemPtr ResetItem ;				
-    MenuItemPtr ForceQuitItem ;			
-
-	MenuItemPtr UndoItem ;				
-    MenuItemPtr RedoItem ;				
-    
-
-    MenuItemPtr NextItem ;				
-    MenuItemPtr PrevItem ;				
-    MenuItemPtr FirstItem;				
-    MenuItemPtr LastItem ;				
-    MenuPtr _SceneSubItem ;				
-
-	MenuItemPtr FlyNavigatorItem ;		
-    MenuItemPtr TrackballNavigatorItem ;
-    MenuItemPtr BasicItem ;				
-    MenuItemPtr RenderItem ;			
-    MenuItemPtr PhysicsItem ;			
-    MenuItemPtr ParticleSystemItem ;	
-	MenuItemPtr AnimationItem ;			
-	MenuItemPtr PauseActiveUpdatesItem;			
-	MenuItemPtr DrawBoundingVolumesItem ;		
-	MenuItemPtr FrustrumCullingItem  ;
-	MenuItemPtr DrawPhysicsCharacteristicsItem  ;
-
-
-	MenuPtr EditMenu;
-	MenuPtr ProjectMenu;
-	MenuPtr SceneMenu;
-	MenuPtr NavigatorMenu;
-	MenuPtr StatisticsMenu;
-	MenuPtr ToggleMenu;
-	MenuBarPtr MainMenuBar;
-	BorderLayoutConstraintsPtr ButtonConstraints;
-	PanelPtr SplitPanelPaneltopleft;
-
-	BorderLayoutPtr PanelFlowLayout2;
-
-	BorderLayoutConstraintsPtr PanelTopLeftConstraints2;
-
-
-	PopupMenuPtr pop;
-	
-	MenuItemPtr CutItem ;
-	MenuItemPtr CopyItem ;
-	MenuItemPtr PasteItem ;
-	MenuItemPtr DeleteItem ;
-	MenuPtr NewNode ;
-	
-
-	BorderLayoutConstraintsPtr SplitPanelConstraints;
-	BorderLayoutConstraintsPtr SplitPanelConstraints2;
-	SplitPanelPtr SplitPanel;
-	SplitPanelPtr TopHalfSplitPanel;
-	DefaultMutableComboBoxModelPtr ComboBoxModel;
-	ComboBoxPtr modeComboBox;
-    
-
-public:
-    ViewportPtr _DebugViewport;
-protected:
-    ViewportPtr createDebugViewport(void);
-	NodePtr DebugBeacon;
-
-	void updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager);
-	void createGotoSceneMenuItems(ProjectPtr TheProject);
-    void updateGotoSceneMenuItems(ProjectPtr TheProject);
-	void updateDebugUI(void);
-
-	void updateListBox(void);
-	void setupPopupMenu();
-	void invertShowHideCaption();
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
@@ -313,17 +223,6 @@ protected:
     /*! \}                                                                 */
 		
 
-	friend class ShowHideCommand;
-	friend class DeleteCommand;
-	friend class CutCommand;
-	friend class CopyCommand;
-	friend class PasteCommand;
-	friend class NewCommand;
-	friend class UndoCommandOfPlayer;
-	friend class RedoCommandOfPlayer;
-
-
-	friend class HierarchyPanel;
 
 	class CommandManagerListener: public ChangeListener
 	{
@@ -337,9 +236,7 @@ protected:
 	  protected :
         ApplicationPlayerPtr _ApplicationPlayer;
 	};
-
 	friend class CommandManagerListener;
-
 	CommandManagerListener _CommandManagerListener;
 
 
@@ -352,10 +249,9 @@ protected:
 	protected :
 		ApplicationPlayerPtr _ApplicationPlayer;
 	};
-	
     friend class PlayerKeyListener;
-
 	PlayerKeyListener _PlayerKeyListener;
+
 	
 	class BasicListener : public ActionListener
 	{
@@ -368,9 +264,9 @@ protected:
 		ApplicationPlayerPtr _ApplicationPlayer;
 	
 	};
-
 	friend class BasicListener;
 	BasicListener _BasicListener;
+
 
 
 	class ComboBoxListener: public ComboBoxSelectionListener
@@ -379,7 +275,7 @@ protected:
         void selectionChanged(const ComboBoxSelectionEventPtr e);
 
 		void set(ComboBoxPtr ComboBoxP,
-                 CardLayoutPtr TopLeftCardLayout,
+                 CardLayoutPtr _CardLayout,
                  PanelPtr TopLeftTreePanel);
 		
         ComboBoxListener(ApplicationPlayerPtr TheApplicationPlayer);
@@ -389,11 +285,11 @@ protected:
 			 CardLayoutPtr _TopLeftCardLayout;
 			 PanelPtr _TopLeftTreePanel;
 	};
-
 	friend class ComboBoxListener;
 	ComboBoxListener _ComboBoxListener;
-	
-	 
+
+
+
 	class GotoSceneItemListener : public ActionListener
 	{
 	public:
@@ -405,11 +301,11 @@ protected:
 		ApplicationPlayerPtr _ApplicationPlayer;
 	
 	};
-	
 	friend class GotoSceneItemListener;
-
 	GotoSceneItemListener _GotoSceneItemListener;
-	
+
+
+
 	class ProjectListener : public EventListener
 	{
 	public:
@@ -421,10 +317,9 @@ protected:
 		ApplicationPlayerPtr _ApplicationPlayer;
 	
 	};
-	
 	friend class ProjectListener;
-
 	ProjectListener _ProjectListener;
+
 
 
 	class highlightNodeListener : public UpdateListener
@@ -438,16 +333,94 @@ protected:
 		ApplicationPlayerPtr _ApplicationPlayer;
 	
 	};
-	
 	friend class highlightNodeListener;
-
 	highlightNodeListener _highlightNodeListener;
 
 
+	NodePtr _HighlightNode;
+	NodePtr _SelectedNode;
+
+	HierarchyPanelPtr	_HierarchyPanel;
+	HelperPanelPtr		_HelperPanel;
+	ContentPanelPtr		_ContentPanel;
 	
+    ViewportPtr _DebugViewport;
+
+	enum cActions{NONE,CUT,COPY};
+
+	UInt32 currentAction;
+
+	NodePtr _NodeInCutClipboard;
+	NodePtr _ClonedNodeInCopyClipboard;
+
+	CommandManagerPtr				_TheCommandManager;
+	UndoManagerPtr					_TheUndoManager;
+	CommandActionListenerForPlayer	_UndoActionListener;
+	CommandActionListenerForPlayer	_RedoActionListener;
+
+
+	BorderLayoutConstraintsPtr		_ToolbarAndContentConstraints;
+	SplitPanelPtr					_ToolbarAndContentPanel;
+
+	PanelPtr			_Toolbar;
+	SpringLayoutPtr		_ToolbarLayout;
+	
+	ButtonPtr	_OpenFileButton;
+	ButtonPtr	_SaveFileButton;
+	ButtonPtr	_CloseFileButton;
+
+
+	MenuItemPtr _ResetItem ;				
+    MenuItemPtr _ForceQuitItem ;			
+
+	MenuItemPtr _UndoItem ;				
+    MenuItemPtr _RedoItem ;				
+    
+
+    MenuItemPtr _NextItem ;				
+    MenuItemPtr _PrevItem ;				
+    MenuItemPtr _FirstItem;				
+    MenuItemPtr _LastItem ;				
+    MenuPtr		_SceneSubItem ;				
+
+	MenuItemPtr _FlyNavigatorItem ;		
+    MenuItemPtr _TrackballNavigatorItem ;
+    MenuItemPtr _BasicItem ;				
+    MenuItemPtr _RenderItem ;			
+    MenuItemPtr _PhysicsItem ;			
+    MenuItemPtr _ParticleSystemItem ;	
+	MenuItemPtr _AnimationItem ;			
+	MenuItemPtr _PauseActiveUpdatesItem;			
+	MenuItemPtr _DrawBoundingVolumesItem ;		
+	MenuItemPtr _FrustrumCullingItem  ;
+	MenuItemPtr _DrawPhysicsCharacteristicsItem  ;
+
+
+	MenuPtr		_EditMenu;
+	MenuPtr		_ProjectMenu;
+	MenuPtr		_SceneMenu;
+	MenuPtr		_NavigatorMenu;
+	MenuPtr		_StatisticsMenu;
+	MenuPtr		_ToggleMenu;
+	MenuBarPtr	_MainMenuBar;
+
+
+	SpringLayoutPtr _TopLeftPanelLayout;
+	PanelPtr		_TopLeftPanel;			//Panel that is found in the top left and that which holds the Hierarchy Panel
+
+
+	BorderLayoutConstraintsPtr	_DebugWindowSplitPanelConstraints;
+	SplitPanelPtr				_DebugWindowSplitPanel;
+
+	BorderLayoutConstraintsPtr	_TopHalfSplitPanelConstraints;
+	SplitPanelPtr				_TopHalfSplitPanel;
+
+	DefaultMutableComboBoxModelPtr	_ModeComboBoxModel;
+	ComboBoxPtr						_ModeComboBox;
+
+	NodePtr _DebugBeacon;
+
 	bool _IsDebugActive;
-    void keyTyped(const KeyEventPtr e);
-	void actionPerformed(const ActionEventPtr e);
 
     SimpleStatisticsForegroundPtr _DebugBasicStatForeground;
     SimpleStatisticsForegroundPtr _DebugRenderStatForeground;
@@ -455,6 +428,26 @@ protected:
     SimpleStatisticsForegroundPtr _DebugParticleSystemStatForeground;
     SimpleStatisticsForegroundPtr _DebugAnimationStatForeground;
 	
+
+
+	void updateListBox(void);
+	void setupPopupMenu();
+	void invertShowHideCaption();
+
+    void keyTyped(const KeyEventPtr e);
+	void actionPerformed(const ActionEventPtr e);
+
+	ViewportPtr createDebugViewport(void);
+
+	virtual void attachDebugInterface(void);
+	virtual void detachDebugInterface(void);
+	virtual void createDebugInterface(void);
+
+	void updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager);
+	void createGotoSceneMenuItems(ProjectPtr TheProject);
+    void updateGotoSceneMenuItems(ProjectPtr TheProject);
+	void updateDebugUI(void);
+
     void initDebugStatForegrounds(void);
     void hideAllStatForegrounds(void);
     void toggleStatForeground(StatisticsForegroundPtr TheForeground);
@@ -466,8 +459,17 @@ protected:
 
     NodePtr getPhysicsDrawableNode(void);
     void updateDebugSceneChange(void);
+
+
+
     /*==========================  PRIVATE  ================================*/
   private:
+
+
+	InternalWindowPtr MainInternalWindow;		
+	GraphicsPtr DebuggerGraphics;				
+	UIForegroundPtr DebuggerUIForeground;		
+	UIDrawingSurfacePtr DebuggerDrawingSurface;	
 
     friend class FieldContainer;
     friend class ApplicationPlayerBase;
