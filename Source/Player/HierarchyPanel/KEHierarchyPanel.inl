@@ -40,5 +40,30 @@
 
 OSG_BEGIN_NAMESPACE
 
+inline
+CardLayoutPtr HierarchyPanel::getCardLayout(void)
+{
+	return _CardLayout;
+}
+
+inline
+SceneGraphTreeModelPtr HierarchyPanel::getSceneGraphTreeModel(void)
+{
+	return _TheSceneGraphTreeModel;
+}
+inline
+TreePtr HierarchyPanel::getSceneGraphTree(void)
+{
+	return _TheSceneGraphTree;
+}
+
+inline
+ApplicationPlayerPtr HierarchyPanel::getApplicationPlayer(void)
+{
+	return _ApplicationPlayer;
+}
+
+
+
 OSG_END_NAMESPACE
 
