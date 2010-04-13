@@ -67,9 +67,9 @@ CommandType ShowHideCommand::_Type("ShowHideCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-ShowHideCommandPtr ShowHideCommand::create(NodePtr SelectedNode,ApplicationPlayerPtr ApplicationPlayer)
+ShowHideCommandPtr ShowHideCommand::create(NodePtr _SelectedNode,MenuItemPtr _ShowHideItem)
 {
-	return Ptr(new ShowHideCommand(SelectedNode,ApplicationPlayer));
+	return Ptr(new ShowHideCommand(_SelectedNode,_ShowHideItem));
 }
 
 /***************************************************************************\
@@ -78,8 +78,8 @@ ShowHideCommandPtr ShowHideCommand::create(NodePtr SelectedNode,ApplicationPlaye
 
 void ShowHideCommand::execute(void)
 {
-	maskval = _SelectedNode->getTravMask();
-	if(!maskval)
+	_Maskval = _SelectedNode->getTravMask();
+	if(!_Maskval)
 	{
 		_SelectedNode->setTravMask(UInt32(-1));
 	}
@@ -95,19 +95,19 @@ void ShowHideCommand::execute(void)
 
 void ShowHideCommand::invertShowHideCaption()
 {
-		std::string caption(_ApplicationPlayer->ShowHideItem->getText());
-		beginEditCP(_ApplicationPlayer->ShowHideItem);
+		std::string caption(_ShowHideItem->getText());
+		beginEditCP(_ShowHideItem);
 		if(caption=="Show")
-			_ApplicationPlayer->ShowHideItem->setText("Hide");
+			_ShowHideItem->setText("Hide");
 		else
-			_ApplicationPlayer->ShowHideItem->setText("Show");
-		endEditCP(_ApplicationPlayer->ShowHideItem);
+			_ShowHideItem->setText("Show");
+		endEditCP(_ShowHideItem);
 }
 
 std::string ShowHideCommand::getCommandDescription(void) const
 {
 	std::string caption;
-	if(!maskval)caption = "Show";
+	if(!_Maskval)caption = "Show";
 	else		caption = "Hide";
 	return		caption;
 }
@@ -122,8 +122,8 @@ void ShowHideCommand::redo(void)
 	if(_SelectedNode != NullFC)
 	{
 		Inherited::redo();
-		UInt32 maskval = _SelectedNode->getTravMask();
-		if(!maskval)
+		UInt32 _Maskval = _SelectedNode->getTravMask();
+		if(!_Maskval)
 		{
 			_SelectedNode->setTravMask(UInt32(-1));
 		}
@@ -133,7 +133,6 @@ void ShowHideCommand::redo(void)
 		}
 		invertShowHideCaption();
 	}
-    //_TheModel->removeBackground(_TheIndex);
 }
 
 void ShowHideCommand::undo(void)
@@ -141,8 +140,8 @@ void ShowHideCommand::undo(void)
     if(_SelectedNode != NullFC)
 	{
 		Inherited::undo();
-		UInt32 maskval = _SelectedNode->getTravMask();
-		if(!maskval)
+		UInt32 _Maskval = _SelectedNode->getTravMask();
+		if(!_Maskval)
 		{
 			_SelectedNode->setTravMask(UInt32(-1));
 		}
@@ -175,7 +174,7 @@ void ShowHideCommand::operator =(const ShowHideCommand& source)
     if(this != &source)
     {
 	    Inherited::operator=(source);
-		_ApplicationPlayer = source._ApplicationPlayer;
+		_ShowHideItem = source._ShowHideItem;
 		_SelectedNode = source._SelectedNode;
     }
 }

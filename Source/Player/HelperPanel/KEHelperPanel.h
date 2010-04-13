@@ -84,88 +84,67 @@ OSG_BEGIN_NAMESPACE
 
 class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 {
+   typedef HelperPanelBase Inherited;
 
-	public:
-	SpringLayoutPtr PanelFlowLayout;
-	GridLayoutPtr TabContentDLayout;
   private:
 
+	SpringLayoutPtr _Layout;
+	GridLayoutPtr _TabPanel4ContentLayout;
 
 	enum tab{LUA=1,ERR,CONSOLE,PROPERTIES};
 
-    typedef HelperPanelBase Inherited;
+	LabelPtr					_HistoryLabel;
+	ListSelectionModelPtr		_HistoryListSelectionModel;
+	ListPtr						_HistoryList;
+	DefaultListModelPtr			_HistoryListModel;
+	ScrollPanelPtr				_HistoryScrollPanel;
+	std::vector<std::string>	_ListOfCommands;
 
-	//enum tabs{LUA=1,SCENEGRAPH};
+	ButtonPtr _ExecuteBtn;
+
+	TabPanelPtr _InfoTabPanel;
+	TextAreaPtr _CodeTextArea;
+	TextAreaPtr _ErrorTextArea;
+	TextAreaPtr _StackTraceTextArea;
+
+	LabelPtr _TabPanel1Label;
+	LabelPtr _TabPanel2Label;
+	LabelPtr _TabPanel3Label;
+	LabelPtr _TabPanel4Label;
+	
+	ScrollPanelPtr	_TabPanel1Content;
+	ScrollPanelPtr	_TabPanel2Content;
+	ScrollPanelPtr	_TabPanel3Content;
+	PanelPtr		_TabPanel4Content;
+
+	LabelPtr _NodeNameLabel;
+	LabelPtr _NodeCoreTypeLabel;
+	LabelPtr _NodeMinLabel;
+	LabelPtr _NodeMaxLabel;
+	LabelPtr _NodeCenterLabel;
+	LabelPtr _NodeTriCountLabel;
+	LabelPtr _NodeTravMaskLabel;
+	LabelPtr _NodeOcclusionMaskLabel;
+	LabelPtr _NodeActiveLabel;
+
+	LabelPtr _NodeNameValueLabel;
+	LabelPtr _NodeCoreTypeValueLabel;
+	LabelPtr _NodeMinValueLabel;
+	LabelPtr _NodeMaxValueLabel;
+	LabelPtr _NodeCenterValueLabel;
+	LabelPtr _NodeTriCountValueLabel;
+	LabelPtr _NodeTravMaskValueLabel;
+	LabelPtr _NodeOcclusionMaskValueLabel;
+	LabelPtr _NodeActiveValueLabel;
+
+
+
+	void updateListBox(void);
+	void setLabelValues(NodePtr _SelectedNode);
+	void setLabelValuesToNull();
 
 	friend class ApplicationPlayer;
 	friend class HierarchyPanel;
-
-
-
-	void setLabelValues(NodePtr SelectedNode);
-	void setLabelValuesToNull();
-
-
-	/////////////////// for the history Label- begin ///////////////////
-	LabelPtr historyLabel;
-	LabelPtr historyLabel2;
-	/////////////////// for the history Label- end ///////////////////
-
-
-	/////////////////// for the History list - begin ///////////////////
-	ListSelectionModelPtr HistoryListSelectionModel;
-	ListPtr HistoryList;
-	DefaultListModelPtr HistoryListModel;
-	ScrollPanelPtr HistoryScrollPanel;
-	std::vector<std::string> list_of_commands;
-	void updateListBox(void);
-	/////////////////// for the History list - end ///////////////////
-
-
-	/////////////////// for the execute Button- begin ///////////////////
-	ButtonPtr executeBtn;
-	/////////////////// for the execute Button- end ///////////////////
-
-
-	/////////////////// for the Information TabPanel - begin///////////////////
-	TabPanelPtr InfoTabPanel;
-	TextAreaPtr CodeTextArea;
-	TextAreaPtr ErrorTextArea;
-	TextAreaPtr StackTraceTextArea;
-
-	LabelPtr TabPanel1;
-	LabelPtr TabPanel2;
-	LabelPtr TabPanel3;
-	LabelPtr TabPanel4;
-	
-	ScrollPanelPtr TabContentA;
-	ScrollPanelPtr TabContentB;
-	ScrollPanelPtr TabContentC;
-	PanelPtr TabContentD;
-
-	// for the properties tab
-	LabelPtr NodeNameLabel;
-	LabelPtr NodeCoreTypeLabel;
-	LabelPtr NodeMinLabel;
-	LabelPtr NodeMaxLabel;
-	LabelPtr NodeCenterLabel;
-	LabelPtr NodeTriCountLabel;
-	LabelPtr NodeTravMaskLabel;
-	LabelPtr NodeOcclusionMaskLabel;
-	LabelPtr NodeActiveLabel;
-
-	LabelPtr NodeNameValueLabel;
-	LabelPtr NodeCoreTypeValueLabel;
-	LabelPtr NodeMinValueLabel;
-	LabelPtr NodeMaxValueLabel;
-	LabelPtr NodeCenterValueLabel;
-	LabelPtr NodeTriCountValueLabel;
-	LabelPtr NodeTravMaskValueLabel;
-	LabelPtr NodeOcclusionMaskValueLabel;
-	LabelPtr NodeActiveValueLabel;
-
-
-	/////////////////// for the Information TabPanel - end ///////////////////
 
 
 

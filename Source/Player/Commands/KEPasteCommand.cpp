@@ -79,23 +79,23 @@ PasteCommandPtr PasteCommand::create(ApplicationPlayerPtr ApplicationPlayer,Hier
 void PasteCommand::execute(void)
 {
 
-	_currentAction = _ApplicationPlayer->currentAction;
-	_nodeInCutClipboard = _ApplicationPlayer->nodeInCutClipboard;
-	_clonedNodeInCopyClipboard = _ApplicationPlayer->clonedNodeInCopyClipboard;
-	_SelectedNode = _ApplicationPlayer->SelectedNode;
+	_CurrentAction = _ApplicationPlayer->getCurrentAction();
+	_NodeInCutClipboard = _ApplicationPlayer->getNodeInCutClipboard();
+	_ClonedNodeInCopyClipboard = _ApplicationPlayer->getClonedNodeInCopyClipboard();
+	_SelectedNode = _ApplicationPlayer->getSelectedNode();
 
-	if(_ApplicationPlayer->currentAction == CUT && _ApplicationPlayer->nodeInCutClipboard!=NullFC)
+	if(_ApplicationPlayer->getCurrentAction() == CUT && _ApplicationPlayer->getNodeInCutClipboard()!=NullFC)
 	{
-		_HierarchyPanel->TheTreeModel->addNode(boost::any(_ApplicationPlayer->SelectedNode),boost::any(_ApplicationPlayer->nodeInCutClipboard));
-		subRefCP(_ApplicationPlayer->nodeInCutClipboard);
-		_ApplicationPlayer->nodeInCutClipboard = NullFC;
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ApplicationPlayer->getSelectedNode()),boost::any(_ApplicationPlayer->getNodeInCutClipboard()));
+		subRefCP(_ApplicationPlayer->getNodeInCutClipboard());
+		_ApplicationPlayer->setNodeInCutClipboard(NullFC);
 	}
-	else if(_ApplicationPlayer->currentAction == COPY && _ApplicationPlayer->clonedNodeInCopyClipboard!=NullFC)
+	else if(_ApplicationPlayer->getCurrentAction() == COPY && _ApplicationPlayer->getClonedNodeInCopyClipboard()!=NullFC)
 	{
-		_HierarchyPanel->TheTreeModel->addNode(boost::any(_ApplicationPlayer->SelectedNode),boost::any(_ApplicationPlayer->clonedNodeInCopyClipboard));
-		_ApplicationPlayer->clonedNodeInCopyClipboard = NullFC;
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ApplicationPlayer->getSelectedNode()),boost::any(_ApplicationPlayer->getClonedNodeInCopyClipboard()));
+		_ApplicationPlayer->setClonedNodeInCopyClipboard(NullFC);
 	}
-	_ApplicationPlayer->currentAction = NONE;
+	_ApplicationPlayer->setCurrentAction(NONE);
 
 	_HasBeenDone = true;
 }
@@ -113,37 +113,37 @@ std::string PasteCommand::getPresentationName(void) const
 void PasteCommand::redo(void)
 {
     Inherited::redo();
-	if(_currentAction == CUT && _nodeInCutClipboard!=NullFC)
+	if(_CurrentAction == CUT && _NodeInCutClipboard!=NullFC)
 	{
-		_HierarchyPanel->TheTreeModel->addNode(boost::any(_SelectedNode),boost::any(_nodeInCutClipboard));
-		subRefCP(_nodeInCutClipboard);
-		_ApplicationPlayer->nodeInCutClipboard = NullFC;
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_SelectedNode),boost::any(_NodeInCutClipboard));
+		subRefCP(_NodeInCutClipboard);
+		_ApplicationPlayer->setNodeInCutClipboard(NullFC);
 	}
-	else if(_ApplicationPlayer->currentAction == COPY && _ApplicationPlayer->clonedNodeInCopyClipboard!=NullFC)
+	else if(_ApplicationPlayer->getCurrentAction() == COPY && _ApplicationPlayer->getClonedNodeInCopyClipboard()!=NullFC)
 	{
-		_HierarchyPanel->TheTreeModel->addNode(boost::any(_SelectedNode),boost::any(_clonedNodeInCopyClipboard));
-		subRefCP(_clonedNodeInCopyClipboard);
-		_ApplicationPlayer->clonedNodeInCopyClipboard = NullFC;
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_SelectedNode),boost::any(_ClonedNodeInCopyClipboard));
+		subRefCP(_ClonedNodeInCopyClipboard);
+		_ApplicationPlayer->setClonedNodeInCopyClipboard(NullFC);
 	}
-	_ApplicationPlayer->currentAction = NONE;
+	_ApplicationPlayer->setCurrentAction(NONE);
 }
 
 void PasteCommand::undo(void)
 {
     Inherited::undo();
-	if(_currentAction == CUT && _nodeInCutClipboard!=NullFC)
+	if(_CurrentAction == CUT && _NodeInCutClipboard!=NullFC)
 	{
-		addRefCP(_nodeInCutClipboard);
-		_HierarchyPanel->TheTreeModel->removeNode(boost::any(_nodeInCutClipboard));
-		_ApplicationPlayer->nodeInCutClipboard = _nodeInCutClipboard;
+		addRefCP(_NodeInCutClipboard);
+		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_NodeInCutClipboard));
+		_ApplicationPlayer->setNodeInCutClipboard(_NodeInCutClipboard);
 	}
-	else if(_currentAction == COPY && _clonedNodeInCopyClipboard!=NullFC)
+	else if(_CurrentAction == COPY && _ClonedNodeInCopyClipboard!=NullFC)
 	{
-		addRefCP(_clonedNodeInCopyClipboard);
-		_HierarchyPanel->TheTreeModel->removeNode(boost::any(_clonedNodeInCopyClipboard));
-		_ApplicationPlayer->clonedNodeInCopyClipboard = _clonedNodeInCopyClipboard;
+		addRefCP(_ClonedNodeInCopyClipboard);
+		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_ClonedNodeInCopyClipboard));
+		_ApplicationPlayer->setClonedNodeInCopyClipboard(_ClonedNodeInCopyClipboard);
 	}
-	_ApplicationPlayer->currentAction = _currentAction;
+	_ApplicationPlayer->setCurrentAction(_CurrentAction);
 
 }
 

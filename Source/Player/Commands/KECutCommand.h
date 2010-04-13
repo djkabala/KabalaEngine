@@ -37,7 +37,7 @@
 #include <OpenSG/UserInterface/OSGUndoableCommand.h>
 
 #include "Player/KEApplicationPlayer.h"
-#include "Player/HierarchyPanel/KEHierarchyPanel.h"
+#include <OpenSG/UserInterface/OSGSceneGraphTreeModel.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -52,7 +52,7 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef CutCommandPtr Ptr;
 
-	CutCommand(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel);
+	CutCommand(ApplicationPlayerPtr ApplicationPlayer,SceneGraphTreeModelPtr SceneGraphTreeModel);
 
 	CutCommand(const CutCommand& source);
 
@@ -65,13 +65,14 @@ protected:
 	virtual void redo(void);
 	virtual void undo(void);
 
-	ApplicationPlayerPtr _ApplicationPlayer;
-	HierarchyPanelPtr _HierarchyPanel;
+
+	ApplicationPlayerPtr _ApplicationPlayer;  
+	SceneGraphTreeModelPtr _SceneGraphTreeModel;
 	
-	UInt32 _currentAction;
-	NodePtr _nodeInClipboardBeforeCut;
-	NodePtr _nodeInClipboardAfterCut;
-	NodePtr _parentOfCutNode;
+	UInt32	_CurrentAction;
+	NodePtr _NodeInClipboardBeforeCut;
+	NodePtr _NodeInClipboardAfterCut;
+	NodePtr _ParentOfCutNode;
 	
 
 public:
@@ -84,7 +85,7 @@ public:
 
 	virtual ~CutCommand(void);
 	
-	static CutCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel);
+	static CutCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,SceneGraphTreeModelPtr SceneGraphTreeModel);
 };
 
 OSG_END_NAMESPACE

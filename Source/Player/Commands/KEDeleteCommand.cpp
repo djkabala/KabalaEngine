@@ -78,27 +78,27 @@ DeleteCommandPtr DeleteCommand::create(ApplicationPlayerPtr ApplicationPlayer,Hi
 
 void DeleteCommand::execute(void)
 {
-	_parent = _ApplicationPlayer->SelectedNode->getParent();
+	_Parent = _ApplicationPlayer->getSelectedNode()->getParent();
 
-	if(_parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2) // 2 because the other child of root is bounding box
+	if(_Parent==_HierarchyPanel->getSceneGraphTreeModel()->getRootNode() && _HierarchyPanel->getSceneGraphTreeModel()->getRootNode()->getNChildren() <= 2) // 2 because the other child of root is bounding box
 	{
 		//std::cout<<"cant delete the only child.Tree becomes empty.\n";
 	}
 	else
 	{
-		_LastSelectedPathComponent = _HierarchyPanel->TheTree->getLastSelectedPathComponent();
-		NodePtr temp = boost::any_cast<NodePtr>(_LastSelectedPathComponent);
-		_LastSelectedPathComponentNode = temp;
+		_LastSelectedPathComponent = _HierarchyPanel->getSceneGraphTree()->getLastSelectedPathComponent();
+		NodePtr _Temp = boost::any_cast<NodePtr>(_LastSelectedPathComponent);
+		_LastSelectedPathComponentNode = _Temp;
 		addRefCP(_LastSelectedPathComponentNode);
 
-		_HierarchyPanel->TheTreeModel->removeNode(_LastSelectedPathComponent);
+		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(_LastSelectedPathComponent);
 	}
 	
-	_nodeInCutClipboard = _ApplicationPlayer->nodeInCutClipboard ;
-	_clonedNodeInCopyClipboard = _ApplicationPlayer->clonedNodeInCopyClipboard ;
+	_NodeInCutClipboard = _ApplicationPlayer->getNodeInCutClipboard() ;
+	_ClonedNodeInCopyClipboard = _ApplicationPlayer->getClonedNodeInCopyClipboard() ;
 
-	_ApplicationPlayer->nodeInCutClipboard = NullFC;
-	_ApplicationPlayer->clonedNodeInCopyClipboard = NullFC;
+	_ApplicationPlayer->setNodeInCutClipboard(NullFC);
+	_ApplicationPlayer->setClonedNodeInCopyClipboard(NullFC);
 	
 	_HasBeenDone = true;
 
@@ -116,7 +116,7 @@ std::string DeleteCommand::getCommandDescription(void) const
 			Description += std::string(": ") + ContainerName;
 		}
 	}
-	return Description;// + getName(_TheModel->getBackground(_TheIndex));
+	return Description;
 }
 
 std::string DeleteCommand::getPresentationName(void) const
@@ -132,10 +132,10 @@ void DeleteCommand::redo(void)
 	{
 		addRefCP(_LastSelectedPathComponentNode);
 
-		_HierarchyPanel->TheTreeModel->removeNode(_LastSelectedPathComponentNode);
+		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(_LastSelectedPathComponentNode);
 	
-		_ApplicationPlayer->nodeInCutClipboard = NullFC;
-		_ApplicationPlayer->clonedNodeInCopyClipboard = NullFC;
+		_ApplicationPlayer->setNodeInCutClipboard(NullFC);
+		_ApplicationPlayer->setClonedNodeInCopyClipboard(NullFC);
 	}
 
 }
@@ -147,11 +147,11 @@ void DeleteCommand::undo(void)
 
 	if(_LastSelectedPathComponentNode!=NullFC)
 	{
-		_HierarchyPanel->TheTreeModel->addNode(boost::any(_parent),boost::any(_LastSelectedPathComponentNode));
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_Parent),boost::any(_LastSelectedPathComponentNode));
 		subRefCP(_LastSelectedPathComponentNode);
 
-		_ApplicationPlayer->nodeInCutClipboard = _nodeInCutClipboard;
-		_ApplicationPlayer->clonedNodeInCopyClipboard = _clonedNodeInCopyClipboard;
+		_ApplicationPlayer->setNodeInCutClipboard(_NodeInCutClipboard);
+		_ApplicationPlayer->setClonedNodeInCopyClipboard(_ClonedNodeInCopyClipboard);
 	}
 		
 }
@@ -177,13 +177,13 @@ void DeleteCommand::operator =(const DeleteCommand& source)
     if(this != &source)
     {
 	    Inherited::operator=(source);
-		_nodeInCutClipboard = source._nodeInCutClipboard;
-		_clonedNodeInCutClipboard = source._clonedNodeInCutClipboard;
-		_clonedNodeInCutClipboard = source._clonedNodeInCopyClipboard;
+		_NodeInCutClipboard = source._NodeInCutClipboard;
+		_ClonedNodeInCutClipboard = source._ClonedNodeInCutClipboard;
+		_ClonedNodeInCutClipboard = source._ClonedNodeInCopyClipboard;
 		_ApplicationPlayer = source._ApplicationPlayer;
 		_HierarchyPanel = source._HierarchyPanel;
 		_LastSelectedPathComponent= source._LastSelectedPathComponent;
-		_parent= source._parent;
+		_Parent= source._Parent;
 		_LastSelectedPathComponentNode = source._LastSelectedPathComponentNode;
     }
 }

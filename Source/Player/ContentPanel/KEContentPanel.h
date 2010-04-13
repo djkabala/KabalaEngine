@@ -63,36 +63,30 @@ class KE_KABALAENGINELIB_DLLMAPPING ContentPanel : public ContentPanelBase
 
     typedef ContentPanelBase Inherited;
 
-	bool isSplit;
+	bool _IsSplit;
 
-	BorderLayoutConstraintsPtr SplitPanelConstraints;
-	TabPanelPtr leftTabPanel;
-	TabPanelPtr rightTabPanel;
-	
-	LabelPtr TabPanel1;
-	LabelPtr TabPanel2;
-	ScrollPanelPtr TabContentA;
-	ScrollPanelPtr TabContentB;
-	TextAreaPtr TextArea1;
-	TextAreaPtr TextArea2;
+	BorderLayoutConstraintsPtr _ContentPanelConstraints;
 
-	LabelPtr TabPanel1_r;
-	LabelPtr TabPanel2_r;
-	ScrollPanelPtr TabContentA_r;
-	ScrollPanelPtr TabContentB_r;
-	TextAreaPtr TextArea1_r;
-	TextAreaPtr TextArea2_r;
+	TabPanelPtr		_LeftTabPanel;
+	LabelPtr		_LeftTabPanelLabel;
+	ScrollPanelPtr	_LeftTabPanelContent;
+	TextAreaPtr		_LeftTabPanelTextArea;
+
+
+	TabPanelPtr		_RightTabPanel;
+	LabelPtr		_RightTabPanelLabel;
+	ScrollPanelPtr	_RightTabPanelContent;
+	TextAreaPtr		_RightTabPanelTextArea;
 
 	void createLeftTabPanel();
 	void createRightTabPanel();
-	void tempcreateDefaultTabs();
+	void createDefaultTabs();
 	void updatePanel();
 	void actionPerformed(const ActionEventPtr e);
 	
 
     /*==========================  PUBLIC  =================================*/
   public:
-	
 	
 	void addTab();
 	void removeTab(UInt32);

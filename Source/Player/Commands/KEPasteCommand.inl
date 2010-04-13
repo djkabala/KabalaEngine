@@ -6,9 +6,9 @@ inline
 PasteCommand::PasteCommand(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel) : Inherited(),
 _ApplicationPlayer(ApplicationPlayer),
 _HierarchyPanel(HierarchyPanel),
-_currentAction(0),
-_nodeInCutClipboard(NullFC),
-_clonedNodeInCopyClipboard(NullFC),
+_CurrentAction(0),
+_NodeInCutClipboard(NullFC),
+_ClonedNodeInCopyClipboard(NullFC),
 _SelectedNode(NullFC)
 {
 }
@@ -18,9 +18,9 @@ PasteCommand::PasteCommand(const PasteCommand& source) : Inherited(source)
 {
 	_ApplicationPlayer = source._ApplicationPlayer;
 	_HierarchyPanel = source._HierarchyPanel;
-	_currentAction = source._currentAction;
-	_nodeInCutClipboard = source._nodeInCutClipboard;
-	_clonedNodeInCopyClipboard = source._clonedNodeInCopyClipboard;
+	_CurrentAction = source._CurrentAction;
+	_NodeInCutClipboard = source._NodeInCutClipboard;
+	_ClonedNodeInCopyClipboard = source._ClonedNodeInCopyClipboard;
 	_SelectedNode = source._SelectedNode;
 
 }

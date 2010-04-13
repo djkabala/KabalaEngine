@@ -5,9 +5,8 @@ OSG_BEGIN_NAMESPACE
 inline
 NewCommand::NewCommand(HierarchyPanelPtr HierarchyPanel,FieldContainerType* FCType) : Inherited(),
 _HierarchyPanel(HierarchyPanel),
-_newNode(NullFC),
+_NewNode(NullFC),
 _FCType(FCType)
-//_name("")
 {
 }
 
@@ -15,9 +14,9 @@ inline
 NewCommand::NewCommand(const NewCommand& source) : Inherited(source)
 {
 	_HierarchyPanel = source._HierarchyPanel;
-	_newNode= source._newNode;
+	_NewNode= source._NewNode;
 	_FCType= source._FCType;
-	_name= source._name;
+	_Name= source._Name;
 }
 
 inline 

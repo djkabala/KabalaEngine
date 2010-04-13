@@ -3,16 +3,16 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-ShowHideCommand::ShowHideCommand(NodePtr SelectedNode,ApplicationPlayerPtr ApplicationPlayer) : Inherited(),
-_ApplicationPlayer(ApplicationPlayer),
-_SelectedNode(SelectedNode)
+ShowHideCommand::ShowHideCommand(NodePtr _SelectedNode,MenuItemPtr ShowHideItem) : Inherited(),
+_ShowHideItem(ShowHideItem),
+_SelectedNode(_SelectedNode)
 {
 }
 
 inline
 ShowHideCommand::ShowHideCommand(const ShowHideCommand& source) : Inherited(source)
 {
-	_ApplicationPlayer = source._ApplicationPlayer;
+	_ShowHideItem = source._ShowHideItem;
 	_SelectedNode = source._SelectedNode;
 }
 

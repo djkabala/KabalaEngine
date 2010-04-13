@@ -79,253 +79,253 @@ void HelperPanel::initMethod (void)
 
 void HelperPanel::setupLuaTab()
 {
-	// Create a CodeTextArea
-    CodeTextArea = osg::TextArea::create();
-    CodeTextArea->setText("");
+	// Create a _CodeTextArea
+    _CodeTextArea = osg::TextArea::create();
+    _CodeTextArea->setText("");
 	
-    TabContentA = ScrollPanel::create();
-    beginEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-        TabContentA->setPreferredSize(Vec2f(300,1200));
-        TabContentA->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-		endEditCP(TabContentA, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-    // Add the CodeTextArea to the ScrollPanel so it is displayed
-	TabContentA->setViewComponent(CodeTextArea);
+    _TabPanel1Content = ScrollPanel::create();
+    beginEditCP(_TabPanel1Content, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        _TabPanel1Content->setPreferredSize(Vec2f(300,1200));
+        _TabPanel1Content->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+		endEditCP(_TabPanel1Content, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the _CodeTextArea to the ScrollPanel so it is displayed
+	_TabPanel1Content->setViewComponent(_CodeTextArea);
 
 }
 void HelperPanel::setupErrorTab()
 {
-	// Create an ErrorTextArea	
-	ErrorTextArea = osg::TextArea::create();
-    ErrorTextArea->setText("Error List");
-	ErrorTextArea->setEditable(false);
+	// Create an _ErrorTextArea	
+	_ErrorTextArea = osg::TextArea::create();
+    _ErrorTextArea->setText("Error List");
+	_ErrorTextArea->setEditable(false);
         
-    TabContentB = ScrollPanel::create();
-    beginEditCP(TabContentB, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-        TabContentB->setPreferredSize(Vec2f(200,1200));
-        TabContentB->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    endEditCP(TabContentB, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-    // Add the ErrorTextArea to the ScrollPanel so it is displayed
-	TabContentB->setViewComponent(ErrorTextArea);
+    _TabPanel2Content = ScrollPanel::create();
+    beginEditCP(_TabPanel2Content, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        _TabPanel2Content->setPreferredSize(Vec2f(200,1200));
+        _TabPanel2Content->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(_TabPanel2Content, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the _ErrorTextArea to the ScrollPanel so it is displayed
+	_TabPanel2Content->setViewComponent(_ErrorTextArea);
 
 }
 void HelperPanel::setupTraceTab()
 {
-	// Create a StackTraceTextArea
-	StackTraceTextArea = osg::TextArea::create();
-    StackTraceTextArea->setText("Stack Trace");
-	StackTraceTextArea->setEditable(false);
+	// Create a _StackTraceTextArea
+	_StackTraceTextArea = osg::TextArea::create();
+    _StackTraceTextArea->setText("Stack Trace");
+	_StackTraceTextArea->setEditable(false);
         
-    TabContentC = ScrollPanel::create();
-    beginEditCP(TabContentC, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-        TabContentC->setPreferredSize(Vec2f(200,1200));
-        TabContentC->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    endEditCP(TabContentC, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-    // Add the StackTraceTextArea to the ScrollPanel so it is displayed
-	TabContentC->setViewComponent(StackTraceTextArea);
+    _TabPanel3Content = ScrollPanel::create();
+    beginEditCP(_TabPanel3Content, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        _TabPanel3Content->setPreferredSize(Vec2f(200,1200));
+        _TabPanel3Content->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    endEditCP(_TabPanel3Content, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    // Add the _StackTraceTextArea to the ScrollPanel so it is displayed
+	_TabPanel3Content->setViewComponent(_StackTraceTextArea);
 }
 void HelperPanel::setupPropertiesTab()
 {
-	TabContentD = osg::Panel::create();
+	_TabPanel4Content = osg::Panel::create();
 
-	TabContentDLayout = osg::GridLayout::create();
+	_TabPanel4ContentLayout = osg::GridLayout::create();
 
-    beginEditCP(TabContentDLayout, GridLayout::RowsFieldMask | GridLayout::ColumnsFieldMask | 
+    beginEditCP(_TabPanel4ContentLayout, GridLayout::RowsFieldMask | GridLayout::ColumnsFieldMask | 
 		GridLayout::HorizontalGapFieldMask | GridLayout::VerticalGapFieldMask);
-	    TabContentDLayout->setRows(9);
-        TabContentDLayout->setColumns(2);
-        TabContentDLayout->setHorizontalGap(2);
-        TabContentDLayout->setVerticalGap(2);
-    endEditCP(TabContentDLayout, GridLayout::RowsFieldMask | GridLayout::ColumnsFieldMask | 
+	    _TabPanel4ContentLayout->setRows(9);
+        _TabPanel4ContentLayout->setColumns(2);
+        _TabPanel4ContentLayout->setHorizontalGap(2);
+        _TabPanel4ContentLayout->setVerticalGap(2);
+    endEditCP(_TabPanel4ContentLayout, GridLayout::RowsFieldMask | GridLayout::ColumnsFieldMask | 
 	GridLayout::HorizontalGapFieldMask | GridLayout::VerticalGapFieldMask);
 
 
-	NodeNameLabel = Label::create();
-    beginEditCP(NodeNameLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeNameLabel->setText("Name");
-        NodeNameLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeNameLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+	_NodeNameLabel = Label::create();
+    beginEditCP(_NodeNameLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeNameLabel->setText("Name");
+        _NodeNameLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeNameLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeNameValueLabel = Label::create();
-    beginEditCP(NodeNameValueLabel, Label::PreferredSizeFieldMask);
-        NodeNameValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeNameValueLabel, Label::PreferredSizeFieldMask);
+    _NodeNameValueLabel = Label::create();
+    beginEditCP(_NodeNameValueLabel, Label::PreferredSizeFieldMask);
+        _NodeNameValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeNameValueLabel, Label::PreferredSizeFieldMask);
 
-    NodeCoreTypeLabel = Label::create();
-    beginEditCP(NodeCoreTypeLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeCoreTypeLabel->setText("Core Type");
-        NodeCoreTypeLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeCoreTypeLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+    _NodeCoreTypeLabel = Label::create();
+    beginEditCP(_NodeCoreTypeLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeCoreTypeLabel->setText("Core Type");
+        _NodeCoreTypeLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeCoreTypeLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeCoreTypeValueLabel = Label::create();
-    beginEditCP(NodeCoreTypeValueLabel, Label::PreferredSizeFieldMask);
-        NodeCoreTypeValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeCoreTypeValueLabel, Label::PreferredSizeFieldMask);
+    _NodeCoreTypeValueLabel = Label::create();
+    beginEditCP(_NodeCoreTypeValueLabel, Label::PreferredSizeFieldMask);
+        _NodeCoreTypeValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeCoreTypeValueLabel, Label::PreferredSizeFieldMask);
 
-    NodeMinLabel = Label::create();
-    beginEditCP(NodeMinLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeMinLabel->setText("Min");
-        NodeMinLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeMinLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+    _NodeMinLabel = Label::create();
+    beginEditCP(_NodeMinLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeMinLabel->setText("Min");
+        _NodeMinLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeMinLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeMinValueLabel = Label::create();
-    beginEditCP(NodeMinValueLabel, Label::PreferredSizeFieldMask);
-        NodeMinValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeMinValueLabel, Label::PreferredSizeFieldMask);
+    _NodeMinValueLabel = Label::create();
+    beginEditCP(_NodeMinValueLabel, Label::PreferredSizeFieldMask);
+        _NodeMinValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeMinValueLabel, Label::PreferredSizeFieldMask);
 
-    NodeMaxLabel = Label::create();
-    beginEditCP(NodeMaxLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeMaxLabel->setText("Max");
-        NodeMaxLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeMaxLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+    _NodeMaxLabel = Label::create();
+    beginEditCP(_NodeMaxLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeMaxLabel->setText("Max");
+        _NodeMaxLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeMaxLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeMaxValueLabel = Label::create();
-    beginEditCP(NodeMaxValueLabel, Label::PreferredSizeFieldMask);
-        NodeMaxValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeMaxValueLabel, Label::PreferredSizeFieldMask);
+    _NodeMaxValueLabel = Label::create();
+    beginEditCP(_NodeMaxValueLabel, Label::PreferredSizeFieldMask);
+        _NodeMaxValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeMaxValueLabel, Label::PreferredSizeFieldMask);
 
-    NodeCenterLabel = Label::create();
-    beginEditCP(NodeCenterLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeCenterLabel->setText("Center");
-        NodeCenterLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeCenterLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+    _NodeCenterLabel = Label::create();
+    beginEditCP(_NodeCenterLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeCenterLabel->setText("Center");
+        _NodeCenterLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeCenterLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeCenterValueLabel = Label::create();
-    beginEditCP(NodeCenterValueLabel, Label::PreferredSizeFieldMask);
-        NodeCenterValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeCenterValueLabel, Label::PreferredSizeFieldMask);
+    _NodeCenterValueLabel = Label::create();
+    beginEditCP(_NodeCenterValueLabel, Label::PreferredSizeFieldMask);
+        _NodeCenterValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeCenterValueLabel, Label::PreferredSizeFieldMask);
 
-    NodeTriCountLabel = Label::create();
-    beginEditCP(NodeTriCountLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeTriCountLabel->setText("TriCount");
-        NodeTriCountLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeTriCountLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+    _NodeTriCountLabel = Label::create();
+    beginEditCP(_NodeTriCountLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeTriCountLabel->setText("TriCount");
+        _NodeTriCountLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeTriCountLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeTriCountValueLabel = Label::create();
-    beginEditCP(NodeTriCountValueLabel, Label::PreferredSizeFieldMask);
-        NodeTriCountValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeTriCountValueLabel, Label::PreferredSizeFieldMask);
+    _NodeTriCountValueLabel = Label::create();
+    beginEditCP(_NodeTriCountValueLabel, Label::PreferredSizeFieldMask);
+        _NodeTriCountValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeTriCountValueLabel, Label::PreferredSizeFieldMask);
 
-    NodeTravMaskLabel = Label::create();
-    beginEditCP(NodeTravMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeTravMaskLabel->setText("Traversal Mask");
-        NodeTravMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeTravMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+    _NodeTravMaskLabel = Label::create();
+    beginEditCP(_NodeTravMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeTravMaskLabel->setText("Traversal Mask");
+        _NodeTravMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeTravMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeTravMaskValueLabel = Label::create();
-    beginEditCP(NodeTravMaskValueLabel, Label::PreferredSizeFieldMask);
-        NodeTravMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeTravMaskValueLabel, Label::PreferredSizeFieldMask);
+    _NodeTravMaskValueLabel = Label::create();
+    beginEditCP(_NodeTravMaskValueLabel, Label::PreferredSizeFieldMask);
+        _NodeTravMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeTravMaskValueLabel, Label::PreferredSizeFieldMask);
 
-    NodeOcclusionMaskLabel = Label::create();
-    beginEditCP(NodeOcclusionMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeOcclusionMaskLabel->setText("Occlusion Mask");
-        NodeOcclusionMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeOcclusionMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+    _NodeOcclusionMaskLabel = Label::create();
+    beginEditCP(_NodeOcclusionMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeOcclusionMaskLabel->setText("Occlusion Mask");
+        _NodeOcclusionMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeOcclusionMaskLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeOcclusionMaskValueLabel = Label::create();
-    beginEditCP(NodeOcclusionMaskValueLabel, Label::PreferredSizeFieldMask);
-        NodeOcclusionMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeOcclusionMaskValueLabel, Label::PreferredSizeFieldMask);
+    _NodeOcclusionMaskValueLabel = Label::create();
+    beginEditCP(_NodeOcclusionMaskValueLabel, Label::PreferredSizeFieldMask);
+        _NodeOcclusionMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeOcclusionMaskValueLabel, Label::PreferredSizeFieldMask);
 
-    NodeActiveLabel = Label::create();
-    beginEditCP(NodeActiveLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
-        NodeActiveLabel->setText("Active");
-        NodeActiveLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-    endEditCP(NodeActiveLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+    _NodeActiveLabel = Label::create();
+    beginEditCP(_NodeActiveLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
+        _NodeActiveLabel->setText("Active");
+        _NodeActiveLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
+    endEditCP(_NodeActiveLabel, Label::TextFieldMask | Label::PreferredSizeFieldMask);
 
-    NodeActiveValueLabel = Label::create();
-    beginEditCP(NodeActiveValueLabel, Label::PreferredSizeFieldMask);
-        NodeActiveValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-    endEditCP(NodeActiveValueLabel, Label::PreferredSizeFieldMask);
+    _NodeActiveValueLabel = Label::create();
+    beginEditCP(_NodeActiveValueLabel, Label::PreferredSizeFieldMask);
+        _NodeActiveValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    endEditCP(_NodeActiveValueLabel, Label::PreferredSizeFieldMask);
 	
-	beginEditCP(TabContentD,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
-        TabContentD->setPreferredSize(Vec2f(100.0f, 200.0f));
-        TabContentD->setLayout(TabContentDLayout);
-        TabContentD->getChildren().push_back(NodeNameLabel);
-        TabContentD->getChildren().push_back(NodeNameValueLabel);
-        TabContentD->getChildren().push_back(NodeCoreTypeLabel);
-        TabContentD->getChildren().push_back(NodeCoreTypeValueLabel);
-        TabContentD->getChildren().push_back(NodeMinLabel);
-        TabContentD->getChildren().push_back(NodeMinValueLabel);
-        TabContentD->getChildren().push_back(NodeMaxLabel);
-        TabContentD->getChildren().push_back(NodeMaxValueLabel);
-        TabContentD->getChildren().push_back(NodeCenterLabel);
-        TabContentD->getChildren().push_back(NodeCenterValueLabel);
-        TabContentD->getChildren().push_back(NodeTriCountLabel);
-        TabContentD->getChildren().push_back(NodeTriCountValueLabel);
-        TabContentD->getChildren().push_back(NodeTravMaskLabel);
-        TabContentD->getChildren().push_back(NodeTravMaskValueLabel);
-        TabContentD->getChildren().push_back(NodeOcclusionMaskLabel);
-        TabContentD->getChildren().push_back(NodeOcclusionMaskValueLabel);
-        TabContentD->getChildren().push_back(NodeActiveLabel);
-        TabContentD->getChildren().push_back(NodeActiveValueLabel);
-	endEditCP(TabContentD,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
+	beginEditCP(_TabPanel4Content,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
+        _TabPanel4Content->setPreferredSize(Vec2f(100.0f, 200.0f));
+        _TabPanel4Content->setLayout(_TabPanel4ContentLayout);
+        _TabPanel4Content->getChildren().push_back(_NodeNameLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeNameValueLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeCoreTypeLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeCoreTypeValueLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeMinLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeMinValueLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeMaxLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeMaxValueLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeCenterLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeCenterValueLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeTriCountLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeTriCountValueLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeTravMaskLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeTravMaskValueLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeOcclusionMaskLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeOcclusionMaskValueLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeActiveLabel);
+        _TabPanel4Content->getChildren().push_back(_NodeActiveValueLabel);
+	endEditCP(_TabPanel4Content,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
 
 }
 
 void HelperPanel::setupInfoTabLabels()
 {
-	TabPanel1 = osg::Label::create();
-    TabPanel2 = osg::Label::create();
-    TabPanel3 = osg::Label::create();
-	TabPanel4 = osg::Label::create();
+	_TabPanel1Label = osg::Label::create();
+    _TabPanel2Label = osg::Label::create();
+    _TabPanel3Label = osg::Label::create();
+	_TabPanel4Label = osg::Label::create();
 
 	// set the fields of the labels
-	beginEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-        TabPanel1->setText("Lua Console");
-        TabPanel1->setBorders(NullFC);
-        TabPanel1->setBackgrounds(NullFC);
-	endEditCP(TabPanel1, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	beginEditCP(_TabPanel1Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        _TabPanel1Label->setText("Lua Console");
+        _TabPanel1Label->setBorders(NullFC);
+        _TabPanel1Label->setBackgrounds(NullFC);
+	endEditCP(_TabPanel1Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
     
-	beginEditCP(TabPanel2, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-        TabPanel2->setText("Error");
-        TabPanel2->setBorders(NullFC);
-        TabPanel2->setBackgrounds(NullFC);
-    endEditCP(TabPanel2, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	beginEditCP(_TabPanel2Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        _TabPanel2Label->setText("Error");
+        _TabPanel2Label->setBorders(NullFC);
+        _TabPanel2Label->setBackgrounds(NullFC);
+    endEditCP(_TabPanel2Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
 	
 	LuaManager::the()->addLuaListener(&_LuaErrorListener);
         
-    beginEditCP(TabPanel3, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-        TabPanel3->setText("Stack");
-        TabPanel3->setBorders(NullFC);
-        TabPanel3->setBackgrounds(NullFC);
-    endEditCP(TabPanel3, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+    beginEditCP(_TabPanel3Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        _TabPanel3Label->setText("Stack");
+        _TabPanel3Label->setBorders(NullFC);
+        _TabPanel3Label->setBackgrounds(NullFC);
+    endEditCP(_TabPanel3Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
     
-	beginEditCP(TabPanel4, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-        TabPanel4->setText("Properties");
-        TabPanel4->setBorders(NullFC);
-        TabPanel4->setBackgrounds(NullFC);
-    endEditCP(TabPanel4, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+	beginEditCP(_TabPanel4Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        _TabPanel4Label->setText("Properties");
+        _TabPanel4Label->setBorders(NullFC);
+        _TabPanel4Label->setBackgrounds(NullFC);
+    endEditCP(_TabPanel4Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
 
 }
 void HelperPanel::setupInfoTabPanel()
 {
 	setupInfoTabLabels();	//TabPanel(1,2,3,4)
-	setupLuaTab();			//TabContentA
-	setupErrorTab();		//TabContentB
-	setupTraceTab();		//TabContentC
-	setupPropertiesTab();	//TabContentD
+	setupLuaTab();			//_TabPanel1Content
+	setupErrorTab();		//_TabPanel2Content
+	setupTraceTab();		//_TabPanel3Content
+	setupPropertiesTab();	//_TabPanel4Content
 
-	InfoTabPanel= osg::TabPanel::create();
-    beginEditCP(InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
-		InfoTabPanel->setPreferredSize(Vec2f(1200,200));
-	    InfoTabPanel->addTab(TabPanel1, TabContentA);
-        InfoTabPanel->addTab(TabPanel2, TabContentB);
-        InfoTabPanel->addTab(TabPanel3, TabContentC);
-		InfoTabPanel->addTab(TabPanel4, TabContentD);
-		InfoTabPanel->setTabAlignment(0.5f);
-        InfoTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
-	endEditCP(InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
-    InfoTabPanel->setSelectedIndex(0);
+	_InfoTabPanel= osg::TabPanel::create();
+    beginEditCP(_InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
+		_InfoTabPanel->setPreferredSize(Vec2f(1200,200));
+	    _InfoTabPanel->addTab(_TabPanel1Label, _TabPanel1Content);
+        _InfoTabPanel->addTab(_TabPanel2Label, _TabPanel2Content);
+        _InfoTabPanel->addTab(_TabPanel3Label, _TabPanel3Content);
+		_InfoTabPanel->addTab(_TabPanel4Label, _TabPanel4Content);
+		_InfoTabPanel->setTabAlignment(0.5f);
+        _InfoTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
+	endEditCP(_InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
+    _InfoTabPanel->setSelectedIndex(0);
 }
 
 void HelperPanel::updateListBox(void)
 {
-	HistoryListModel->clear();
+	_HistoryListModel->clear();
 	
-	for(int i=list_of_commands.size()-1;i>=0;i--)
+	for(int i=_ListOfCommands.size()-1;i>=0;i--)
 	{
-		HistoryListModel->pushBack(boost::any(list_of_commands[i]));
+		_HistoryListModel->pushBack(boost::any(_ListOfCommands[i]));
 	}
 
 	
@@ -334,86 +334,86 @@ void HelperPanel::updateListBox(void)
 
 void HelperPanel::setupHistoryList()
 {
-	ListSelectionModelPtr HistoryListSelectionModel(new DefaultListSelectionModel);
+	ListSelectionModelPtr _HistoryListSelectionModel(new DefaultListSelectionModel);
 
 	
-	HistoryListModel = DefaultListModel::create();
+	_HistoryListModel = DefaultListModel::create();
 
 	updateListBox();
 	
-	HistoryList = List::create();
-	beginEditCP(HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
-	    HistoryList->setPreferredSize(Vec2f(100, 100));
-	    HistoryList->setOrientation(List::VERTICAL_ORIENTATION);
-		HistoryList->setModel(HistoryListModel);
-	endEditCP(HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
+	_HistoryList = List::create();
+	beginEditCP(_HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
+	    _HistoryList->setPreferredSize(Vec2f(100, 100));
+	    _HistoryList->setOrientation(List::VERTICAL_ORIENTATION);
+		_HistoryList->setModel(_HistoryListModel);
+	endEditCP(_HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
 
-	HistoryList->setSelectionModel(HistoryListSelectionModel);
-	HistoryList->addMouseListener(&_PlayerMouseListener);
+	_HistoryList->setSelectionModel(_HistoryListSelectionModel);
+	_HistoryList->addMouseListener(&_PlayerMouseListener);
 
 	
-	HistoryScrollPanel = ScrollPanel::create();
-	beginEditCP(HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-		HistoryScrollPanel->setPreferredSize(Vec2f(400,100));
-		HistoryScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-	endEditCP(HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-	HistoryScrollPanel->setViewComponent(HistoryList);
+	_HistoryScrollPanel = ScrollPanel::create();
+	beginEditCP(_HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+		_HistoryScrollPanel->setPreferredSize(Vec2f(400,100));
+		_HistoryScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+	endEditCP(_HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+	_HistoryScrollPanel->setViewComponent(_HistoryList);
 	
 	
-	historyLabel = osg::Label::create();
+	_HistoryLabel = osg::Label::create();
 
-	beginEditCP(historyLabel, Label::TextFieldMask);
-        historyLabel->setText("History");
-   	endEditCP(historyLabel, Label::TextFieldMask);
+	beginEditCP(_HistoryLabel, Label::TextFieldMask);
+        _HistoryLabel->setText("History");
+   	endEditCP(_HistoryLabel, Label::TextFieldMask);
 
 }
 
 void HelperPanel::setupRest()
 {
 	// the execute button
-	executeBtn=osg::Button::create();
+	_ExecuteBtn=osg::Button::create();
 
-	beginEditCP(executeBtn,Button::TextFieldMask);
-		executeBtn->setText("EXECUTE");
-		executeBtn->setPreferredSize(Vec2f(100,30));
-	endEditCP(executeBtn,Button::TextFieldMask);
+	beginEditCP(_ExecuteBtn,Button::TextFieldMask);
+		_ExecuteBtn->setText("EXECUTE");
+		_ExecuteBtn->setPreferredSize(Vec2f(100,30));
+	endEditCP(_ExecuteBtn,Button::TextFieldMask);
 
-	executeBtn->addActionListener(&_BasicListener);
+	_ExecuteBtn->addActionListener(&_BasicListener);
 
 	UInt32 SPACE_FOR_BUTTON = 200;
 
     // OverlayLayout has no options to edit!
-    beginEditCP(PanelFlowLayout);
+    beginEditCP(_Layout);
         // NOTHING : )
-    endEditCP(PanelFlowLayout); 
+    endEditCP(_Layout); 
 
 
-	PanelFlowLayout = osg::SpringLayout::create();
+	_Layout = osg::SpringLayout::create();
 
-	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, HelperPanelPtr(this));  
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, HelperPanelPtr(this)); 
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, InfoTabPanel, -5, SpringLayoutConstraints::WEST_EDGE, HistoryScrollPanel);
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, HelperPanelPtr(this));  
+	_Layout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, HelperPanelPtr(this));  
+    _Layout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, HelperPanelPtr(this)); 
+    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::WEST_EDGE, _HistoryScrollPanel);
+    _Layout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, HelperPanelPtr(this));  
 
-	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, historyLabel, 5, SpringLayoutConstraints::NORTH_EDGE, HelperPanelPtr(this));  
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, historyLabel, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, historyLabel, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);  
+	_Layout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HistoryLabel, 5, SpringLayoutConstraints::NORTH_EDGE, HelperPanelPtr(this));  
+    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HistoryLabel, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));
+    _Layout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _HistoryLabel, 5, SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel);  
 
-	PanelFlowLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, HistoryScrollPanel, 5, SpringLayoutConstraints::SOUTH_EDGE, historyLabel);  
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, HistoryScrollPanel, -5, SpringLayoutConstraints::NORTH_EDGE, executeBtn); 
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, HistoryScrollPanel, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));
+	_Layout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HistoryScrollPanel, 5, SpringLayoutConstraints::SOUTH_EDGE, _HistoryLabel);  
+    _Layout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _HistoryScrollPanel, -5, SpringLayoutConstraints::NORTH_EDGE, _ExecuteBtn); 
+    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HistoryScrollPanel, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));
 
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, executeBtn, -5, SpringLayoutConstraints::SOUTH_EDGE, HelperPanelPtr(this));
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, executeBtn, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));  
-    PanelFlowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, executeBtn, 5, SpringLayoutConstraints::EAST_EDGE, InfoTabPanel);
+    _Layout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _ExecuteBtn, -5, SpringLayoutConstraints::SOUTH_EDGE, HelperPanelPtr(this));
+    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _ExecuteBtn, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));  
+    _Layout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _ExecuteBtn, 5, SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel);
     
 	
 	beginEditCP(HelperPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-		this->getChildren().push_back(InfoTabPanel);
-		this->getChildren().push_back(historyLabel);
-		this->getChildren().push_back(HistoryScrollPanel);		
-		this->getChildren().push_back(executeBtn);
-        this->setLayout(PanelFlowLayout);
+		this->getChildren().push_back(_InfoTabPanel);
+		this->getChildren().push_back(_HistoryLabel);
+		this->getChildren().push_back(_HistoryScrollPanel);		
+		this->getChildren().push_back(_ExecuteBtn);
+        this->setLayout(_Layout);
     endEditCP(HelperPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener2);
@@ -432,104 +432,104 @@ void HelperPanel::hideTab(UInt32)
 
 void HelperPanel::setLabelValuesToNull()
 {
-	    beginEditCP(NodeNameValueLabel, Label::TextFieldMask);
-           NodeNameValueLabel->setText("");
-        endEditCP(NodeNameValueLabel, Label::TextFieldMask);
+	    beginEditCP(_NodeNameValueLabel, Label::TextFieldMask);
+           _NodeNameValueLabel->setText("");
+        endEditCP(_NodeNameValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
-            NodeCoreTypeValueLabel->setText("");
-        endEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeCoreTypeValueLabel, Label::TextFieldMask);
+            _NodeCoreTypeValueLabel->setText("");
+        endEditCP(_NodeCoreTypeValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeMinValueLabel, Label::TextFieldMask);
-            NodeMinValueLabel->setText("");
-        endEditCP(NodeMinValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeMinValueLabel, Label::TextFieldMask);
+            _NodeMinValueLabel->setText("");
+        endEditCP(_NodeMinValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeMaxValueLabel, Label::TextFieldMask);
-            NodeMaxValueLabel->setText("");
-        endEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeMaxValueLabel, Label::TextFieldMask);
+            _NodeMaxValueLabel->setText("");
+        endEditCP(_NodeMaxValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeCenterValueLabel, Label::TextFieldMask);
-            NodeCenterValueLabel->setText("");
-        endEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeCenterValueLabel, Label::TextFieldMask);
+            _NodeCenterValueLabel->setText("");
+        endEditCP(_NodeCenterValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
-            NodeTriCountValueLabel->setText("");
-        endEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeTriCountValueLabel, Label::TextFieldMask);
+            _NodeTriCountValueLabel->setText("");
+        endEditCP(_NodeTriCountValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
-            NodeTravMaskValueLabel->setText("");
-        endEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeTravMaskValueLabel, Label::TextFieldMask);
+            _NodeTravMaskValueLabel->setText("");
+        endEditCP(_NodeTravMaskValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
-            NodeOcclusionMaskValueLabel->setText("");
-        endEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+            _NodeOcclusionMaskValueLabel->setText("");
+        endEditCP(_NodeOcclusionMaskValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeActiveValueLabel, Label::TextFieldMask);
-            NodeActiveValueLabel->setText("");
-        endEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeActiveValueLabel, Label::TextFieldMask);
+            _NodeActiveValueLabel->setText("");
+        endEditCP(_NodeActiveValueLabel, Label::TextFieldMask);
 }
 
 
-void HelperPanel::setLabelValues(NodePtr SelectedNode)
+void HelperPanel::setLabelValues(NodePtr _SelectedNode)
 {
-		const Char8 *NodeName = getName(SelectedNode);
+		const Char8 *_NodeName = getName(_SelectedNode);
 
-		beginEditCP(NodeNameValueLabel, Label::TextFieldMask);
-            if(NodeName == NULL)
+		beginEditCP(_NodeNameValueLabel, Label::TextFieldMask);
+            if(_NodeName == NULL)
             {
-                NodeNameValueLabel->setText("Unnamed Node");
+                _NodeNameValueLabel->setText("Unnamed Node");
             }
             else
             {
-                NodeNameValueLabel->setText(NodeName);
+                _NodeNameValueLabel->setText(_NodeName);
             }
-        endEditCP(NodeNameValueLabel, Label::TextFieldMask);
+        endEditCP(_NodeNameValueLabel, Label::TextFieldMask);
 	
-        beginEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
-            NodeCoreTypeValueLabel->setText(SelectedNode->getCore()->getType().getCName());
-        endEditCP(NodeCoreTypeValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeCoreTypeValueLabel, Label::TextFieldMask);
+            _NodeCoreTypeValueLabel->setText(_SelectedNode->getCore()->getType().getCName());
+        endEditCP(_NodeCoreTypeValueLabel, Label::TextFieldMask);
 		
 
-        DynamicVolume DyVol;
-        SelectedNode->getWorldVolume(DyVol);
+        DynamicVolume _DyVol;
+        _SelectedNode->getWorldVolume(_DyVol);
         Pnt3f Min,Max,Center;
-        DyVol.getBounds(Min,Max);
-        DyVol.getCenter(Center);
+        _DyVol.getBounds(Min,Max);
+        _DyVol.getCenter(Center);
 
-        std::string TempText("");
+        std::string _TempText("");
 
-        TempText = boost::lexical_cast<std::string>(Min.x()) + ", " +boost::lexical_cast<std::string>(Min.x()) + ", " + boost::lexical_cast<std::string>(Min.x());
-        beginEditCP(NodeMinValueLabel, Label::TextFieldMask);
-            NodeMinValueLabel->setText(TempText);
-        endEditCP(NodeMinValueLabel, Label::TextFieldMask);
+        _TempText = boost::lexical_cast<std::string>(Min.x()) + ", " +boost::lexical_cast<std::string>(Min.x()) + ", " + boost::lexical_cast<std::string>(Min.x());
+        beginEditCP(_NodeMinValueLabel, Label::TextFieldMask);
+            _NodeMinValueLabel->setText(_TempText);
+        endEditCP(_NodeMinValueLabel, Label::TextFieldMask);
 
-        TempText = boost::lexical_cast<std::string>(Max.x()) + ", " +boost::lexical_cast<std::string>(Max.x()) + ", " + boost::lexical_cast<std::string>(Max.x());
-        beginEditCP(NodeMaxValueLabel, Label::TextFieldMask);
-            NodeMaxValueLabel->setText(TempText);
-        endEditCP(NodeMaxValueLabel, Label::TextFieldMask);
+        _TempText = boost::lexical_cast<std::string>(Max.x()) + ", " +boost::lexical_cast<std::string>(Max.x()) + ", " + boost::lexical_cast<std::string>(Max.x());
+        beginEditCP(_NodeMaxValueLabel, Label::TextFieldMask);
+            _NodeMaxValueLabel->setText(_TempText);
+        endEditCP(_NodeMaxValueLabel, Label::TextFieldMask);
 
-        TempText = boost::lexical_cast<std::string>(Center.x()) + ", " +boost::lexical_cast<std::string>(Center.x()) + ", " + boost::lexical_cast<std::string>(Center.x());
-        beginEditCP(NodeCenterValueLabel, Label::TextFieldMask);
-            NodeCenterValueLabel->setText(TempText);
-        endEditCP(NodeCenterValueLabel, Label::TextFieldMask);
+        _TempText = boost::lexical_cast<std::string>(Center.x()) + ", " +boost::lexical_cast<std::string>(Center.x()) + ", " + boost::lexical_cast<std::string>(Center.x());
+        beginEditCP(_NodeCenterValueLabel, Label::TextFieldMask);
+            _NodeCenterValueLabel->setText(_TempText);
+        endEditCP(_NodeCenterValueLabel, Label::TextFieldMask);
 
         GeometryPrimitivesCounter PrimCounter;
-        PrimCounter(SelectedNode);
-        beginEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
-            NodeTriCountValueLabel->setText(boost::lexical_cast<std::string>(PrimCounter.getTriCount()));
-        endEditCP(NodeTriCountValueLabel, Label::TextFieldMask);
+        PrimCounter(_SelectedNode);
+        beginEditCP(_NodeTriCountValueLabel, Label::TextFieldMask);
+            _NodeTriCountValueLabel->setText(boost::lexical_cast<std::string>(PrimCounter.getTriCount()));
+        endEditCP(_NodeTriCountValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
-            NodeTravMaskValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getTravMask()));
-        endEditCP(NodeTravMaskValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeTravMaskValueLabel, Label::TextFieldMask);
+            _NodeTravMaskValueLabel->setText(boost::lexical_cast<std::string>(_SelectedNode->getTravMask()));
+        endEditCP(_NodeTravMaskValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
-            NodeOcclusionMaskValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getOcclusionMask()));
-        endEditCP(NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeOcclusionMaskValueLabel, Label::TextFieldMask);
+            _NodeOcclusionMaskValueLabel->setText(boost::lexical_cast<std::string>(_SelectedNode->getOcclusionMask()));
+        endEditCP(_NodeOcclusionMaskValueLabel, Label::TextFieldMask);
 
-        beginEditCP(NodeActiveValueLabel, Label::TextFieldMask);
-            NodeActiveValueLabel->setText(boost::lexical_cast<std::string>(SelectedNode->getActive()));
-        endEditCP(NodeActiveValueLabel, Label::TextFieldMask);
+        beginEditCP(_NodeActiveValueLabel, Label::TextFieldMask);
+            _NodeActiveValueLabel->setText(boost::lexical_cast<std::string>(_SelectedNode->getActive()));
+        endEditCP(_NodeActiveValueLabel, Label::TextFieldMask);
 }
 
 
@@ -578,14 +578,14 @@ void HelperPanel::BasicListener::actionPerformed(const ActionEventPtr e)
 
 void HelperPanel::actionPerformed(const ActionEventPtr e)
 {
-	if(e->getSource() == executeBtn)
+	if(e->getSource() == _ExecuteBtn)
 	{
-		LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
-		list_of_commands.push_back(std::string(CodeTextArea->getText()));
+		LuaManager::the()->runScript(std::string(_CodeTextArea->getText()));
+		_ListOfCommands.push_back(std::string(_CodeTextArea->getText()));
 		updateListBox();
 	}
 }
-/// need to commit this!!! 
+
 void HelperPanel::PlayerKeyListener2::keyTyped(const KeyEventPtr e)
 {
     _HelperPanel->keyTyped2(e);
@@ -595,15 +595,15 @@ void HelperPanel::PlayerMouseListener::mouseClicked(const MouseEventPtr e)
 {
    if(e->getClickCount() == 2)
    {
-	   if(_HelperPanel->HistoryListModel->getSize()>0 && !_HelperPanel->HistoryList->getSelectionModel()->isSelectionEmpty())
+	   if(_HelperPanel->_HistoryListModel->getSize()>0 && !_HelperPanel->_HistoryList->getSelectionModel()->isSelectionEmpty())
 	   {
 		   
-		UInt32 SelectedItemIndex(_HelperPanel->HistoryList->getSelectionModel()->getMinSelectionIndex());
-		std::string temp = std::string(_HelperPanel->CodeTextArea->getText());
-		temp+="\n"+boost::any_cast<std::string>(_HelperPanel->HistoryListModel->getElementAt(SelectedItemIndex));
-		beginEditCP(_HelperPanel->CodeTextArea,TextArea::TextFieldMask);		
-		_HelperPanel->CodeTextArea->setText(temp);
-		endEditCP(_HelperPanel->CodeTextArea,TextArea::TextFieldMask);		
+		UInt32 _SelectedItemIndex(_HelperPanel->_HistoryList->getSelectionModel()->getMinSelectionIndex());
+		std::string _Temp = std::string(_HelperPanel->_CodeTextArea->getText());
+		_Temp+="\n"+boost::any_cast<std::string>(_HelperPanel->_HistoryListModel->getElementAt(_SelectedItemIndex));
+		beginEditCP(_HelperPanel->_CodeTextArea,TextArea::TextFieldMask);		
+		_HelperPanel->_CodeTextArea->setText(_Temp);
+		endEditCP(_HelperPanel->_CodeTextArea,TextArea::TextFieldMask);		
 		
 	   }
 	   else
@@ -618,14 +618,14 @@ void HelperPanel::keyTyped2(const KeyEventPtr e)
 {
 	if(e->getKey() == KeyEvent::KEY_X && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
 	{
-		LuaManager::the()->runScript(std::string(CodeTextArea->getText()));
-		list_of_commands.push_back(std::string(CodeTextArea->getText()));
+		LuaManager::the()->runScript(std::string(_CodeTextArea->getText()));
+		_ListOfCommands.push_back(std::string(_CodeTextArea->getText()));
 		updateListBox();
 	}
 	//if(e->getKey() == KeyEvent::KEY_C && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
 	//{
-	//	//MainInternalWindow->setFocusedComponent(CodeTextArea); // need to get the access to the maininternal window.. 
-	//	InfoTabPanel->setSelectedIndex(0);
+	//	//MainInternalWindow->setFocusedComponent(_CodeTextArea); // need to get the access to the maininternal window.. 
+	//	_InfoTabPanel->setSelectedIndex(0);
 	//}
 }
 
@@ -677,15 +677,15 @@ void HelperPanel::LuaErrorListener::error(const LuaErrorEventPtr e)
             ErrorType = "Lua Unknown Error";
             break;
     }
-    _HelperPanel->ErrorTextArea->clear();
-    if(_HelperPanel->ErrorTextArea->getText().size() != 0)
+    _HelperPanel->_ErrorTextArea->clear();
+    if(_HelperPanel->_ErrorTextArea->getText().size() != 0)
     {
-        _HelperPanel->ErrorTextArea->write("\n");
+        _HelperPanel->_ErrorTextArea->write("\n");
     }
-    _HelperPanel->ErrorTextArea->write(ErrorType + ":\n    " + e->getErrorString());
+    _HelperPanel->_ErrorTextArea->write(ErrorType + ":\n    " + e->getErrorString());
 
     //Select the Error Tab
-    _HelperPanel->InfoTabPanel->setSelectedIndex(1);
+    _HelperPanel->_InfoTabPanel->setSelectedIndex(1);
 
     //Fill Stack Trace
     if(e->getStackTraceEnabled() && 
@@ -701,8 +701,8 @@ void HelperPanel::LuaErrorListener::error(const LuaErrorEventPtr e)
         {
             ss << "     " << (*ListItor) << std::endl;
         }
-        _HelperPanel->StackTraceTextArea->clear();
-        _HelperPanel->StackTraceTextArea->write(ss.str());
+        _HelperPanel->_StackTraceTextArea->clear();
+        _HelperPanel->_StackTraceTextArea->write(ss.str());
     }
 }
 

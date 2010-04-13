@@ -3,13 +3,13 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-CutCommand::CutCommand(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel) : Inherited(),
+CutCommand::CutCommand(ApplicationPlayerPtr ApplicationPlayer,SceneGraphTreeModelPtr SceneGraphTreeModel) : Inherited(),
 _ApplicationPlayer(ApplicationPlayer),
-_HierarchyPanel(HierarchyPanel),
-_nodeInClipboardBeforeCut(NullFC),
-_nodeInClipboardAfterCut(NullFC),
-_parentOfCutNode(NullFC),
-_currentAction(0)
+_SceneGraphTreeModel(SceneGraphTreeModel),
+_NodeInClipboardBeforeCut(NullFC),
+_NodeInClipboardAfterCut(NullFC),
+_ParentOfCutNode(NullFC),
+_CurrentAction(0)
 {
 }
 
@@ -17,11 +17,11 @@ inline
 CutCommand::CutCommand(const CutCommand& source) : Inherited(source)
 {
 	_ApplicationPlayer = source._ApplicationPlayer;
-	_HierarchyPanel = source._HierarchyPanel;
-	_nodeInClipboardBeforeCut= source._nodeInClipboardBeforeCut;
-	_nodeInClipboardAfterCut= source._nodeInClipboardAfterCut;
-	_parentOfCutNode= source._parentOfCutNode;
-	_currentAction= source._currentAction;
+	_SceneGraphTreeModel = source._SceneGraphTreeModel;
+	_NodeInClipboardBeforeCut= source._NodeInClipboardBeforeCut;
+	_NodeInClipboardAfterCut= source._NodeInClipboardAfterCut;
+	_ParentOfCutNode= source._ParentOfCutNode;
+	_CurrentAction= source._CurrentAction;
 
 }
 

@@ -51,7 +51,7 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef ShowHideCommandPtr Ptr;
 
-	ShowHideCommand(NodePtr SelectedNode,ApplicationPlayerPtr ApplicationPlayer);
+	ShowHideCommand(NodePtr _SelectedNode,MenuItemPtr _ShowHideItem);
 
 	ShowHideCommand(const ShowHideCommand& source);
 
@@ -66,11 +66,9 @@ protected:
 
 	void invertShowHideCaption(void);
 
-	UInt32 maskval;
+	UInt32 _Maskval;
 	NodePtr _SelectedNode;
-	ApplicationPlayerPtr _ApplicationPlayer;
-	/*MenuItemPtr _ShowHideItem;
-	NodePtr _SelectedNode;*/
+	MenuItemPtr _ShowHideItem;
 
 public:
 
@@ -82,7 +80,7 @@ public:
 
 	virtual ~ShowHideCommand(void);
 	
-	static ShowHideCommandPtr create(NodePtr SelectedNode,ApplicationPlayerPtr ApplicationPlayer);
+	static ShowHideCommandPtr create(NodePtr _SelectedNode,MenuItemPtr _ShowHideItem);
 };
 
 OSG_END_NAMESPACE

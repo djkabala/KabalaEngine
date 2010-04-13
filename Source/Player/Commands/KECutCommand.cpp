@@ -67,9 +67,9 @@ CommandType CutCommand::_Type("CutCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-CutCommandPtr CutCommand::create(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel)
+CutCommandPtr CutCommand::create(ApplicationPlayerPtr ApplicationPlayer,SceneGraphTreeModelPtr SceneGraphTreeModel)
 {
-	return Ptr(new CutCommand(ApplicationPlayer,HierarchyPanel));
+	return Ptr(new CutCommand(ApplicationPlayer,SceneGraphTreeModel));
 }
 
 /***************************************************************************\
@@ -79,24 +79,24 @@ CutCommandPtr CutCommand::create(ApplicationPlayerPtr ApplicationPlayer,Hierarch
 void CutCommand::execute(void)
 {
 
-	NodePtr parent = _ApplicationPlayer->SelectedNode->getParent();
-	if(parent==_HierarchyPanel->TheTreeModel->getRootNode() && _HierarchyPanel->TheTreeModel->getRootNode()->getNChildren() <= 2)
+	NodePtr parent = _ApplicationPlayer->getSelectedNode()->getParent();
+	if(parent==_SceneGraphTreeModel->getRootNode() && _SceneGraphTreeModel->getRootNode()->getNChildren() <= 2)
 	{
 		//std::cout<<"\nCant cut the only remaining Item\n"<<std::endl;
 	}
 	else
 	{
-		_currentAction = _ApplicationPlayer->currentAction;
-		_ApplicationPlayer->currentAction = CUT;
+		_CurrentAction = _ApplicationPlayer->getCurrentAction();
+		_ApplicationPlayer->setCurrentAction(CUT);
 
-		_nodeInClipboardBeforeCut = _ApplicationPlayer->nodeInCutClipboard ;
-		_ApplicationPlayer->nodeInCutClipboard = _ApplicationPlayer->SelectedNode;
-		_nodeInClipboardAfterCut = _ApplicationPlayer->nodeInCutClipboard ;
+		_NodeInClipboardBeforeCut = _ApplicationPlayer->getNodeInCutClipboard() ;
+		_ApplicationPlayer->setNodeInCutClipboard(_ApplicationPlayer->getSelectedNode());
+		_NodeInClipboardAfterCut = _ApplicationPlayer->getNodeInCutClipboard() ;
 
-		_parentOfCutNode = _ApplicationPlayer->SelectedNode->getParent();
+		_ParentOfCutNode = _ApplicationPlayer->getSelectedNode()->getParent();
 		
-		addRefCP(_nodeInClipboardAfterCut);
-		_HierarchyPanel->TheTreeModel->removeNode(boost::any(_nodeInClipboardAfterCut));
+		addRefCP(_NodeInClipboardAfterCut);
+		_SceneGraphTreeModel->removeNode(boost::any(_NodeInClipboardAfterCut));
 	}
 	
 	_HasBeenDone = true;
@@ -104,7 +104,7 @@ void CutCommand::execute(void)
 
 std::string CutCommand::getCommandDescription(void) const
 {
-	return std::string("Cut ");// + getName(_TheModel->getBackground(_TheIndex));
+	return std::string("Cut ");
 }
 
 std::string CutCommand::getPresentationName(void) const
@@ -116,20 +116,20 @@ void CutCommand::redo(void)
 {
     Inherited::redo();
 
-	_ApplicationPlayer->currentAction = CUT;
-	_ApplicationPlayer->nodeInCutClipboard = _ApplicationPlayer->SelectedNode;
+	_ApplicationPlayer->setCurrentAction(CUT);
+	_ApplicationPlayer->setNodeInCutClipboard(_ApplicationPlayer->getSelectedNode());
 
-	addRefCP(_nodeInClipboardAfterCut);
-	_HierarchyPanel->TheTreeModel->removeNode(boost::any(_nodeInClipboardAfterCut));
+	addRefCP(_NodeInClipboardAfterCut);
+	_SceneGraphTreeModel->removeNode(boost::any(_NodeInClipboardAfterCut));
 }
 
 void CutCommand::undo(void)
 {
     Inherited::undo();
-	_ApplicationPlayer->currentAction = _currentAction;
-	_ApplicationPlayer->nodeInCutClipboard = _nodeInClipboardBeforeCut;
-	_HierarchyPanel->TheTreeModel->addNode(boost::any(_parentOfCutNode),boost::any(_nodeInClipboardAfterCut));
-	subRefCP(_nodeInClipboardAfterCut);
+	_ApplicationPlayer->setCurrentAction(_CurrentAction);
+	_ApplicationPlayer->setNodeInCutClipboard(_NodeInClipboardBeforeCut);
+	_SceneGraphTreeModel->addNode(boost::any(_ParentOfCutNode),boost::any(_NodeInClipboardAfterCut));
+	subRefCP(_NodeInClipboardAfterCut);
 }
 
 const CommandType &CutCommand::getType(void) const
@@ -154,11 +154,11 @@ void CutCommand::operator =(const CutCommand& source)
     {
 	    Inherited::operator=(source);
 		_ApplicationPlayer = source._ApplicationPlayer;
-		_HierarchyPanel = source._HierarchyPanel;
-		_nodeInClipboardBeforeCut= source._nodeInClipboardBeforeCut;
-		_nodeInClipboardAfterCut= source._nodeInClipboardAfterCut;
-		_parentOfCutNode= source._parentOfCutNode;
-		_currentAction= source._currentAction;
+		_SceneGraphTreeModel = source._SceneGraphTreeModel;
+		_NodeInClipboardBeforeCut= source._NodeInClipboardBeforeCut;
+		_NodeInClipboardAfterCut= source._NodeInClipboardAfterCut;
+		_ParentOfCutNode= source._ParentOfCutNode;
+		_CurrentAction= source._CurrentAction;
 
     }
 }

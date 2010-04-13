@@ -81,15 +81,15 @@ void NewCommand::execute(void)
 
 	NodeCorePtr newCore = FieldContainerFactory::the()->createNodeCore(_FCType->getCName());
 
-	_newNode = Node::create();
-	beginEditCP(_newNode,Node::CoreFieldMask);
-	_newNode->setCore(newCore);	
-	endEditCP(_newNode,Node::CoreFieldMask);
-	_name = _FCType->getCName();
-	_name = "New "+_name+" Node";
-	setName(_newNode,_name);
+	_NewNode = Node::create();
+	beginEditCP(_NewNode,Node::CoreFieldMask);
+	_NewNode->setCore(newCore);	
+	endEditCP(_NewNode,Node::CoreFieldMask);
+	_Name = _FCType->getCName();
+	_Name = "New "+_Name+" Node";
+	setName(_NewNode,_Name);
 
-	_HierarchyPanel->TheTreeModel->addNode(boost::any(_HierarchyPanel->_ApplicationPlayer->SelectedNode),boost::any(_newNode));
+	_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_HierarchyPanel->getApplicationPlayer()->getSelectedNode()),boost::any(_NewNode));
 	
 	_HasBeenDone = true;
 
@@ -97,7 +97,7 @@ void NewCommand::execute(void)
 
 std::string NewCommand::getCommandDescription(void) const
 {
-	std::string Description(_name);
+	std::string Description(_Name);
 	
 	return Description;
 }
@@ -111,10 +111,10 @@ void NewCommand::redo(void)
 {
     Inherited::redo();
 
-	if(_newNode!=NullFC)
+	if(_NewNode!=NullFC)
 	{
-		_HierarchyPanel->TheTreeModel->addNode(boost::any(_HierarchyPanel->_ApplicationPlayer->SelectedNode),boost::any(_newNode));
-		subRefCP(_newNode);
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_HierarchyPanel->getApplicationPlayer()->getSelectedNode()),boost::any(_NewNode));
+		subRefCP(_NewNode);
 	}
 
 }
@@ -123,10 +123,10 @@ void NewCommand::undo(void)
 {
     Inherited::undo();
 
-	if(_newNode!=NullFC)
+	if(_NewNode!=NullFC)
 	{
-		addRefCP(_newNode);
-		_HierarchyPanel->TheTreeModel->removeNode(boost::any(_newNode));
+		addRefCP(_NewNode);
+		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_NewNode));
 	}
 
 }
@@ -153,9 +153,9 @@ void NewCommand::operator =(const NewCommand& source)
     {
 	    Inherited::operator=(source);
 		_HierarchyPanel = source._HierarchyPanel;
-		_newNode= source._newNode;
+		_NewNode= source._NewNode;
 		_FCType= source._FCType;
-		_name= source._name;
+		_Name= source._Name;
     }
 }
 /*------------------------------------------------------------------------*/

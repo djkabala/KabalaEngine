@@ -67,11 +67,11 @@ protected:
 	HierarchyPanelPtr _HierarchyPanel;
 	boost::any _LastSelectedPathComponent;
 	NodePtr _LastSelectedPathComponentNode;
-	NodePtr _parent;
+	NodePtr _Parent;
 
-	NodePtr _nodeInCutClipboard;
-	NodePtr _clonedNodeInCutClipboard;
-	NodePtr _clonedNodeInCopyClipboard;
+	NodePtr _NodeInCutClipboard;
+	NodePtr _ClonedNodeInCutClipboard;
+	NodePtr _ClonedNodeInCopyClipboard;
 	
 
 public:

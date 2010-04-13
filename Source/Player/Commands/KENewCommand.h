@@ -64,9 +64,9 @@ protected:
 	virtual void undo(void);
 
 	HierarchyPanelPtr _HierarchyPanel;
-	NodePtr _newNode;
+	NodePtr _NewNode;
 	FieldContainerType* _FCType;
-	std::string _name;
+	std::string _Name;
 
 
 public:

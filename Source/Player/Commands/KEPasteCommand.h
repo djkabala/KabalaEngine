@@ -67,11 +67,11 @@ protected:
 	virtual void undo(void);
 
 	ApplicationPlayerPtr _ApplicationPlayer;
-	HierarchyPanelPtr _HierarchyPanel;
+	HierarchyPanelPtr	 _HierarchyPanel;
 
-	UInt32 _currentAction;
-	NodePtr _nodeInCutClipboard;
-	NodePtr _clonedNodeInCopyClipboard;
+	UInt32 _CurrentAction;
+	NodePtr _NodeInCutClipboard;
+	NodePtr _ClonedNodeInCopyClipboard;
 	NodePtr _SelectedNode;
 
 
