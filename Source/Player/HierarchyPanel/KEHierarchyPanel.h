@@ -105,33 +105,31 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
 	enum tabs{LUA=1,SCENEGRAPH};
 
-	
-	
-	std::set<UInt32> TabsAdded;
-	std::set<UInt32>::iterator TabsAddedItr;
-	SceneGraphTreeModelPtr TheTreeModel;
-	LuaGraphTreeModelPtr TheTreeModel2;
-	//SceneGraphTreeModelPtr TempTreeModel;
-	TreePtr TheTree;
-	TreePtr TheTree2;
-	NodePtr SelectedNode;
+	std::set<UInt32>			_TabsAdded;
+	std::set<UInt32>::iterator	_TabsAddedItr;
+	SceneGraphTreeModelPtr		_TheSceneGraphTreeModel;
+	LuaGraphTreeModelPtr		_TheLuaGraphTreeModel;
+	TreePtr						_TheSceneGraphTree;
+	TreePtr						_TheLuaGraphTree;
+	NodePtr						_SelectedNode;
 
-	ScrollPanelPtr TreeScrollPanel;
-	ScrollPanelPtr TreeScrollPanel2;
-	NodePtr highlightNode;
-	CardLayoutPtr TopLeftCardLayout;
-	BorderLayoutConstraintsPtr	PanelTopLeftConstraints1;
+	ScrollPanelPtr				_TheSceneGraphTreeScrollPanel;
+	ScrollPanelPtr				_TheLuaGraphTreeScrollPanel;
+	NodePtr						_HighlightNode;
 
+	CardLayoutPtr				_CardLayout;
+	BorderLayoutConstraintsPtr	_LayoutConstraints;
 
-	
-	
 
     /*==========================  PUBLIC  =================================*/
   public:
 
-	ApplicationPlayerPtr _ApplicationPlayer;
-
-	friend class ApplicationPlayer;
+	//inline functions
+	
+	CardLayoutPtr getCardLayout(void);
+	SceneGraphTreeModelPtr getSceneGraphTreeModel(void);
+	TreePtr getSceneGraphTree(void);
+	ApplicationPlayerPtr getApplicationPlayer(void);
 
 	void createSceneGraphTree(void);
 	void createLuaGraphTree(void);
@@ -141,38 +139,15 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	void createDefaultHierarchyPanel();
 	void setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer);
 
-	friend class DeleteCommand;
-	friend class CutCommand;
-	friend class CopyCommand;
-	friend class PasteCommand;
 
-	class TheTreeSelectionListener2 : public TreeSelectionListener
+	class LuaGraphTreeSelectionListener : public TreeSelectionListener
 	{
 	public:
 
-		TheTreeSelectionListener2(HierarchyPanelPtr TheHierarchyPanel);
-		//Called whenever elements are added to the selection
-		virtual void selectionAdded(const TreeSelectionEventPtr e)
-		{
-			//Get the selected Node
-			try
-			{
-				_SelectedPath = boost::any_cast<Path>(_TheTree->getLastSelectedPathComponent());
-			}
-			catch (boost::bad_any_cast &)
-			{
-	//			_SelectedPath = boost::any_cast<Path>(boost::any(std::string(".")));
-			}
-			
-		}
-		
+		LuaGraphTreeSelectionListener(HierarchyPanelPtr TheHierarchyPanel);
 
-		//Called whenever elements are removed to the selection
-		virtual void selectionRemoved(const TreeSelectionEventPtr e)
-		{
-	//		_SelectedPath = boost::any_cast<Path>(boost::any(std::string(".")));
-		}
-
+		void selectionAdded(const TreeSelectionEventPtr e);
+		void selectionRemoved(const TreeSelectionEventPtr e){};
 		void setParams(TreePtr,ApplicationPlayerPtr);
 
 	protected:
@@ -182,34 +157,16 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 		Path _SelectedPath;
 	};
 
-	friend class TheTreeSelectionListener2;
-	TheTreeSelectionListener2 _TheTreeSelectionListener2;
+	friend class LuaGraphTreeSelectionListener;
+	LuaGraphTreeSelectionListener _LuaGraphTreeSelectionListener;
 
-	class TheTreeSelectionListener : public TreeSelectionListener
+	class SceneGraphTreeSelectionListener : public TreeSelectionListener
 	{
 	public:
-		TheTreeSelectionListener(HierarchyPanelPtr TheHierarchyPanel);
-		//Called whenever elements are added to the selection
-		virtual void selectionAdded(const TreeSelectionEventPtr e)
-		{
-			//Get the selected Node
-			try
-			{
-				_SelectedNode = boost::any_cast<NodePtr>(_TheTree->getLastSelectedPathComponent());
-			}
-			catch (boost::bad_any_cast &)
-			{
-				_SelectedNode = NullFC;
-			}
-			selectedNodeChanged();
-		}
+		SceneGraphTreeSelectionListener(HierarchyPanelPtr TheHierarchyPanel);
 
-		//Called whenever elements are removed to the selection
-		virtual void selectionRemoved(const TreeSelectionEventPtr e)
-		{
-			_SelectedNode = NullFC;
-			selectedNodeChanged();
-		}
+		void selectionAdded(const TreeSelectionEventPtr e);
+		void selectionRemoved(const TreeSelectionEventPtr e);
 		void selectedNodeChanged(void);
 		void setParams(TreePtr,ApplicationPlayerPtr);
 		void updateHighlight(void);
@@ -220,7 +177,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 		void setHighlight(NodePtr selectednode);
 
 		friend class ShowHideCommand;
-		
 
 		NodePtr _SelectedNode;
 	protected:
@@ -231,8 +187,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 		ApplicationPlayerPtr _ApplicationPlayer;
 	};
 
-	friend class TheTreeSelectionListener;
-	TheTreeSelectionListener _TheTreeSelectionListener;
+	friend class SceneGraphTreeSelectionListener;
+	SceneGraphTreeSelectionListener _SceneGraphTreeSelectionListener;
 
 	
 
@@ -242,11 +198,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 		PlayerMouseListener2(HierarchyPanelPtr TheHierarchyPanel);
 
 		virtual void mouseClicked(const MouseEventPtr e);
-
-	//	void setParams(ApplicationPlayerPtr);
 	protected :
 		HierarchyPanelPtr _HierarchyPanel;
-	//	ApplicationPlayerPtr _ApplicationPlayer;
 	};
 	
     friend class PlayerMouseListener2;
@@ -257,10 +210,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	{
 	public:
 		MenuButtonActionListener(HierarchyPanelPtr TheHierearchyPanel);
-		virtual void actionPerformed(const ActionEventPtr e)
-		{
-			createNewNode(e);
-		}
+
+		void actionPerformed(const ActionEventPtr e);
 	protected:
 		void createNewNode(const ActionEventPtr e);
 		HierarchyPanelPtr _HierarchyPanel;
@@ -269,7 +220,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	friend class MenuButtonActionListener;
 	MenuButtonActionListener _TheMenuButtonActionListener;
 	
-	friend class NewCommand;
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
@@ -289,11 +239,38 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     /*=========================  PROTECTED  ===============================*/
   protected:
 
-	DerivedFieldContainerComboBoxModelPtr NewNodeMenuModel;
-	MenuButtonPtr CreateNewNodeMenuButton;
-	PanelPtr SceneGraphPanel;
-	BorderLayoutConstraintsPtr CreateNewButtonConstraints;
+  	ApplicationPlayerPtr _ApplicationPlayer;
+	DerivedFieldContainerComboBoxModelPtr _NewNodeMenuModel;
+	MenuButtonPtr _CreateNewNodeMenuButton;
+	PanelPtr _SceneGraphPanel;
+	BorderLayoutConstraintsPtr _CreateNewButtonConstraints;
 
+	PopupMenuPtr _HierarchyPanelPopupMenu;
+	
+	MenuItemPtr _ShowHideItem ;
+	MenuItemPtr _CutItem ;
+	MenuItemPtr _CopyItem ;
+	MenuItemPtr _PasteItem ;
+	MenuItemPtr _DeleteItem ;
+
+	void createPopUpMenu(void);
+	void updatePopupMenu(void);
+	void changeShowHideMenuItem(void);
+	void actionPerformed(const ActionEventPtr e);
+
+	class BasicListener : public ActionListener
+	{
+	public:
+		BasicListener(HierarchyPanelPtr TheHierarchyPanel);
+		~BasicListener();
+
+		virtual void actionPerformed(const ActionEventPtr e);
+	protected :
+		HierarchyPanelPtr _HierarchyPanel;
+	
+	};
+	friend class BasicListener;
+	BasicListener _BasicListener;
 
     // Variables should all be in HierarchyPanelBase.
 
@@ -313,8 +290,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
     /*! \}                                                                 */
 
-	void updatePopupMenu(void);
-	void changeShowHideMenuItem(void);
     
     /*==========================  PRIVATE  ================================*/
   private:
