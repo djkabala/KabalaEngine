@@ -1538,33 +1538,34 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 #define SWIGTYPE_p_osg__FieldContainer swig_types[26]
 #define SWIGTYPE_p_osg__FieldContainerPtr swig_types[27]
 #define SWIGTYPE_p_osg__FieldContainerType swig_types[28]
-#define SWIGTYPE_p_osg__Geometry swig_types[29]
-#define SWIGTYPE_p_osg__GeometryPtr swig_types[30]
-#define SWIGTYPE_p_osg__Image swig_types[31]
-#define SWIGTYPE_p_osg__ImagePtr swig_types[32]
-#define SWIGTYPE_p_osg__Node swig_types[33]
-#define SWIGTYPE_p_osg__NodeCore swig_types[34]
-#define SWIGTYPE_p_osg__NodeCorePtr swig_types[35]
-#define SWIGTYPE_p_osg__NodePtr swig_types[36]
-#define SWIGTYPE_p_osg__ParticleSystem swig_types[37]
-#define SWIGTYPE_p_osg__ParticleSystemPtr swig_types[38]
-#define SWIGTYPE_p_osg__Project swig_types[39]
-#define SWIGTYPE_p_osg__ProjectPtr swig_types[40]
-#define SWIGTYPE_p_osg__Scene swig_types[41]
-#define SWIGTYPE_p_osg__ScenePtr swig_types[42]
-#define SWIGTYPE_p_osg__Sound swig_types[43]
-#define SWIGTYPE_p_osg__SoundPtr swig_types[44]
-#define SWIGTYPE_p_osg__Viewport swig_types[45]
-#define SWIGTYPE_p_osg__ViewportPtr swig_types[46]
-#define SWIGTYPE_p_osg__WindowEventProducer swig_types[47]
-#define SWIGTYPE_p_osg__WindowEventProducerPtr swig_types[48]
-#define SWIGTYPE_p_signed_char swig_types[49]
-#define SWIGTYPE_p_std__mapT_std__string_unsigned_int_t swig_types[50]
-#define SWIGTYPE_p_unsigned_char swig_types[51]
-#define SWIGTYPE_p_unsigned_int swig_types[52]
-#define SWIGTYPE_p_unsigned_long swig_types[53]
-static swig_type_info *swig_types[55];
-static swig_module_info swig_module = {swig_types, 54, 0, 0, 0, 0};
+#define SWIGTYPE_p_osg__GenericEventPtr swig_types[29]
+#define SWIGTYPE_p_osg__Geometry swig_types[30]
+#define SWIGTYPE_p_osg__GeometryPtr swig_types[31]
+#define SWIGTYPE_p_osg__Image swig_types[32]
+#define SWIGTYPE_p_osg__ImagePtr swig_types[33]
+#define SWIGTYPE_p_osg__Node swig_types[34]
+#define SWIGTYPE_p_osg__NodeCore swig_types[35]
+#define SWIGTYPE_p_osg__NodeCorePtr swig_types[36]
+#define SWIGTYPE_p_osg__NodePtr swig_types[37]
+#define SWIGTYPE_p_osg__ParticleSystem swig_types[38]
+#define SWIGTYPE_p_osg__ParticleSystemPtr swig_types[39]
+#define SWIGTYPE_p_osg__Project swig_types[40]
+#define SWIGTYPE_p_osg__ProjectPtr swig_types[41]
+#define SWIGTYPE_p_osg__Scene swig_types[42]
+#define SWIGTYPE_p_osg__ScenePtr swig_types[43]
+#define SWIGTYPE_p_osg__Sound swig_types[44]
+#define SWIGTYPE_p_osg__SoundPtr swig_types[45]
+#define SWIGTYPE_p_osg__Viewport swig_types[46]
+#define SWIGTYPE_p_osg__ViewportPtr swig_types[47]
+#define SWIGTYPE_p_osg__WindowEventProducer swig_types[48]
+#define SWIGTYPE_p_osg__WindowEventProducerPtr swig_types[49]
+#define SWIGTYPE_p_signed_char swig_types[50]
+#define SWIGTYPE_p_std__mapT_std__string_unsigned_int_t swig_types[51]
+#define SWIGTYPE_p_unsigned_char swig_types[52]
+#define SWIGTYPE_p_unsigned_int swig_types[53]
+#define SWIGTYPE_p_unsigned_long swig_types[54]
+static swig_type_info *swig_types[56];
+static swig_module_info swig_module = {swig_types, 55, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1609,7 +1610,7 @@ typedef struct{} LANGUAGE_OBJ;
 #include <OpenSG/OSGGeometry.h>
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGCamera.h>
-#include <OpenSG/OSGImage.h>
+#include <OpenSG/OSGImage.h>S
 #include <OpenSG/OSGSysFieldDataType.h>
 #include <OpenSG/OSGVecFieldDataType.h>
 #include <OpenSG/OSGMathFieldDataType.h>
@@ -1623,6 +1624,7 @@ typedef struct{} LANGUAGE_OBJ;
 #include <OpenSG/OSGFieldContainerFields.h>
 #include <OpenSG/Toolbox/OSGFieldContainerUtils.h>
 #include <OpenSG/Toolbox/OSGActivity.h>
+#include <OpenSG/Toolbox/OSGGenericEvent.h>
 #include <OpenSG/Toolbox/OSGEventProducerType.h>
 #include <boost/bind.hpp>
 
@@ -1830,6 +1832,318 @@ fail:
 }
 
 
+static int _wrap_ScenePtr_registerNewGenericMethod(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  osg::UInt32 result;
+  
+  SWIG_check_num_args("registerNewGenericMethod",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("registerNewGenericMethod",1,"osg::ScenePtr *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("registerNewGenericMethod",2,"std::string const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_registerNewGenericMethod",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
+  result = (osg::UInt32)(*arg1)->registerNewGenericMethod((std::string const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ScenePtr_unregisterNewGenericMethod__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  osg::UInt32 arg2 ;
+  bool result;
+  
+  SWIG_check_num_args("unregisterNewGenericMethod",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("unregisterNewGenericMethod",1,"osg::ScenePtr *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("unregisterNewGenericMethod",2,"osg::UInt32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_unregisterNewGenericMethod",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (osg::UInt32)lua_tonumber(L, 2);
+  result = (bool)(*arg1)->unregisterNewGenericMethod(arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ScenePtr_unregisterNewGenericMethod__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  bool result;
+  
+  SWIG_check_num_args("unregisterNewGenericMethod",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("unregisterNewGenericMethod",1,"osg::ScenePtr *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("unregisterNewGenericMethod",2,"std::string const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_unregisterNewGenericMethod",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
+  result = (bool)(*arg1)->unregisterNewGenericMethod((std::string const &)*arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ScenePtr_unregisterNewGenericMethod(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_osg__ScenePtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_ScenePtr_unregisterNewGenericMethod__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_osg__ScenePtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_ScenePtr_unregisterNewGenericMethod__SWIG_1(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'ScenePtr_unregisterNewGenericMethod'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    unregisterNewGenericMethod(osg::ScenePtr *,osg::UInt32)\n"
+    "    unregisterNewGenericMethod(osg::ScenePtr *,std::string const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_ScenePtr_isGenericMethodDefined__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  osg::UInt32 arg2 ;
+  bool result;
+  
+  SWIG_check_num_args("isGenericMethodDefined",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isGenericMethodDefined",1,"osg::ScenePtr const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("isGenericMethodDefined",2,"osg::UInt32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_isGenericMethodDefined",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (osg::UInt32)lua_tonumber(L, 2);
+  result = (bool)(*arg1)->isGenericMethodDefined(arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ScenePtr_isGenericMethodDefined__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  bool result;
+  
+  SWIG_check_num_args("isGenericMethodDefined",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isGenericMethodDefined",1,"osg::ScenePtr const *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("isGenericMethodDefined",2,"std::string const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_isGenericMethodDefined",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
+  result = (bool)(*arg1)->isGenericMethodDefined((std::string const &)*arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ScenePtr_isGenericMethodDefined(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_osg__ScenePtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_ScenePtr_isGenericMethodDefined__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_osg__ScenePtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_ScenePtr_isGenericMethodDefined__SWIG_1(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'ScenePtr_isGenericMethodDefined'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    isGenericMethodDefined(osg::ScenePtr const *,osg::UInt32)\n"
+    "    isGenericMethodDefined(osg::ScenePtr const *,std::string const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_ScenePtr_getGenericMethodId(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  osg::UInt32 result;
+  
+  SWIG_check_num_args("getGenericMethodId",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getGenericMethodId",1,"osg::ScenePtr const *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("getGenericMethodId",2,"std::string const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_getGenericMethodId",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
+  result = (osg::UInt32)(*arg1)->getGenericMethodId((std::string const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ScenePtr_produceGenericEvent(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::ScenePtr *arg1 = (osg::ScenePtr *) 0 ;
+  osg::UInt32 arg2 ;
+  osg::GenericEventPtr arg3 ;
+  osg::GenericEventPtr *argp3 ;
+  
+  SWIG_check_num_args("produceGenericEvent",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("produceGenericEvent",1,"osg::ScenePtr *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("produceGenericEvent",2,"osg::UInt32");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("produceGenericEvent",3,"osg::GenericEventPtr");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ScenePtr,0))){
+    SWIG_fail_ptr("ScenePtr_produceGenericEvent",1,SWIGTYPE_p_osg__ScenePtr);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (osg::UInt32)lua_tonumber(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_osg__GenericEventPtr,0))){
+    SWIG_fail_ptr("ScenePtr_produceGenericEvent",3,SWIGTYPE_p_osg__GenericEventPtr);
+  }
+  arg3 = *argp3;
+  
+  (*arg1)->produceGenericEvent(arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static void swig_delete_ScenePtr(void *obj) {
 osg::ScenePtr *arg1 = (osg::ScenePtr *) obj;
 delete arg1;
@@ -1839,6 +2153,11 @@ static swig_lua_method swig_osg_ScenePtr_methods[] = {
     {"isStarted", _wrap_ScenePtr_isStarted}, 
     {"blockInput", _wrap_ScenePtr_blockInput}, 
     {"isInputBlocked", _wrap_ScenePtr_isInputBlocked}, 
+    {"registerNewGenericMethod", _wrap_ScenePtr_registerNewGenericMethod}, 
+    {"unregisterNewGenericMethod", _wrap_ScenePtr_unregisterNewGenericMethod}, 
+    {"isGenericMethodDefined", _wrap_ScenePtr_isGenericMethodDefined}, 
+    {"getGenericMethodId", _wrap_ScenePtr_getGenericMethodId}, 
+    {"produceGenericEvent", _wrap_ScenePtr_produceGenericEvent}, 
     {0,0}
 };
 static swig_lua_attribute swig_osg_ScenePtr_attributes[] = {
@@ -1922,10 +2241,327 @@ fail:
 }
 
 
+static int _wrap_Scene_registerNewGenericMethod(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  osg::UInt32 result;
+  
+  SWIG_check_num_args("registerNewGenericMethod",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("registerNewGenericMethod",1,"osg::Scene *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("registerNewGenericMethod",2,"std::string const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_registerNewGenericMethod",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
+  result = (osg::UInt32)(arg1)->registerNewGenericMethod((std::string const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Scene_unregisterNewGenericMethod__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  osg::UInt32 arg2 ;
+  bool result;
+  
+  SWIG_check_num_args("unregisterNewGenericMethod",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("unregisterNewGenericMethod",1,"osg::Scene *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("unregisterNewGenericMethod",2,"osg::UInt32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_unregisterNewGenericMethod",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (osg::UInt32)lua_tonumber(L, 2);
+  result = (bool)(arg1)->unregisterNewGenericMethod(arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Scene_unregisterNewGenericMethod__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  bool result;
+  
+  SWIG_check_num_args("unregisterNewGenericMethod",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("unregisterNewGenericMethod",1,"osg::Scene *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("unregisterNewGenericMethod",2,"std::string const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_unregisterNewGenericMethod",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
+  result = (bool)(arg1)->unregisterNewGenericMethod((std::string const &)*arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Scene_unregisterNewGenericMethod(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_osg__Scene, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_Scene_unregisterNewGenericMethod__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_osg__Scene, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_Scene_unregisterNewGenericMethod__SWIG_1(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'Scene_unregisterNewGenericMethod'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    unregisterNewGenericMethod(osg::Scene *,osg::UInt32)\n"
+    "    unregisterNewGenericMethod(osg::Scene *,std::string const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_Scene_isGenericMethodDefined__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  osg::UInt32 arg2 ;
+  bool result;
+  
+  SWIG_check_num_args("isGenericMethodDefined",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isGenericMethodDefined",1,"osg::Scene const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("isGenericMethodDefined",2,"osg::UInt32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_isGenericMethodDefined",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (osg::UInt32)lua_tonumber(L, 2);
+  result = (bool)((osg::Scene const *)arg1)->isGenericMethodDefined(arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Scene_isGenericMethodDefined__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  bool result;
+  
+  SWIG_check_num_args("isGenericMethodDefined",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isGenericMethodDefined",1,"osg::Scene const *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("isGenericMethodDefined",2,"std::string const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_isGenericMethodDefined",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
+  result = (bool)((osg::Scene const *)arg1)->isGenericMethodDefined((std::string const &)*arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Scene_isGenericMethodDefined(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_osg__Scene, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_Scene_isGenericMethodDefined__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_osg__Scene, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_Scene_isGenericMethodDefined__SWIG_1(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'Scene_isGenericMethodDefined'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    isGenericMethodDefined(osg::Scene const *,osg::UInt32)\n"
+    "    isGenericMethodDefined(osg::Scene const *,std::string const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_Scene_getGenericMethodId(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  osg::UInt32 result;
+  
+  SWIG_check_num_args("getGenericMethodId",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getGenericMethodId",1,"osg::Scene const *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("getGenericMethodId",2,"std::string const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_getGenericMethodId",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
+  result = (osg::UInt32)((osg::Scene const *)arg1)->getGenericMethodId((std::string const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Scene_produceGenericEvent(lua_State* L) {
+  int SWIG_arg = 0;
+  osg::Scene *arg1 = (osg::Scene *) 0 ;
+  osg::UInt32 arg2 ;
+  osg::GenericEventPtr arg3 ;
+  osg::GenericEventPtr *argp3 ;
+  
+  SWIG_check_num_args("produceGenericEvent",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("produceGenericEvent",1,"osg::Scene *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("produceGenericEvent",2,"osg::UInt32");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("produceGenericEvent",3,"osg::GenericEventPtr");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Scene,0))){
+    SWIG_fail_ptr("Scene_produceGenericEvent",1,SWIGTYPE_p_osg__Scene);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (osg::UInt32)lua_tonumber(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_osg__GenericEventPtr,0))){
+    SWIG_fail_ptr("Scene_produceGenericEvent",3,SWIGTYPE_p_osg__GenericEventPtr);
+  }
+  arg3 = *argp3;
+  
+  (arg1)->produceGenericEvent(arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static swig_lua_method swig_osg_Scene_methods[] = {
     {"isStarted", _wrap_Scene_isStarted}, 
     {"blockInput", _wrap_Scene_blockInput}, 
     {"isInputBlocked", _wrap_Scene_isInputBlocked}, 
+    {"registerNewGenericMethod", _wrap_Scene_registerNewGenericMethod}, 
+    {"unregisterNewGenericMethod", _wrap_Scene_unregisterNewGenericMethod}, 
+    {"isGenericMethodDefined", _wrap_Scene_isGenericMethodDefined}, 
+    {"getGenericMethodId", _wrap_Scene_getGenericMethodId}, 
+    {"produceGenericEvent", _wrap_Scene_produceGenericEvent}, 
     {0,0}
 };
 static swig_lua_attribute swig_osg_Scene_attributes[] = {
@@ -2180,38 +2816,6 @@ static int _wrap_ProjectPtr_getActiveScene(lua_State* L) {
     osg::ScenePtr * resultptr = new osg::ScenePtr((const osg::ScenePtr &) result);
     SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_osg__ScenePtr,1); SWIG_arg++;
   }
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_ProjectPtr_setActiveCamera(lua_State* L) {
-  int SWIG_arg = 0;
-  osg::ProjectPtr *arg1 = (osg::ProjectPtr *) 0 ;
-  osg::CameraPtr arg2 ;
-  osg::CameraPtr *argp2 ;
-  
-  SWIG_check_num_args("setActiveCamera",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("setActiveCamera",1,"osg::ProjectPtr *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("setActiveCamera",2,"osg::CameraPtr");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__ProjectPtr,0))){
-    SWIG_fail_ptr("ProjectPtr_setActiveCamera",1,SWIGTYPE_p_osg__ProjectPtr);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_osg__CameraPtr,0))){
-    SWIG_fail_ptr("ProjectPtr_setActiveCamera",2,SWIGTYPE_p_osg__CameraPtr);
-  }
-  arg2 = *argp2;
-  
-  //(*arg1)->setActiveCamera(arg2);
-  
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -3287,7 +3891,6 @@ static swig_lua_method swig_osg_ProjectPtr_methods[] = {
     {"stop", _wrap_ProjectPtr_stop}, 
     {"setActiveScene", _wrap_ProjectPtr_setActiveScene}, 
     {"getActiveScene", _wrap_ProjectPtr_getActiveScene}, 
-    {"setActiveCamera", _wrap_ProjectPtr_setActiveCamera}, 
     {"setActiveNode", _wrap_ProjectPtr_setActiveNode}, 
     {"addActiveAnimation", _wrap_ProjectPtr_addActiveAnimation}, 
     {"removeActiveAnimation", _wrap_ProjectPtr_removeActiveAnimation}, 
@@ -3435,38 +4038,6 @@ static int _wrap_Project_getActiveScene(lua_State* L) {
     osg::ScenePtr * resultptr = new osg::ScenePtr((const osg::ScenePtr &) result);
     SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_osg__ScenePtr,1); SWIG_arg++;
   }
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_Project_setActiveCamera(lua_State* L) {
-  int SWIG_arg = 0;
-  osg::Project *arg1 = (osg::Project *) 0 ;
-  osg::CameraPtr arg2 ;
-  osg::CameraPtr *argp2 ;
-  
-  SWIG_check_num_args("setActiveCamera",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("setActiveCamera",1,"osg::Project *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("setActiveCamera",2,"osg::CameraPtr");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_osg__Project,0))){
-    SWIG_fail_ptr("Project_setActiveCamera",1,SWIGTYPE_p_osg__Project);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_osg__CameraPtr,0))){
-    SWIG_fail_ptr("Project_setActiveCamera",2,SWIGTYPE_p_osg__CameraPtr);
-  }
-  arg2 = *argp2;
-  
-  //(arg1)->setActiveCamera(arg2);
-  
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -3835,7 +4406,6 @@ static swig_lua_method swig_osg_Project_methods[] = {
     {"stop", _wrap_Project_stop}, 
     {"setActiveScene", _wrap_Project_setActiveScene}, 
     {"getActiveScene", _wrap_Project_getActiveScene}, 
-    {"setActiveCamera", _wrap_Project_setActiveCamera}, 
     {"setActiveNode", _wrap_Project_setActiveNode}, 
     {"addActiveAnimation", _wrap_Project_addActiveAnimation}, 
     {"removeActiveAnimation", _wrap_Project_removeActiveAnimation}, 
@@ -4063,6 +4633,7 @@ static swig_type_info _swigt__p_osg__Camera = {"_p_osg__Camera", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_osg__Viewport = {"_p_osg__Viewport", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_osg__Animation = {"_p_osg__Animation", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_osg__AttachmentContainerPtr = {"_p_osg__AttachmentContainerPtr", "osg::AttachmentContainerPtr *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_osg__CameraPtr = {"_p_osg__CameraPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_osg__ViewportPtr = {"_p_osg__ViewportPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_osg__ComponentPtr = {"_p_osg__ComponentPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_osg__NodeCorePtr = {"_p_osg__NodeCorePtr", 0, 0, 0, 0, 0};
@@ -4071,11 +4642,11 @@ static swig_type_info _swigt__p_osg__GeometryPtr = {"_p_osg__GeometryPtr", 0, 0,
 static swig_type_info _swigt__p_osg__WindowEventProducer = {"_p_osg__WindowEventProducer", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_osg__SoundPtr = {"_p_osg__SoundPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_osg__AttachmentPtr = {"_p_osg__AttachmentPtr", "osg::AttachmentPtr *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_osg__CameraPtr = {"_p_osg__CameraPtr", "osg::CameraPtr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_osg__Field = {"_p_osg__Field", "osg::Field *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_osg__FieldContainer = {"_p_osg__FieldContainer", "osg::FieldContainer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_osg__FieldContainerPtr = {"_p_osg__FieldContainerPtr", "osg::FieldContainerPtr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_osg__FieldContainerType = {"_p_osg__FieldContainerType", "osg::FieldContainerType *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_osg__GenericEventPtr = {"_p_osg__GenericEventPtr", "osg::GenericEventPtr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_osg__NodePtr = {"_p_osg__NodePtr", "osg::NodePtr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_osg__ParticleSystemPtr = {"_p_osg__ParticleSystemPtr", "osg::ParticleSystemPtr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_osg__Project = {"_p_osg__Project", "osg::Project *", 0, 0, (void*)&_wrap_class_osg_Project, 0};
@@ -4119,6 +4690,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_osg__FieldContainer,
   &_swigt__p_osg__FieldContainerPtr,
   &_swigt__p_osg__FieldContainerType,
+  &_swigt__p_osg__GenericEventPtr,
   &_swigt__p_osg__Geometry,
   &_swigt__p_osg__GeometryPtr,
   &_swigt__p_osg__Image,
@@ -4174,6 +4746,7 @@ static swig_cast_info _swigc__p_osg__Camera[] = {{&_swigt__p_osg__Camera, 0, 0, 
 static swig_cast_info _swigc__p_osg__Viewport[] = {{&_swigt__p_osg__Viewport, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__Animation[] = {{&_swigt__p_osg__Animation, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__AttachmentContainer[] = {  {&_swigt__p_osg__Component, _p_osg__ComponentTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__Image, _p_osg__ImageTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__Node, _p_osg__NodeTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__Sound, _p_osg__SoundTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__Geometry, _p_osg__GeometryTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__ParticleSystem, _p_osg__ParticleSystemTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__AttachmentContainer, 0, 0, 0},  {&_swigt__p_osg__NodeCore, _p_osg__NodeCoreTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__Camera, _p_osg__CameraTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__Viewport, _p_osg__ViewportTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__Animation, _p_osg__AnimationTo_p_osg__AttachmentContainer, 0, 0},  {&_swigt__p_osg__Project, _p_osg__ProjectTo_p_osg__AttachmentContainer, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_osg__CameraPtr[] = {{&_swigt__p_osg__CameraPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__ViewportPtr[] = {{&_swigt__p_osg__ViewportPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__ComponentPtr[] = {{&_swigt__p_osg__ComponentPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__NodeCorePtr[] = {{&_swigt__p_osg__NodeCorePtr, 0, 0, 0},{0, 0, 0, 0}};
@@ -4183,11 +4756,11 @@ static swig_cast_info _swigc__p_osg__WindowEventProducer[] = {{&_swigt__p_osg__W
 static swig_cast_info _swigc__p_osg__SoundPtr[] = {{&_swigt__p_osg__SoundPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__AttachmentContainerPtr[] = {  {&_swigt__p_osg__ParticleSystemPtr, _p_osg__ParticleSystemPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__NodePtr, _p_osg__NodePtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__CameraPtr, _p_osg__CameraPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__ViewportPtr, _p_osg__ViewportPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__ComponentPtr, _p_osg__ComponentPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__AnimationPtr, _p_osg__AnimationPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__NodeCorePtr, _p_osg__NodeCorePtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__ImagePtr, _p_osg__ImagePtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__ScenePtr, _p_osg__ScenePtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__GeometryPtr, _p_osg__GeometryPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__WindowEventProducerPtr, _p_osg__WindowEventProducerPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__WindowEventProducer, _p_osg__WindowEventProducerTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__SoundPtr, _p_osg__SoundPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__ProjectPtr, _p_osg__ProjectPtrTo_p_osg__AttachmentContainerPtr, 0, 0},  {&_swigt__p_osg__AttachmentContainerPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__AttachmentPtr[] = {  {&_swigt__p_osg__AttachmentPtr, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_osg__CameraPtr[] = {  {&_swigt__p_osg__CameraPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__Field[] = {  {&_swigt__p_osg__Field, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__FieldContainer[] = {  {&_swigt__p_osg__Component, _p_osg__ComponentTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__Image, _p_osg__ImageTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__Node, _p_osg__NodeTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__Sound, _p_osg__SoundTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__Geometry, _p_osg__GeometryTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__ParticleSystem, _p_osg__ParticleSystemTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__FieldContainer, 0, 0, 0},  {&_swigt__p_osg__AttachmentContainer, _p_osg__AttachmentContainerTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__NodeCore, _p_osg__NodeCoreTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__Camera, _p_osg__CameraTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__Viewport, _p_osg__ViewportTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__Animation, _p_osg__AnimationTo_p_osg__FieldContainer, 0, 0},  {&_swigt__p_osg__Project, _p_osg__ProjectTo_p_osg__FieldContainer, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__FieldContainerPtr[] = {  {&_swigt__p_osg__ParticleSystemPtr, _p_osg__ParticleSystemPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__NodePtr, _p_osg__NodePtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__CameraPtr, _p_osg__CameraPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__ViewportPtr, _p_osg__ViewportPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__ComponentPtr, _p_osg__ComponentPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__AnimationPtr, _p_osg__AnimationPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__NodeCorePtr, _p_osg__NodeCorePtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__ImagePtr, _p_osg__ImagePtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__ScenePtr, _p_osg__ScenePtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__GeometryPtr, _p_osg__GeometryPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__WindowEventProducerPtr, _p_osg__WindowEventProducerPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__WindowEventProducer, _p_osg__WindowEventProducerTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__SoundPtr, _p_osg__SoundPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__ProjectPtr, _p_osg__ProjectPtrTo_p_osg__FieldContainerPtr, 0, 0},  {&_swigt__p_osg__FieldContainerPtr, 0, 0, 0},  {&_swigt__p_osg__AttachmentContainerPtr, _p_osg__AttachmentContainerPtrTo_p_osg__FieldContainerPtr, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__FieldContainerType[] = {  {&_swigt__p_osg__FieldContainerType, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_osg__GenericEventPtr[] = {  {&_swigt__p_osg__GenericEventPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__NodePtr[] = {  {&_swigt__p_osg__NodePtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__ParticleSystemPtr[] = {  {&_swigt__p_osg__ParticleSystemPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_osg__Project[] = {  {&_swigt__p_osg__Project, 0, 0, 0},{0, 0, 0, 0}};
@@ -4231,6 +4804,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_osg__FieldContainer,
   _swigc__p_osg__FieldContainerPtr,
   _swigc__p_osg__FieldContainerType,
+  _swigc__p_osg__GenericEventPtr,
   _swigc__p_osg__Geometry,
   _swigc__p_osg__GeometryPtr,
   _swigc__p_osg__Image,

@@ -45,6 +45,7 @@
 #include <OpenSG/OSGFieldContainerFields.h>
 #include <OpenSG/Toolbox/OSGFieldContainerUtils.h>
 #include <OpenSG/Toolbox/OSGActivity.h>
+#include <OpenSG/Toolbox/OSGGenericEvent.h>
 #include <OpenSG/Toolbox/OSGEventProducerType.h>
 #include <boost/bind.hpp>
 %}
@@ -52,6 +53,7 @@
 namespace osg {
     class Scene;
     class Project;
+	class GenericEventPtr;
     
     /******************************************************/
     /*                    ScenePtr                        */
@@ -80,9 +82,21 @@ namespace osg {
         bool isStarted(void) const;
         void blockInput(bool block);
         bool isInputBlocked(void) const;
-      protected:
+        
+        UInt32 registerNewGenericMethod(const std::string& MethodName);
+
+        bool unregisterNewGenericMethod(UInt32 Id);
+        bool unregisterNewGenericMethod(const std::string& MethodName);
+
+        bool isGenericMethodDefined(UInt32 Id) const;
+        bool isGenericMethodDefined(const std::string& MethodName) const;
+        UInt32 getGenericMethodId(const std::string& MethodName) const;
+    
+        void produceGenericEvent(UInt32 GenericEventId, GenericEventPtr e);
+    
+	protected:
         Scene(void);
-        Scene(const Animation &source);
+        Scene(const Scene &source);
         virtual ~Scene(void); 
     };
 

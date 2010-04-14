@@ -6,3 +6,5 @@ osg::LuaManager::OpenBoundLuaLibFunctor getKabalaEngineLuaBindingsLibFunctor(voi
 {
     return boost::bind(&luaopen_KabalaEngine, _1);
 }
+
+GenericEventPtrs may need to be appended w/ osg::
