@@ -386,20 +386,24 @@ void Scene::attachNames(void)
 ******************************************************************/
 UInt32 Scene::registerNewGenericMethod(const std::string& MethodName)
 {
-    UInt32 Id = _sfGenericMethodIDs.getValue();
-    Id++;
-
-    _sfGenericMethodIDs.setValue(Id);
-    
-    const MethodDescription newGenericDescription = MethodDescription(MethodName.c_str(),
-                                                                Id,
-                                                                SFEventPtr::getClassType(),
-                                                                FunctorAccessMethod());
-    
-    EventProducerType producerType = _Producer.getProducerType();
-    producerType.addDescription(newGenericDescription);
+    if(!isGenericMethodDefined(MethodName))
+    {
+        UInt32 Id = SceneBase::NextMethodId + _GenericMethodIDCount;
+        _GenericMethodIDCount++;
+        
+        MethodDescription newGenericDescription(MethodName.c_str(),
+                                                Id,
+                                                SFEventPtr::getClassType(),
+                                                FunctorAccessMethod());
+        
+        const_cast<EventProducerType&>(_Producer.getProducerType()).addDescription(newGenericDescription);
 
     return Id;
+    }
+    else
+    {
+        return getGenericMethodId(MethodName);
+    }
 }
 
 bool Scene::unregisterNewGenericMethod(UInt32 Id)
@@ -437,7 +441,7 @@ UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
     return Id;
 }
 
-void Scene::produceGenericEvent(UInt32 GenericEventId, const GenericEventPtr e)
+void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventPtr e)
 {
     if(isGenericMethodDefined(GenericEventId))
     {
@@ -482,7 +486,8 @@ Scene::Scene(void) :
     Inherited(),
     _SceneUpdateListener(ScenePtr(this)),
     _IsStarted(false),
-    _BlockInput(false)
+    _BlockInput(false),
+    _GenericMethodIDCount(0)
 {
 }
 
@@ -490,7 +495,8 @@ Scene::Scene(const Scene &source) :
     Inherited(source),
         _SceneUpdateListener(ScenePtr(this)),
     _IsStarted(false),
-    _BlockInput(source._BlockInput)
+    _BlockInput(source._BlockInput),
+    _GenericMethodIDCount(source._GenericMethodIDCount)
 {
 }
 

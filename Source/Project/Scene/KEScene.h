@@ -94,14 +94,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
 	bool isGenericMethodDefined(UInt32 Id) const;
 	bool isGenericMethodDefined(const std::string& MethodName) const;
 	UInt32 getGenericMethodId(const std::string& MethodName) const;
-	
-	//funcname is the table('object') function
-	bool addLuaCallback(std::string funcName, UInt32 producedMethodId);
-	bool removeLuaCallback(std::string funcName, UInt32 producedMethodId);
 
-	//typedef FCPtr<FieldContainerPtr, GenericEvent>
-	//GenericEventPtr; This belongs in SceneFields.
-	void produceGenericEvent(UInt32 GenericEventId, const GenericEventPtr e);
+	void produceGenericEvent(UInt32 GenericEventId, GenericEventPtr e);
 
     /*=========================  PROTECTED  ===============================*/
   protected:
@@ -190,6 +184,8 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
     
     bool _IsStarted;
     bool _BlockInput;
+
+    UInt32 _GenericMethodIDCount;
 
     /*==========================  PRIVATE  ================================*/
   private:
