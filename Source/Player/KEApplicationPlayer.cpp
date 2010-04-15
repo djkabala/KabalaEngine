@@ -825,6 +825,20 @@ void ApplicationPlayer::detachDebugInterface(void)
 		MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().erase(SearchItor);
 	}
 
+	CameraPtr OriginalCamera = MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getCamera();
+
+	if(_OriginalCameraInitialized)
+	{
+		std::string _NameOfCore = OriginalCamera->getBeacon()->getCore()->getType().getCName();
+		if(_NameOfCore=="Transform")
+		{
+			TransformPtr OriginalTransform = TransformPtr::dcast(OriginalCamera->getBeacon()->getCore());
+			beginEditCP(OriginalTransform,Transform::MatrixFieldMask);
+				OriginalTransform->setMatrix(_OriginalMatrix);
+			endEditCP(OriginalTransform,Transform::MatrixFieldMask);
+		}
+	}
+
 }
 
 void ApplicationPlayer::enableDebug(bool EnableDebug)
@@ -1418,10 +1432,14 @@ void ApplicationPlayer::updateDebugSceneChange(void)
 ViewportPtr ApplicationPlayer::createDebugViewport(void)
 {
 
+	_OriginalCameraInitialized = true;
+
 	CameraPtr OriginalCamera = MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getCamera();
 
+	_OriginalMatrix = OriginalCamera->getBeacon()->getToWorld();
+
 	CameraPtr DebugCamera = CameraPtr::dcast(OriginalCamera->shallowCopy());
-	
+		
     //Camera Transformation Node	
 	TransformPtr DebugBeaconTransform = Transform::create();
     beginEditCP(DebugBeaconTransform, Transform::MatrixFieldMask);
@@ -1510,6 +1528,7 @@ ApplicationPlayer::ApplicationPlayer(void) :
 	_RedoActionListener(NULL,NULL),
 	_CommandManagerListener(ApplicationPlayerPtr(this))
 {
+	_OriginalCameraInitialized = false;
 	_TheUndoManager = UndoManager::create();
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
 	initDebugStatForegrounds();
@@ -1537,6 +1556,7 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
 	_RedoActionListener(NULL,NULL),
 	_CommandManagerListener(ApplicationPlayerPtr(this))
 {
+	_OriginalCameraInitialized = false;
 	_TheUndoManager = UndoManager::create();
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
 }

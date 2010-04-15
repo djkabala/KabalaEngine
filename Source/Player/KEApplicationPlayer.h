@@ -428,7 +428,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     SimpleStatisticsForegroundPtr _DebugParticleSystemStatForeground;
     SimpleStatisticsForegroundPtr _DebugAnimationStatForeground;
 	
-
+	Matrix _OriginalMatrix;
+	bool _OriginalCameraInitialized;
 
 	void updateListBox(void);
 	void setupPopupMenu();
