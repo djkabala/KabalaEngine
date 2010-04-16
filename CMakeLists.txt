@@ -53,6 +53,12 @@ SET(KABALA_ENGINE_PATCH_VERSION ${CMAKE_MATCH_3})
 SET(KABALA_ENGINE_VERSION ${CMAKE_MATCH_0})
 MESSAGE("Current Version is ${KABALA_ENGINE_VERSION}")
 
+######## Authors
+FILE(STRINGS ${CMAKE_SOURCE_DIR}/AUTHORS.txt KABALA_ENGINE_AUTHORS)
+
+######## Website
+FILE(STRINGS ${CMAKE_SOURCE_DIR}/WEBSITE.txt KABALA_ENGINE_WEBSITE)
+
 ######## IS 64 bit
 IF( NOT APPLE )
    # check 64 bit
@@ -198,6 +204,8 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${OPENSGTOOLBOX_LIB_DIR} ${FMOD_LIB_DIR} 
 
 ######## Kabala Engine Executable
 #Configure the version and config headers
+SET(KABALA_ENGINE_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+SET(KABALA_ENGINE_REPOSITORY_REVISION "${Project_WC_REVISION}")
 CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/Source/KEVersion.h.in ${CMAKE_SOURCE_DIR}/Source/KEVersion.h)
 
 #Make the Source groups for these files
@@ -211,12 +219,18 @@ FILE(GLOB_RECURSE INLINES ${CMAKE_SOURCE_DIR}/Source/[^~]*.inl)
 
 
 
-SET(CMAKE_DEBUG_POSTFIX "D")
+IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    SET(CMAKE_DEBUG_POSTFIX "D")
+ELSE(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    SET(CMAKE_DEBUG_POSTFIX "")
+ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-ADD_EXECUTABLE(KabalaEngine ${HEADERS} ${SOURCES} ${INLINES})
+SET(EXECUTABLE_NAME "KabalaEngine${CMAKE_DEBUG_POSTFIX}")
+
+ADD_EXECUTABLE(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES} ${INLINES})
 
 #Attach all of the libraries
-TARGET_LINK_LIBRARIES(KabalaEngine 
+TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} 
 	optimized OSGToolbox  
 	optimized OSGInput
 	optimized OSGParticleSystem
@@ -243,7 +257,7 @@ TARGET_LINK_LIBRARIES(KabalaEngine
    ${Boost_LIBRARIES} ${FMOD_LIBRARIES} ${ODE_LIBRARIES})
 
 #Attach all of the Compile flags
-SET_TARGET_PROPERTIES(KabalaEngine
+SET_TARGET_PROPERTIES(${EXECUTABLE_NAME}
    PROPERTIES
    COMPILE_FLAGS "${PLATFORM_COMPILE_FLAGS}"
    LINK_FLAGS_DEBUG "${OPENSG_LIBS_DBG} ${PLATFORM_LINKER_FLAGS}"
@@ -252,7 +266,7 @@ SET_TARGET_PROPERTIES(KabalaEngine
    LINK_FLAGS_RELWITHDEBINFO "${OPENSG_LIBS_OPT} ${PLATFORM_LINKER_FLAGS}")
 
 #Install the libraries
-INSTALL(TARGETS KabalaEngine
+INSTALL(TARGETS ${EXECUTABLE_NAME}
         EXPORT  KabalaEngineExport
         RUNTIME DESTINATION bin 
         LIBRARY DESTINATION lib
@@ -264,53 +278,53 @@ OPTION(BUILD_ICONS "Build the Icon set for the Kabala Engine" ON)
 OPTION(INCLUDE_APP_DATA "Include the data used by the Kabala Engine" ON)
 
 IF(BUILD_ICONS)
-	FIND_PROGRAM(INKSCAPE_EXECUTABLE inkscape)
-	FIND_PROGRAM(CONVERT_EXECUTABLE convert)
+    FIND_PROGRAM(INKSCAPE_EXECUTABLE inkscape)
+    FIND_PROGRAM(CONVERT_EXECUTABLE convert)
 
-   FILE(GLOB_RECURSE ICON_SVG_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Data/Images/Source/Icons/*.svg)
+    FILE(GLOB_RECURSE ICON_SVG_SOURCE_FILES ${CMAKE_SOURCE_DIR}/Data/Images/Source/Icons/*.svg)
 
-	SET(BUILD_ICON_DIMENSION 64 CACHE STRING "Advanced: The vertical and horizontal dimenstions to use to create the icons.")
-	SET(DISABLED_ICON_CONVERT_ARG_1 "-modulate" CACHE STRING "Advanced: The 1 argument to send to the convert command to generate the Disabled Icons.")
-	SET(DISABLED_ICON_CONVERT_ARG_2 "100,0" CACHE STRING "Advanced: The 2 argument to send to the convert command to generate the Disabled Icons.")
+    SET(BUILD_ICON_DIMENSION 64 CACHE STRING "Advanced: The vertical and horizontal dimenstions to use to create the icons.")
+    SET(DISABLED_ICON_CONVERT_ARG_1 "-modulate" CACHE STRING "Advanced: The 1 argument to send to the convert command to generate the Disabled Icons.")
+    SET(DISABLED_ICON_CONVERT_ARG_2 "100,0" CACHE STRING "Advanced: The 2 argument to send to the convert command to generate the Disabled Icons.")
 
-   FOREACH(ICON_SVG_SOURCE_FILE ${ICON_SVG_SOURCE_FILES})
-	   FILE(RELATIVE_PATH ICON_SVG_NAME  ${CMAKE_SOURCE_DIR}/Data/Images/Source/Icons ${ICON_SVG_SOURCE_FILE})
-   
-	   #Extract a short name for the icon svg file
-      STRING(REGEX MATCH "(.*)[.]svg" ICON_SVG_NAME ${ICON_SVG_NAME})
-      SET(ICON_SVG_NAME ${CMAKE_MATCH_1})
+    FOREACH(ICON_SVG_SOURCE_FILE ${ICON_SVG_SOURCE_FILES})
+        FILE(RELATIVE_PATH ICON_SVG_NAME  ${CMAKE_SOURCE_DIR}/Data/Images/Source/Icons ${ICON_SVG_SOURCE_FILE})
 
-		SET(BASIC_IMG_PATH ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME})
-	   
-		FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME})
-	
-		#Command for making the Normal Icons
-		ADD_CUSTOM_COMMAND(OUTPUT ${BASIC_IMG_PATH}Normal.png
-	    	                COMMAND ${INKSCAPE_EXECUTABLE} ${ICON_SVG_SOURCE_FILE} -w ${BUILD_ICON_DIMENSION} -h ${BUILD_ICON_DIMENSION} --export-png=${BASIC_IMG_PATH}Normal.png
-		   					 DEPENDS ${ICON_SVG_SOURCE_FILE})
-	   #Add this icon as a target
-      LIST(APPEND ICON_PNG_TARGETS ${BASIC_IMG_PATH}Normal.png)
+        #Extract a short name for the icon svg file
+        STRING(REGEX MATCH "(.*)[.]svg" ICON_SVG_NAME ${ICON_SVG_NAME})
+        SET(ICON_SVG_NAME ${CMAKE_MATCH_1})
 
-		IF(CONVERT_EXECUTABLE)
-			#Command for making he disabled Icons
-		   ADD_CUSTOM_COMMAND(OUTPUT ${BASIC_IMG_PATH}Disabled.png
-	    	                   COMMAND ${CONVERT_EXECUTABLE}  ${BASIC_IMG_PATH}Normal.png ${DISABLED_ICON_CONVERT_ARG_1} ${DISABLED_ICON_CONVERT_ARG_2} ${BASIC_IMG_PATH}Disabled.png
-		   	   				 DEPENDS ${BASIC_IMG_PATH}Normal.png)
-	      #Add this icon as a target
-         LIST(APPEND ICON_PNG_TARGETS ${BASIC_IMG_PATH}Disabled.png)
-		ENDIF(CONVERT_EXECUTABLE)
+        SET(BASIC_IMG_PATH ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME}/${ICON_SVG_NAME})
 
-   ENDFOREACH(ICON_SVG_SOURCE_FILE ${ICON_SVG_SOURCE_FILES})
+        FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Data/Images/Icons/${ICON_SVG_NAME})
 
-   ADD_CUSTOM_TARGET(Icons ALL COMMENT "Building the Icons"
-	                  DEPENDS ${ICON_PNG_TARGETS})
-   
-	IF(INCLUDE_APP_DATA)
-	   #Installing the Icon Set
-      INSTALL(DIRECTORY ${CMAKE_BINARY_DIR}/Data/Images/Icons
-                 DESTINATION share/KabalaEngine/Data/Images
-                 COMPONENT Data)
-	ENDIF(INCLUDE_APP_DATA)
+        #Command for making the Normal Icons
+        ADD_CUSTOM_COMMAND(OUTPUT ${BASIC_IMG_PATH}Normal.png
+            COMMAND ${INKSCAPE_EXECUTABLE} ${ICON_SVG_SOURCE_FILE} -w ${BUILD_ICON_DIMENSION} -h ${BUILD_ICON_DIMENSION} --export-png=${BASIC_IMG_PATH}Normal.png
+            DEPENDS ${ICON_SVG_SOURCE_FILE})
+        #Add this icon as a target
+        LIST(APPEND ICON_PNG_TARGETS ${BASIC_IMG_PATH}Normal.png)
+
+        IF(CONVERT_EXECUTABLE)
+            #Command for making he disabled Icons
+            ADD_CUSTOM_COMMAND(OUTPUT ${BASIC_IMG_PATH}Disabled.png
+                COMMAND ${CONVERT_EXECUTABLE}  ${BASIC_IMG_PATH}Normal.png ${DISABLED_ICON_CONVERT_ARG_1} ${DISABLED_ICON_CONVERT_ARG_2} ${BASIC_IMG_PATH}Disabled.png
+                DEPENDS ${BASIC_IMG_PATH}Normal.png)
+            #Add this icon as a target
+            LIST(APPEND ICON_PNG_TARGETS ${BASIC_IMG_PATH}Disabled.png)
+        ENDIF(CONVERT_EXECUTABLE)
+
+    ENDFOREACH(ICON_SVG_SOURCE_FILE ${ICON_SVG_SOURCE_FILES})
+
+    ADD_CUSTOM_TARGET(Icons ALL COMMENT "Building the Icons"
+        DEPENDS ${ICON_PNG_TARGETS})
+
+    IF(INCLUDE_APP_DATA)
+        #Installing the Icon Set
+        INSTALL(DIRECTORY ${CMAKE_BINARY_DIR}/Data/Images/Icons
+            DESTINATION share/KabalaEngine/Data/Images
+            COMPONENT Data)
+    ENDIF(INCLUDE_APP_DATA)
 ENDIF(BUILD_ICONS)
 
 IF(INCLUDE_APP_DATA)

@@ -49,6 +49,9 @@
 #include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGNode.h>
 #include <OpenSG/OSGViewport.h>
+#include <OpenSG/OSGCamera.h>
+#include <OpenSG/OSGBackground.h>
+#include <OpenSG/OSGForeground.h>
 #include <OpenSG/UserInterface/OSGUIDrawingSurface.h>
 #include "Application/KEMainApplication.h"
 #include <OpenSG/Lua/OSGLuaManager.h>
@@ -86,6 +89,11 @@ void Scene::initMethod (void)
 
 void Scene::enter(void)
 {
+    SLOG << "Entering Scene: "
+         << (getName(ScenePtr(this)) ? getName(ScenePtr(this)) : "UNNAMED SCENE")
+         << "." << std::endl;
+    dump(1);
+
     if(getRoot() == NullFC)
     {
         createDefaults();
@@ -198,6 +206,10 @@ void Scene::enter(void)
 
 void Scene::start(void)
 {
+    SLOG << "Starting Scene: "
+         << (getName(ScenePtr(this)) ? getName(ScenePtr(this)) : "UNNAMED SCENE")
+         << "." << std::endl;
+
     //If there is  a Lua Module for this scene then load it
     if(!getLuaModule().string().empty())
     {
@@ -214,10 +226,18 @@ void Scene::end(void)
     _IsStarted = false;
 
     producerSceneEnded(SceneEvent::create(ScenePtr(this), getTimeStamp()));
+
+    SLOG << "Ending Scene: "
+         << (getName(ScenePtr(this)) ? getName(ScenePtr(this)) : "UNNAMED SCENE")
+         << "." << std::endl;
 }
 
 void Scene::reset(void)
 {
+    SLOG << "Reseting Scene: "
+         << (getName(ScenePtr(this)) ? getName(ScenePtr(this)) : "UNNAMED SCENE")
+         << "." << std::endl;
+
     producerSceneReset(SceneEvent::create(ScenePtr(this), getTimeStamp()));
 }
 
@@ -260,7 +280,6 @@ void Scene::exit(void)
     //If There is a physics Handler then detach it
     if(getPhysicsHandler() != NullFC)
     {
-        std::cout << "Detaching Update Producer" << std::endl;
         //getPhysicsHandler()->detachUpdateProducer();
 
         //Detach all Physics spaces from the Physics handler
@@ -272,6 +291,10 @@ void Scene::exit(void)
     }
 
     producerSceneExited(SceneEvent::create(ScenePtr(this), getTimeStamp()));
+
+    SLOG << "Exited Scene: "
+         << (getName(ScenePtr(this)) ? getName(ScenePtr(this)) : "UNNAMED SCENE")
+         << "." << std::endl;
 }
 
 void Scene::createDefaults(void)
@@ -524,10 +547,72 @@ void Scene::changed(BitVector whichField, UInt32 origin)
     }
 }
 
-void Scene::dump(      UInt32    , 
+void Scene::dump(      UInt32 uiIndent   , 
                          const BitVector ) const
 {
-    SLOG << "Dump Scene NI" << std::endl;
+    for(UInt32 i(0) ; i<getViewports().size() ; ++i)
+    {
+        //Viewport
+        OSG::indentLog(uiIndent*4,PLOG);
+        PLOG << i << " Viewport: " 
+             << (getName(getViewports(i)) ? getName(getViewports(i)) : "UNNAMED VIEWPORT")
+             << ", Bounds ( L " << getViewports(i)->getLeft() 
+             << ", R " << getViewports(i)->getRight()
+             << ", T " << getViewports(i)->getTop()
+             << ", B " << getViewports(i)->getBottom() << ")"
+             << std::endl;
+
+        //Camera
+        OSG::indentLog((uiIndent+1)*4,PLOG);
+        PLOG << "Camera: ";
+        if(getViewports(i)->getCamera() == NullFC)
+        {
+            PLOG << "NULL";
+        }
+        else
+        {
+            PLOG << (getName(getViewports(i)->getCamera()) ?
+                     getName(getViewports(i)->getCamera()) : "UNNAMED CAMERA")
+                 << ", Type: "
+                 << getViewports(i)->getCamera()->getType().getCName();
+        }
+        PLOG << std::endl;
+
+        //Root
+        OSG::indentLog((uiIndent+1)*4,PLOG);
+        PLOG << "Root Node: " 
+             << (getViewports(i)->getRoot() == NullFC ? "NULL" :
+                 (getName(getViewports(i)->getRoot()) ?
+                  getName(getViewports(i)->getRoot()) : "UNNAMED Node"))
+             << std::endl;
+
+        //Background
+        OSG::indentLog((uiIndent+1)*4,PLOG);
+        PLOG << "Background: ";
+        if(getViewports(i)->getBackground() == NullFC)
+        {
+            PLOG << "NULL";
+        }
+        else
+        {
+            PLOG << (getName(getViewports(i)->getBackground()) ? getName(getViewports(i)->getBackground()) : "UNNAMED BACKGROUND")
+                 << ", Type: "
+                 << getViewports(i)->getBackground()->getType().getCName();
+        }
+        PLOG << std::endl;
+
+        //Foreground
+        for(UInt32 j(0) ; j<getViewports(i)->getForegrounds().size() ; ++j)
+        {
+            OSG::indentLog((uiIndent+1)*4,PLOG);
+            PLOG << j << " Foreground: " 
+                 << (getName(getViewports(i)->getForegrounds(j)) ?
+                      getName(getViewports(i)->getForegrounds(j)) : "UNNAMED FOREGROUND")
+                 << ", Type: "
+                 << getViewports(i)->getForegrounds(j)->getType().getCName()
+                 << std::endl;
+        }
+    }
 }
 
 

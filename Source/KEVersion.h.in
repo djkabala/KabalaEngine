@@ -55,5 +55,35 @@ std::string getKabalaEngineBuilderVersion(void)
 	return "@KABALA_ENGINE_VERSION@";
 }
 
+inline
+std::string getKabalaEngineBuildType(void)
+{
+	return "@KABALA_ENGINE_BUILD_TYPE@";
+}
+
+inline
+std::string getKabalaEngineBuildRepositoryRevision(void)
+{
+	return "@KABALA_ENGINE_REPOSITORY_REVISION@";
+}
+
+inline
+std::string getKabalaEngineAuthors(void)
+{
+	return "@KABALA_ENGINE_AUTHORS@";
+}
+
+inline
+std::string getKabalaEngineWebsite(void)
+{
+	return "@KABALA_ENGINE_WEBSITE@";
+}
+
+inline
+std::string getKabalaEngineBuilderAuthors()
+{
+	return "@KABALA_ENGINE_AUTHORS@";
+}
+
 #endif
 

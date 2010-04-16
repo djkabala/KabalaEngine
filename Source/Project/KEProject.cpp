@@ -193,6 +193,10 @@ void Project::start(void)
 	{
 		setActiveScene(getInitialScene());
 	}
+    else
+    {
+        SFATAL << "Project has no Initial Scene set." << std::endl;
+    }
 
     setDefaults();
 
@@ -283,7 +287,7 @@ Path Project::getProjectFilePath(void) const
 
 Path Project::getLuaModulePath(void) const
 {
-    return getProjectFilePath() / getLuaModulesDirectory();
+    return getLuaModulesDirectory();
 }
 
 void Project::loadScripts(void)

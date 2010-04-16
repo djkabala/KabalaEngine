@@ -134,6 +134,7 @@ ImageComponentPtr IconManager::createIconImageComponent(const std::string& IconS
 			IconImageComponent->setRolloverTexture(TheSet->getTexture(IconSet::ICON_ROLLOVER));
 			IconImageComponent->setFocusedTexture(TheSet->getTexture(IconSet::ICON_FOCUSED));
 			IconImageComponent->setDisabledTexture(TheSet->getTexture(IconSet::ICON_DISABLED));
+			IconImageComponent->setScale(ImageComponent::SCALE_MIN_AXIS);
 		endEditCP(IconImageComponent, ImageComponent::TextureFieldMask | ImageComponent::RolloverTextureFieldMask | ImageComponent::FocusedTextureFieldMask | ImageComponent::DisabledTextureFieldMask);
 
 		return IconImageComponent;

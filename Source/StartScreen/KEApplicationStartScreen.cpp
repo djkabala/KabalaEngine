@@ -358,8 +358,8 @@ ForegroundPtr ApplicationStartScreen::createInterface(void)
 	//Version Value Label
     LabelPtr VersionValueLabel = osg::Label::create();
 	beginEditCP(VersionValueLabel, Label::TextFieldMask | Label::FontFieldMask | Label::PreferredSizeFieldMask | Label::TextColorsFieldMask | Label::BackgroundsFieldMask | Label::BordersFieldMask);
-        VersionValueLabel->setText(getKabalaEngineVersion());
-        VersionValueLabel->setPreferredSize(Vec2f(70,20));
+        VersionValueLabel->setText(getKabalaEngineVersion() + " - " + getKabalaEngineBuildType());
+        VersionValueLabel->setPreferredSize(Vec2f(110,20));
 		VersionValueLabel->setTextColors(Color4f(1.0f,1.0f,1.0f,1.0f));
 		VersionValueLabel->setBackgrounds(NullFC);
 		VersionValueLabel->setBorders(NullFC);
@@ -370,7 +370,7 @@ ForegroundPtr ApplicationStartScreen::createInterface(void)
     LabelPtr AuthorValueLabel = osg::Label::create();
 	beginEditCP(AuthorValueLabel, Label::TextFieldMask | Label::FontFieldMask | Label::PreferredSizeFieldMask | Label::TextColorsFieldMask | Label::BackgroundsFieldMask | Label::BordersFieldMask);
         AuthorValueLabel->setText(getKabalaEngineAuthors());
-        AuthorValueLabel->setPreferredSize(Vec2f(100,20));
+        AuthorValueLabel->setPreferredSize(Vec2f(300,20));
 		AuthorValueLabel->setTextColors(Color4f(1.0f,1.0f,1.0f,1.0f));
 		AuthorValueLabel->setBackgrounds(NullFC);
 		AuthorValueLabel->setBorders(NullFC);

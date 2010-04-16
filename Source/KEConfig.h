@@ -64,7 +64,7 @@ inline
 inline
 ::osg::UInt32 getKabalaEngineMinorVersion(void)
 {
-	return 1;
+	return 3;
 }
 
 inline
@@ -76,7 +76,7 @@ inline
 inline
 std::string getKabalaEngineVersion(void)
 {
-	return "0.1.0";
+	return "0.3.0";
 }
 
 inline
@@ -88,7 +88,7 @@ inline
 inline
 ::osg::UInt32 getKabalaEngineBuilderMinorVersion(void)
 {
-	return 1;
+	return 3;
 }
 
 inline
@@ -100,22 +100,40 @@ inline
 inline
 std::string getKabalaEngineBuilderVersion(void)
 {
-	return "0.1.0";
+	return "0.3.0";
 }
 
-#endif
+inline
+std::string getKabalaEngineBuildType(void)
+{
+	return "Debug";
+}
 
 inline
-std::string getKabalaEngineAuthors()
+std::string getKabalaEngineBuildRepositoryRevision(void)
 {
-	return "David Kabala";
+	return "164";
+}
+
+inline
+std::string getKabalaEngineAuthors(void)
+{
+	return "David Kabala <djkabala@gmail.com>";
+}
+
+inline
+std::string getKabalaEngineWebsite(void)
+{
+	return "http://www.vrac.iastate.edu/~dkabala/KabalaEngine/";
 }
 
 inline
 std::string getKabalaEngineBuilderAuthors()
 {
-	return "David Kabala";
+	return "David Kabala <djkabala@gmail.com>";
 }
+
+#endif
 
 #define BOOST_SMART_PTR_HPP
 
