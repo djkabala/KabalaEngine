@@ -626,8 +626,6 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::highlightChanged(void)
 
 void HierarchyPanel::SceneGraphTreeSelectionListener::changeDebugCameraPosition(void)
 {
-	
-
 	showAll(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getCamera(),_ApplicationPlayer->getSelectedNode());
 	//showAll(_ApplicationPlayer->getDebugViewport()->getCamera(),_ApplicationPlayer->getSelectedNode());
 
@@ -676,82 +674,64 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::showAll(CameraPtr TheCamer
 
 	if(Scene!=NullFC && TheCameraOrig!=NullFC)
 	{
-		if(getName(Scene))
-		{
-			std::cout<<"Selected node is : "<<getName(Scene)<<std::endl;
-		}
-		else
-		{
-			std::cout<<"Selected node is : Unnamed node"<<std::endl;
-		}
+        PerspectiveCameraPtr TheCamera;
+        if(TheCameraOrig->getType() == PerspectiveCamera::getClassType())
+        {
+            TheCamera = PerspectiveCamera::Ptr::dcast(TheCameraOrig);
+        }
 
-		std::string coreType = Scene->getCore()->getTypeName();
+        //Make sure the volume is up to date for the Scene
+        Scene->updateVolume();
 
-		//if(coreType == "Geometry")
-		//{
+        //Get the Minimum and Maximum bounds of the volume
+        Vec3f min,max;
+        DynamicVolume TheVol;
+        Scene->getWorldVolume(TheVol);
+        TheVol.getBounds( min, max );
 
-			PerspectiveCameraPtr TheCamera;
-			if(TheCameraOrig->getType() == PerspectiveCamera::getClassType())
-			{
-				TheCamera = PerspectiveCamera::Ptr::dcast(TheCameraOrig);
-			}
+        Vec3f d = max - min;
+        if(d.length() < Eps) //The volume is 0
+        {
+            Pnt3f NodeOrigin(0.0f,0.0f,0.0f);
+            Scene->getToWorld().mult(NodeOrigin);
+            //Default to a 1x1x1 box volume
+            min = NodeOrigin - Vec3f(1.0f,1.0f,1.0f);
+            max = NodeOrigin + Vec3f(1.0f,1.0f,1.0f);
+            d = max - min;
+        }
 
-			//Make sure the volume is up to date for the Scene
-			Scene->updateVolume();
+        // try to be nice to people giving degrees...
+        Real32 fov(TheCamera->getFov());
+        if(fov > Pi)
+        {
+            fov = osgdegree2rad(fov);
+        }
 
-			//Get the Minimum and Maximum bounds of the volume
-			DynamicVolume _DyVol;
-			Scene->getWorldVolume(_DyVol);
+        Real32 dist = osgMax(d[0],d[1]) / (2.0f * osgtan(fov /2.0f));
 
-			Vec3f min,max;
-			_DyVol.getBounds( min, max );
-			Vec3f d = max - min;
+        Pnt3f at((min[0] + max[0]) * .5f,(min[1] + max[1]) * .5f,(min[2] + max[2]) * .5f);
+        Pnt3f from=at;
 
-			if(d.length() < Eps) //The volume is 0
-			{
-				SWARNING << "The volume of selected geometry is zero" ;
-				//Default to a 1x1x1 box volume
-				min.setValues(-0.5f,-0.5f,-0.5f);
-				max.setValues( 0.5f, 0.5f, 0.5f);
-				d = max - min;
-			}
+        //Check if the Camera is flipped
+        Vec3f OrigX(1.0f,0.0f,0.0f), OrigZ(0.0f,0.0f,1.0f);
+        Matrix OrigViewing;
+        TheCamera->getViewing(OrigViewing,1,1);
+        OrigViewing.mult(OrigX);
+        OrigViewing.mult(OrigZ);
+        if(OrigX.cross(OrigZ) == Up)
+        {
+            from[2]+=(dist+fabs(max[2]-min[2])*0.5f); 
+        }
+        else
+        {
+            from[2]-=(dist+fabs(max[2]-min[2])*0.5f); 
+        }
 
-			Real32 dist = osgMax(d[0],d[1]) / (2 * osgtan(TheCamera->getFov() / 2.f));
-
-			Pnt3f at((min[0] + max[0]) * .5f,(min[1] + max[1]) * .5f,(min[2] + max[2]) * .5f);
-			Pnt3f from=at;
-			from[2]-=(100+dist+fabs(max[2]-min[2])*0.5f); 
-
-			//std::cout<<"at : "<<at[0]<<","<<at[1]<<","<<at[2]<<std::endl;
-			//std::cout<<"from : "<<from[0]<<","<<from[1]<<","<<from[2]<<std::endl;
-
-			//If the Camera Beacon is a node with a transfrom core
-			if(TheCamera->getBeacon() != NullFC &&
-				TheCamera->getBeacon()->getCore() != NullFC &&
-				TheCamera->getBeacon()->getCore()->getType().isDerivedFrom(Transform::getClassType()))
-			{
-				Matrix m;
-
-				if(!MatrixLookAt(m, from, at, Up))
-				{
-					beginEditCP(TheCamera->getBeacon()->getCore(), Transform::MatrixFieldMask);
-						Transform::Ptr::dcast(TheCamera->getBeacon()->getCore())->setMatrix(m);
-					endEditCP(TheCamera->getBeacon()->getCore(), Transform::MatrixFieldMask);
-				}
-			}
-
-			//Set the camera to go from 1% of the object to 10 times its size
-			/*Real32 diag = osgMax(osgMax(d[0], d[1]), d[2]);
-			beginEditCP(TheCamera,  PerspectiveCamera::NearFieldMask | PerspectiveCamera::FarFieldMask);
-				TheCamera->setNear (diag / 100.f);
-				TheCamera->setFar  (10 * diag);
-			endEditCP(TheCamera, PerspectiveCamera::NearFieldMask | PerspectiveCamera::FarFieldMask);
-			*/
-		//}
-		//else
-		//{
-		//	SWARNING << "Selected node not a geometry node"<<std::endl;
-		//}
+        Matrix m;
+        if(!MatrixLookAt(m, from, at, Up))
+        {
+            _ApplicationPlayer->moveDebugCamera(m);
+        }
 	}
 	else
 	{

@@ -48,6 +48,7 @@
 
 
 #include <OpenSG/OSGViewport.h>
+#include <OpenSG/OSGTransform.h>
 #include <OpenSG/Toolbox/OSGEventListener.h>
 
 #include <OpenSG/Input/OSGKeyAdapter.h>
@@ -135,6 +136,13 @@
 #include "Player/Commands/KEUndoCommandOfPlayer.h"
 #include "Player/Commands/KERedoCommandOfPlayer.h"
 
+
+//Animation
+#include <OpenSG/Animation/OSGKeyframeSequences.h>
+#include <OpenSG/Animation/OSGKeyframeAnimator.h>
+#include <OpenSG/Animation/OSGFieldAnimation.h>
+#include <OpenSG/Animation/OSGAnimationGroup.h>
+
 #include <vector>
 
 OSG_BEGIN_NAMESPACE
@@ -200,7 +208,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	ContentPanelPtr getContentPanel(void);
 	void setContentPanel(ContentPanelPtr);
 
-    /*=========================  PROTECTED  ===============================*/
+    void moveDebugCamera(const Matrix& Transform);
+    void resetDebugCamera(void);
+   /*=========================  PROTECTED  ===============================*/
   protected:
 
 
@@ -428,8 +438,18 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     SimpleStatisticsForegroundPtr _DebugParticleSystemStatForeground;
     SimpleStatisticsForegroundPtr _DebugAnimationStatForeground;
 	
-	Matrix _OriginalMatrix;
-	bool _OriginalCameraInitialized;
+    //Debug Camera
+	CameraPtr _SceneViewportCamera;
+	CameraPtr _DebugCamera;
+	NodePtr _DebugCameraBeacon;
+	TransformPtr _DebugBeaconTransform;
+
+    //Debug Camera Animation
+    KeyframeTransformationsSequencePtr _DebugCameraTransformationKeyframes;
+    //KeyframeNumbersSequencePtr _DebugCameraFovKeyframes;
+    FieldAnimationPtr _DebugCameraTransAnimation;
+    //FieldAnimationPtr _DebugCameraFovAnimation;
+    AnimationGroupPtr _DebugCameraAnimationGroup;
 
 	void updateListBox(void);
 	void setupPopupMenu();
@@ -439,6 +459,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	void actionPerformed(const ActionEventPtr e);
 
 	ViewportPtr createDebugViewport(void);
+    void attachDebugViewport(void);
+    void detachDebugViewport(void);
+    void updateDebugViewport(void);
+
+    void createDebugCameraAnim(void);
 
 	virtual void attachDebugInterface(void);
 	virtual void detachDebugInterface(void);

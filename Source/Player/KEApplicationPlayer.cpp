@@ -45,7 +45,6 @@
 #include <OpenSG/OSGConfig.h>
 #include <OpenSG/OSGSimpleAttachments.h>
 #include <OpenSG/OSGDrawable.h>
-#include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGPerspectiveCamera.h>
 #include <OpenSG/OSGPassiveBackground.h>
 #include <OpenSG/OSGViewport.h>
@@ -73,12 +72,6 @@ OSG_USING_NAMESPACE
 
 
 //  the ptrs for the debug interface
-
-/// MAKE THESE AS DATA VARIABLES ***********************************************************
-
-
-
-/// MAKE THESE AS DATA VARIABLES ***********************************************************END
 
 /***************************************************************************\
  *                            Description                                  *
@@ -141,7 +134,6 @@ void ApplicationPlayer::start(void)
 {
 	if(MainApplication::the()->getProject() != NullFC)
 	{
-        //TODO: Check if te Debug Interface has already been created
 		createDebugInterface();							// Allocate memory to the various pointers in the debug interface when the ApplicationPlayer is started
 
         createGotoSceneMenuItems(MainApplication::the()->getProject());
@@ -163,6 +155,12 @@ void ApplicationPlayer::stop(void)
 
 void ApplicationPlayer::createDebugInterface(void)
 {
+    //Check if te Debug Interface has already been created
+    if(DebuggerGraphics != NullFC)
+    {
+        return;
+    }
+
 	 // debug interface creation
 	DebuggerGraphics = osg::Graphics2D::create();
 
@@ -708,6 +706,12 @@ void ApplicationPlayer::createDebugInterface(void)
         DebuggerUIForeground->setDrawingSurface(DebuggerDrawingSurface);
     endEditCP(DebuggerUIForeground, UIForeground::DrawingSurfaceFieldMask);
 
+    //Create the Viewport
+    _DebugViewport = createDebugViewport();
+    addRefCP(_DebugViewport);
+
+    //Create the Debug Camera Animation Group
+    createDebugCameraAnim();
 }
 
 void ApplicationPlayer::updateGotoSceneMenuItems(ProjectPtr TheProject)
@@ -754,7 +758,7 @@ void ApplicationPlayer::createGotoSceneMenuItems(ProjectPtr TheProject)
 
         if(SceneCharName == NULL)
         {
-            SceneName = "Untitled Scene ";
+            SceneName = "UNTITLED SCENE";
         }
         else
         {
@@ -776,7 +780,6 @@ void ApplicationPlayer::createGotoSceneMenuItems(ProjectPtr TheProject)
 
 void ApplicationPlayer::attachDebugInterface(void)
 {
-
 	if( MainApplication::the()->getProject()->getActiveScene()->getMFViewports()->size() == 0 ||
 		MainApplication::the()->getProject()->getActiveScene()->getViewports(0) == NullFC)
 	{
@@ -803,10 +806,8 @@ void ApplicationPlayer::attachDebugInterface(void)
 	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     	DebuggerDrawingSurface->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
     endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
-    
-	_DebugViewport = createDebugViewport();
 
-	MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(_DebugViewport);
+    attachDebugViewport();
 	
 	//MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getForegrounds().push_back(DebuggerUIForeground);
 }
@@ -814,40 +815,21 @@ void ApplicationPlayer::attachDebugInterface(void)
 
 void ApplicationPlayer::detachDebugInterface(void)
 {
+
 	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
         DebuggerDrawingSurface->setEventProducer(NullFC);
     endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     
-	osg::MFViewportPtr::iterator SearchItor(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().find(_DebugViewport));
-	if(SearchItor != MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().end())
-	{
-		// remove viewport
-		MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().erase(SearchItor);
-	}
-
-	CameraPtr OriginalCamera = MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getCamera();
-
-	if(_OriginalCameraInitialized)
-	{
-		std::string _NameOfCore = OriginalCamera->getBeacon()->getCore()->getType().getCName();
-		if(_NameOfCore=="Transform")
-		{
-			TransformPtr OriginalTransform = TransformPtr::dcast(OriginalCamera->getBeacon()->getCore());
-			beginEditCP(OriginalTransform,Transform::MatrixFieldMask);
-				OriginalTransform->setMatrix(_OriginalMatrix);
-			endEditCP(OriginalTransform,Transform::MatrixFieldMask);
-		}
-	}
-
+    detachDebugViewport();
 }
 
 void ApplicationPlayer::enableDebug(bool EnableDebug)
 {
-    _IsDebugActive = EnableDebug;
-    if(_IsDebugActive)
+    if(EnableDebug && !_IsDebugActive)
     {
         //Attach the Interface
 		attachDebugInterface();
+
         updateGotoSceneMenuItems(MainApplication::the()->getProject());
 
         //Attach Listeners to the project
@@ -873,11 +855,11 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
             MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(true);
         }
     }
-    else
+    else if(!EnableDebug && _IsDebugActive)
     {
 		detachDebugInterface();
 
-        //Attach Listeners to the project
+        //dettach Listeners to the project
         MainApplication::the()->getProject()->editEventProducer()->detachEventListener(&_ProjectListener, Project::SceneChangedMethodId);
 
         //Turn off Input Blocking
@@ -895,6 +877,7 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
             MainApplication::the()->getMainWindowEventProducer()->setAttachMouseToCursor(false);
         }
     }
+    _IsDebugActive = EnableDebug;
 }
 
 void ApplicationPlayer::updateWindowTitle(void)
@@ -1393,11 +1376,6 @@ void ApplicationPlayer::updateDebugUI(void)
 
 void ApplicationPlayer::updateDebugSceneChange(void)
 {
-	//Make sure the Debug Viewport is on top
-	MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(_DebugViewport);
-	MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(_DebugViewport);
-
-
 	//Update the UI for the debug interface
 	updateDebugUI();
 
@@ -1416,46 +1394,76 @@ void ApplicationPlayer::updateDebugSceneChange(void)
 	if(_IsDebugActive)
 	{
 		setSceneInputBlocking(true);
-		SWARNING<<"Just blocked the input"<<std::endl;
-		if(MainApplication::the()->getProject()->isInputBlocked())
-		{
-			SWARNING<<"input is blocked"<<std::endl;
-		}
-		else
-		{
-			SWARNING<<"input is NOT blocked"<<std::endl;
-		}
 	}
+    
+    updateDebugViewport();
+    
+}
 
+void ApplicationPlayer::detachDebugViewport(void)
+{
+	//Make sure the Debug Viewport is on top
+    MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(_DebugViewport);
+
+    //Put the original Camera back on the Scene's Viewport
+    beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0),Viewport::CameraFieldMask);
+        MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->setCamera(_SceneViewportCamera);
+    endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0),Viewport::CameraFieldMask);
+}
+
+void ApplicationPlayer::updateDebugViewport(void)
+{
+    //Update The Camera
+	_SceneViewportCamera = MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getCamera();
+
+	_DebugCamera = CameraPtr::dcast(_SceneViewportCamera->shallowCopy());
+    beginEditCP(_DebugCamera, Camera::BeaconFieldMask);
+        _DebugCamera->setBeacon(_DebugCameraBeacon);
+    endEditCP(_DebugCamera, Camera::BeaconFieldMask);
+
+    //Put the Camera Beacon to the beacon of the scene's camera
+    beginEditCP(_DebugBeaconTransform, Transform::MatrixFieldMask);
+		_DebugBeaconTransform->setMatrix(_SceneViewportCamera->getBeacon()->getToWorld());
+    endEditCP(_DebugBeaconTransform, Transform::MatrixFieldMask);
+
+    //Put the Debug Camera on the Scene's Viewport
+    beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0),Viewport::CameraFieldMask);
+        MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->setCamera(_DebugCamera);
+    endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0),Viewport::CameraFieldMask);
+
+	beginEditCP(_DebugViewport, Viewport::CameraFieldMask);
+        _DebugViewport->setCamera(_DebugCamera);
+	endEditCP(_DebugViewport, Viewport::CameraFieldMask);
+
+	//Make sure the Debug Viewport is on top
+    beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(),
+                Window::PortFieldMask);
+        MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(_DebugViewport);
+        MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(_DebugViewport);
+    endEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow(),
+                Window::PortFieldMask);
+}
+
+void ApplicationPlayer::attachDebugViewport(void)
+{
+    updateDebugViewport();
 }
 
 ViewportPtr ApplicationPlayer::createDebugViewport(void)
 {
-
-	_OriginalCameraInitialized = true;
-
-	CameraPtr OriginalCamera = MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0)->getCamera();
-
-	_OriginalMatrix = OriginalCamera->getBeacon()->getToWorld();
-
-	CameraPtr DebugCamera = CameraPtr::dcast(OriginalCamera->shallowCopy());
-		
     //Camera Transformation Node	
-	TransformPtr DebugBeaconTransform = Transform::create();
-    beginEditCP(DebugBeaconTransform, Transform::MatrixFieldMask);
-		DebugBeaconTransform->setMatrix(OriginalCamera->getBeacon()->getToWorld());
-    endEditCP(DebugBeaconTransform, Transform::MatrixFieldMask);
+	_DebugBeaconTransform = Transform::create();
 
-	NodePtr _DebugBeacon = osg::Node::create();
-    beginEditCP(_DebugBeacon, Node::CoreFieldMask);
-        _DebugBeacon->setCore(DebugBeaconTransform);
-    endEditCP(_DebugBeacon, Node::CoreFieldMask);
+	_DebugCameraBeacon = osg::Node::create();
+    beginEditCP(_DebugCameraBeacon, Node::CoreFieldMask);
+        _DebugCameraBeacon->setCore(_DebugBeaconTransform);
+    endEditCP(_DebugCameraBeacon, Node::CoreFieldMask);
 
     //Debug Root Node
     NodePtr DefaultRootNode = osg::Node::create();
     beginEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
         DefaultRootNode->setCore(osg::Group::create());
-        DefaultRootNode->addChild(_DebugBeacon);//CameraBeaconNode);
+        DefaultRootNode->addChild(_DebugCameraBeacon);
     endEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
 
 	//Background
@@ -1464,7 +1472,6 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
     ViewportPtr DebugViewport = Viewport::create();
 	
 	beginEditCP(DebugViewport);
-        DebugViewport->setCamera                  (DebugCamera);
         DebugViewport->setRoot                    (DefaultRootNode);
         DebugViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
         DebugViewport->setBackground              (DefaultBackground);
@@ -1472,6 +1479,93 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
     endEditCP(DebugViewport);
 
     return DebugViewport;
+}
+
+void ApplicationPlayer::moveDebugCamera(const Matrix& Transform)
+{
+    if(_DebugCamera!=NullFC)
+    {
+        _DebugCameraAnimationGroup->stop();
+
+        //Update The Camera Animation Values
+        _DebugCameraTransformationKeyframes->clear();
+        _DebugCameraTransformationKeyframes->addKeyframe(_DebugBeaconTransform->getMatrix(),0.0f);
+        _DebugCameraTransformationKeyframes->addKeyframe(Transform,1.0f);
+
+        //_DebugCameraFovKeyframes->clear();
+        //_DebugCameraFovKeyframes->addKeyframe(PerspectiveCamera::Ptr::dcast(_SceneViewportCamera)->getFov(),0.0f);
+        //_DebugCameraFovKeyframes->addKeyframe(PerspectiveCamera::Ptr::dcast(_SceneViewportCamera)->getFov()
+                                              //* 1.5f,0.5f);
+        //_DebugCameraFovKeyframes->addKeyframe(PerspectiveCamera::Ptr::dcast(_SceneViewportCamera)->getFov(),1.0f);
+
+        //Attach the Debug Camera Animation
+        _DebugCameraTransAnimation->setAnimatedField(_DebugBeaconTransform,
+                                                     Transform::MatrixFieldId);
+
+        //_DebugCameraFovAnimation->setAnimatedField(_DebugCamera,
+                                                   //PerspectiveCamera::FovFieldId);
+
+        _DebugCameraAnimationGroup->attachUpdateProducer(MainApplication::the()->getMainWindowEventProducer()->editEventProducer());
+
+        //Start the Animation
+        _DebugCameraAnimationGroup->start();
+    }
+    else
+    {
+        if(_DebugCamera==NullFC)
+        {
+            SWARNING << "Debug Camera is NullFC." << std::endl;
+        }
+    }
+}
+
+void ApplicationPlayer::createDebugCameraAnim(void)
+{
+    //Transformation Animation
+    _DebugCameraTransformationKeyframes = KeyframeTransformationsSequence44f::create();
+
+    KeyframeAnimatorPtr DebugCameraTransformationAnimator = KeyframeAnimator::create();
+    beginEditCP(DebugCameraTransformationAnimator, KeyframeAnimator::KeyframeSequenceFieldMask);
+        DebugCameraTransformationAnimator->setKeyframeSequence(_DebugCameraTransformationKeyframes);
+    endEditCP(DebugCameraTransformationAnimator, KeyframeAnimator::KeyframeSequenceFieldMask);
+    
+    _DebugCameraTransAnimation = FieldAnimation::create();
+    beginEditCP(_DebugCameraTransAnimation);
+        _DebugCameraTransAnimation->setAnimator(DebugCameraTransformationAnimator);
+        _DebugCameraTransAnimation->setInterpolationType(LINEAR_INTERPOLATION);
+        _DebugCameraTransAnimation->setCycling(1);
+    endEditCP(_DebugCameraTransAnimation);
+    
+    //Fov Animation
+    //_DebugCameraFovKeyframes = KeyframeNumbersSequenceReal32::create();
+
+    //KeyframeAnimatorPtr DebugCameraFovAnimator = KeyframeAnimator::create();
+    //beginEditCP(DebugCameraFovAnimator, KeyframeAnimator::KeyframeSequenceFieldMask);
+        //DebugCameraFovAnimator->setKeyframeSequence(_DebugCameraFovKeyframes);
+    //endEditCP(DebugCameraFovAnimator, KeyframeAnimator::KeyframeSequenceFieldMask);
+    
+    //_DebugCameraFovAnimation = FieldAnimation::create();
+    //beginEditCP(_DebugCameraFovAnimation);
+        //_DebugCameraFovAnimation->setAnimator(DebugCameraFovAnimator);
+        //_DebugCameraFovAnimation->setInterpolationType(LINEAR_INTERPOLATION);
+        //_DebugCameraFovAnimation->setCycling(1);
+    //endEditCP(_DebugCameraFovAnimation);
+
+    //Animation Group
+    _DebugCameraAnimationGroup = AnimationGroup::create();
+    beginEditCP(_DebugCameraAnimationGroup);
+        _DebugCameraAnimationGroup->getAnimations().push_back(_DebugCameraTransAnimation);
+        //_DebugCameraAnimationGroup->getAnimations().push_back(_DebugCameraFovAnimation);
+    endEditCP(_DebugCameraAnimationGroup);
+    addRefCP(_DebugCameraAnimationGroup);
+}
+
+void ApplicationPlayer::resetDebugCamera(void)
+{
+    //Put the Camera Beacon to the beacon of the scene's camera
+    beginEditCP(_DebugBeaconTransform, Transform::MatrixFieldMask);
+		_DebugBeaconTransform->setMatrix(_SceneViewportCamera->getBeacon()->getToWorld());
+    endEditCP(_DebugBeaconTransform, Transform::MatrixFieldMask);
 }
 
 void ApplicationPlayer::updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager)
@@ -1528,7 +1622,6 @@ ApplicationPlayer::ApplicationPlayer(void) :
 	_RedoActionListener(NULL,NULL),
 	_CommandManagerListener(ApplicationPlayerPtr(this))
 {
-	_OriginalCameraInitialized = false;
 	_TheUndoManager = UndoManager::create();
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
 	initDebugStatForegrounds();
@@ -1556,7 +1649,6 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
 	_RedoActionListener(NULL,NULL),
 	_CommandManagerListener(ApplicationPlayerPtr(this))
 {
-	_OriginalCameraInitialized = false;
 	_TheUndoManager = UndoManager::create();
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
 }
