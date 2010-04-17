@@ -54,6 +54,7 @@
 #include <OpenSG/OSGImageForeground.h>
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGTransform.h>
+#include <OpenSG/OSGPointLight.h>
 #include <OpenSG/OSGPerspectiveCamera.h>
 #include <OpenSG/OSGSimpleAttachments.h>
 
@@ -406,15 +407,12 @@ void MainApplication::exit(void)
 	getMainWindowEventProducer()->closeWindow();
 }
 
-ProjectPtr MainApplication::createDefaultProject(void)
+ScenePtr MainApplication::createDefaultScene(void)
 {
-	ProjectPtr TheDefaultProject = ProjectBase::create();
-
     //The Default Scene
-    //Root Node
     //Camera Transformation Node
 	Matrix CameraTransformMatrix;
-	CameraTransformMatrix.setTranslate(0.0f,0.0f, 5.0f);
+	CameraTransformMatrix.setTranslate(0.0f,0.0f, 9.0f);
 	TransformPtr CameraBeaconTransform = Transform::create();
 	beginEditCP(CameraBeaconTransform, Transform::MatrixFieldMask);
 		CameraBeaconTransform->setMatrix(CameraTransformMatrix);
@@ -426,28 +424,9 @@ ProjectPtr MainApplication::createDefaultProject(void)
 		CameraBeaconNode->setCore(CameraBeaconTransform);
 	endEditCP(CameraBeaconNode, Node::CoreFieldMask);
 
-    // Make Torus Node (creates Torus in background of scene)
-    NodePtr TorusGeometryNode = makeTorus(.5, 2, 64, 64);
-    setName(TorusGeometryNode, "Torus" );
-    
-	NodePtr SceneTransformNode = Node::create();
-    setName(SceneTransformNode, "Torus Transform" );
-    beginEditCP(SceneTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
-		SceneTransformNode->setCore(Transform::create());
-        SceneTransformNode->addChild(TorusGeometryNode);
-	endEditCP(SceneTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
-
-	NodePtr DefaultSceneNode = Node::create();
-    setName(DefaultSceneNode, "Scene Root" );
-    beginEditCP(DefaultSceneNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
-        DefaultSceneNode->setCore(osg::Group::create());
-        DefaultSceneNode->addChild(CameraBeaconNode);
-        DefaultSceneNode->addChild(SceneTransformNode);
-    endEditCP(DefaultSceneNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
-
     //Camera
     PerspectiveCameraPtr DefaultSceneCamera = PerspectiveCamera::create();
-    setName(DefaultSceneCamera, "Camera" );
+    setName(DefaultSceneCamera, "Untitled Camera" );
     beginEditCP(DefaultSceneCamera, PerspectiveCamera::FovFieldMask | PerspectiveCamera::NearFieldMask | PerspectiveCamera::FarFieldMask | PerspectiveCamera::BeaconFieldMask);
         DefaultSceneCamera->setFov(60.f);
         DefaultSceneCamera->setNear(0.1f);
@@ -455,16 +434,105 @@ ProjectPtr MainApplication::createDefaultProject(void)
         DefaultSceneCamera->setBeacon(CameraBeaconNode);
     endEditCP(DefaultSceneCamera, PerspectiveCamera::FovFieldMask | PerspectiveCamera::NearFieldMask | PerspectiveCamera::FarFieldMask | PerspectiveCamera::BeaconFieldMask);
 
+    // Make Torus Node (creates Torus in background of scene)
+    NodePtr TorusGeometryNode = makeTorus(.5, 2, 64, 64);
+    setName(TorusGeometryNode, "Torus" );
+    
+	NodePtr TorusTransformNode = Node::create();
+    setName(TorusTransformNode, "Torus Transform" );
+    beginEditCP(TorusTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+		TorusTransformNode->setCore(Transform::create());
+        TorusTransformNode->addChild(TorusGeometryNode);
+	endEditCP(TorusTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+
+    // Make Box Node (creates Box in background of scene)
+    NodePtr BoxGeometryNode = makeBox(3.0f, 3.0f, 3.0f, 8, 8, 8);
+    setName(BoxGeometryNode, "Box" );
+    
+	Matrix BoxTransformMatrix;
+	BoxTransformMatrix.setTranslate(5.0f,0.0f, 0.0f);
+
+	TransformPtr BoxTransform = Transform::create();
+	beginEditCP(BoxTransform, Transform::MatrixFieldMask);
+		BoxTransform->setMatrix(BoxTransformMatrix);
+	endEditCP(BoxTransform, Transform::MatrixFieldMask);
+    
+	NodePtr BoxTransformNode = Node::create();
+    setName(BoxTransformNode, "Box Transform" );
+    beginEditCP(BoxTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+		BoxTransformNode->setCore(BoxTransform);
+        BoxTransformNode->addChild(BoxGeometryNode);
+	endEditCP(BoxTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+
+    // Make Cone Node (creates Cone in background of scene)
+    NodePtr ConeGeometryNode = makeCone(3.5, 1.5f, 96, true, true);
+    setName(ConeGeometryNode, "Cone" );
+    
+	Matrix ConeTransformMatrix;
+	ConeTransformMatrix.setTranslate(-5.0f,0.0f, 0.0f);
+
+	TransformPtr ConeTransform = Transform::create();
+	beginEditCP(ConeTransform, Transform::MatrixFieldMask);
+		ConeTransform->setMatrix(ConeTransformMatrix);
+	endEditCP(ConeTransform, Transform::MatrixFieldMask);
+    
+	NodePtr ConeTransformNode = Node::create();
+    setName(ConeTransformNode, "Cone Transform" );
+    beginEditCP(ConeTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+		ConeTransformNode->setCore(ConeTransform);
+        ConeTransformNode->addChild(ConeGeometryNode);
+	endEditCP(ConeTransformNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+
+    //Light Beacon
+	Matrix LightTransformMatrix;
+	LightTransformMatrix.setTranslate(0.0f,5.0f, 5.0f);
+	TransformPtr LightBeaconTransform = Transform::create();
+	beginEditCP(LightBeaconTransform, Transform::MatrixFieldMask);
+		LightBeaconTransform->setMatrix(LightTransformMatrix);
+	endEditCP(LightBeaconTransform, Transform::MatrixFieldMask);
+
+	NodePtr LightBeaconNode = Node::create();
+    setName(LightBeaconNode, "Light Beacon" );
+	beginEditCP(LightBeaconNode, Node::CoreFieldMask);
+		LightBeaconNode->setCore(LightBeaconTransform);
+	endEditCP(LightBeaconNode, Node::CoreFieldMask);
+
+    //Make the Light
+    PointLightPtr ThePointLight = PointLight::create();
+
+	beginEditCP(ThePointLight, PointLight::BeaconFieldMask);
+        ThePointLight->setBeacon(LightBeaconNode);
+	endEditCP(ThePointLight, PointLight::BeaconFieldMask);
+
+	NodePtr LightNode = Node::create();
+    setName(LightNode, "Light " );
+	beginEditCP(LightNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+		LightNode->setCore(ThePointLight);
+        LightNode->addChild(TorusTransformNode);
+        LightNode->addChild(BoxTransformNode);
+        LightNode->addChild(ConeTransformNode);
+	endEditCP(LightNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+
+    //Scene Root Node
+	NodePtr DefaultSceneNode = Node::create();
+    setName(DefaultSceneNode, "Scene Root" );
+    beginEditCP(DefaultSceneNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+        DefaultSceneNode->setCore(osg::Group::create());
+        DefaultSceneNode->addChild(LightBeaconNode);
+        DefaultSceneNode->addChild(CameraBeaconNode);
+        DefaultSceneNode->addChild(LightNode);
+    endEditCP(DefaultSceneNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
+
     //Background
     SolidBackgroundPtr DefaultSceneBackground = SolidBackground::create();
-    setName(DefaultSceneBackground, "Background" );
+    setName(DefaultSceneBackground, "Untitled Background" );
     beginEditCP(DefaultSceneBackground, SolidBackground::ColorFieldMask);
-        DefaultSceneBackground->setColor(Color3f(0.0f,1.0f,0.0f));
+        DefaultSceneBackground->setColor(Color3f(0.3f,0.3f,0.3f));
     endEditCP(DefaultSceneBackground, SolidBackground::ColorFieldMask);
 
     //Viewport
     ViewportPtr DefaultSceneViewport = Viewport::create();
-    setName(DefaultSceneViewport, "Viewport" );
+    setName(DefaultSceneViewport, "Untitled Viewport" );
     beginEditCP(DefaultSceneViewport);
         DefaultSceneViewport->setSize(0.0,0.0,1.0,1.0);
         DefaultSceneViewport->setCamera(DefaultSceneCamera);
@@ -486,6 +554,16 @@ ProjectPtr MainApplication::createDefaultProject(void)
 
         TheDefaultScene->getViewports().push_back(DefaultSceneViewport);
     endEditCP(TheDefaultScene);
+
+    return TheDefaultScene;
+}
+
+ProjectPtr MainApplication::createDefaultProject(void)
+{
+	ProjectPtr TheDefaultProject = ProjectBase::create();
+
+
+    ScenePtr TheDefaultScene(createDefaultScene());
 
 	beginEditCP(TheDefaultProject, Project::ScenesFieldMask | Project::InitialSceneFieldMask);
 		TheDefaultProject->getScenes().push_back(TheDefaultScene);

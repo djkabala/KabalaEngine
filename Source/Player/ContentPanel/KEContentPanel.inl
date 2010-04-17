@@ -40,5 +40,32 @@
 
 OSG_BEGIN_NAMESPACE
 
+inline
+ContentPanel::CloseButtonListener::CloseButtonListener(ContentPanelPtr TheContentPanel) : 
+	_ContentPanel(TheContentPanel)
+{
+}
+
+inline
+ContentPanel::CloseButtonListener::~CloseButtonListener()
+{
+}
+
+inline
+ContentPanel::SceneEditorPanelListener::SceneEditorPanelListener(ContentPanelPtr TheContentPanel) : 
+	_ContentPanel(TheContentPanel)
+{
+}
+
+inline
+ContentPanel::SceneEditorPanelListener::~SceneEditorPanelListener()
+{
+}
+
+inline
+void ContentPanel::setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer)
+{
+	_ApplicationPlayer = TheApplicationPlayer;
+}
 OSG_END_NAMESPACE
 

@@ -49,6 +49,7 @@
 #include "KEContentPanel.h"
 #include <OpenSG/UserInterface/OSGInternalWindow.h>
 #include <OpenSG/UserInterface/OSGTitlebar.h>
+#include "Player/KEApplicationPlayer.h"
 
 #include <boost/program_options.hpp>
 
@@ -375,6 +376,9 @@ void ContentPanel::createSceneEditorPanel()
 {
     //Scene Editing Panel
     _SceneEditorPanel = Panel::createEmpty();
+    _SceneEditorPanel->addMouseListener(&_SceneEditorPanelListener);
+    _SceneEditorPanel->addMouseMotionListener(&_SceneEditorPanelListener);
+    _SceneEditorPanel->addMouseWheelListener(&_SceneEditorPanelListener);
 }
 
 void ContentPanel::init()
@@ -432,19 +436,75 @@ void ContentPanel::actionPerformed(const osg::ActionEventPtr e)
 	endEditCP(_RightTabPanel,TabPanel::ChildrenFieldMask);
 
 }
-ContentPanel::CloseButtonListener::CloseButtonListener(ContentPanelPtr TheContentPanel)
-{
-	_ContentPanelPtr = TheContentPanel;
-}
-
-ContentPanel::CloseButtonListener::~CloseButtonListener()
-{
-}
 
 void ContentPanel::CloseButtonListener::actionPerformed(const osg::ActionEventPtr e)
 {
-	_ContentPanelPtr->actionPerformed(e);
+	_ContentPanel->actionPerformed(e);
 }
+
+void ContentPanel::SceneEditorPanelListener::mouseMoved(const MouseEventPtr e)
+{
+}
+
+void ContentPanel::SceneEditorPanelListener::mouseDragged(const MouseEventPtr e)
+{
+    _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().moveTo(e->getX(),e->getY());
+}
+
+
+void ContentPanel::SceneEditorPanelListener::mouseClicked(const MouseEventPtr e)
+{
+}
+
+void ContentPanel::SceneEditorPanelListener::mouseEntered(const MouseEventPtr e)
+{
+}
+
+void ContentPanel::SceneEditorPanelListener::mouseExited(const MouseEventPtr e)
+{
+}
+
+void ContentPanel::SceneEditorPanelListener::mousePressed(const MouseEventPtr e)
+{
+    //if()
+    //{
+        switch (e->getButton())
+        {
+            case MouseEvent::BUTTON1: 
+                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::LEFT_MOUSE,e->getX(),e->getY());
+                break;
+            case MouseEvent::BUTTON2:
+                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::RIGHT_MOUSE,e->getX(),e->getY());
+                break;
+            case MouseEvent::BUTTON3:
+                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
+                break;
+        }
+    //}
+}
+
+void ContentPanel::SceneEditorPanelListener::mouseReleased(const MouseEventPtr e)
+{
+    switch (e->getButton())
+    {
+        case MouseEvent::BUTTON1: 
+            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::LEFT_MOUSE,e->getX(),e->getY());
+            break;
+        case MouseEvent::BUTTON2:
+            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::RIGHT_MOUSE,e->getX(),e->getY());
+            break;
+        case MouseEvent::BUTTON3:
+            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
+            break;
+    }
+}
+
+void ContentPanel::SceneEditorPanelListener::mouseWheelMoved(const MouseWheelEventPtr e)
+{
+    Navigator& TheNav(_ContentPanel->_ApplicationPlayer->getDebugSceneNavigator());
+    TheNav.setDistance(TheNav.getDistance() + e->getUnitsToScroll() * TheNav.getMotionFactor());
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -453,13 +513,15 @@ void ContentPanel::CloseButtonListener::actionPerformed(const osg::ActionEventPt
 
 ContentPanel::ContentPanel(void) :
     Inherited(),
-	_CloseButtonListener(ContentPanelPtr(this))
+	_CloseButtonListener(ContentPanelPtr(this)),
+	_SceneEditorPanelListener(ContentPanelPtr(this))
 {
 }
 
 ContentPanel::ContentPanel(const ContentPanel &source) :
     Inherited(source),
-	_CloseButtonListener(ContentPanelPtr(this))
+	_CloseButtonListener(ContentPanelPtr(this)),
+	_SceneEditorPanelListener(ContentPanelPtr(this))
 {
 }
 

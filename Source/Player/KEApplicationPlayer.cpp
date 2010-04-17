@@ -50,7 +50,9 @@
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/Input/OSGWindowEventProducer.h>
 #include <OpenSG/Input/OSGStringUtils.h>
-#include <OpenSG/OSGSimpleMaterial.h>
+#include <OpenSG/OSGChunkMaterial.h>
+#include <OpenSG/OSGLineChunk.h>
+#include <OpenSG/OSGBlendChunk.h>
 
 // the general scene file loading handler
 #include <OpenSG/OSGSceneFileHandler.h>
@@ -351,6 +353,7 @@ void ApplicationPlayer::createDebugInterface(void)
 	_HierarchyPanel->createDefaultHierarchyPanel();
 
 	_ContentPanel = ContentPanel::create();
+	_ContentPanel->setApplicationPlayer(ApplicationPlayerPtr(this));
 
 	BorderLayoutConstraintsPtr ContentConstraints = osg::BorderLayoutConstraints::create();
 
@@ -620,18 +623,14 @@ void ApplicationPlayer::createDebugInterface(void)
     endEditCP(MainInternalWindowLayout);
 
     // Create The Main InternalWindow
-    // Create Background to be used with the Main InternalWindow
-    ColorLayerPtr MainInternalWindowBackground = osg::ColorLayer::create();
-    beginEditCP(MainInternalWindowBackground, ColorLayer::ColorFieldMask);
-        MainInternalWindowBackground->setColor(Color4f(1.0,1.0,1.0,0.0));
-    endEditCP(MainInternalWindowBackground, ColorLayer::ColorFieldMask);
 
 
     MainInternalWindow = osg::InternalWindow::create();
 	beginEditCP(MainInternalWindow, InternalWindow::ChildrenFieldMask | InternalWindow::MenuBarFieldMask | InternalWindow::LayoutFieldMask | InternalWindow::BackgroundsFieldMask | InternalWindow::AlignmentInDrawingSurfaceFieldMask | InternalWindow::ScalingInDrawingSurfaceFieldMask | InternalWindow::DrawTitlebarFieldMask | InternalWindow::ResizableFieldMask);
 	   MainInternalWindow->getChildren().push_back(_DebugWindowSplitPanel);
 	   MainInternalWindow->setLayout(MainInternalWindowLayout);
-       MainInternalWindow->setBackgrounds(MainInternalWindowBackground);
+       MainInternalWindow->setBackgrounds(NullFC);
+       MainInternalWindow->setBorders(NullFC);
 	   MainInternalWindow->setAlignmentInDrawingSurface(Vec2f(0.5f,0.5f));
 	   MainInternalWindow->setMenuBar(_MainMenuBar);
 	   MainInternalWindow->setScalingInDrawingSurface(Vec2f(1.0f,1.0f));
@@ -755,7 +754,7 @@ void ApplicationPlayer::attachDebugInterface(void)
     }
 	
     _HierarchyPanel->_SceneGraphTreeSelectionListener.setParams(_HierarchyPanel->getSceneGraphTree(),ApplicationPlayerPtr(this));
-	_HierarchyPanel->_SceneGraphTreeSelectionListener.updateHighlight();
+	updateHighlightNode();
 	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     	DebuggerDrawingSurface->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
     endEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
@@ -1177,24 +1176,26 @@ void ApplicationPlayer::toggleFrustumCulling(void)
 
 void ApplicationPlayer::toggleStatForeground(StatisticsForegroundPtr TheForeground)
 {
-    //MFForegroundPtr::iterator SearchItor(MainApplication::the()->getProject()->getActiveForegrounds().find(TheForeground));
-    //if( SearchItor != MainApplication::the()->getProject()->getActiveForegrounds().end())
-    //{
-        ////If the Stat foreground is present then switch it off
-        //beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        //endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-    //}
-    //else
-    //{
-        ////If not present then switch all other stat foregrounds off
-        //hideAllStatForegrounds();
-        ////and switch it on
-        //beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-            //MainApplication::the()->getProject()->getActiveForegrounds().push_back(TheForeground);
-        //endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-        //MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->setStatistics(&TheForeground->getCollector());
-    //}
+    MFForegroundPtr::iterator SearchItor(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().find(TheForeground));
+    if( SearchItor != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().end())
+    {
+        //If the Stat foreground is present then switch it off
+        beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0), Viewport::ForegroundsFieldMask);
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().erase(SearchItor);
+        endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0), Viewport::ForegroundsFieldMask);
+    }
+    else
+    {
+        //If not present then switch all other stat foregrounds off
+        hideAllStatForegrounds();
+
+        //and switch it on
+        beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0), Viewport::ForegroundsFieldMask);
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().push_back(TheForeground);
+        endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0), Viewport::ForegroundsFieldMask);
+
+        MainApplication::the()->getMainWindowEventProducer()->getRenderAction()->setStatistics(&TheForeground->getCollector());
+    }
 }
 
 void ApplicationPlayer::hideAllStatForegrounds(void)
@@ -1202,43 +1203,54 @@ void ApplicationPlayer::hideAllStatForegrounds(void)
     
     MFForegroundPtr::iterator SearchItor;
 
-    //beginEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
-        ////Hide Basic Stat Foreground if present
-        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugBasicStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        //{
-            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        //}
-        ////Hide Render Stat Foreground if present
-        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugRenderStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        //{
-            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        //}
-        ////Hide Physics Stat Foreground if present
-        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugPhysicsStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        //{
-            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        //}
-        ////Hide Particle System Stat Foreground if present
-        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugParticleSystemStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        //{
-            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        //}
-        ////Hide Animation Stat Foreground if present
-        //if( (SearchItor = MainApplication::the()->getProject()->getActiveForegrounds().find(_DebugAnimationStatForeground)) != MainApplication::the()->getProject()->getActiveForegrounds().end() )
-        //{
-            //MainApplication::the()->getProject()->getActiveForegrounds().erase(SearchItor);
-        //}
-    //endEditCP(MainApplication::the()->getProject(), Project::InternalActiveForegroundsFieldMask);
+    beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0), Viewport::ForegroundsFieldMask);
+        //Hide Basic Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().find(_DebugBasicStatForeground)) != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().erase(SearchItor);
+        }
+        //Hide Render Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().find(_DebugRenderStatForeground)) != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().erase(SearchItor);
+        }
+        //Hide Physics Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().find(_DebugPhysicsStatForeground)) != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().erase(SearchItor);
+        }
+        //Hide Particle System Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().find(_DebugParticleSystemStatForeground)) != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().erase(SearchItor);
+        }
+        //Hide Animation Stat Foreground if present
+        if( (SearchItor = MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().find(_DebugAnimationStatForeground)) != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().end() )
+        {
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getForegrounds().erase(SearchItor);
+        }
+    endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0), Viewport::ForegroundsFieldMask);
 }
 
 void ApplicationPlayer::initDebugStatForegrounds(void)
 {
+    Color4f StatColor(0.9f,0.9f,0.9f,0.8f),
+            StatShadowColor(0.0f,0.0f,0.0f,0.8f),
+            StatBorderColor(0.9f,0.9f,0.9f,0.8f),
+            StatBackgroundColor(0.0f,0.0f,0.0f,0.7f);
+
+    UInt32 StatFontSize(25);
+
     //Basic Statistics
     _DebugBasicStatForeground = SimpleStatisticsForeground::create();
     beginEditCP(_DebugBasicStatForeground);
-        _DebugBasicStatForeground->setSize(25);
-        _DebugBasicStatForeground->setColor(Color4f(0,1,0,0.7));
-		_DebugBasicStatForeground->addElement(RenderAction::statDrawTime, " ");
+		_DebugBasicStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
+		_DebugBasicStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+        _DebugBasicStatForeground->setSize(StatFontSize);
+        _DebugBasicStatForeground->setColor(StatColor);
+        _DebugBasicStatForeground->setShadowColor(StatShadowColor);
+        _DebugBasicStatForeground->setBgColor(StatBackgroundColor);
+        _DebugBasicStatForeground->setBorderColor(StatBorderColor);
         _DebugBasicStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
         _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
         _DebugBasicStatForeground->addElement(Drawable::statNTriangles, "%d triangles drawn");
@@ -1248,10 +1260,13 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Rendering Statistics
     _DebugRenderStatForeground = SimpleStatisticsForeground::create();
     beginEditCP(_DebugRenderStatForeground);
-        _DebugRenderStatForeground->setSize(25);
-		//_DebugRenderStatForeground->setPosition(Pnt2f(10,30));
-        _DebugRenderStatForeground->setColor(Color4f(0,1,0,0.7));
-		_DebugRenderStatForeground->addElement(RenderAction::statDrawTime," ");
+		_DebugRenderStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
+		_DebugRenderStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+        _DebugRenderStatForeground->setSize(StatFontSize);
+        _DebugRenderStatForeground->setColor(StatColor);
+        _DebugRenderStatForeground->setShadowColor(StatShadowColor);
+        _DebugRenderStatForeground->setBgColor(StatBackgroundColor);
+        _DebugRenderStatForeground->setBorderColor(StatBorderColor);
 		_DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
         _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
         _DebugRenderStatForeground->addElement(DrawActionBase::statTravTime, "TravTime: %.3f s");
@@ -1276,10 +1291,13 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Physics Statistics
     _DebugPhysicsStatForeground = SimpleStatisticsForeground::create();
     beginEditCP(_DebugPhysicsStatForeground);
-        _DebugPhysicsStatForeground->setSize(25);
-		//_DebugPhysicsStatForeground->setPosition(Pnt2f(10,30));
-        _DebugPhysicsStatForeground->setColor(Color4f(0,1,0,0.7));
-		_DebugPhysicsStatForeground->addElement(RenderAction::statDrawTime," ");
+		_DebugPhysicsStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
+		_DebugPhysicsStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+        _DebugPhysicsStatForeground->setSize(StatFontSize);
+        _DebugPhysicsStatForeground->setColor(StatColor);
+        _DebugPhysicsStatForeground->setShadowColor(StatShadowColor);
+        _DebugPhysicsStatForeground->setBgColor(StatBackgroundColor);
+        _DebugPhysicsStatForeground->setBorderColor(StatBorderColor);
         _DebugPhysicsStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     endEditCP(_DebugPhysicsStatForeground);
     addRefCP(_DebugPhysicsStatForeground);
@@ -1287,10 +1305,13 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Particle System Statistics
     _DebugParticleSystemStatForeground = SimpleStatisticsForeground::create();
     beginEditCP(_DebugParticleSystemStatForeground);
-        _DebugParticleSystemStatForeground->setSize(25);
-        _DebugParticleSystemStatForeground->setColor(Color4f(0,1,0,0.7));
-		_DebugParticleSystemStatForeground->addElement(RenderAction::statDrawTime," ");
-		//_DebugParticleSystemStatForeground->setPosition(Pnt2f(10,30));
+		_DebugParticleSystemStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
+		_DebugParticleSystemStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+        _DebugParticleSystemStatForeground->setSize(StatFontSize);
+        _DebugParticleSystemStatForeground->setColor(StatColor);
+        _DebugParticleSystemStatForeground->setShadowColor(StatShadowColor);
+        _DebugParticleSystemStatForeground->setBgColor(StatBackgroundColor);
+        _DebugParticleSystemStatForeground->setBorderColor(StatBorderColor);
         _DebugParticleSystemStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     endEditCP(_DebugParticleSystemStatForeground);
     addRefCP(_DebugParticleSystemStatForeground);
@@ -1298,10 +1319,13 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Animation Statistics
     _DebugAnimationStatForeground = SimpleStatisticsForeground::create();
     beginEditCP(_DebugAnimationStatForeground);
-        _DebugAnimationStatForeground->setSize(25);
-        _DebugAnimationStatForeground->setColor(Color4f(0,1,0,0.7));
-		//_DebugAnimationStatForeground->setPosition(Pnt2f(10,30));
-		_DebugAnimationStatForeground->addElement(RenderAction::statDrawTime," ");
+		_DebugAnimationStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
+		_DebugAnimationStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+        _DebugAnimationStatForeground->setSize(StatFontSize);
+        _DebugAnimationStatForeground->setColor(StatColor);
+        _DebugAnimationStatForeground->setShadowColor(StatShadowColor);
+        _DebugAnimationStatForeground->setBgColor(StatBackgroundColor);
+        _DebugAnimationStatForeground->setBorderColor(StatBorderColor);
         _DebugAnimationStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     endEditCP(_DebugAnimationStatForeground);
     addRefCP(_DebugAnimationStatForeground);
@@ -1317,7 +1341,7 @@ void ApplicationPlayer::updateDebugUI(void)
 	}
 	
 	//_HierarchyPanel->_SceneGraphTreeSelectionListener.setParams(_HierarchyPanel->_TheSceneGraphTree,ApplicationPlayerPtr(this));
-	_HierarchyPanel->_SceneGraphTreeSelectionListener.updateHighlight();
+	updateHighlightNode();
 	
 }
 
@@ -1369,9 +1393,7 @@ void ApplicationPlayer::updateDebugViewport(void)
     endEditCP(_DebugCamera, Camera::BeaconFieldMask);
 
     //Put the Camera Beacon to the beacon of the scene's camera
-    beginEditCP(_DebugBeaconTransform, Transform::MatrixFieldMask);
-		_DebugBeaconTransform->setMatrix(_SceneViewportCamera->getBeacon()->getToWorld());
-    endEditCP(_DebugBeaconTransform, Transform::MatrixFieldMask);
+    _DebugSceneNavigator.set(_SceneViewportCamera->getBeacon()->getToWorld());
 
     //Put the Debug Camera on the Scene's Viewport
     beginEditCP(MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(0),Viewport::CameraFieldMask);
@@ -1398,6 +1420,9 @@ void ApplicationPlayer::attachDebugViewport(void)
 
 ViewportPtr ApplicationPlayer::createDebugViewport(void)
 {
+    //Create the Highlight Node
+    createHighlightNode();
+
     //Camera Transformation Node	
 	_DebugBeaconTransform = Transform::create();
 
@@ -1411,6 +1436,7 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
     beginEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
         DefaultRootNode->setCore(osg::Group::create());
         DefaultRootNode->addChild(_DebugCameraBeacon);
+        DefaultRootNode->addChild(_HighlightNode);
     endEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
 
 	//Background
@@ -1424,6 +1450,10 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
         DebugViewport->setBackground              (DefaultBackground);
         DebugViewport->getForegrounds().push_back (DebuggerUIForeground);
     endEditCP(DebugViewport);
+
+    _DebugSceneNavigator.setMode(Navigator::TRACKBALL);
+    _DebugSceneNavigator.setViewport(DebugViewport);
+    _DebugSceneNavigator.setCameraTransformation(_DebugCameraBeacon);
 
     return DebugViewport;
 }
@@ -1456,6 +1486,9 @@ void ApplicationPlayer::moveDebugCamera(const Matrix& Transform)
 
         //Start the Animation
         _DebugCameraAnimationGroup->start();
+
+        //Set The Navigator
+        _DebugSceneNavigator.set(Transform);
     }
     else
     {
@@ -1510,9 +1543,7 @@ void ApplicationPlayer::createDebugCameraAnim(void)
 void ApplicationPlayer::resetDebugCamera(void)
 {
     //Put the Camera Beacon to the beacon of the scene's camera
-    beginEditCP(_DebugBeaconTransform, Transform::MatrixFieldMask);
-		_DebugBeaconTransform->setMatrix(_SceneViewportCamera->getBeacon()->getToWorld());
-    endEditCP(_DebugBeaconTransform, Transform::MatrixFieldMask);
+    _DebugSceneNavigator.set(_SceneViewportCamera->getBeacon()->getToWorld());
 }
 
 void ApplicationPlayer::updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager)
@@ -1676,9 +1707,28 @@ ApplicationPlayer::highlightNodeListener::highlightNodeListener(ApplicationPlaye
 
 void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
 {
-	if(_ApplicationPlayer->_SelectedNode != NullFC)		// selected node is the node that is being selected.
+    _ApplicationPlayer->updateHighlightNode();
+}
+
+void ApplicationPlayer::updateHighlightNode(void)
+{
+    getDebugSceneNavigator().updateCameraTransformation();
+
+	// attach the hightlight node to the root if the highlight is active
+    beginEditCP(_HighlightNode, Node::TravMaskFieldMask);
+        if(_SelectedNode == NullFC)
+        {
+            _HighlightNode->setTravMask(0);
+        }
+        else
+        {
+            _HighlightNode->setTravMask(UInt32(-1));
+        }
+    endEditCP(_HighlightNode, Node::TravMaskFieldMask);
+
+	if(_SelectedNode != NullFC)		// selected node is the node that is being selected.
     {													// highlight node is the pointer to the bounding box for the selected node
-	 std::string coreName= _ApplicationPlayer->_SelectedNode->getCore()->getTypeName();
+	 std::string coreName= _SelectedNode->getCore()->getTypeName();
 
 		// calc the world bbox of the highlight object
 		#ifndef OSG_2_PREP
@@ -1686,33 +1736,204 @@ void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
 		#else
 		BoxVolume      vol;
 		#endif
-		_ApplicationPlayer->_SelectedNode->getWorldVolume(vol);
+		_SelectedNode->getWorldVolume(vol);
 
 		Pnt3f min,max;
 		vol.getBounds(min, max);
 
-		GeoPositions3fPtr temphighlightPoints = GeoPositions3f::create();
+        //Get The Local Coordinate System
+        Matrix NodeMatrix = _SelectedNode->getToWorld();
+        Pnt3f NodeOrigin(0.0f,0.0f,0.0f);
+        Vec3f NodeXDir(1.0f,0.0f,0.0f),
+              NodeYDir(0.0f,1.0f,0.0f),
+              NodeZDir(0.0f,0.0f,1.0f);
+
+        NodeMatrix.mult(NodeOrigin);
+        NodeMatrix.mult(NodeXDir);
+        NodeMatrix.mult(NodeYDir);
+        NodeMatrix.mult(NodeZDir);
+
+        //If the Volume is Zero, use a volume of size 1.0
+        if(min == max)
+        {
+            min = NodeOrigin - Vec3f(0.5f,0.5f,0.5f);
+            max = NodeOrigin + Vec3f(0.5f,0.5f,0.5f);
+        }
+
+        //Get the side lengths of the volume
+        Vec3f  Sides(max - min);
+
+        if(GeometryPtr::dcast(_HighlightNode->getCore())->getPositions() == NullFC)
+        {
+            beginEditCP(_HighlightNode->getCore(), Geometry::PositionsFieldMask);
+                GeometryPtr::dcast(_HighlightNode->getCore())->setPositions(GeoPositions3f::create());
+            endEditCP  (_HighlightNode->getCore(), Geometry::PositionsFieldMask);
+        }
+
+		GeoPositions3fPtr temphighlightPoints =
+            GeoPositions3fPtr::dcast(GeometryPtr::dcast(_HighlightNode->getCore())->getPositions());
 
 		beginEditCP(temphighlightPoints);
-		temphighlightPoints->push_back(Pnt3f(min[0], min[1], min[2]));
-		temphighlightPoints->push_back(Pnt3f(max[0], min[1], min[2]));
-		temphighlightPoints->push_back(Pnt3f(min[0], max[1], min[2]));
-		temphighlightPoints->push_back(Pnt3f(max[0], max[1], min[2]));
-		temphighlightPoints->push_back(Pnt3f(min[0], min[1], max[2]));
-		temphighlightPoints->push_back(Pnt3f(max[0], min[1], max[2]));
-		temphighlightPoints->push_back(Pnt3f(min[0], max[1], max[2]));
-		temphighlightPoints->push_back(Pnt3f(max[0], max[1], max[2]));
+            //Update Bounding Box
+            temphighlightPoints->setValue(Pnt3f(min[0], min[1], min[2]), 0);
+            temphighlightPoints->setValue(Pnt3f(max[0], min[1], min[2]), 1);
+            temphighlightPoints->setValue(Pnt3f(min[0], max[1], min[2]), 2);
+            temphighlightPoints->setValue(Pnt3f(max[0], max[1], min[2]), 3);
+            temphighlightPoints->setValue(Pnt3f(min[0], min[1], max[2]), 4);
+            temphighlightPoints->setValue(Pnt3f(max[0], min[1], max[2]), 5);
+            temphighlightPoints->setValue(Pnt3f(min[0], max[1], max[2]), 6);
+            temphighlightPoints->setValue(Pnt3f(max[0], max[1], max[2]), 7);
+
+            //Update Local Coordinate Axis
+            Real32 AxisScaling(Sides.maxValue() * 0.55f);
+            temphighlightPoints->setValue(NodeOrigin, 8);
+            temphighlightPoints->setValue(NodeOrigin + (NodeXDir* AxisScaling), 9);
+            temphighlightPoints->setValue(NodeOrigin, 10);
+            temphighlightPoints->setValue(NodeOrigin + (NodeYDir* AxisScaling), 11);
+            temphighlightPoints->setValue(NodeOrigin, 12);
+            temphighlightPoints->setValue(NodeOrigin + (NodeZDir* AxisScaling), 13);
 		endEditCP(temphighlightPoints);
-
-
-		beginEditCP(_ApplicationPlayer->_HighlightNode->getCore(), Geometry::PositionsFieldMask);
-		GeometryPtr::dcast(_ApplicationPlayer->_HighlightNode->getCore())->setPositions(temphighlightPoints);
-		endEditCP  (_ApplicationPlayer->_HighlightNode->getCore(), Geometry::PositionsFieldMask);
-
-
     }
 }
 
+void ApplicationPlayer::createHighlightNode(void)
+{
+    //Create the Material for the Highlight
+    LineChunkPtr HighlightMatLineChunk = LineChunk::create();
+    beginEditCP(HighlightMatLineChunk);
+        HighlightMatLineChunk->setWidth(2.0f);
+        HighlightMatLineChunk->setSmooth(true);
+    endEditCP(HighlightMatLineChunk);
+
+    BlendChunkPtr TheBlendChunk = BlendChunk::create();
+    beginEditCP(TheBlendChunk);
+        TheBlendChunk->setSrcFactor(GL_SRC_ALPHA);
+        TheBlendChunk->setDestFactor(GL_ONE_MINUS_SRC_ALPHA);
+    endEditCP(TheBlendChunk);
+
+    ChunkMaterialPtr highlightMaterial = ChunkMaterial::create();
+    beginEditCP(highlightMaterial);
+        highlightMaterial->addChunk (TheBlendChunk);
+        highlightMaterial->addChunk (HighlightMatLineChunk);
+    endEditCP(highlightMaterial);
+    
+    //Create teh Geometry for the highlight
+    GeoPTypesPtr type = GeoPTypesUI8::create();
+    beginEditCP(type);
+        //Volume bound box
+        type->push_back(GL_LINE_STRIP);
+        type->push_back(GL_LINES);
+
+        //Local Coordinage axis
+        type->push_back(GL_LINES);
+    endEditCP(type);
+
+    GeoPLengthsPtr lens = GeoPLengthsUI32::create();
+    beginEditCP(lens);
+        //Volume bound box
+        lens->push_back(10);
+        lens->push_back(6);
+
+        //Local Coordinage axis
+        lens->push_back(6);
+    endEditCP(lens);
+
+    GeoIndicesUI32Ptr index = GeoIndicesUI32::create();
+    beginEditCP(index);
+        //Volume bound box
+        index->getFieldPtr()->push_back(0);
+        index->getFieldPtr()->push_back(1);
+        index->getFieldPtr()->push_back(3);
+        index->getFieldPtr()->push_back(2);
+        index->getFieldPtr()->push_back(0);
+        index->getFieldPtr()->push_back(4);
+        index->getFieldPtr()->push_back(5);
+        index->getFieldPtr()->push_back(7);
+        index->getFieldPtr()->push_back(6);
+        index->getFieldPtr()->push_back(4);
+
+        index->getFieldPtr()->push_back(1);
+        index->getFieldPtr()->push_back(5);
+        index->getFieldPtr()->push_back(2);
+        index->getFieldPtr()->push_back(6);
+        index->getFieldPtr()->push_back(3);
+        index->getFieldPtr()->push_back(7);
+
+        //Local Coordinage axis
+        index->getFieldPtr()->push_back(8);
+        index->getFieldPtr()->push_back(9);
+        index->getFieldPtr()->push_back(10);
+        index->getFieldPtr()->push_back(11);
+        index->getFieldPtr()->push_back(12);
+        index->getFieldPtr()->push_back(13);
+    endEditCP(index);
+
+    GeoPositions3fPtr highlightPoints = GeoPositions3f::create();
+    beginEditCP(highlightPoints);
+        //Volume bound box
+        highlightPoints->push_back(Pnt3f(-1, -1, -1));
+        highlightPoints->push_back(Pnt3f( 1, -1, -1));
+        highlightPoints->push_back(Pnt3f(-1,  1, -1));
+        highlightPoints->push_back(Pnt3f( 1,  1, -1));
+        highlightPoints->push_back(Pnt3f(-1, -1,  1));
+        highlightPoints->push_back(Pnt3f( 1, -1,  1));
+        highlightPoints->push_back(Pnt3f(-1,  1,  1));
+        highlightPoints->push_back(Pnt3f( 1,  1,  1));
+
+        //Local Coordinage axis
+        highlightPoints->push_back(Pnt3f( 0,  0,  0));
+        highlightPoints->push_back(Pnt3f( 1,  0,  0));
+        highlightPoints->push_back(Pnt3f( 0,  0,  0));
+        highlightPoints->push_back(Pnt3f( 0,  1,  0));
+        highlightPoints->push_back(Pnt3f( 0,  0,  0));
+        highlightPoints->push_back(Pnt3f( 0,  0,  1));
+    endEditCP(highlightPoints);
+
+    //Colors
+    Color4f BoundBoxColor(0.0f,1.0f,1.0,1.0f);
+    Color4f XAxisColor   (1.0f,0.0f,0.0,1.0f);
+    Color4f YAxisColor   (0.0f,1.0f,0.0,1.0f);
+    Color4f ZAxisColor   (0.0f,0.0f,1.0,1.0f);
+
+    GeoColors4fPtr highlightColors = GeoColors4f::create();
+    beginEditCP(highlightColors);
+        //Volume bound box
+        highlightColors->getFieldPtr()->push_back(BoundBoxColor);
+        highlightColors->getFieldPtr()->push_back(BoundBoxColor);
+        highlightColors->getFieldPtr()->push_back(BoundBoxColor);
+        highlightColors->getFieldPtr()->push_back(BoundBoxColor);
+        highlightColors->getFieldPtr()->push_back(BoundBoxColor);
+        highlightColors->getFieldPtr()->push_back(BoundBoxColor);
+        highlightColors->getFieldPtr()->push_back(BoundBoxColor);
+        highlightColors->getFieldPtr()->push_back(BoundBoxColor);
+
+        //Local Coordinage axis
+        highlightColors->getFieldPtr()->push_back(XAxisColor);
+        highlightColors->getFieldPtr()->push_back(XAxisColor);
+        highlightColors->getFieldPtr()->push_back(YAxisColor);
+        highlightColors->getFieldPtr()->push_back(YAxisColor);
+        highlightColors->getFieldPtr()->push_back(ZAxisColor);
+        highlightColors->getFieldPtr()->push_back(ZAxisColor);
+    endEditCP(highlightColors);
+
+    GeometryPtr geo=Geometry::create();
+    beginEditCP(geo);
+        geo->setTypes     (type);
+        geo->setLengths   (lens);
+        geo->setIndices   (index);
+        geo->setPositions (highlightPoints);
+        geo->setColors    (highlightColors);
+        geo->setMaterial  (highlightMaterial);
+    endEditCP(geo);
+
+    _HighlightNode = Node::create();
+    setName(_HighlightNode,"DEBUG_MODE_BOUNDING_BOX");
+    
+    beginEditCP(_HighlightNode);
+        _HighlightNode->setCore(geo);
+    endEditCP(_HighlightNode);
+    addRefCP(_HighlightNode);
+}
 
 void ApplicationPlayer::setupPopupMenu()
 {

@@ -53,6 +53,11 @@
 #include <OpenSG/UserInterface/OSGSpringLayoutConstraints.h>
 #include <OpenSG/UserInterface/OSGCardLayout.h>
 
+#include <OpenSG/Input/OSGMouseListener.h>
+#include <OpenSG/Input/OSGMouseMotionListener.h>
+#include <OpenSG/Input/OSGMouseWheelListener.h>
+#include "Player/KEApplicationPlayerFields.h"
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief ContentPanel class. See \ref 
@@ -64,6 +69,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ContentPanel : public ContentPanelBase
   private:
 
     typedef ContentPanelBase Inherited;
+
+  	ApplicationPlayerPtr _ApplicationPlayer;
 
 	bool _IsSplit;
 
@@ -105,6 +112,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ContentPanel : public ContentPanelBase
 	void saveTextFile(Path);
 
     void setView(UInt32 Index);
+	void setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer);
 	
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -133,12 +141,38 @@ class KE_KABALAENGINELIB_DLLMAPPING ContentPanel : public ContentPanelBase
 
 			virtual void actionPerformed(const ActionEventPtr e);
 		protected :
-			ContentPanelPtr _ContentPanelPtr;
+			ContentPanelPtr _ContentPanel;
 	  };
 
 	  CloseButtonListener _CloseButtonListener;
 	  friend class CloseButtonListener;
 
+
+	  class SceneEditorPanelListener : public MouseListener, 
+                                       public MouseMotionListener,
+                                       public MouseWheelListener
+	  {
+		public:
+			SceneEditorPanelListener(ContentPanelPtr TheContentPanel);
+            ~SceneEditorPanelListener(void);
+
+            virtual void mouseMoved(const MouseEventPtr e);
+            virtual void mouseDragged(const MouseEventPtr e);
+
+            virtual void mouseClicked(const MouseEventPtr e);
+            virtual void mouseEntered(const MouseEventPtr e);
+            virtual void mouseExited(const MouseEventPtr e);
+            virtual void mousePressed(const MouseEventPtr e);
+            virtual void mouseReleased(const MouseEventPtr e);
+
+            virtual void mouseWheelMoved(const MouseWheelEventPtr e);
+
+		protected :
+			ContentPanelPtr _ContentPanel;
+	  };
+
+	  SceneEditorPanelListener _SceneEditorPanelListener;
+	  friend class SceneEditorPanelListener;
 	 
     // Variables should all be in ContentPanelBase.
 

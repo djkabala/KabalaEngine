@@ -48,6 +48,7 @@
 #include <OpenSG/Toolbox/OSGPathType.h> // SettingsLoadFile type
 #include <OpenSG/Input/OSGWindowEventProducerFields.h> // MainWindowEventProducer type
 #include <Project/KEProjectFields.h> // Project type
+#include <Project/Scene/KESceneFields.h> // Scene type
 #include <Application/KEApplicationModeFields.h> 
 
 
@@ -131,6 +132,7 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication
 	void createDefaultStartScreenMode(void);
 
 	ProjectPtr createDefaultProject(void);
+	ScenePtr createDefaultScene(void);
     // Variables should all be in MainApplicationBase.
 
     /*---------------------------------------------------------------------*/

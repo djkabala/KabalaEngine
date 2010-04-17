@@ -169,10 +169,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 		void selectionRemoved(const TreeSelectionEventPtr e);
 		void selectedNodeChanged(void);
 		void setParams(TreePtr,ApplicationPlayerPtr);
-		void updateHighlight(void);
-		void highlightChanged(void);
-		NodePtr getHighlight(void);
-		void setHighlight(NodePtr selectednode);
 
 		friend class ShowHideCommand;
 
@@ -180,8 +176,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	protected:
 		HierarchyPanelPtr _HierarchyPanel;
 		TreePtr _TheTree;
-		NodePtr  _highlight;
-		GeoPositions3fPtr _highlightPoints;
 		ApplicationPlayerPtr _ApplicationPlayer;
 	};
 

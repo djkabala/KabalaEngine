@@ -113,8 +113,6 @@ void HierarchyPanel::createSceneGraphTree(void)
 
 	
 	_SceneGraphTreeSelectionListener.setParams(_TheSceneGraphTree,_ApplicationPlayer);
-	_SceneGraphTreeSelectionListener.updateHighlight();
-
 
 	_NewNodeMenuModel = DerivedFieldContainerComboBoxModel::create();
     beginEditCP(_NewNodeMenuModel, DerivedFieldContainerComboBoxModel::DerivedFieldContainerTypesFieldMask);
@@ -508,8 +506,6 @@ HierarchyPanel::SceneGraphTreeSelectionListener::SceneGraphTreeSelectionListener
 	_HierarchyPanel = TheHierarchyPanel;
 	_ApplicationPlayer = NullFC;
 	_TheTree=NullFC;
-	_highlight = NullFC;
-	_highlightPoints = NullFC;
 }
 
 void HierarchyPanel::SceneGraphTreeSelectionListener::setParams(TreePtr TheTree,ApplicationPlayerPtr TheApplicationPlayer)//,NodePtr  _SelectedNode)
@@ -524,135 +520,10 @@ void HierarchyPanel::LuaGraphTreeSelectionListener::setParams(TreePtr TheTree,Ap
 	_ApplicationPlayer = TheApplicationPlayer;
 }
 
-void HierarchyPanel::SceneGraphTreeSelectionListener::setHighlight(NodePtr selectednode)
-{
-	
-	_highlight = selectednode;
-	highlightChanged();
-}
-NodePtr HierarchyPanel::SceneGraphTreeSelectionListener::getHighlight()
-{
-	return _highlight;
-}
-void HierarchyPanel::SceneGraphTreeSelectionListener::highlightChanged(void)
-{
- 
-	// change the ShowHideMenuItem's text 
-	
-	SimpleMaterialPtr _highlightMaterial;
-	
-	
-// SWARNING << "SimpleSceneManager::updateHightlight() called\n";
-
-	// init as needed
-	if(_highlightMaterial == NullFC)
-	{
-		_highlightMaterial = SimpleMaterial::create();
-		
-		beginEditCP(_highlightMaterial);
-		_highlightMaterial->setDiffuse (Color3f(0,1,0));
-		_highlightMaterial->setLit     (false);
-		endEditCP(_highlightMaterial);
-	}
-	if(_ApplicationPlayer->getHighlightNode() == NullFC)
-	{
-		GeoPTypesPtr type = GeoPTypesUI8::create();
-		beginEditCP(type);
-		type->push_back(GL_LINE_STRIP);
-		type->push_back(GL_LINES);
-		endEditCP(type);
-
-		GeoPLengthsPtr lens = GeoPLengthsUI32::create();
-		beginEditCP(lens);
-		lens->push_back(10);
-		lens->push_back(6);
-		endEditCP(lens);
-
-		GeoIndicesUI32Ptr index = GeoIndicesUI32::create();
-		beginEditCP(index);
-		index->getFieldPtr()->push_back(0);
-		index->getFieldPtr()->push_back(1);
-		index->getFieldPtr()->push_back(3);
-		index->getFieldPtr()->push_back(2);
-		index->getFieldPtr()->push_back(0);
-		index->getFieldPtr()->push_back(4);
-		index->getFieldPtr()->push_back(5);
-		index->getFieldPtr()->push_back(7);
-		index->getFieldPtr()->push_back(6);
-		index->getFieldPtr()->push_back(4);
-
-		index->getFieldPtr()->push_back(1);
-		index->getFieldPtr()->push_back(5);
-		index->getFieldPtr()->push_back(2);
-		index->getFieldPtr()->push_back(6);
-		index->getFieldPtr()->push_back(3);
-		index->getFieldPtr()->push_back(7);
-		endEditCP(index);
-
-		_highlightPoints = GeoPositions3f::create();
-		beginEditCP(_highlightPoints);
-		_highlightPoints->push_back(Pnt3f(-1, -1, -1));
-		_highlightPoints->push_back(Pnt3f( 1, -1, -1));
-		_highlightPoints->push_back(Pnt3f(-1,  1, -1));
-		_highlightPoints->push_back(Pnt3f( 1,  1, -1));
-		_highlightPoints->push_back(Pnt3f(-1, -1,  1));
-		_highlightPoints->push_back(Pnt3f( 1, -1,  1));
-		_highlightPoints->push_back(Pnt3f(-1,  1,  1));
-		_highlightPoints->push_back(Pnt3f( 1,  1,  1));
-		endEditCP(_highlightPoints);
-		addRefCP(_highlightPoints);
-
-		GeometryPtr geo=Geometry::create();
-		beginEditCP(geo);
-		geo->setTypes     (type);
-		geo->setLengths   (lens);
-		geo->setIndices   (index);
-		geo->setPositions (_highlightPoints);
-		geo->setMaterial  (_highlightMaterial);  /// billa
-		endEditCP(geo);
-		addRefCP(geo);
-
-		_ApplicationPlayer->setHighlightNode(Node::create());
-		setName(_ApplicationPlayer->getHighlightNode(),"DEBUG_MODE_BOUNDING_BOX");
-		
-		beginEditCP(_ApplicationPlayer->getHighlightNode());
-		_ApplicationPlayer->getHighlightNode()->setCore(geo);
-		endEditCP(_ApplicationPlayer->getHighlightNode());
-		addRefCP(_ApplicationPlayer->getHighlightNode());
-	}
-
-	
-	// attach the hightlight node to the root if the highlight is active
-	if(getHighlight() != NullFC)
-	{
-		if(_ApplicationPlayer->getHighlightNode()->getParent() == NullFC)
-		{
-		beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
-		MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->addChild(_ApplicationPlayer->getHighlightNode());
-
-		endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
-		}
-		
-	}
-	else
-	{
-		if(_ApplicationPlayer->getHighlightNode()->getParent() != NullFC)
-		{
-		beginEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
-		MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->subChild(_ApplicationPlayer->getHighlightNode());
-		endEditCP(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
-		}
-	}
-	// update the highlight geometry
-	updateHighlight();
-}
-
 void HierarchyPanel::changeDebugCameraPosition(void)
 {
 	showAll(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getCamera(),_ApplicationPlayer->getSelectedNode());
 }
-
-
 
 void HierarchyPanel::showAll(CameraPtr TheCameraOrig, NodePtr Scene, Vec3f Up)
 {
@@ -722,42 +593,14 @@ void HierarchyPanel::showAll(CameraPtr TheCameraOrig, NodePtr Scene, Vec3f Up)
         {
             _ApplicationPlayer->moveDebugCamera(m);
         }
+
+        //Scale the Motion Factor of the Navigator
+        _ApplicationPlayer->getDebugSceneNavigator().setMotionFactor((d[0] + d[1] + d[2]) / 100.f);
 	}
 	else
 	{
 		SWARNING << "Camera is NullFC!" <<std::endl;
 	}
-}
-
-
-void HierarchyPanel::SceneGraphTreeSelectionListener::updateHighlight(void)
-{
-	if(_highlight==NullFC)
-	return;
-
-	// calc the world bbox of the highlight object
-	#ifndef OSG_2_PREP
-	DynamicVolume vol;
-	#else
-	BoxVolume      vol;
-	#endif
-	_highlight->getWorldVolume(vol);
-
-	Pnt3f min,max;
-	vol.getBounds(min, max);
-
-	beginEditCP(_highlightPoints);
-	_highlightPoints->setValue(Pnt3f(min[0], min[1], min[2]), 0);
-	_highlightPoints->setValue(Pnt3f(max[0], min[1], min[2]), 1);
-	_highlightPoints->setValue(Pnt3f(min[0], max[1], min[2]), 2);
-	_highlightPoints->setValue(Pnt3f(max[0], max[1], min[2]), 3);
-	_highlightPoints->setValue(Pnt3f(min[0], min[1], max[2]), 4);
-	_highlightPoints->setValue(Pnt3f(max[0], min[1], max[2]), 5);
-	_highlightPoints->setValue(Pnt3f(min[0], max[1], max[2]), 6);
-	_highlightPoints->setValue(Pnt3f(max[0], max[1], max[2]), 7);
-	endEditCP(_highlightPoints);
-
-
 }
 
 void HierarchyPanel::setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer)
@@ -767,8 +610,6 @@ void HierarchyPanel::setApplicationPlayer(ApplicationPlayerPtr TheApplicationPla
 
 void HierarchyPanel::SceneGraphTreeSelectionListener::selectedNodeChanged(void)
 {
-	setHighlight(_SelectedNode);
-	
     //Update Details Panel
     if(_SelectedNode == NullFC)
     {
@@ -782,9 +623,6 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::selectedNodeChanged(void)
 
 	//Update Right Click Menu
 	_HierarchyPanel->updatePopupMenu();
-	
-	
-
 }
 
 HierarchyPanel::PlayerMouseListener2::PlayerMouseListener2(HierarchyPanelPtr TheHierarchyPanel)

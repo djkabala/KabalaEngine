@@ -49,6 +49,7 @@
 
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGTransform.h>
+#include <OpenSG/OSGNavigator.h>
 #include <OpenSG/Toolbox/OSGEventListener.h>
 
 #include <OpenSG/Input/OSGKeyAdapter.h>
@@ -66,9 +67,6 @@
 #include <OpenSG/UserInterface/OSGBorderLayoutConstraints.h>
 //text area
 #include <OpenSG/UserInterface/OSGScrollPanel.h>
-
-
-
 
 //split panel 
 #include <OpenSG/UserInterface/OSGSplitPanel.h>
@@ -208,10 +206,13 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	ContentPanelPtr getContentPanel(void);
 	void setContentPanel(ContentPanelPtr);
 
+    Navigator& getDebugSceneNavigator(void);
+
     void moveDebugCamera(const Matrix& Transform);
     void resetDebugCamera(void);
 
     void setDebugView(UInt32 Index);
+    void updateHighlightNode(void);
    /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -427,10 +428,13 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     SimpleStatisticsForegroundPtr _DebugAnimationStatForeground;
 	
     //Debug Camera
-	CameraPtr _SceneViewportCamera;
-	CameraPtr _DebugCamera;
-	NodePtr _DebugCameraBeacon;
-	TransformPtr _DebugBeaconTransform;
+    CameraPtr    _SceneViewportCamera;
+    CameraPtr    _DebugCamera;
+    NodePtr      _DebugCameraBeacon;
+    TransformPtr _DebugBeaconTransform;
+
+    //Camera Navigator
+    Navigator    _DebugSceneNavigator;
 
     //Debug Camera Animation
     KeyframeTransformationsSequencePtr _DebugCameraTransformationKeyframes;
@@ -474,6 +478,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     NodePtr getPhysicsDrawableNode(void);
     void updateDebugSceneChange(void);
 
+    void createHighlightNode(void);
 
 
     /*==========================  PRIVATE  ================================*/

@@ -171,7 +171,11 @@ NodePtr ApplicationPlayer::getSelectedNode(void)
 inline 
 void ApplicationPlayer::setSelectedNode(NodePtr selectedNode)
 {
-	_SelectedNode = selectedNode;
+    if(_SelectedNode != selectedNode)
+    {
+        _SelectedNode = selectedNode;
+        updateHighlightNode();
+    }
 }
 
 inline 
@@ -184,6 +188,12 @@ inline
 void ApplicationPlayer::setContentPanel(ContentPanelPtr contentPanel)
 {
 	_ContentPanel = contentPanel;
+}
+
+inline 
+Navigator& ApplicationPlayer::getDebugSceneNavigator(void)
+{
+    return _DebugSceneNavigator;
 }
 
 OSG_END_NAMESPACE
