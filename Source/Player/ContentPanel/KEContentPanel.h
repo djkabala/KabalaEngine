@@ -42,6 +42,7 @@
 
 #include "KEContentPanelBase.h"
 
+#include <OpenSG/UserInterface/OSGSplitPanel.h>
 #include <OpenSG/UserInterface/OSGTabPanel.h>
 #include <OpenSG/UserInterface/OSGTextArea.h>
 #include <OpenSG/UserInterface/OSGScrollPanel.h>
@@ -50,6 +51,7 @@
 #include <OpenSG/UserInterface/OSGPanel.h>
 #include <OpenSG/UserInterface/OSGSpringLayout.h>
 #include <OpenSG/UserInterface/OSGSpringLayoutConstraints.h>
+#include <OpenSG/UserInterface/OSGCardLayout.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -65,37 +67,44 @@ class KE_KABALAENGINELIB_DLLMAPPING ContentPanel : public ContentPanelBase
 
 	bool _IsSplit;
 
-	BorderLayoutConstraintsPtr _ContentPanelConstraints;
+    SplitPanelPtr  _LuaEditorSplitPanel;
+    PanelPtr       _SceneEditorPanel;
 
-	TabPanelPtr		_LeftTabPanel;
-	LabelPtr		_LeftTabPanelLabel;
-	ScrollPanelPtr	_LeftTabPanelContent;
-	TextAreaPtr		_LeftTabPanelTextArea;
+    CardLayoutPtr  _MainCardLayout;
+
+    TabPanelPtr    _LeftTabPanel;
+    LabelPtr       _LeftTabPanelLabel;
+    ScrollPanelPtr _LeftTabPanelContent;
+    TextAreaPtr    _LeftTabPanelTextArea;
 
 
-	TabPanelPtr		_RightTabPanel;
-	LabelPtr		_RightTabPanelLabel;
-	ScrollPanelPtr	_RightTabPanelContent;
-	TextAreaPtr		_RightTabPanelTextArea;
+    TabPanelPtr    _RightTabPanel;
+    LabelPtr       _RightTabPanelLabel;
+    ScrollPanelPtr _RightTabPanelContent;
+    TextAreaPtr    _RightTabPanelTextArea;
 
-	void createLeftTabPanel();
-	void createRightTabPanel();
-	void createDefaultTabs();
-	void updatePanel();
+    void createLuaEditorSplitPanel(void);
+    void createSceneEditorPanel(void);
+	void createLeftTabPanel(void);
+	void createRightTabPanel(void);
+	void createDefaultTabs(void);
+	void updatePanel(void);
 	void actionPerformed(const ActionEventPtr e);
 	
 
     /*==========================  PUBLIC  =================================*/
   public:
 	
-	void addTab();
+	void addTab(void);
 	void removeTab(UInt32);
 	void setIsSplit(bool value);	
-	bool getIsSplit();
-	void init();
+	bool getIsSplit(void);
+	void init(void);
 	void addTabWithText(Path);
-	void closeCurrentWindow();
+	void closeCurrentWindow(void);
 	void saveTextFile(Path);
+
+    void setView(UInt32 Index);
 	
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -120,7 +129,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ContentPanel : public ContentPanelBase
 	  {
 		public:
 			CloseButtonListener(ContentPanelPtr TheContentPanel);
-			~CloseButtonListener();
+			~CloseButtonListener(void);
 
 			virtual void actionPerformed(const ActionEventPtr e);
 		protected :

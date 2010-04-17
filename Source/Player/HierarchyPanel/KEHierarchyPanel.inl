@@ -41,12 +41,6 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-CardLayoutPtr HierarchyPanel::getCardLayout(void)
-{
-	return _CardLayout;
-}
-
-inline
 SceneGraphTreeModelPtr HierarchyPanel::getSceneGraphTreeModel(void)
 {
 	return _TheSceneGraphTreeModel;

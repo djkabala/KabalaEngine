@@ -210,6 +210,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
     void moveDebugCamera(const Matrix& Transform);
     void resetDebugCamera(void);
+
+    void setDebugView(UInt32 Index);
    /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -283,17 +285,10 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
     {
     public:
         void selectionChanged(const ComboBoxSelectionEventPtr e);
-
-		void set(ComboBoxPtr ComboBoxP,
-                 CardLayoutPtr _CardLayout,
-                 PanelPtr TopLeftTreePanel);
 		
         ComboBoxListener(ApplicationPlayerPtr TheApplicationPlayer);
 	protected:
 			 ApplicationPlayerPtr _ApplicationPlayer;
-	         ComboBoxPtr _ComboBox;
-			 CardLayoutPtr _TopLeftCardLayout;
-			 PanelPtr _TopLeftTreePanel;
 	};
 	friend class ComboBoxListener;
 	ComboBoxListener _ComboBoxListener;
@@ -369,11 +364,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	CommandActionListenerForPlayer	_RedoActionListener;
 
 
-	BorderLayoutConstraintsPtr		_ToolbarAndContentConstraints;
-	SplitPanelPtr					_ToolbarAndContentPanel;
+	PanelPtr					_ToolbarAndContentPanel;
 
 	PanelPtr			_Toolbar;
-	SpringLayoutPtr		_ToolbarLayout;
 	
 	ButtonPtr	_OpenFileButton;
 	ButtonPtr	_SaveFileButton;
@@ -413,11 +406,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	MenuPtr		_StatisticsMenu;
 	MenuPtr		_ToggleMenu;
 	MenuBarPtr	_MainMenuBar;
-
-
-	SpringLayoutPtr _TopLeftPanelLayout;
-	PanelPtr		_TopLeftPanel;			//Panel that is found in the top left and that which holds the Hierarchy Panel
-
 
 	BorderLayoutConstraintsPtr	_DebugWindowSplitPanelConstraints;
 	SplitPanelPtr				_DebugWindowSplitPanel;

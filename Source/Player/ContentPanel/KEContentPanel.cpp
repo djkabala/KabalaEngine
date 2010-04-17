@@ -323,51 +323,86 @@ bool ContentPanel::getIsSplit()
 {
 	return _IsSplit;
 }
-void ContentPanel::updatePanel()
-{
-	if(_ContentPanelConstraints == NullFC)
-	{
-	_ContentPanelConstraints = osg::BorderLayoutConstraints::create();
 
-	beginEditCP(_ContentPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
-		_ContentPanelConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
-	endEditCP(_ContentPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
-	}
-
-	beginEditCP(SplitPanelPtr(this), SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-	SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-
-	this->setConstraints(_ContentPanelConstraints);
-	this->setMaxComponent(_RightTabPanel);
-	this->setDividerSize(5);
-	this->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
-
-	if(_IsSplit)
-	{
-			this->setDividerPosition(.50); 
-			this->setExpandable(true);
-			this->setMaxDividerPosition(.85);
-			this->setMinDividerPosition(.15);
-			this->setMinComponent(_LeftTabPanel);
-	}
-	else
-	{
-			this->setDividerPosition(0); 
-			this->setExpandable(true);
-			this->setMaxDividerPosition(0);
-			this->setMinDividerPosition(0);
-			this->setMinComponent(_LeftTabPanel);
-	}
-	endEditCP(SplitPanelPtr(this), SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-	SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-
-}
-void ContentPanel::init()
+void ContentPanel::createLuaEditorSplitPanel()
 {
 	createDefaultTabs();
 	createRightTabPanel();
 	createLeftTabPanel();
+
+    //Lua Editing Panel
+    _LuaEditorSplitPanel = SplitPanel::create();
+
+    beginEditCP(_LuaEditorSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+                SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+
+        _LuaEditorSplitPanel->setMaxComponent(_RightTabPanel);
+        _LuaEditorSplitPanel->setDividerSize(5);
+        _LuaEditorSplitPanel->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
+
+    endEditCP(_LuaEditorSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+              SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+}
+
+void ContentPanel::updatePanel()
+{
+    beginEditCP(_LuaEditorSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+                SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+    
+	if(_IsSplit)
+	{
+			_LuaEditorSplitPanel->setDividerPosition(.50); 
+			_LuaEditorSplitPanel->setExpandable(true);
+			_LuaEditorSplitPanel->setMaxDividerPosition(.85);
+			_LuaEditorSplitPanel->setMinDividerPosition(.15);
+			_LuaEditorSplitPanel->setMinComponent(_LeftTabPanel);
+	}
+	else
+	{
+			_LuaEditorSplitPanel->setDividerPosition(0); 
+			_LuaEditorSplitPanel->setExpandable(true);
+			_LuaEditorSplitPanel->setMaxDividerPosition(0);
+			_LuaEditorSplitPanel->setMinDividerPosition(0);
+			_LuaEditorSplitPanel->setMinComponent(_LeftTabPanel);
+	}
+
+    endEditCP(_LuaEditorSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
+              SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+
+}
+
+void ContentPanel::createSceneEditorPanel()
+{
+    //Scene Editing Panel
+    _SceneEditorPanel = Panel::createEmpty();
+}
+
+void ContentPanel::init()
+{
+    //Create the Lua Code Editing Panel
+    createLuaEditorSplitPanel();
 	setIsSplit(false);
+
+    //Create the Scene Graph Editing Panel
+    createSceneEditorPanel();
+
+    //Add the Editing Panels in a card layout to this panel
+	_MainCardLayout = CardLayout::create();
+    
+    beginEditCP(ContentPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+        getChildren().push_back(_SceneEditorPanel);
+        getChildren().push_back(_LuaEditorSplitPanel);
+        setLayout(_MainCardLayout);
+        setBackgrounds(NullFC);
+        setBorders(NullFC);
+    endEditCP(ContentPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+}
+
+void ContentPanel::setView(UInt32 Index)
+{
+    beginEditCP(_MainCardLayout, CardLayout::CardFieldMask);
+        _MainCardLayout->setCard(Index);
+    endEditCP(_MainCardLayout, CardLayout::CardFieldMask);
 }
 
 void ContentPanel::addTab()

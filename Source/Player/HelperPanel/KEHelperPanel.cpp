@@ -83,13 +83,77 @@ void HelperPanel::setupLuaTab()
     _CodeTextArea = osg::TextArea::create();
     _CodeTextArea->setText("");
 	
-    _TabPanel1Content = ScrollPanel::create();
-    beginEditCP(_TabPanel1Content, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-        _TabPanel1Content->setPreferredSize(Vec2f(300,1200));
-        _TabPanel1Content->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-		endEditCP(_TabPanel1Content, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    _LuaConsoleScrollPanel = ScrollPanel::create();
+    beginEditCP(_LuaConsoleScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+        _LuaConsoleScrollPanel->setPreferredSize(Vec2f(300,1200));
+        _LuaConsoleScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+		endEditCP(_LuaConsoleScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
     // Add the _CodeTextArea to the ScrollPanel so it is displayed
-	_TabPanel1Content->setViewComponent(_CodeTextArea);
+	_LuaConsoleScrollPanel->setViewComponent(_CodeTextArea);
+
+	
+	_HistoryList = List::create();
+	beginEditCP(_HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
+	    _HistoryList->setPreferredSize(Vec2f(100, 100));
+	    _HistoryList->setOrientation(List::VERTICAL_ORIENTATION);
+		_HistoryList->setModel(_HistoryListModel);
+	endEditCP(_HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
+
+	_HistoryList->setSelectionModel(_HistoryListSelectionModel);
+	_HistoryList->addMouseListener(&_PlayerMouseListener);
+
+	
+	_HistoryScrollPanel = ScrollPanel::create();
+	beginEditCP(_HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+		_HistoryScrollPanel->setPreferredSize(Vec2f(400,100));
+		_HistoryScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+	endEditCP(_HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+	_HistoryScrollPanel->setViewComponent(_HistoryList);
+	
+	
+	_HistoryLabel = osg::Label::create();
+
+	beginEditCP(_HistoryLabel, Label::TextFieldMask);
+        _HistoryLabel->setText("History");
+   	endEditCP(_HistoryLabel, Label::TextFieldMask);
+
+	// the execute button
+	_ExecuteBtn=osg::Button::create();
+
+	beginEditCP(_ExecuteBtn,Button::TextFieldMask);
+		_ExecuteBtn->setText("EXECUTE");
+		_ExecuteBtn->setPreferredSize(Vec2f(90,25));
+	endEditCP(_ExecuteBtn,Button::TextFieldMask);
+
+	_ExecuteBtn->addActionListener(&_BasicListener);
+    //Content Panel
+	_LuaConsoleContent = osg::Panel::createEmpty();
+
+	SpringLayoutPtr LuaConsoleContentLayout = osg::SpringLayout::create();
+
+	LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleScrollPanel, 0, SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleContent);  
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _LuaConsoleScrollPanel, 0, SpringLayoutConstraints::SOUTH_EDGE, _LuaConsoleContent); 
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _LuaConsoleScrollPanel, -5, SpringLayoutConstraints::WEST_EDGE, _HistoryScrollPanel);
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _LuaConsoleScrollPanel, 0, SpringLayoutConstraints::WEST_EDGE, _LuaConsoleContent);  
+
+	LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HistoryLabel, 5, SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleContent);  
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HistoryLabel, -5, SpringLayoutConstraints::EAST_EDGE, _LuaConsoleContent);
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _HistoryLabel, 0, SpringLayoutConstraints::WEST_EDGE, _HistoryScrollPanel);  
+
+	LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HistoryScrollPanel, 5, SpringLayoutConstraints::SOUTH_EDGE, _HistoryLabel);  
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _HistoryScrollPanel, -5, SpringLayoutConstraints::NORTH_EDGE, _ExecuteBtn); 
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HistoryScrollPanel, 0, SpringLayoutConstraints::EAST_EDGE, _LuaConsoleContent);
+
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _ExecuteBtn, -5, SpringLayoutConstraints::SOUTH_EDGE, _LuaConsoleContent);
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::HORIZONTAL_CENTER_EDGE, _ExecuteBtn, 0, SpringLayoutConstraints::HORIZONTAL_CENTER_EDGE, _HistoryScrollPanel);  
+
+	beginEditCP(_LuaConsoleContent,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+        _LuaConsoleContent->setLayout(LuaConsoleContentLayout);
+        _LuaConsoleContent->getChildren().push_back(_LuaConsoleScrollPanel);
+        _LuaConsoleContent->getChildren().push_back(_HistoryLabel);
+        _LuaConsoleContent->getChildren().push_back(_HistoryScrollPanel);
+        _LuaConsoleContent->getChildren().push_back(_ExecuteBtn);
+	endEditCP(_LuaConsoleContent,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 }
 void HelperPanel::setupErrorTab()
@@ -108,6 +172,7 @@ void HelperPanel::setupErrorTab()
 	_TabPanel2Content->setViewComponent(_ErrorTextArea);
 
 }
+
 void HelperPanel::setupTraceTab()
 {
 	// Create a _StackTraceTextArea
@@ -123,6 +188,38 @@ void HelperPanel::setupTraceTab()
     // Add the _StackTraceTextArea to the ScrollPanel so it is displayed
 	_TabPanel3Content->setViewComponent(_StackTraceTextArea);
 }
+
+void HelperPanel::createLoggingTab()
+{
+	//Text Area
+    _LoggingArea = osg::TextArea::create();
+	beginEditCP(_LoggingArea, TextArea::EditableFieldMask);
+        _LoggingArea->setEditable(false);
+	endEditCP(_LoggingArea, TextArea::EditableFieldMask);
+	
+    //Scroll Panel
+    _LoggingScrollPanel = osg::ScrollPanel::create();
+	beginEditCP(_LoggingScrollPanel, ScrollPanel::HorizontalResizePolicyFieldMask);
+		_LoggingScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+	endEditCP(_LoggingScrollPanel, ScrollPanel::HorizontalResizePolicyFieldMask);
+	_LoggingScrollPanel->setViewComponent(_LoggingArea);
+
+    //Content Panel
+	_LoggingContent = osg::Panel::createEmpty();
+
+	SpringLayoutPtr LoggingContentLayout = osg::SpringLayout::create();
+
+	LoggingContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _LoggingScrollPanel, 5, SpringLayoutConstraints::NORTH_EDGE, _LoggingContent);  
+    LoggingContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, _LoggingContent); 
+    LoggingContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::WEST_EDGE, _LoggingContent);
+    LoggingContentLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _LoggingScrollPanel, 5, SpringLayoutConstraints::WEST_EDGE, _LoggingContent);  
+
+	beginEditCP(_LoggingContent,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+        _LoggingContent->setLayout(LoggingContentLayout);
+        _LoggingContent->getChildren().push_back(_LoggingScrollPanel);
+	endEditCP(_LoggingContent,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+}
+
 void HelperPanel::setupPropertiesTab()
 {
 	_TabPanel4Content = osg::Panel::create();
@@ -269,6 +366,7 @@ void HelperPanel::setupInfoTabLabels()
     _TabPanel2Label = osg::Label::create();
     _TabPanel3Label = osg::Label::create();
 	_TabPanel4Label = osg::Label::create();
+	_LoggingContentLabel = osg::Label::create();
 
 	// set the fields of the labels
 	beginEditCP(_TabPanel1Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
@@ -296,23 +394,31 @@ void HelperPanel::setupInfoTabLabels()
         _TabPanel4Label->setBorders(NullFC);
         _TabPanel4Label->setBackgrounds(NullFC);
     endEditCP(_TabPanel4Label, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+    
+	beginEditCP(_LoggingContentLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
+        _LoggingContentLabel->setText("Logging");
+        _LoggingContentLabel->setBorders(NullFC);
+        _LoggingContentLabel->setBackgrounds(NullFC);
+    endEditCP(_LoggingContentLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
 
 }
 void HelperPanel::setupInfoTabPanel()
 {
 	setupInfoTabLabels();	//TabPanel(1,2,3,4)
-	setupLuaTab();			//_TabPanel1Content
+	setupLuaTab();			//_LuaConsoleScrollPanel
 	setupErrorTab();		//_TabPanel2Content
 	setupTraceTab();		//_TabPanel3Content
 	setupPropertiesTab();	//_TabPanel4Content
+    createLoggingTab();     //LoggingTab
 
 	_InfoTabPanel= osg::TabPanel::create();
     beginEditCP(_InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
 		_InfoTabPanel->setPreferredSize(Vec2f(1200,200));
-	    _InfoTabPanel->addTab(_TabPanel1Label, _TabPanel1Content);
+	    _InfoTabPanel->addTab(_TabPanel1Label, _LuaConsoleContent);
         _InfoTabPanel->addTab(_TabPanel2Label, _TabPanel2Content);
         _InfoTabPanel->addTab(_TabPanel3Label, _TabPanel3Content);
 		_InfoTabPanel->addTab(_TabPanel4Label, _TabPanel4Content);
+		_InfoTabPanel->addTab(_LoggingContentLabel, _LoggingContent);
 		_InfoTabPanel->setTabAlignment(0.5f);
         _InfoTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
 	endEditCP(_InfoTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
@@ -340,84 +446,25 @@ void HelperPanel::setupHistoryList()
 	_HistoryListModel = DefaultListModel::create();
 
 	updateListBox();
-	
-	_HistoryList = List::create();
-	beginEditCP(_HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
-	    _HistoryList->setPreferredSize(Vec2f(100, 100));
-	    _HistoryList->setOrientation(List::VERTICAL_ORIENTATION);
-		_HistoryList->setModel(_HistoryListModel);
-	endEditCP(_HistoryList, List::PreferredSizeFieldMask | List::OrientationFieldMask | List::ModelFieldMask);
-
-	_HistoryList->setSelectionModel(_HistoryListSelectionModel);
-	_HistoryList->addMouseListener(&_PlayerMouseListener);
-
-	
-	_HistoryScrollPanel = ScrollPanel::create();
-	beginEditCP(_HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-		_HistoryScrollPanel->setPreferredSize(Vec2f(400,100));
-		_HistoryScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-	endEditCP(_HistoryScrollPanel, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-	_HistoryScrollPanel->setViewComponent(_HistoryList);
-	
-	
-	_HistoryLabel = osg::Label::create();
-
-	beginEditCP(_HistoryLabel, Label::TextFieldMask);
-        _HistoryLabel->setText("History");
-   	endEditCP(_HistoryLabel, Label::TextFieldMask);
 
 }
 
 void HelperPanel::setupRest()
 {
-	// the execute button
-	_ExecuteBtn=osg::Button::create();
-
-	beginEditCP(_ExecuteBtn,Button::TextFieldMask);
-		_ExecuteBtn->setText("EXECUTE");
-		_ExecuteBtn->setPreferredSize(Vec2f(100,30));
-	endEditCP(_ExecuteBtn,Button::TextFieldMask);
-
-	_ExecuteBtn->addActionListener(&_BasicListener);
-
-	UInt32 SPACE_FOR_BUTTON = 200;
-
-    // OverlayLayout has no options to edit!
-    beginEditCP(_Layout);
-        // NOTHING : )
-    endEditCP(_Layout); 
-
-
 	_Layout = osg::SpringLayout::create();
 
 	_Layout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, HelperPanelPtr(this));  
     _Layout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, HelperPanelPtr(this)); 
-    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::WEST_EDGE, _HistoryScrollPanel);
+    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));
     _Layout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, HelperPanelPtr(this));  
-
-	_Layout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HistoryLabel, 5, SpringLayoutConstraints::NORTH_EDGE, HelperPanelPtr(this));  
-    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HistoryLabel, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));
-    _Layout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _HistoryLabel, 5, SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel);  
-
-	_Layout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HistoryScrollPanel, 5, SpringLayoutConstraints::SOUTH_EDGE, _HistoryLabel);  
-    _Layout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _HistoryScrollPanel, -5, SpringLayoutConstraints::NORTH_EDGE, _ExecuteBtn); 
-    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HistoryScrollPanel, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));
-
-    _Layout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _ExecuteBtn, -5, SpringLayoutConstraints::SOUTH_EDGE, HelperPanelPtr(this));
-    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _ExecuteBtn, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelPtr(this));  
-    _Layout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _ExecuteBtn, 5, SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel);
-    
 	
-	beginEditCP(HelperPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+	beginEditCP(HelperPanelPtr(this), Panel::ChildrenFieldMask | Panel::BordersFieldMask | Panel::LayoutFieldMask);
 		this->getChildren().push_back(_InfoTabPanel);
-		this->getChildren().push_back(_HistoryLabel);
-		this->getChildren().push_back(_HistoryScrollPanel);		
-		this->getChildren().push_back(_ExecuteBtn);
         this->setLayout(_Layout);
-    endEditCP(HelperPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+        this->setBorders(NullFC);
+    endEditCP(HelperPanelPtr(this), Panel::ChildrenFieldMask | Panel::BordersFieldMask | Panel::LayoutFieldMask);
 
 	MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_PlayerKeyListener2);
-	//MainApplication::the()->getMainWindowEventProducer()->addMouseListener(&_PlayerMouseListener);
 }
 
 void HelperPanel::viewTab(UInt32)

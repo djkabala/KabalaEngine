@@ -144,7 +144,7 @@ void HierarchyPanel::createSceneGraphTree(void)
         // Nothing
     endEditCP(SceneGraphTreeLayout);
 
-	_SceneGraphPanel = Panel::create();
+	_SceneGraphPanel = Panel::createEmpty();
 	beginEditCP(_SceneGraphPanel,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 	_SceneGraphPanel->getChildren().push_back(_TheSceneGraphTreeScrollPanel);
 	_SceneGraphPanel->getChildren().push_back(_CreateNewNodeMenuButton);
@@ -195,6 +195,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_CutItem = MenuItem::create();
 	_CopyItem = MenuItem::create();
 	_PasteItem = MenuItem::create();
+	_FocusCamera = MenuItem::create();
 
 	// _HierarchyPanelPopupMenu up menu items
 
@@ -218,11 +219,16 @@ void HierarchyPanel::createPopUpMenu(void)
         _PasteItem->setText("Paste");
     endEditCP(_PasteItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
+	beginEditCP(_FocusCamera, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _FocusCamera->setText("Focus Camera All");
+    endEditCP(_FocusCamera, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
 	_ShowHideItem->addActionListener(&_BasicListener);
 	_DeleteItem->addActionListener(&_BasicListener);
 	_CutItem->addActionListener(&_BasicListener);
 	_CopyItem->addActionListener(&_BasicListener);
 	_PasteItem->addActionListener(&_BasicListener);
+	_FocusCamera->addActionListener(&_BasicListener);
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
@@ -233,12 +239,21 @@ void HierarchyPanel::createPopUpMenu(void)
 	_HierarchyPanelPopupMenu->addItem(_CopyItem);	
 	_HierarchyPanelPopupMenu->addItem(_PasteItem);	
 	_HierarchyPanelPopupMenu->addItem(_DeleteItem);	
+	_HierarchyPanelPopupMenu->addSeparator();
+	_HierarchyPanelPopupMenu->addItem(_FocusCamera);	
 	endEditCP(_HierarchyPanelPopupMenu);
 
 	beginEditCP(HierarchyPanelPtr(this),Panel::PopupMenuFieldMask);
 	this->setPopupMenu(_HierarchyPanelPopupMenu);
 	endEditCP(HierarchyPanelPtr(this),Panel::PopupMenuFieldMask);
 
+}
+
+void HierarchyPanel::setView(UInt32 Index)
+{
+    beginEditCP(_CardLayout, CardLayout::CardFieldMask);
+        _CardLayout->setCard(Index);
+    endEditCP(_CardLayout, CardLayout::CardFieldMask);
 }
 
 void HierarchyPanel::actionPerformed(const ActionEventPtr e)
@@ -252,6 +267,11 @@ void HierarchyPanel::actionPerformed(const ActionEventPtr e)
 	{
 		CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,HierarchyPanelPtr(this));
         _ApplicationPlayer->getCommandManager()->executeCommand(DeleteCommandPtr);
+	}
+	else if(e->getSource() == _FocusCamera)
+	{
+		//Reset the debug camera to point to the corresponding geometry
+		changeDebugCameraPosition();
 	}
 	else if(e->getSource() == _CutItem)
 	{
@@ -313,7 +333,7 @@ void HierarchyPanel::createPanel()
 	_LayoutConstraints = osg::BorderLayoutConstraints::create();
 	
 	beginEditCP(_LayoutConstraints, BorderLayoutConstraints::RegionFieldMask);
-        _LayoutConstraints->setRegion(BorderLayoutConstraints::BORDER_WEST);
+        _LayoutConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
     endEditCP(_LayoutConstraints, BorderLayoutConstraints::RegionFieldMask);
 
 
@@ -337,7 +357,6 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 		{
 			if (_TheSceneGraphTreeScrollPanel == NullFC)
 			{
-				std::cout<<"the scenegraph tree hasnt been created yet.. so creating tree";
 				createSceneGraphTree();
 			}
 			beginEditCP(HierarchyPanelPtr(this),Panel::ChildrenFieldMask);
@@ -351,7 +370,6 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 		{
 			if (_TheLuaGraphTreeScrollPanel == NullFC)
 			{
-				std::cout<<"the luafile tree hasnt been created yet.. so creating tree";
 				createLuaGraphTree();
 			}
 			beginEditCP(HierarchyPanelPtr(this),  Panel::ChildrenFieldMask);
@@ -360,14 +378,6 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 
 			_TabsAdded.insert(LUA);
 		}
-		else
-		{
-			std::cout<<"undefined number in addtab of HierarchyPanel";
-		}
-	}
-	else
-	{
-		std::cout<<"tab already exists\n";
 	}
 }
 
@@ -433,6 +443,19 @@ void HierarchyPanel::updatePopupMenu(void)
 	beginEditCP(_DeleteItem, MenuItem::EnabledFieldMask);
 		_DeleteItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NullFC);
     endEditCP(_DeleteItem, MenuItem::EnabledFieldMask);
+
+    //Update Camera Focusing
+	beginEditCP(_FocusCamera, MenuItem::TextFieldMask);
+        if(_SceneGraphTreeSelectionListener._SelectedNode != NullFC)
+        {
+            _FocusCamera->setText("Focus Camera Here");
+        }
+        else
+        {
+            _FocusCamera->setText("Focus Camera All");
+        }
+    endEditCP(_FocusCamera, MenuItem::TextFieldMask);
+
 }
 
 void HierarchyPanel::changeShowHideMenuItem(void)
@@ -624,55 +647,22 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::highlightChanged(void)
 	updateHighlight();
 }
 
-void HierarchyPanel::SceneGraphTreeSelectionListener::changeDebugCameraPosition(void)
+void HierarchyPanel::changeDebugCameraPosition(void)
 {
 	showAll(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getCamera(),_ApplicationPlayer->getSelectedNode());
-	//showAll(_ApplicationPlayer->getDebugViewport()->getCamera(),_ApplicationPlayer->getSelectedNode());
-
-	/*
-	if(_highlight==NullFC)
-	return;
-
-	// calc the world bbox of the highlight object
-	#ifndef OSG_2_PREP
-	DynamicVolume vol;
-	#else
-	BoxVolume      vol;
-	#endif
-	_highlight->getWorldVolume(vol);
-
-	Pnt3f min,max;
-	vol.getBounds(min, max);
-
-	
-	NodePtr _DebugBeacon = _ApplicationPlayer->_DebugBeacon;
-	TransformPtr DebugCameraTransform = osg::TransformPtr::dcast(_DebugBeacon->getCore());
-
-	Matrix CameraTransformMatrix;
-	CameraTransformMatrix.setTranslate(0.0f,25.0f, 105.0f);
-	
-	beginEditCP(DebugCameraTransform, Transform::MatrixFieldMask);
-		DebugCameraTransform->setMatrix(CameraTransformMatrix);
-	endEditCP(DebugCameraTransform, Transform::MatrixFieldMask);
-	
-	
-	beginEditCP(_DebugBeacon, Node::CoreFieldMask);
-		_DebugBeacon->setCore(DebugCameraTransform);
-	endEditCP(_DebugBeacon, Node::CoreFieldMask);
-
-	beginEditCP(_ApplicationPlayer->_DebugBeacon, Node::CoreFieldMask);
-		_ApplicationPlayer->_DebugBeacon->setCore(DebugCameraTransform);
-	endEditCP(_ApplicationPlayer->_DebugBeacon, Node::CoreFieldMask);
-	
-	*/
 }
 
 
 
-void HierarchyPanel::SceneGraphTreeSelectionListener::showAll(CameraPtr TheCameraOrig, NodePtr Scene, Vec3f Up)
+void HierarchyPanel::showAll(CameraPtr TheCameraOrig, NodePtr Scene, Vec3f Up)
 {
+    NodePtr FocusNode(Scene);
+	if(FocusNode==NullFC)
+	{
+        FocusNode = MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot();
+    }
 
-	if(Scene!=NullFC && TheCameraOrig!=NullFC)
+	if(TheCameraOrig!=NullFC)
 	{
         PerspectiveCameraPtr TheCamera;
         if(TheCameraOrig->getType() == PerspectiveCamera::getClassType())
@@ -680,20 +670,20 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::showAll(CameraPtr TheCamer
             TheCamera = PerspectiveCamera::Ptr::dcast(TheCameraOrig);
         }
 
-        //Make sure the volume is up to date for the Scene
-        Scene->updateVolume();
+        //Make sure the volume is up to date for the FocusNode
+        FocusNode->updateVolume();
 
         //Get the Minimum and Maximum bounds of the volume
         Vec3f min,max;
         DynamicVolume TheVol;
-        Scene->getWorldVolume(TheVol);
+        FocusNode->getWorldVolume(TheVol);
         TheVol.getBounds( min, max );
 
         Vec3f d = max - min;
         if(d.length() < Eps) //The volume is 0
         {
             Pnt3f NodeOrigin(0.0f,0.0f,0.0f);
-            Scene->getToWorld().mult(NodeOrigin);
+            FocusNode->getToWorld().mult(NodeOrigin);
             //Default to a 1x1x1 box volume
             min = NodeOrigin - Vec3f(1.0f,1.0f,1.0f);
             max = NodeOrigin + Vec3f(1.0f,1.0f,1.0f);
@@ -735,10 +725,7 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::showAll(CameraPtr TheCamer
 	}
 	else
 	{
-
-		if(Scene==NullFC)SWARNING << "Scene is NullFC!" <<std::endl;
-		else SWARNING << "Camera is NullFC!" <<std::endl;
-		
+		SWARNING << "Camera is NullFC!" <<std::endl;
 	}
 }
 
@@ -780,10 +767,6 @@ void HierarchyPanel::setApplicationPlayer(ApplicationPlayerPtr TheApplicationPla
 
 void HierarchyPanel::SceneGraphTreeSelectionListener::selectedNodeChanged(void)
 {
-
-	//Update Right Click Menu
-	_HierarchyPanel->updatePopupMenu();
-	
 	setHighlight(_SelectedNode);
 	
     //Update Details Panel
@@ -793,12 +776,13 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::selectedNodeChanged(void)
     }
     else
     {
-		_ApplicationPlayer->setSelectedNode(_SelectedNode);
 		_ApplicationPlayer->getHelperPanel()->setLabelValues(_SelectedNode);
-		//Reset the debug camera to point to the corresponding geometry
-		changeDebugCameraPosition();
     }
+    _ApplicationPlayer->setSelectedNode(_SelectedNode);
 
+	//Update Right Click Menu
+	_HierarchyPanel->updatePopupMenu();
+	
 	
 
 }

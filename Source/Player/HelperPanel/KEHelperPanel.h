@@ -112,7 +112,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	LabelPtr _TabPanel3Label;
 	LabelPtr _TabPanel4Label;
 	
-	ScrollPanelPtr	_TabPanel1Content;
+	PanelPtr		_LuaConsoleContent;
+	ScrollPanelPtr	_LuaConsoleScrollPanel;
 	ScrollPanelPtr	_TabPanel2Content;
 	ScrollPanelPtr	_TabPanel3Content;
 	PanelPtr		_TabPanel4Content;
@@ -137,6 +138,11 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	LabelPtr _NodeOcclusionMaskValueLabel;
 	LabelPtr _NodeActiveValueLabel;
 
+    //Logging Panel
+	LabelPtr _LoggingContentLabel;
+	PanelPtr		_LoggingContent;
+	TextAreaPtr _LoggingArea;
+	ScrollPanelPtr	_LoggingScrollPanel;
 
 
 	void updateListBox(void);
@@ -146,6 +152,13 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	friend class ApplicationPlayer;
 	friend class HierarchyPanel;
 
+	void setupLuaTab(void);
+	void setupErrorTab(void);
+	void setupTraceTab(void);
+	void setupPropertiesTab(void);
+	void setupInfoTabLabels(void);
+	void setupInfoTabPanel(void);
+    void createLoggingTab(void);
 
 
     /*==========================  PUBLIC  =================================*/
@@ -222,13 +235,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	/////////////////// other function definitions - begin///////////////////
 	void viewTab(UInt32);
 	void hideTab(UInt32);
-
-	void setupLuaTab(void);
-	void setupErrorTab(void);
-	void setupTraceTab(void);
-	void setupPropertiesTab(void);
-	void setupInfoTabLabels(void);
-	void setupInfoTabPanel(void);
 
 	//void updateListBox(void);
 	void setupHistoryList(void);

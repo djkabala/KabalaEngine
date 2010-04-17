@@ -126,7 +126,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
 	//inline functions
 	
-	CardLayoutPtr getCardLayout(void);
 	SceneGraphTreeModelPtr getSceneGraphTreeModel(void);
 	TreePtr getSceneGraphTree(void);
 	ApplicationPlayerPtr getApplicationPlayer(void);
@@ -139,6 +138,7 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	void createDefaultHierarchyPanel();
 	void setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer);
 
+    void setView(UInt32 Index);
 
 	class LuaGraphTreeSelectionListener : public TreeSelectionListener
 	{
@@ -171,8 +171,6 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 		void setParams(TreePtr,ApplicationPlayerPtr);
 		void updateHighlight(void);
 		void highlightChanged(void);
-		void changeDebugCameraPosition(void);
-		void showAll(CameraPtr TheCamera, NodePtr Scene, Vec3f Up = Vec3f(0.0,1.0,0.0));
 		NodePtr getHighlight(void);
 		void setHighlight(NodePtr selectednode);
 
@@ -252,6 +250,7 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	MenuItemPtr _CopyItem ;
 	MenuItemPtr _PasteItem ;
 	MenuItemPtr _DeleteItem ;
+	MenuItemPtr _FocusCamera ;
 
 	void createPopUpMenu(void);
 	void updatePopupMenu(void);
@@ -272,6 +271,8 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	friend class BasicListener;
 	BasicListener _BasicListener;
 
+    void changeDebugCameraPosition(void);
+    void showAll(CameraPtr TheCamera, NodePtr Scene, Vec3f Up = Vec3f(0.0,1.0,0.0));
     // Variables should all be in HierarchyPanelBase.
 
     /*---------------------------------------------------------------------*/

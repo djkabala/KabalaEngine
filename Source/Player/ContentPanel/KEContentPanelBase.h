@@ -61,7 +61,7 @@
 #include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGCoredNodePtr.h>
 
-#include <OpenSG/UserInterface/OSGSplitPanel.h> // Parent
+#include <OpenSG/UserInterface/OSGPanel.h> // Parent
 
 
 #include "KEContentPanelFields.h"
@@ -72,11 +72,11 @@ class BinaryDataHandler;
 
 //! \brief ContentPanel Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING ContentPanelBase : public SplitPanel
+class KE_KABALAENGINELIB_DLLMAPPING ContentPanelBase : public Panel
 {
   private:
 
-    typedef SplitPanel    Inherited;
+    typedef Panel    Inherited;
 
     /*==========================  PUBLIC  =================================*/
   public:

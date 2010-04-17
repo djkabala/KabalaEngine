@@ -351,13 +351,23 @@ void ApplicationPlayer::createDebugInterface(void)
 	_HierarchyPanel->createDefaultHierarchyPanel();
 
 	_ContentPanel = ContentPanel::create();
-	_ContentPanel->init();
+
+	BorderLayoutConstraintsPtr ContentConstraints = osg::BorderLayoutConstraints::create();
+
+	beginEditCP(ContentConstraints, BorderLayoutConstraints::RegionFieldMask);
+        ContentConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    endEditCP(ContentConstraints, BorderLayoutConstraints::RegionFieldMask);
+	
+	beginEditCP(_ContentPanel, Panel::ConstraintsFieldMask);
+        _ContentPanel->setConstraints(ContentConstraints);
+	endEditCP(_ContentPanel, Panel::ConstraintsFieldMask);
+    _ContentPanel->init();
 
 	_OpenFileButton = Button::create();
 
 	beginEditCP(_OpenFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
 	_OpenFileButton->setText("Open File");
-	_OpenFileButton->setPreferredSize(Vec2f(100,50));
+	//_OpenFileButton->setPreferredSize(Vec2f(100,50));
 	endEditCP(_OpenFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
 	
 	_OpenFileButton->addActionListener(&_BasicListener);
@@ -366,7 +376,7 @@ void ApplicationPlayer::createDebugInterface(void)
 
 	beginEditCP(_SaveFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
 	_SaveFileButton->setText("Save File");
-	_SaveFileButton->setPreferredSize(Vec2f(100,50));
+	//_SaveFileButton->setPreferredSize(Vec2f(100,50));
 	endEditCP(_SaveFileButton,Button::TextFieldMask,Button::PreferredSizeFieldMask);
 
 	_SaveFileButton->addActionListener(&_BasicListener);
@@ -383,48 +393,33 @@ void ApplicationPlayer::createDebugInterface(void)
 
 	_ModeComboBox = ComboBox::create();
 
+
+	BorderLayoutConstraintsPtr ToolbarConstraints = osg::BorderLayoutConstraints::create();
+
+	beginEditCP(ToolbarConstraints, BorderLayoutConstraints::RegionFieldMask);
+        ToolbarConstraints->setRegion(BorderLayoutConstraints::BORDER_NORTH);
+    endEditCP(ToolbarConstraints, BorderLayoutConstraints::RegionFieldMask);
+
 	_Toolbar = Panel::create();
 	
 	beginEditCP(_Toolbar,Panel::PreferredSizeFieldMask);
-	_Toolbar->setPreferredSize(Vec2f(200,60));
+        _Toolbar->setConstraints(ToolbarConstraints);
+        _Toolbar->setPreferredSize(Vec2f(200,40));
 	endEditCP(_Toolbar,Panel::PreferredSizeFieldMask);
 
-
-	beginEditCP(_ToolbarLayout);
-        // NOTHING : )
-	endEditCP(_ToolbarLayout); 
-
-	_ToolbarLayout = osg::SpringLayout::create();
-
-
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _ModeComboBox, 5, SpringLayoutConstraints::NORTH_EDGE, _Toolbar);  
-    _ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _ModeComboBox, -5, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _ModeComboBox, -140, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _ModeComboBox, -5, SpringLayoutConstraints::SOUTH_EDGE, _Toolbar);
-
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _SaveFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, _Toolbar);  
-    _ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _SaveFileButton, -150, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _SaveFileButton, -285, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _SaveFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, _Toolbar);
-    	
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _OpenFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, _Toolbar);  
-    _ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _OpenFileButton, -295, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _OpenFileButton, -430, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _OpenFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, _Toolbar);
-   
-/*	_ToolbarLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _CloseFileButton, 5, SpringLayoutConstraints::NORTH_EDGE, _Toolbar);  
-    _ToolbarLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _CloseFileButton, -440, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _CloseFileButton, -575, SpringLayoutConstraints::EAST_EDGE, _Toolbar);
-	_ToolbarLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _CloseFileButton, -5, SpringLayoutConstraints::SOUTH_EDGE, _Toolbar);
-  */  
-	//_ToolbarLayout = osg::FlowLayout::create();
+	FlowLayoutPtr ToolbarLayout = osg::FlowLayout::create();
+	beginEditCP(ToolbarLayout,FlowLayout::OrientationFieldMask |
+                               FlowLayout::MajorAxisAlignmentFieldMask);
+        ToolbarLayout->setOrientation(FlowLayout::HORIZONTAL_ORIENTATION);
+        ToolbarLayout->setMajorAxisAlignment(1.0);
+	endEditCP(ToolbarLayout,FlowLayout::OrientationFieldMask |
+                               FlowLayout::MajorAxisAlignmentFieldMask);
 
 	beginEditCP(_Toolbar,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-	_Toolbar->getChildren().push_back(_ModeComboBox);
-	_Toolbar->getChildren().push_back(_SaveFileButton);
-	_Toolbar->getChildren().push_back(_OpenFileButton);
-	//_Toolbar->getChildren().push_back(_CloseFileButton);
-	_Toolbar->setLayout(_ToolbarLayout);
+        _Toolbar->getChildren().push_back(_OpenFileButton);
+        _Toolbar->getChildren().push_back(_SaveFileButton);
+        _Toolbar->getChildren().push_back(_ModeComboBox);
+        _Toolbar->setLayout(ToolbarLayout);
 	endEditCP(_Toolbar,Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 
@@ -538,15 +533,12 @@ void ApplicationPlayer::createDebugInterface(void)
 	_MainMenuBar->addMenu(_StatisticsMenu);
 	_MainMenuBar->addMenu(_ToggleMenu);
   
-	_TopLeftPanel = osg::Panel::create();
-    
 	//ToolbarLayout2= osg::BorderLayout::create();
 
 	beginEditCP(_HierarchyPanel,Panel::PreferredSizeFieldMask);
 		_HierarchyPanel->setPreferredSize(Vec2f(400,700));
 	endEditCP(_HierarchyPanel,Panel::PreferredSizeFieldMask);
 
-	// _TopLeftPanel panel elements creation
 	_ModeComboBoxModel = DefaultMutableComboBoxModel::create();
 	_ModeComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
 	_ModeComboBoxModel->addElement(boost::any(std::string("Lua Graph")));
@@ -558,79 +550,40 @@ void ApplicationPlayer::createDebugInterface(void)
 	endEditCP(_ModeComboBox, ComboBox::ModelFieldMask);
 	
 	//_ModeComboBox->addActionListener(&_BasicListener);
-	_ComboBoxListener.set(_ModeComboBox,_HierarchyPanel->getCardLayout(),_HierarchyPanel);//->TopLeftTreePanel);
 	_ModeComboBoxModel->addSelectionListener(&_ComboBoxListener);
 			
 	// Determine where the _ModeComboBox starts
 	_ModeComboBox->setSelectedIndex(0);
 	
-	
-	
-	
-	_TopLeftPanelLayout = osg::SpringLayout::create();
-
-	_TopLeftPanelLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HierarchyPanel, 5, SpringLayoutConstraints::NORTH_EDGE, _TopLeftPanel);  
-    _TopLeftPanelLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HierarchyPanel, -5, SpringLayoutConstraints::EAST_EDGE, _TopLeftPanel);
-	_TopLeftPanelLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _HierarchyPanel, 5, SpringLayoutConstraints::WEST_EDGE, _TopLeftPanel);
-	_TopLeftPanelLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _HierarchyPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, _TopLeftPanel);
-   
-
 	setupPopupMenu();
-
-	beginEditCP(_TopLeftPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-		_TopLeftPanel->getChildren().push_back(_HierarchyPanel);//->TopLeftTreePanel);
-		//_TopLeftPanel->getChildren().push_back(_ModeComboBox);
-		//_TopLeftPanel->getChildren().push_back(poptrigger);
-		//_TopLeftPanel->setPopupMenu(_HierarchyPanelPopupMenu);
-		_TopLeftPanel->setLayout(_TopLeftPanelLayout);
-    endEditCP(_TopLeftPanel, Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
 
 	/*************************************************** _DebugWindowSplitPanel creation **********************************************************************/
 
-	_ToolbarAndContentConstraints = osg::BorderLayoutConstraints::create();
+    BorderLayoutPtr ToolbarAndContentPanelLayout = BorderLayout::create();
 
-	beginEditCP(_ToolbarAndContentConstraints, BorderLayoutConstraints::RegionFieldMask);
-        _ToolbarAndContentConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
-    endEditCP(_ToolbarAndContentConstraints, BorderLayoutConstraints::RegionFieldMask);
+	_ToolbarAndContentPanel = osg::Panel::createEmpty();
 
-	_ToolbarAndContentPanel = osg::SplitPanel::create();
+	beginEditCP(_ToolbarAndContentPanel, Panel::ChildrenFieldMask |
+                Panel::LayoutFieldMask);
+        _ToolbarAndContentPanel->setLayout(ToolbarAndContentPanelLayout);
+        _ToolbarAndContentPanel->getChildren().push_back(_Toolbar);
+		_ToolbarAndContentPanel->getChildren().push_back(_ContentPanel);
+	endEditCP(_ToolbarAndContentPanel, Panel::ChildrenFieldMask |
+                Panel::LayoutFieldMask);
 
-	beginEditCP(_ToolbarAndContentPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-        _ToolbarAndContentPanel->setConstraints(_ToolbarAndContentConstraints);
-        _ToolbarAndContentPanel->setMinComponent(_Toolbar);
-		_ToolbarAndContentPanel->setMaxComponent(_ContentPanel);
-        _ToolbarAndContentPanel->setOrientation(SplitPanel::VERTICAL_ORIENTATION);
-        _ToolbarAndContentPanel->setDividerPosition(.05); 
-        // location from the left/top
-        _ToolbarAndContentPanel->setDividerSize(1);
-        _ToolbarAndContentPanel->setExpandable(false);
-        //_ToolbarAndContentPanel->setMaxDividerPosition(.25);
-        //_ToolbarAndContentPanel->setMinDividerPosition(.15);
-    endEditCP(_ToolbarAndContentPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-
-
-	_TopHalfSplitPanelConstraints = osg::BorderLayoutConstraints::create();
-
-	beginEditCP(_TopHalfSplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
-        _TopHalfSplitPanelConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
-    endEditCP(_TopHalfSplitPanelConstraints, BorderLayoutConstraints::RegionFieldMask);
-    
 	_TopHalfSplitPanel = osg::SplitPanel::create();
 
 	beginEditCP(_TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-		_TopHalfSplitPanel->setConstraints(_TopHalfSplitPanelConstraints);
-        _TopHalfSplitPanel->setMinComponent(_TopLeftPanel);
+        _TopHalfSplitPanel->setMinComponent(_HierarchyPanel);
 		_TopHalfSplitPanel->setMaxComponent(_ToolbarAndContentPanel);
         _TopHalfSplitPanel->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
-        _TopHalfSplitPanel->setDividerPosition(.25); 
+        _TopHalfSplitPanel->setDividerPosition(350.0f); 
         // location from the left/top
-        _TopHalfSplitPanel->setDividerSize(1);
-        _TopHalfSplitPanel->setExpandable(true);
-        _TopHalfSplitPanel->setMaxDividerPosition(.25);
-        _TopHalfSplitPanel->setMinDividerPosition(.15);
+        _TopHalfSplitPanel->setDividerSize(5);
+        //_TopHalfSplitPanel->setExpandable(true);
+        _TopHalfSplitPanel->setMaxDividerPosition(.85);
+        _TopHalfSplitPanel->setMinDividerPosition(150.0f);
     endEditCP(_TopHalfSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
 		SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
 
@@ -1046,15 +999,9 @@ void ApplicationPlayer::actionPerformed(const ActionEventPtr e)
 	}
 	else if(e->getSource() == _ModeComboBox)
 	{
-		int _Temp = _ModeComboBox->getSelectedIndex();
-		if(_Temp == 1)
-        {
-            _HierarchyPanel->getCardLayout()->last(_HierarchyPanel);//->TopLeftTreePanel);
-        }
-        else
-        {
-            _HierarchyPanel->getCardLayout()->first(_HierarchyPanel);//->TopLeftTreePanel);
-        }
+        int index = _ModeComboBox->getSelectedIndex();
+        _HierarchyPanel->setView(index);
+        _ContentPanel->setView(index);
 	}
 	else if(e->getSource() == _OpenFileButton)
 	{
@@ -1597,6 +1544,11 @@ void ApplicationPlayer::updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager)
 }
 
 
+void ApplicationPlayer::setDebugView(UInt32 Index)
+{
+    _HierarchyPanel->setView(Index);
+    _ContentPanel->setView(Index);
+}
 
 
 /*-------------------------------------------------------------------------*\
@@ -1774,37 +1726,11 @@ ApplicationPlayer::highlightNodeListener::~highlightNodeListener()
 
 void ApplicationPlayer::ComboBoxListener::selectionChanged(const ComboBoxSelectionEventPtr e)
 {
-    int index = _ComboBox->getSelectedIndex();
-    if(index == 0)
-    {
-        _TopLeftCardLayout->first(_TopLeftTreePanel);
-        /*beginEditCP(_ApplicationPlayer->_TopLeftPanel);
-            _ApplicationPlayer->_TopLeftPanel->setPopupMenu(_ApplicationPlayer->_HierarchyPanelPopupMenu);
-        endEditCP(_ApplicationPlayer->_TopLeftPanel);*/
-        _ApplicationPlayer->_ContentPanel->setVisible(false);
-    }
-    else 
-    {
-        /*beginEditCP(_ApplicationPlayer->_TopLeftPanel);
-            _ApplicationPlayer->_TopLeftPanel->setPopupMenu(NullFC);
-        endEditCP(_ApplicationPlayer->_TopLeftPanel);*/
-
-        _TopLeftCardLayout->last(_TopLeftTreePanel);
-        _ApplicationPlayer->_ContentPanel->setVisible(true);
-    }
-}
-
-void ApplicationPlayer::ComboBoxListener::set(ComboBoxPtr ComboBoxP,CardLayoutPtr _CardLayout,PanelPtr TopLeftTreePanel)
-{
-    _ComboBox = ComboBoxP;
-    _TopLeftCardLayout = _CardLayout;
-    _TopLeftTreePanel = TopLeftTreePanel;
+    _ApplicationPlayer->setDebugView(e->getCurrentIndex());
 }
 
 ApplicationPlayer::ComboBoxListener::ComboBoxListener(ApplicationPlayerPtr TheApplicationPlayer)
 {
     _ApplicationPlayer = TheApplicationPlayer;
-    _ComboBox = NullFC;
-    _TopLeftCardLayout = NullFC;
-    _TopLeftTreePanel = NullFC;
 }
+

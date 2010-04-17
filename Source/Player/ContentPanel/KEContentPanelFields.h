@@ -56,7 +56,7 @@
 #include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGSplitPanelFields.h>
+#include <OpenSG/UserInterface/OSGPanelFields.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -65,7 +65,7 @@ class ContentPanel;
 #if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
 //! ContentPanelPtr
 
-typedef FCPtr<SplitPanelPtr, ContentPanel> ContentPanelPtr;
+typedef FCPtr<PanelPtr, ContentPanel> ContentPanelPtr;
 
 #endif
 

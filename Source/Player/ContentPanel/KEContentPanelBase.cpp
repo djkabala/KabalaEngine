@@ -69,7 +69,7 @@ const OSG::BitVector ContentPanelBase::MTInfluenceMask =
 
 FieldContainerType ContentPanelBase::_type(
     "ContentPanel",
-    "SplitPanel",
+    "Panel",
     NULL,
     reinterpret_cast<PrototypeCreateF>(&ContentPanelBase::createEmpty),
     ContentPanel::initMethod,
@@ -225,7 +225,7 @@ OSG_END_NAMESPACE
 OSG_BEGIN_NAMESPACE
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ContentPanelPtr>::_type("ContentPanelPtr", "SplitPanelPtr");
+DataType FieldDataTraits<ContentPanelPtr>::_type("ContentPanelPtr", "PanelPtr");
 #endif
 
 OSG_DLLEXPORT_SFIELD_DEF1(ContentPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
