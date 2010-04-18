@@ -454,6 +454,13 @@ void ContentPanel::SceneEditorPanelListener::mouseDragged(const MouseEventPtr e)
 
 void ContentPanel::SceneEditorPanelListener::mouseClicked(const MouseEventPtr e)
 {
+    switch (e->getButton())
+    {
+        case MouseEvent::BUTTON1: 
+            //Cast a ray into the scene and select the closest node
+            _ContentPanel->_ApplicationPlayer->selectNode(e->getLocation());
+            break;
+    }
 }
 
 void ContentPanel::SceneEditorPanelListener::mouseEntered(const MouseEventPtr e)

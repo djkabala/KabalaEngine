@@ -54,6 +54,7 @@
 #include <OpenSG/OSGLineChunk.h>
 #include <OpenSG/OSGBlendChunk.h>
 #include <OpenSG/OSGMaterialChunk.h>
+#include <OpenSG/OSGIntersectAction.h>
 #include <OpenSG/OSGPolygonChunk.h>
 #include <OpenSG/OSGMaterialGroup.h>
 
@@ -68,6 +69,7 @@
 #include "Project/Scene/KEScene.h"
 #include "Application/KEMainApplication.h"
 #include <OpenSG/UserInterface/OSGFlowLayout.h>
+#include <OpenSG/UserInterface/OSGSceneGraphTreeModel.h>
 
 #include "Player/HierarchyPanel/KEHierarchyPanel.h"
 #include "Player/HelperPanel/KEHelperPanel.h"
@@ -1986,10 +1988,11 @@ void ApplicationPlayer::createHighlightNode(void)
     Color4f WireframeColor(1.0f,0.0f,1.0f,1.0f);
     MaterialChunkPtr WireframeMatMaterialChunk = MaterialChunk::create();
     beginEditCP(WireframeMatMaterialChunk);
-        WireframeMatMaterialChunk->setAmbient (WireframeColor);
-        WireframeMatMaterialChunk->setDiffuse (WireframeColor);
-        WireframeMatMaterialChunk->setSpecular(WireframeColor);
-        WireframeMatMaterialChunk->setLit(false);
+        WireframeMatMaterialChunk->setAmbient (Color4f(0.0f,0.0f,0.0f,1.0f));
+        WireframeMatMaterialChunk->setDiffuse (Color4f(0.0f,0.0f,0.0f,1.0f));
+        WireframeMatMaterialChunk->setSpecular(Color4f(0.0f,0.0f,0.0f,1.0f));
+        WireframeMatMaterialChunk->setEmission(WireframeColor);
+        WireframeMatMaterialChunk->setLit(true);
     endEditCP(WireframeMatMaterialChunk);
 
     ChunkMaterialPtr WireframeMaterial = ChunkMaterial::create();
@@ -2031,6 +2034,33 @@ void ApplicationPlayer::createHighlightNode(void)
         _HighlightNode->addChild(WireframeTransfromationNode);
     endEditCP(_HighlightNode);
     addRefCP(_HighlightNode);
+}
+
+void ApplicationPlayer::selectNode(const Pnt2f& ViewportPoint)
+{
+    Line ViewRay;
+    ViewportPtr TheViewport(MainApplication::the()->getProject()->getActiveScene()->getViewports(0));
+    TheViewport->getCamera()->calcViewRay( ViewRay, ViewportPoint.x(), ViewportPoint.y(), *TheViewport);
+
+    IntersectAction *CastRayAction = IntersectAction::create();
+
+    CastRayAction->setLine( ViewRay );
+    CastRayAction->apply( TheViewport->getRoot() );             
+
+    //Get the Tree Model
+    SceneGraphTreeModelPtr SceneModel(_HierarchyPanel->getSceneGraphTreeModel());
+    TreePtr SceneTree(_HierarchyPanel->getSceneGraphTree());
+    if ( CastRayAction->didHit() )
+    {
+        TreePath ThePath(SceneModel->getPathForNode(CastRayAction->getHitObject()));
+        SceneTree->expandPath(ThePath);
+        SceneTree->scrollPathToVisible(ThePath);
+        SceneTree->setSelectionPath(ThePath);
+    }
+    else
+    {
+        SceneTree->clearSelection();
+    }
 }
 
 void ApplicationPlayer::setupPopupMenu()

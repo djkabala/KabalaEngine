@@ -203,6 +203,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	void setHelperPanel(HelperPanelPtr);
 	NodePtr getSelectedNode(void);
 	void setSelectedNode(NodePtr);
+	void selectNode(const Pnt2f& ViewportPoint);
 	ContentPanelPtr getContentPanel(void);
 	void setContentPanel(ContentPanelPtr);
 
