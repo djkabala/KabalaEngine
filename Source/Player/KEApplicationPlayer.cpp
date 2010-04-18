@@ -53,6 +53,9 @@
 #include <OpenSG/OSGChunkMaterial.h>
 #include <OpenSG/OSGLineChunk.h>
 #include <OpenSG/OSGBlendChunk.h>
+#include <OpenSG/OSGMaterialChunk.h>
+#include <OpenSG/OSGPolygonChunk.h>
+#include <OpenSG/OSGMaterialGroup.h>
 
 // the general scene file loading handler
 #include <OpenSG/OSGSceneFileHandler.h>
@@ -1710,6 +1713,34 @@ void ApplicationPlayer::highlightNodeListener::update(const UpdateEventPtr e)
     _ApplicationPlayer->updateHighlightNode();
 }
 
+void ApplicationPlayer::updateWireframeNode(void)
+{
+    //Clone the sub-tree rooted at the selected node
+    if(_SelectedNode != NullFC)
+    {
+        NodePtr ClonedTree(cloneTree(_SelectedNode));
+        beginEditCP(_WireframeNode, Node::ChildrenFieldMask);
+            if(_WireframeNode->getNChildren() > 0)
+            {
+                _WireframeNode->replaceChild(0, ClonedTree);
+            }
+            else
+            {
+                _WireframeNode->addChild(ClonedTree);
+            }
+        endEditCP(_WireframeNode, Node::ChildrenFieldMask);
+    }
+
+    //Update the transformation for the wireframe node
+    beginEditCP(_WireframeTransform, Transform::MatrixFieldMask);
+        if(_SelectedNode != NullFC &&
+           _SelectedNode->getParent() != NullFC)
+        {
+            _WireframeTransform->setMatrix(_SelectedNode->getParent()->getToWorld());
+        }
+    endEditCP(_WireframeTransform, Transform::MatrixFieldMask);
+}
+
 void ApplicationPlayer::updateHighlightNode(void)
 {
     getDebugSceneNavigator().updateCameraTransformation();
@@ -1793,6 +1824,15 @@ void ApplicationPlayer::updateHighlightNode(void)
             temphighlightPoints->setValue(NodeOrigin, 12);
             temphighlightPoints->setValue(NodeOrigin + (NodeZDir* AxisScaling), 13);
 		endEditCP(temphighlightPoints);
+
+        //Update the transformation for the wireframe node
+        beginEditCP(_WireframeTransform, Transform::MatrixFieldMask);
+            if(_SelectedNode != NullFC &&
+               _SelectedNode->getParent() != NullFC)
+            {
+                _WireframeTransform->setMatrix(_SelectedNode->getParent()->getToWorld());
+            }
+        endEditCP(_WireframeTransform, Transform::MatrixFieldMask);
     }
 }
 
@@ -1811,11 +1851,11 @@ void ApplicationPlayer::createHighlightNode(void)
         TheBlendChunk->setDestFactor(GL_ONE_MINUS_SRC_ALPHA);
     endEditCP(TheBlendChunk);
 
-    ChunkMaterialPtr highlightMaterial = ChunkMaterial::create();
-    beginEditCP(highlightMaterial);
-        highlightMaterial->addChunk (TheBlendChunk);
-        highlightMaterial->addChunk (HighlightMatLineChunk);
-    endEditCP(highlightMaterial);
+    ChunkMaterialPtr HighlightMaterial = ChunkMaterial::create();
+    beginEditCP(HighlightMaterial);
+        HighlightMaterial->addChunk (TheBlendChunk);
+        HighlightMaterial->addChunk (HighlightMatLineChunk);
+    endEditCP(HighlightMaterial);
     
     //Create teh Geometry for the highlight
     GeoPTypesPtr type = GeoPTypesUI8::create();
@@ -1923,14 +1963,72 @@ void ApplicationPlayer::createHighlightNode(void)
         geo->setIndices   (index);
         geo->setPositions (highlightPoints);
         geo->setColors    (highlightColors);
-        geo->setMaterial  (highlightMaterial);
+        geo->setMaterial  (HighlightMaterial);
     endEditCP(geo);
 
+    //Create the Material for the Mesh Highlight
+    LineChunkPtr WireframeMatLineChunk = LineChunk::create();
+    beginEditCP(WireframeMatLineChunk);
+        WireframeMatLineChunk->setWidth(1.0f);
+        WireframeMatLineChunk->setSmooth(true);
+    endEditCP(WireframeMatLineChunk);
+
+    PolygonChunkPtr WireframeMatPolygonChunk = PolygonChunk::create();
+    beginEditCP(WireframeMatPolygonChunk);
+        WireframeMatPolygonChunk->setCullFace(GL_NONE);
+        WireframeMatPolygonChunk->setFrontMode(GL_LINE);
+        WireframeMatPolygonChunk->setBackMode(GL_LINE);
+        WireframeMatPolygonChunk->setOffsetFactor(1.0f);
+        WireframeMatPolygonChunk->setOffsetBias(0.01f);
+        WireframeMatPolygonChunk->setOffsetFill(true);
+    endEditCP(WireframeMatPolygonChunk);
+
+    Color4f WireframeColor(1.0f,0.0f,1.0f,1.0f);
+    MaterialChunkPtr WireframeMatMaterialChunk = MaterialChunk::create();
+    beginEditCP(WireframeMatMaterialChunk);
+        WireframeMatMaterialChunk->setAmbient (WireframeColor);
+        WireframeMatMaterialChunk->setDiffuse (WireframeColor);
+        WireframeMatMaterialChunk->setSpecular(WireframeColor);
+        WireframeMatMaterialChunk->setLit(false);
+    endEditCP(WireframeMatMaterialChunk);
+
+    ChunkMaterialPtr WireframeMaterial = ChunkMaterial::create();
+    beginEditCP(WireframeMaterial);
+        WireframeMaterial->addChunk (TheBlendChunk);
+        WireframeMaterial->addChunk (WireframeMatPolygonChunk);
+        WireframeMaterial->addChunk (WireframeMatMaterialChunk);
+        WireframeMaterial->addChunk (WireframeMatLineChunk);
+    endEditCP(WireframeMaterial);
+
+    //MaterialGroup
+    MaterialGroupPtr WireframeMaterialGroup = MaterialGroup::create(); 
+    beginEditCP(WireframeMaterialGroup);
+        WireframeMaterialGroup->setMaterial(WireframeMaterial);
+    endEditCP(WireframeMaterialGroup);
+
+    //Mesh Highlight Node
+    _WireframeNode = Node::create();
+    setName(_WireframeNode,"DEBUG_MODE_MESH_HIGHLIGHT_NODE");
+    beginEditCP(_WireframeNode);
+        _WireframeNode->setCore(WireframeMaterialGroup);
+    endEditCP(_WireframeNode);
+
+    //Mesh Highlight Transformation Node
+    _WireframeTransform = Transform::create();
+
+    NodePtr WireframeTransfromationNode = Node::create();
+    beginEditCP(WireframeTransfromationNode);
+        WireframeTransfromationNode->setCore(_WireframeTransform);
+        WireframeTransfromationNode->addChild(_WireframeNode);
+    endEditCP(WireframeTransfromationNode);
+
+    //Highlight Node
     _HighlightNode = Node::create();
-    setName(_HighlightNode,"DEBUG_MODE_BOUNDING_BOX");
+    setName(_HighlightNode,"DEBUG_MODE_HIGHLIGHT_NODE");
     
     beginEditCP(_HighlightNode);
         _HighlightNode->setCore(geo);
+        _HighlightNode->addChild(WireframeTransfromationNode);
     endEditCP(_HighlightNode);
     addRefCP(_HighlightNode);
 }

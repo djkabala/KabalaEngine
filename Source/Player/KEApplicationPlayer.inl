@@ -175,6 +175,7 @@ void ApplicationPlayer::setSelectedNode(NodePtr selectedNode)
     {
         _SelectedNode = selectedNode;
         updateHighlightNode();
+        updateWireframeNode();
     }
 }
 

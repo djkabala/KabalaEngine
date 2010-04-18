@@ -213,6 +213,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
     void setDebugView(UInt32 Index);
     void updateHighlightNode(void);
+    void updateWireframeNode(void);
    /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -344,6 +345,8 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
 
 	NodePtr _HighlightNode;
+	NodePtr _WireframeNode;
+	TransformPtr _WireframeTransform;
 	NodePtr _SelectedNode;
 
 	HierarchyPanelPtr	_HierarchyPanel;
