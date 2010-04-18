@@ -45,6 +45,7 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KEShowHideCommand.h"
+#include "KEUtils.h"
 
 #include <OpenSG/OSGSimpleAttachments.h>
 
@@ -67,9 +68,9 @@ CommandType ShowHideCommand::_Type("ShowHideCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-ShowHideCommandPtr ShowHideCommand::create(NodePtr _SelectedNode,MenuItemPtr _ShowHideItem)
+ShowHideCommandPtr ShowHideCommand::create(NodePtr SelectedNode, bool Show, bool Recursive)
 {
-	return Ptr(new ShowHideCommand(_SelectedNode,_ShowHideItem));
+	return Ptr(new ShowHideCommand(SelectedNode,Show,Recursive));
 }
 
 /***************************************************************************\
@@ -78,38 +79,45 @@ ShowHideCommandPtr ShowHideCommand::create(NodePtr _SelectedNode,MenuItemPtr _Sh
 
 void ShowHideCommand::execute(void)
 {
-	_Maskval = _SelectedNode->getTravMask();
-	if(!_Maskval)
-	{
-		_SelectedNode->setTravMask(UInt32(-1));
-	}
-	else	
-	{
-		_SelectedNode->setTravMask(0);
-	}
-	invertShowHideCaption();
+    _ChangedNodes.clear();
+    if(_Recursive)
+    {
+	    recurseSetTravMasRecord(_SelectedNode, (_Show ? UInt32(-1) : 0), _ChangedNodes);
+    }
+    else if(_SelectedNode->getTravMask() != (_Show ? UInt32(-1) : 0))
+    {
+        _ChangedNodes.push_back(std::pair<NodePtr, UInt32>(_SelectedNode, _SelectedNode->getTravMask()));
+        beginEditCP(_SelectedNode, Node::TravMaskFieldMask);
+            _SelectedNode->setTravMask((_Show ? UInt32(-1) : 0));
+        endEditCP(_SelectedNode, Node::TravMaskFieldMask);
+    }
+    else
+    {
+        //Insignificant change
+    }
 
 	_HasBeenDone = true;
 
 }
 
-void ShowHideCommand::invertShowHideCaption()
-{
-		std::string caption(_ShowHideItem->getText());
-		beginEditCP(_ShowHideItem);
-		if(caption=="Show")
-			_ShowHideItem->setText("Hide");
-		else
-			_ShowHideItem->setText("Show");
-		endEditCP(_ShowHideItem);
-}
-
 std::string ShowHideCommand::getCommandDescription(void) const
 {
 	std::string caption;
-	if(!_Maskval)caption = "Show";
-	else		caption = "Hide";
-	return		caption;
+	if(_Recursive)
+    {
+        caption += "Recursive ";
+    }
+
+	if(_Show)
+    {
+        caption += "Show";
+    }
+	else
+    {
+        caption += "Hide";
+    }
+
+	return caption;
 }
 
 std::string ShowHideCommand::getPresentationName(void) const
@@ -119,38 +127,19 @@ std::string ShowHideCommand::getPresentationName(void) const
 
 void ShowHideCommand::redo(void)
 {
-	if(_SelectedNode != NullFC)
-	{
-		Inherited::redo();
-		UInt32 _Maskval = _SelectedNode->getTravMask();
-		if(!_Maskval)
-		{
-			_SelectedNode->setTravMask(UInt32(-1));
-		}
-		else	
-		{
-			_SelectedNode->setTravMask(0);
-		}
-		invertShowHideCaption();
-	}
+    Inherited::redo();
+    execute();
 }
 
 void ShowHideCommand::undo(void)
 {
-    if(_SelectedNode != NullFC)
-	{
-		Inherited::undo();
-		UInt32 _Maskval = _SelectedNode->getTravMask();
-		if(!_Maskval)
-		{
-			_SelectedNode->setTravMask(UInt32(-1));
-		}
-		else	
-		{
-			_SelectedNode->setTravMask(0);
-		}
-		invertShowHideCaption();
-	}
+    Inherited::undo();
+    for(UInt32 i = 0; i < _ChangedNodes.size(); ++i)
+    {
+        beginEditCP(_ChangedNodes[i].first, Node::TravMaskFieldMask);
+            _ChangedNodes[i].first->setTravMask(_ChangedNodes[i].second);
+        endEditCP(_ChangedNodes[i].first, Node::TravMaskFieldMask);
+    }
 }
 
 const CommandType &ShowHideCommand::getType(void) const
@@ -174,8 +163,9 @@ void ShowHideCommand::operator =(const ShowHideCommand& source)
     if(this != &source)
     {
 	    Inherited::operator=(source);
-		_ShowHideItem = source._ShowHideItem;
 		_SelectedNode = source._SelectedNode;
+		_Recursive = source._Recursive;
+		_Show = source._Show;
     }
 }
 /*------------------------------------------------------------------------*/

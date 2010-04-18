@@ -758,7 +758,6 @@ void ApplicationPlayer::attachDebugInterface(void)
 		
     }
 	
-    _HierarchyPanel->_SceneGraphTreeSelectionListener.setParams(_HierarchyPanel->getSceneGraphTree(),ApplicationPlayerPtr(this));
 	updateHighlightNode();
 	beginEditCP(DebuggerDrawingSurface, UIDrawingSurface::GraphicsFieldMask | UIDrawingSurface::EventProducerFieldMask);
     	DebuggerDrawingSurface->setEventProducer(MainApplication::the()->getMainWindowEventProducer());
@@ -1345,7 +1344,6 @@ void ApplicationPlayer::updateDebugUI(void)
 		_HierarchyPanel->getSceneGraphTreeModel()->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
 	}
 	
-	//_HierarchyPanel->_SceneGraphTreeSelectionListener.setParams(_HierarchyPanel->_TheSceneGraphTree,ApplicationPlayerPtr(this));
 	updateHighlightNode();
 	
 }

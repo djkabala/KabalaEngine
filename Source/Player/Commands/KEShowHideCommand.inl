@@ -3,17 +3,20 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-ShowHideCommand::ShowHideCommand(NodePtr _SelectedNode,MenuItemPtr ShowHideItem) : Inherited(),
-_ShowHideItem(ShowHideItem),
-_SelectedNode(_SelectedNode)
+ShowHideCommand::ShowHideCommand(NodePtr SelectedNode, bool Show,bool Recursive) : Inherited(),
+_SelectedNode(SelectedNode),
+_Show(Show),
+_Recursive(Recursive)
 {
 }
 
 inline
-ShowHideCommand::ShowHideCommand(const ShowHideCommand& source) : Inherited(source)
+ShowHideCommand::ShowHideCommand(const ShowHideCommand& source) : Inherited(source),
+_SelectedNode(source._SelectedNode),
+_Show(source._Show),
+_Recursive(source._Recursive)
+
 {
-	_ShowHideItem = source._ShowHideItem;
-	_SelectedNode = source._SelectedNode;
 }
 
 inline 

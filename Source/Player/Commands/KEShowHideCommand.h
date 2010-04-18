@@ -36,9 +36,7 @@
 
 #include <OpenSG/UserInterface/OSGUndoableCommand.h>
 #include <OpenSG/OSGNode.h>
-
-#include "Player/KEApplicationPlayer.h"
-#include "Player/HierarchyPanel/KEHierarchyPanel.h"
+#include <vector>
 
 OSG_BEGIN_NAMESPACE
 
@@ -51,7 +49,7 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef ShowHideCommandPtr Ptr;
 
-	ShowHideCommand(NodePtr _SelectedNode,MenuItemPtr _ShowHideItem);
+	ShowHideCommand(NodePtr SelectedNode, bool Show, bool Recursive);
 
 	ShowHideCommand(const ShowHideCommand& source);
 
@@ -64,11 +62,10 @@ protected:
 	virtual void redo(void);
 	virtual void undo(void);
 
-	void invertShowHideCaption(void);
-
-	UInt32 _Maskval;
 	NodePtr _SelectedNode;
-	MenuItemPtr _ShowHideItem;
+	bool _Show;
+	bool _Recursive;
+	std::vector<std::pair<NodePtr, UInt32> > _ChangedNodes;
 
 public:
 
@@ -80,7 +77,7 @@ public:
 
 	virtual ~ShowHideCommand(void);
 	
-	static ShowHideCommandPtr create(NodePtr _SelectedNode,MenuItemPtr _ShowHideItem);
+	static ShowHideCommandPtr create(NodePtr SelectedNode, bool Show,bool Recursive);
 };
 
 OSG_END_NAMESPACE

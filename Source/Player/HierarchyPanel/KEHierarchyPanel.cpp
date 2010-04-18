@@ -189,6 +189,7 @@ void HierarchyPanel::createPopUpMenu(void)
 {
 
 	_ShowHideItem = MenuItem::create();
+	_ShowRecursiveItem = MenuItem::create();
 	_DeleteItem = MenuItem::create();
 	_CutItem = MenuItem::create();
 	_CopyItem = MenuItem::create();
@@ -200,6 +201,10 @@ void HierarchyPanel::createPopUpMenu(void)
 	beginEditCP(_ShowHideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _ShowHideItem->setText("Hide");
     endEditCP(_ShowHideItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
+	beginEditCP(_ShowRecursiveItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _ShowRecursiveItem->setText("Show all below");
+    endEditCP(_ShowRecursiveItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	beginEditCP(_DeleteItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _DeleteItem->setText("Delete");
@@ -222,6 +227,7 @@ void HierarchyPanel::createPopUpMenu(void)
     endEditCP(_FocusCamera, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	_ShowHideItem->addActionListener(&_BasicListener);
+	_ShowRecursiveItem->addActionListener(&_BasicListener);
 	_DeleteItem->addActionListener(&_BasicListener);
 	_CutItem->addActionListener(&_BasicListener);
 	_CopyItem->addActionListener(&_BasicListener);
@@ -231,15 +237,17 @@ void HierarchyPanel::createPopUpMenu(void)
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
 	beginEditCP(_HierarchyPanelPopupMenu);
-	_HierarchyPanelPopupMenu->addItem(_ShowHideItem);
-	_HierarchyPanelPopupMenu->addSeparator();
-	_HierarchyPanelPopupMenu->addItem(_CutItem);	
-	_HierarchyPanelPopupMenu->addItem(_CopyItem);	
-	_HierarchyPanelPopupMenu->addItem(_PasteItem);	
-	_HierarchyPanelPopupMenu->addItem(_DeleteItem);	
-	_HierarchyPanelPopupMenu->addSeparator();
-	_HierarchyPanelPopupMenu->addItem(_FocusCamera);	
+        _HierarchyPanelPopupMenu->addItem(_ShowHideItem);
+        _HierarchyPanelPopupMenu->addItem(_ShowRecursiveItem);
+        _HierarchyPanelPopupMenu->addSeparator();
+        _HierarchyPanelPopupMenu->addItem(_CutItem);	
+        _HierarchyPanelPopupMenu->addItem(_CopyItem);	
+        _HierarchyPanelPopupMenu->addItem(_PasteItem);	
+        _HierarchyPanelPopupMenu->addItem(_DeleteItem);	
+        _HierarchyPanelPopupMenu->addSeparator();
+        _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
 	endEditCP(_HierarchyPanelPopupMenu);
+    _HierarchyPanelPopupMenu->addPopupMenuListener(&_TheSceneGraphPopupListener);
 
 	beginEditCP(HierarchyPanelPtr(this),Panel::PopupMenuFieldMask);
 	this->setPopupMenu(_HierarchyPanelPopupMenu);
@@ -258,7 +266,18 @@ void HierarchyPanel::actionPerformed(const ActionEventPtr e)
 {
 	if(e->getSource() == _ShowHideItem)
 	{
-		 CommandPtr ShowHideItemCommand = ShowHideCommand::create(this->_SceneGraphTreeSelectionListener._SelectedNode,_ShowHideItem);
+		 CommandPtr ShowHideItemCommand =
+             ShowHideCommand::create(_SceneGraphTreeSelectionListener._SelectedNode,
+                                     (_SceneGraphTreeSelectionListener._SelectedNode->getTravMask() ==0),
+                                     false);
+        _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
+	}
+    else if(e->getSource() == _ShowRecursiveItem)
+	{
+		 CommandPtr ShowHideItemCommand =
+             ShowHideCommand::create(_SceneGraphTreeSelectionListener._SelectedNode,
+                                     true,
+                                     true);
         _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
 	}
 	else if(e->getSource() == _DeleteItem)
@@ -418,9 +437,15 @@ void HierarchyPanel::createDefaultHierarchyPanel() // creates the panel with the
 void HierarchyPanel::updatePopupMenu(void)
 {
 	changeShowHideMenuItem();
+    //Update Show/Hide
 	beginEditCP(_ShowHideItem, MenuItem::EnabledFieldMask);
 		_ShowHideItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NullFC);
     endEditCP(_ShowHideItem, MenuItem::EnabledFieldMask);
+
+    //Update Show Recursive
+	beginEditCP(_ShowRecursiveItem, MenuItem::EnabledFieldMask);
+		_ShowRecursiveItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NullFC);
+    endEditCP(_ShowRecursiveItem, MenuItem::EnabledFieldMask);
 
 	//Update Paste
 	beginEditCP(_PasteItem, MenuItem::EnabledFieldMask);
@@ -458,39 +483,21 @@ void HierarchyPanel::updatePopupMenu(void)
 
 void HierarchyPanel::changeShowHideMenuItem(void)
 {
-
-	if(_ApplicationPlayer!=NullFC && _SelectedNode!=NullFC && _ShowHideItem!=NullFC)
+	if(_ApplicationPlayer!=NullFC && _SceneGraphTreeSelectionListener._SelectedNode!=NullFC && _ShowHideItem!=NullFC)
 	{
-		UInt32 maskval = _SelectedNode->getTravMask();
-		//std::cout<<"maskval:"<<maskval<<std::endl;	
-		if(!maskval)
-		{
-			if(_ShowHideItem->getText()== "Hide")
-			{
-				//std::cout<<"changing from hide to show"<<std::endl;
-				beginEditCP(_ShowHideItem,MenuItem::TextFieldMask);
-				_ShowHideItem->setText("Show");
-				endEditCP(_ShowHideItem,MenuItem::TextFieldMask);
-			}
-			else
-			{
-				//std::cout<<"its already 'show'";
-			}
-		}
-		else 
-		{
-			if(_ShowHideItem->getText()== "Show")
-			{
-				//std::cout<<"changing from show to hide"<<std::endl;
-				beginEditCP(_ShowHideItem,MenuItem::TextFieldMask);
-				_ShowHideItem->setText("Hide");
-				endEditCP(_ShowHideItem,MenuItem::TextFieldMask);
-			}
-			else
-			{
-				//std::cout<<"its already 'hide'";
-			}
-		}
+		UInt32 maskval = _SceneGraphTreeSelectionListener._SelectedNode->getTravMask();
+		if(!maskval && (_ShowHideItem->getText()== "Hide"))
+        {
+            beginEditCP(_ShowHideItem,MenuItem::TextFieldMask);
+                _ShowHideItem->setText("Show");
+            endEditCP(_ShowHideItem,MenuItem::TextFieldMask);
+        }
+		else if(maskval && (_ShowHideItem->getText()== "Show"))
+        {
+            beginEditCP(_ShowHideItem,MenuItem::TextFieldMask);
+                _ShowHideItem->setText("Hide");
+            endEditCP(_ShowHideItem,MenuItem::TextFieldMask);
+        }
 	}
 }
 
@@ -702,9 +709,23 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::selectedNodeChanged(void)
 		_ApplicationPlayer->getHelperPanel()->setLabelValues(_SelectedNode);
     }
     _ApplicationPlayer->setSelectedNode(_SelectedNode);
+}
 
-	//Update Right Click Menu
-	_HierarchyPanel->updatePopupMenu();
+void HierarchyPanel::SceneGraphPopupListener::popupMenuCanceled            (const  PopupMenuEventPtr e)
+{
+}
+
+void HierarchyPanel::SceneGraphPopupListener::popupMenuWillBecomeInvisible (const  PopupMenuEventPtr e)
+{
+}
+
+void HierarchyPanel::SceneGraphPopupListener::popupMenuWillBecomeVisible   (const  PopupMenuEventPtr e)
+{
+    _HierarchyPanel->updatePopupMenu();
+}
+
+void HierarchyPanel::SceneGraphPopupListener::popupMenuContentsChanged     (const  PopupMenuEventPtr e)
+{
 }
 
 HierarchyPanel::PlayerMouseListener2::PlayerMouseListener2(HierarchyPanelPtr TheHierarchyPanel)
@@ -744,10 +765,10 @@ void HierarchyPanel::MenuButtonActionListener::createNewNode(const ActionEventPt
 	{
 		try
 		{	
-			NodePtr _SelectedNode(_HierarchyPanel->_ApplicationPlayer->getSelectedNode());
-			if(_SelectedNode == NullFC)
+			NodePtr SelectedNode(_HierarchyPanel->_ApplicationPlayer->getSelectedNode());
+			if(SelectedNode == NullFC)
 			{
-				_SelectedNode = _HierarchyPanel->_TheSceneGraphTreeModel->getRootNode();
+				SelectedNode = _HierarchyPanel->_TheSceneGraphTreeModel->getRootNode();
 			}
 
 			FieldContainerType* FCType;
@@ -835,7 +856,8 @@ HierarchyPanel::HierarchyPanel() :
 	_LuaGraphTreeSelectionListener(HierarchyPanelPtr(this)),
 	_PlayerMouseListener2(HierarchyPanelPtr(this)),
 	_TheMenuButtonActionListener(HierarchyPanelPtr(this)),
-	_BasicListener(HierarchyPanelPtr(this))
+	_BasicListener(HierarchyPanelPtr(this)),
+	_TheSceneGraphPopupListener(HierarchyPanelPtr(this))
 {
 	_ApplicationPlayer = NullFC;
 	
@@ -847,7 +869,8 @@ HierarchyPanel::HierarchyPanel(const HierarchyPanel &source) :
 	_LuaGraphTreeSelectionListener(HierarchyPanelPtr(this)),
 	_PlayerMouseListener2(HierarchyPanelPtr(this)),
 	_TheMenuButtonActionListener(HierarchyPanelPtr(this)),
-	_BasicListener(HierarchyPanelPtr(this))
+	_BasicListener(HierarchyPanelPtr(this)),
+	_TheSceneGraphPopupListener(HierarchyPanelPtr(this))
 {
 }
 

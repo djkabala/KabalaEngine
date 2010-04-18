@@ -44,6 +44,7 @@
 #include "KEKabalaEngineDef.h"
 #include <OpenSG/OSGAttachmentContainer.h>
 #include <OpenSG/OSGSimpleAttachments.h>
+#include <OpenSG/OSGNode.h>
 
 #include <OpenSG/OSGConfig.h>
 
@@ -52,6 +53,13 @@
 OSG_USING_NAMESPACE
 
 bool KE_KABALAENGINELIB_DLLMAPPING attachName (AttachmentContainerPtr AttContainer);
+
+void KE_KABALAENGINELIB_DLLMAPPING recurseSetTravMask(NodePtr RootNode, 
+                                                      UInt32 TravMask);
+
+void KE_KABALAENGINELIB_DLLMAPPING recurseSetTravMasRecord(NodePtr RootNode, 
+                                                           UInt32 TravMask,
+                                                           std::vector<std::pair<NodePtr, UInt32> >& NodesChanged);
 
 #endif /* _KE_DEFINES_H_ */
 

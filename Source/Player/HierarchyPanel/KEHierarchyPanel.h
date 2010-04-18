@@ -139,6 +139,60 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	void setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer);
 
     void setView(UInt32 Index);
+	
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Sync                                    */
+    /*! \{                                                                 */
+
+    virtual void changed(BitVector  whichField, 
+                         UInt32     origin    );
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Output                                   */
+    /*! \{                                                                 */
+
+    virtual void dump(      UInt32     uiIndent = 0, 
+                      const BitVector  bvFlags  = 0) const;
+
+    /*! \}                                                                 */
+    /*=========================  PROTECTED  ===============================*/
+  protected:
+
+  	ApplicationPlayerPtr _ApplicationPlayer;
+	DerivedFieldContainerComboBoxModelPtr _NewNodeMenuModel;
+	MenuButtonPtr _CreateNewNodeMenuButton;
+	PanelPtr _SceneGraphPanel;
+	BorderLayoutConstraintsPtr _CreateNewButtonConstraints;
+
+	PopupMenuPtr _HierarchyPanelPopupMenu;
+	
+	MenuItemPtr _ShowHideItem ;
+	MenuItemPtr _ShowRecursiveItem ;
+	MenuItemPtr _CutItem ;
+	MenuItemPtr _CopyItem ;
+	MenuItemPtr _PasteItem ;
+	MenuItemPtr _DeleteItem ;
+	MenuItemPtr _FocusCamera ;
+
+	void createPopUpMenu(void);
+	void updatePopupMenu(void);
+	void changeShowHideMenuItem(void);
+	void actionPerformed(const ActionEventPtr e);
+
+	class BasicListener : public ActionListener
+	{
+	public:
+		BasicListener(HierarchyPanelPtr TheHierarchyPanel);
+		~BasicListener();
+
+		virtual void actionPerformed(const ActionEventPtr e);
+	protected :
+		HierarchyPanelPtr _HierarchyPanel;
+	
+	};
+	friend class BasicListener;
+	BasicListener _BasicListener;
 
 	class LuaGraphTreeSelectionListener : public TreeSelectionListener
 	{
@@ -211,59 +265,23 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
 	friend class MenuButtonActionListener;
 	MenuButtonActionListener _TheMenuButtonActionListener;
-	
-    /*---------------------------------------------------------------------*/
-    /*! \name                      Sync                                    */
-    /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                     Output                                   */
-    /*! \{                                                                 */
-
-    virtual void dump(      UInt32     uiIndent = 0, 
-                      const BitVector  bvFlags  = 0) const;
-
-    /*! \}                                                                 */
-    /*=========================  PROTECTED  ===============================*/
-  protected:
-
-  	ApplicationPlayerPtr _ApplicationPlayer;
-	DerivedFieldContainerComboBoxModelPtr _NewNodeMenuModel;
-	MenuButtonPtr _CreateNewNodeMenuButton;
-	PanelPtr _SceneGraphPanel;
-	BorderLayoutConstraintsPtr _CreateNewButtonConstraints;
-
-	PopupMenuPtr _HierarchyPanelPopupMenu;
-	
-	MenuItemPtr _ShowHideItem ;
-	MenuItemPtr _CutItem ;
-	MenuItemPtr _CopyItem ;
-	MenuItemPtr _PasteItem ;
-	MenuItemPtr _DeleteItem ;
-	MenuItemPtr _FocusCamera ;
-
-	void createPopUpMenu(void);
-	void updatePopupMenu(void);
-	void changeShowHideMenuItem(void);
-	void actionPerformed(const ActionEventPtr e);
-
-	class BasicListener : public ActionListener
+	class SceneGraphPopupListener : public PopupMenuListener
 	{
-	public:
-		BasicListener(HierarchyPanelPtr TheHierarchyPanel);
-		~BasicListener();
+      public:
+        SceneGraphPopupListener(HierarchyPanelPtr TheHierearchyPanel);
 
-		virtual void actionPerformed(const ActionEventPtr e);
-	protected :
-		HierarchyPanelPtr _HierarchyPanel;
-	
-	};
-	friend class BasicListener;
-	BasicListener _BasicListener;
+        void popupMenuCanceled            (const  PopupMenuEventPtr e);
+        void popupMenuWillBecomeInvisible (const  PopupMenuEventPtr e);
+        void popupMenuWillBecomeVisible   (const  PopupMenuEventPtr e);
+        void popupMenuContentsChanged     (const  PopupMenuEventPtr e);
+
+      protected:
+        HierarchyPanelPtr _HierarchyPanel;
+    };
+
+	friend class SceneGraphPopupListener;
+	SceneGraphPopupListener _TheSceneGraphPopupListener;
 
     void changeDebugCameraPosition(void);
     void showAll(CameraPtr TheCameraOrig,

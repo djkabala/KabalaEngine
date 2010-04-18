@@ -57,6 +57,11 @@ ApplicationPlayerPtr HierarchyPanel::getApplicationPlayer(void)
 	return _ApplicationPlayer;
 }
 
+inline
+HierarchyPanel::SceneGraphPopupListener::SceneGraphPopupListener(HierarchyPanelPtr TheHierarchyPanel)
+    : _HierarchyPanel(TheHierarchyPanel)
+{
+}
 
 
 OSG_END_NAMESPACE
