@@ -266,7 +266,9 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	BasicListener _BasicListener;
 
     void changeDebugCameraPosition(void);
-    void showAll(CameraPtr TheCamera, NodePtr Scene, Vec3f Up = Vec3f(0.0,1.0,0.0));
+    void showAll(CameraPtr TheCameraOrig,
+                 NodePtr Scene,
+                 ViewportPtr LocalViewport);
     // Variables should all be in HierarchyPanelBase.
 
     /*---------------------------------------------------------------------*/

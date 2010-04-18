@@ -522,10 +522,14 @@ void HierarchyPanel::LuaGraphTreeSelectionListener::setParams(TreePtr TheTree,Ap
 
 void HierarchyPanel::changeDebugCameraPosition(void)
 {
-	showAll(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getCamera(),_ApplicationPlayer->getSelectedNode());
+	showAll(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getCamera(),
+            _ApplicationPlayer->getSelectedNode(),
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0));
 }
 
-void HierarchyPanel::showAll(CameraPtr TheCameraOrig, NodePtr Scene, Vec3f Up)
+void HierarchyPanel::showAll(CameraPtr TheCameraOrig,
+                             NodePtr Scene,
+                             ViewportPtr LocalViewport)
 {
     NodePtr FocusNode(Scene);
 	if(FocusNode==NullFC)
@@ -562,34 +566,112 @@ void HierarchyPanel::showAll(CameraPtr TheCameraOrig, NodePtr Scene, Vec3f Up)
         }
 
         // try to be nice to people giving degrees...
-        Real32 fov(TheCamera->getFov());
-        if(fov > Pi)
+        Real32 VertFov(TheCamera->getFov());
+        if(VertFov > Pi)
         {
-            fov = osgdegree2rad(fov);
+            VertFov = osgdegree2rad(VertFov);
         }
 
-        Real32 dist = osgMax(d[0],d[1]) / (2.0f * osgtan(fov /2.0f));
+        //Get the horizontal feild of view
+        Real32 HorFov = 2.0f * osgatan(static_cast<Real32>(LocalViewport->getPixelWidth())
+                                       /(static_cast<Real32>(LocalViewport->getPixelHeight())/osgtan(VertFov*0.5f)));
 
         Pnt3f at((min[0] + max[0]) * .5f,(min[1] + max[1]) * .5f,(min[2] + max[2]) * .5f);
-        Pnt3f from=at;
 
-        //Check if the Camera is flipped
-        Vec3f OrigX(1.0f,0.0f,0.0f), OrigZ(0.0f,0.0f,1.0f);
-        Matrix OrigViewing;
-        TheCamera->getViewing(OrigViewing,1,1);
-        OrigViewing.mult(OrigX);
-        OrigViewing.mult(OrigZ);
-        if(OrigX.cross(OrigZ) == Up)
-        {
-            from[2]+=(dist+fabs(max[2]-min[2])*0.5f); 
-        }
-        else
-        {
-            from[2]-=(dist+fabs(max[2]-min[2])*0.5f); 
-        }
+        //Get the camera world transformation
+        Matrix CameraToWorld(TheCamera->getBeacon()->getToWorld());
+        Matrix WorldToCamera(CameraToWorld);
+        WorldToCamera.invert();
+
+        //Get the 8 points of the bounding box in camera space
+        Pnt3f p1(min),
+              p2(max.x(), min.y(), min.z()),
+              p3(max.x(), max.y(), min.z()),
+              p4(max.x(), min.y(), max.z()),
+              p5(min.x(), max.y(), min.z()),
+              p6(min.x(), max.y(), max.z()),
+              p7(min.x(), min.y(), max.z()),
+              p8(max);
+
+        p1 = WorldToCamera * p1;
+        p2 = WorldToCamera * p2;
+        p3 = WorldToCamera * p3;
+        p4 = WorldToCamera * p4;
+        p5 = WorldToCamera * p5;
+        p6 = WorldToCamera * p6;
+        p7 = WorldToCamera * p7;
+        p8 = WorldToCamera * p8;
+
+        //Get the min and max of the bounding volume relative camera space
+        Vec3f BBMinCamera;
+        Vec3f BBMaxCamera;
+        BBMinCamera[0] = osgMin(p1.x(),
+                         osgMin(p2.x(),
+                         osgMin(p3.x(),
+                         osgMin(p4.x(),
+                         osgMin(p5.x(),
+                         osgMin(p6.x(),
+                         osgMin(p7.x(),p8.x())))))));
+
+        BBMinCamera[1] = osgMin(p1.y(),
+                         osgMin(p2.y(),
+                         osgMin(p3.y(),
+                         osgMin(p4.y(),
+                         osgMin(p5.y(),
+                         osgMin(p6.y(),
+                         osgMin(p7.y(),p8.y())))))));
+
+        BBMinCamera[2] = osgMin(p1.z(),
+                         osgMin(p2.z(),
+                         osgMin(p3.z(),
+                         osgMin(p4.z(),
+                         osgMin(p5.z(),
+                         osgMin(p6.z(),
+                         osgMin(p7.z(),p8.z())))))));
+
+        BBMaxCamera[0] = osgMax(p1.x(),
+                         osgMax(p2.x(),
+                         osgMax(p3.x(),
+                         osgMax(p4.x(),
+                         osgMax(p5.x(),
+                         osgMax(p6.x(),
+                         osgMax(p7.x(),p8.x())))))));
+
+        BBMaxCamera[1] = osgMax(p1.y(),
+                         osgMax(p2.y(),
+                         osgMax(p3.y(),
+                         osgMax(p4.y(),
+                         osgMax(p5.y(),
+                         osgMax(p6.y(),
+                         osgMax(p7.y(),p8.y())))))));
+
+        BBMaxCamera[2] = osgMax(p1.z(),
+                         osgMax(p2.z(),
+                         osgMax(p3.z(),
+                         osgMax(p4.z(),
+                         osgMax(p5.z(),
+                         osgMax(p6.z(),
+                         osgMax(p7.z(),p8.z())))))));
+
+        Pnt3f CamerAt(WorldToCamera * at);
+
+        //Calculate the distance to move the camera back to make sure the bound
+        //box is visible
+        Real32 dist = 1.05f * ((BBMaxCamera.z()-CamerAt.z()) +
+                              osgMax(((BBMaxCamera.y()-BBMinCamera.y()) / (2.0f * osgtan(VertFov *0.5f))),
+                                     ((BBMaxCamera.x()-BBMinCamera.x()) / (2.0f * osgtan(HorFov  *0.5f)))));
+
+        //Get the cameras current orientation
+        Vec3f OrigY(0.0f,1.0f,0.0f),
+              OrigZ(0.0f,0.0f,1.0f);
+        CameraToWorld.mult(OrigY);
+        CameraToWorld.mult(OrigZ);
+
+        //Keep the same camera heading
+        Pnt3f  from = at + (OrigZ * dist); 
 
         Matrix m;
-        if(!MatrixLookAt(m, from, at, Up))
+        if(!MatrixLookAt(m, from, at, OrigY))
         {
             _ApplicationPlayer->moveDebugCamera(m);
         }
