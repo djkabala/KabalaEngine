@@ -341,6 +341,7 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	NodePtr _WireframeNode;
 	TransformPtr _WireframeTransform;
 	NodePtr _SelectedNode;
+	NodePtr _WorkspaceGrid;
 
 	HierarchyPanelPtr	_HierarchyPanel;
 	HelperPanelPtr		_HelperPanel;

@@ -57,6 +57,7 @@
 #include <OpenSG/OSGIntersectAction.h>
 #include <OpenSG/OSGPolygonChunk.h>
 #include <OpenSG/OSGMaterialGroup.h>
+#include <OpenSG/OSGSimpleGeometryExt.h>
 
 // the general scene file loading handler
 #include <OpenSG/OSGSceneFileHandler.h>
@@ -1418,6 +1419,37 @@ void ApplicationPlayer::attachDebugViewport(void)
 
 ViewportPtr ApplicationPlayer::createDebugViewport(void)
 {
+    LineChunkPtr WorkspaceGridLineChunk = LineChunk::create();
+    beginEditCP(WorkspaceGridLineChunk);
+        WorkspaceGridLineChunk->setWidth(1.0f);
+        WorkspaceGridLineChunk->setSmooth(true);
+    endEditCP(WorkspaceGridLineChunk);
+
+    BlendChunkPtr TheBlendChunk = BlendChunk::create();
+    beginEditCP(TheBlendChunk);
+        TheBlendChunk->setSrcFactor(GL_SRC_ALPHA);
+        TheBlendChunk->setDestFactor(GL_ONE_MINUS_SRC_ALPHA);
+    endEditCP(TheBlendChunk);
+
+    ChunkMaterialPtr WorkspaceGridMaterial = ChunkMaterial::create();
+    beginEditCP(WorkspaceGridMaterial);
+        WorkspaceGridMaterial->addChunk (TheBlendChunk);
+        WorkspaceGridMaterial->addChunk (WorkspaceGridLineChunk);
+    endEditCP(WorkspaceGridMaterial);
+
+    MaterialGroupPtr GridMatGroup = MaterialGroup::create();
+    beginEditCP(GridMatGroup, MaterialGroup::MaterialFieldMask);
+        GridMatGroup->setMaterial(WorkspaceGridMaterial);
+    endEditCP(GridMatGroup, MaterialGroup::MaterialFieldMask);
+
+    //Create the Workspace Grid
+    _WorkspaceGrid = Node::create();
+
+    beginEditCP(_WorkspaceGrid, Node::CoreFieldMask | Node::ChildrenFieldMask);
+        _WorkspaceGrid->setCore(GridMatGroup);
+        _WorkspaceGrid->addChild(makeGrid(100.0f, 100.0f, 1.0, Color3f(0.7f,0.7f,0.7f)));
+    endEditCP(_WorkspaceGrid, Node::CoreFieldMask | Node::ChildrenFieldMask);
+
     //Create the Highlight Node
     createHighlightNode();
 
@@ -1435,6 +1467,7 @@ ViewportPtr ApplicationPlayer::createDebugViewport(void)
         DefaultRootNode->setCore(osg::Group::create());
         DefaultRootNode->addChild(_DebugCameraBeacon);
         DefaultRootNode->addChild(_HighlightNode);
+        DefaultRootNode->addChild(_WorkspaceGrid);
     endEditCP(DefaultRootNode, Node::CoreFieldMask | Node::ChildrenFieldMask);
 
 	//Background
