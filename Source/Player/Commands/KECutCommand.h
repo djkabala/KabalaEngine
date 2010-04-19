@@ -52,7 +52,9 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef CutCommandPtr Ptr;
 
-	CutCommand(ApplicationPlayerPtr ApplicationPlayer,SceneGraphTreeModelPtr SceneGraphTreeModel);
+    CutCommand(ApplicationPlayerPtr ApplicationPlayer,
+               SceneGraphTreeModelPtr SceneGraphTreeModel,
+               NodePtr CutNode);
 
 	CutCommand(const CutCommand& source);
 
@@ -69,11 +71,9 @@ protected:
 	ApplicationPlayerPtr _ApplicationPlayer;  
 	SceneGraphTreeModelPtr _SceneGraphTreeModel;
 	
-	UInt32	_CurrentAction;
-	NodePtr _NodeInClipboardBeforeCut;
-	NodePtr _NodeInClipboardAfterCut;
-	NodePtr _ParentOfCutNode;
-	
+	NodePtr _CutNode;
+	NodePtr _Parent;
+	UInt32 _IndexOfCut;
 
 public:
 
@@ -85,7 +85,9 @@ public:
 
 	virtual ~CutCommand(void);
 	
-	static CutCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,SceneGraphTreeModelPtr SceneGraphTreeModel);
+    static CutCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,
+                                SceneGraphTreeModelPtr SceneGraphTreeModel,
+                                NodePtr CutNode);
 };
 
 OSG_END_NAMESPACE

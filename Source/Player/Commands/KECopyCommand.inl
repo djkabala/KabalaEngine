@@ -3,15 +3,18 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-CopyCommand::CopyCommand(ApplicationPlayerPtr ApplicationPlayer) : Inherited(),
-_ApplicationPlayer(ApplicationPlayer)
+CopyCommand::CopyCommand(ApplicationPlayerPtr ApplicationPlayer,
+                         NodePtr CopyNode) : Inherited(),
+    _ApplicationPlayer(ApplicationPlayer),
+    _CopyNode(CopyNode)
 {
 }
 
 inline
-CopyCommand::CopyCommand(const CopyCommand& source) : Inherited(source)
+CopyCommand::CopyCommand(const CopyCommand& source) : Inherited(source),
+    _ApplicationPlayer(source._ApplicationPlayer),
+    _CopyNode(source._CopyNode)
 {
-	_ApplicationPlayer = source._ApplicationPlayer;
 }
 
 inline 

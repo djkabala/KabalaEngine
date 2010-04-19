@@ -67,9 +67,9 @@ CommandType CopyCommand::_Type("CopyCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-CopyCommandPtr CopyCommand::create(ApplicationPlayerPtr ApplicationPlayer)
+CopyCommandPtr CopyCommand::create(ApplicationPlayerPtr ApplicationPlayer, NodePtr CopyNode)
 {
-	return Ptr(new CopyCommand(ApplicationPlayer));
+	return Ptr(new CopyCommand(ApplicationPlayer, CopyNode));
 }
 
 /***************************************************************************\
@@ -78,11 +78,7 @@ CopyCommandPtr CopyCommand::create(ApplicationPlayerPtr ApplicationPlayer)
 
 void CopyCommand::execute(void)
 {
-	_ApplicationPlayer->setCurrentAction(COPY);//currentAction = COPY;
-	_ApplicationPlayer->setClonedNodeInCopyClipboard(osg::deepCloneTree(_ApplicationPlayer->getSelectedNode()));
-	std::string _Name=getName(_ApplicationPlayer->getSelectedNode());
-	_Name+=" copy";
-	setName(_ApplicationPlayer->getClonedNodeInCopyClipboard(),_Name);
+	_ApplicationPlayer->setClonedNodeInCopyClipboard(_CopyNode);
 }
 
 std::string CopyCommand::getCommandDescription(void) const
@@ -100,6 +96,7 @@ const CommandType &CopyCommand::getType(void) const
 {
 	return _Type;
 }
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/

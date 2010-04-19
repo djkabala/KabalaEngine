@@ -50,7 +50,7 @@ protected:
 
 	enum cActions{NONE,CUT,COPY};
 
-	CopyCommand(ApplicationPlayerPtr ApplicationPlayer);
+	CopyCommand(ApplicationPlayerPtr ApplicationPlayer, NodePtr CopyNode);
 
 	CopyCommand(const CopyCommand& source);
 
@@ -63,6 +63,7 @@ protected:
 	virtual std::string getPresentationName(void) const;
 
 	ApplicationPlayerPtr _ApplicationPlayer;
+    NodePtr _CopyNode;
 
 public:
 
@@ -74,7 +75,7 @@ public:
 
 	virtual ~CopyCommand(void);
 	
-	static CopyCommandPtr create(ApplicationPlayerPtr ApplicationPlayer);
+	static CopyCommandPtr create(ApplicationPlayerPtr ApplicationPlayer, NodePtr CopyNode);
 };
 
 OSG_END_NAMESPACE

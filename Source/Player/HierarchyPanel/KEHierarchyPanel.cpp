@@ -63,6 +63,13 @@
 #include <OpenSG/UserInterface/OSGComboBox.h>
 #include <OpenSG/UserInterface/OSGDerivedFieldContainerComboBoxModel.h>
 
+#include "Player/Commands/KEShowHideCommand.h"
+#include "Player/Commands/KEDeleteCommand.h"
+#include "Player/Commands/KECutCommand.h"
+#include "Player/Commands/KECopyCommand.h"
+#include "Player/Commands/KEPasteCommand.h"
+#include "Player/Commands/KENewCommand.h"
+
 OSG_BEGIN_NAMESPACE
 
 /***************************************************************************\
@@ -194,6 +201,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_CutItem = MenuItem::create();
 	_CopyItem = MenuItem::create();
 	_PasteItem = MenuItem::create();
+	_PasteInstanceItem = MenuItem::create();
 	_FocusCamera = MenuItem::create();
 
 	// _HierarchyPanelPopupMenu up menu items
@@ -222,6 +230,10 @@ void HierarchyPanel::createPopUpMenu(void)
         _PasteItem->setText("Paste");
     endEditCP(_PasteItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
+	beginEditCP(_PasteInstanceItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+        _PasteInstanceItem->setText("Paste Instance");
+    endEditCP(_PasteInstanceItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
+
 	beginEditCP(_FocusCamera, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _FocusCamera->setText("Focus Camera All");
     endEditCP(_FocusCamera, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
@@ -232,6 +244,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_CutItem->addActionListener(&_BasicListener);
 	_CopyItem->addActionListener(&_BasicListener);
 	_PasteItem->addActionListener(&_BasicListener);
+	_PasteInstanceItem->addActionListener(&_BasicListener);
 	_FocusCamera->addActionListener(&_BasicListener);
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
@@ -243,6 +256,7 @@ void HierarchyPanel::createPopUpMenu(void)
         _HierarchyPanelPopupMenu->addItem(_CutItem);	
         _HierarchyPanelPopupMenu->addItem(_CopyItem);	
         _HierarchyPanelPopupMenu->addItem(_PasteItem);	
+        _HierarchyPanelPopupMenu->addItem(_PasteInstanceItem);	
         _HierarchyPanelPopupMenu->addItem(_DeleteItem);	
         _HierarchyPanelPopupMenu->addSeparator();
         _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
@@ -282,7 +296,7 @@ void HierarchyPanel::actionPerformed(const ActionEventPtr e)
 	}
 	else if(e->getSource() == _DeleteItem)
 	{
-		CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,HierarchyPanelPtr(this));
+		CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,HierarchyPanelPtr(this),_ApplicationPlayer->getSelectedNode());
         _ApplicationPlayer->getCommandManager()->executeCommand(DeleteCommandPtr);
 	}
 	else if(e->getSource() == _FocusCamera)
@@ -292,22 +306,57 @@ void HierarchyPanel::actionPerformed(const ActionEventPtr e)
 	}
 	else if(e->getSource() == _CutItem)
 	{
-		CommandPtr CutCommandPtr = CutCommand::create(_ApplicationPlayer,_TheSceneGraphTreeModel);
+		CommandPtr CutCommandPtr =
+            CutCommand::create(_ApplicationPlayer,_TheSceneGraphTreeModel,_ApplicationPlayer->getSelectedNode());
         _ApplicationPlayer->getCommandManager()->executeCommand(CutCommandPtr);
 	}
 
 	else if(e->getSource() == _CopyItem)
 	{
 	
-		CommandPtr CopyCommandPtr = CopyCommand::create(_ApplicationPlayer);
+		CommandPtr CopyCommandPtr = CopyCommand::create(_ApplicationPlayer,_ApplicationPlayer->getSelectedNode());
         _ApplicationPlayer->getCommandManager()->executeCommand(CopyCommandPtr);
 
 	}
 	else if(e->getSource() == _PasteItem)
 	{
+        CommandPtr ThePasteCommand;
+        if(_ApplicationPlayer->getSelectedNode() != NullFC)
+        {
+            ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
+                                                   HierarchyPanelPtr(this),
+                                                   _ApplicationPlayer->getSelectedNode(),
+                                                   true);
+        }
+        else
+        {
+            ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
+                                                   HierarchyPanelPtr(this),
+                                                   MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
+                                                   true);
+        }
 
-		CommandPtr PasteCommandPtr = PasteCommand::create(_ApplicationPlayer,HierarchyPanelPtr(this));
-        _ApplicationPlayer->getCommandManager()->executeCommand(PasteCommandPtr);
+        _ApplicationPlayer->getCommandManager()->executeCommand(ThePasteCommand);
+	}
+	else if(e->getSource() == _PasteInstanceItem)
+	{
+        CommandPtr ThePasteCommand;
+        if(_ApplicationPlayer->getSelectedNode() != NullFC)
+        {
+            ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
+                                                   HierarchyPanelPtr(this),
+                                                   _ApplicationPlayer->getSelectedNode(),
+                                                   false);
+        }
+        else
+        {
+            ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
+                                                   HierarchyPanelPtr(this),
+                                                   MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
+                                                   false);
+        }
+
+        _ApplicationPlayer->getCommandManager()->executeCommand(ThePasteCommand);
 	}
 }
 
@@ -449,8 +498,13 @@ void HierarchyPanel::updatePopupMenu(void)
 
 	//Update Paste
 	beginEditCP(_PasteItem, MenuItem::EnabledFieldMask);
-		_PasteItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NullFC);
+		_PasteItem->setEnabled(_ApplicationPlayer->getClonedNodeInCopyClipboard() != NullFC);
     endEditCP(_PasteItem, MenuItem::EnabledFieldMask);
+
+	//Update Paste Instance
+	beginEditCP(_PasteInstanceItem, MenuItem::EnabledFieldMask);
+		_PasteInstanceItem->setEnabled(_ApplicationPlayer->getClonedNodeInCopyClipboard() != NullFC);
+    endEditCP(_PasteInstanceItem, MenuItem::EnabledFieldMask);
 
 	//Update Copy
 	beginEditCP(_CopyItem, MenuItem::EnabledFieldMask);

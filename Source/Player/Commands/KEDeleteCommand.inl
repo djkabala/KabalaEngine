@@ -3,29 +3,26 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-DeleteCommand::DeleteCommand(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel) : Inherited(),
-_NodeInCutClipboard(NullFC),
-_ClonedNodeInCutClipboard(NullFC),
-_ClonedNodeInCopyClipboard(NullFC),
-_ApplicationPlayer(ApplicationPlayer),
-_HierarchyPanel(HierarchyPanel),
-_LastSelectedPathComponent(NullFC),
-_LastSelectedPathComponentNode(NullFC),
-_Parent(NullFC)
+DeleteCommand::DeleteCommand(ApplicationPlayerPtr ApplicationPlayer,
+                             HierarchyPanelPtr HierarchyPanel,
+                             NodePtr DeleteNode) : Inherited(),
+    _ApplicationPlayer(ApplicationPlayer),
+    _HierarchyPanel(HierarchyPanel),
+    _DeletedNode(DeleteNode),
+    _Parent(NullFC)
 {
+    addRefCP(_DeletedNode);
 }
 
 inline
-DeleteCommand::DeleteCommand(const DeleteCommand& source) : Inherited(source)
+DeleteCommand::DeleteCommand(const DeleteCommand& source) : Inherited(source),
+    _ApplicationPlayer(source._ApplicationPlayer),
+    _HierarchyPanel(source._HierarchyPanel),
+    _DeletedNode(source._DeletedNode),
+    _Parent(NullFC)
+
 {
-	_NodeInCutClipboard = source._NodeInCutClipboard;
-	_ClonedNodeInCutClipboard = source._ClonedNodeInCutClipboard;
-	_ClonedNodeInCutClipboard = source._ClonedNodeInCopyClipboard;
-	_ApplicationPlayer = source._ApplicationPlayer;
-	_HierarchyPanel = source._HierarchyPanel;
-	_LastSelectedPathComponent= source._LastSelectedPathComponent;
-	_LastSelectedPathComponentNode = source._LastSelectedPathComponentNode;
-	_Parent= source._Parent;
+    addRefCP(_DeletedNode);
 }
 
 inline 

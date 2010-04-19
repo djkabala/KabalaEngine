@@ -216,15 +216,16 @@ void ApplicationPlayer::createDebugInterface(void)
     
 	beginEditCP(_UndoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _UndoItem->setText("Undo");
-		_UndoItem->setAcceleratorKey(KeyEvent::KEY_U);
+		_UndoItem->setAcceleratorKey(KeyEvent::KEY_Z);
         _UndoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         _UndoItem->setMnemonicKey(KeyEvent::KEY_U);
     endEditCP(_UndoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
  
 	beginEditCP(_RedoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _RedoItem->setText("Redo");
-		_RedoItem->setAcceleratorKey(KeyEvent::KEY_R);
-        _RedoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+		_RedoItem->setAcceleratorKey(KeyEvent::KEY_Z);
+        _RedoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL |
+                                           KeyEvent::KEY_MODIFIER_SHIFT);
         _RedoItem->setMnemonicKey(KeyEvent::KEY_R);
     endEditCP(_RedoItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
  
@@ -288,22 +289,16 @@ void ApplicationPlayer::createDebugInterface(void)
     
 	beginEditCP(_PhysicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _PhysicsItem->setText("Physics ");
-        _PhysicsItem->setAcceleratorKey(KeyEvent::KEY_Y);
-        _PhysicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         _PhysicsItem->setMnemonicKey(KeyEvent::KEY_Y);
     endEditCP(_PhysicsItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
 	beginEditCP(_ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _ParticleSystemItem->setText("ParticleSystem ");
-        _ParticleSystemItem->setAcceleratorKey(KeyEvent::KEY_Z);
-        _ParticleSystemItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         _ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_Z);
     endEditCP(_ParticleSystemItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	beginEditCP(_AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _AnimationItem->setText("Animation ");
-        _AnimationItem->setAcceleratorKey(KeyEvent::KEY_A);
-        _AnimationItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
         _AnimationItem->setMnemonicKey(KeyEvent::KEY_A);
     endEditCP(_AnimationItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 

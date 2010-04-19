@@ -125,12 +125,6 @@
 
 #include "Player/Commands/KECommandActionListenerForPlayer.h"
 
-#include "Player/Commands/KECutCommand.h"
-#include "Player/Commands/KECopyCommand.h"
-#include "Player/Commands/KEPasteCommand.h"
-#include "Player/Commands/KEDeleteCommand.h"
-#include "Player/Commands/KEShowHideCommand.h"
-#include "Player/Commands/KENewCommand.h"
 #include "Player/Commands/KEUndoCommandOfPlayer.h"
 #include "Player/Commands/KERedoCommandOfPlayer.h"
 
@@ -192,8 +186,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 	UInt32 getCurrentAction(void);
 	void setClonedNodeInCopyClipboard(NodePtr node);
 	NodePtr getClonedNodeInCopyClipboard(void);
-	void setNodeInCutClipboard(NodePtr node);
-	NodePtr getNodeInCutClipboard(void);
 	UndoManagerPtr getUndoManager(void);
 	NodePtr getHighlightNode(void);
 	void setHighlightNode(NodePtr);
@@ -358,9 +350,6 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationPlayer : public ApplicationPlayer
 
 	enum cActions{NONE,CUT,COPY};
 
-	UInt32 currentAction;
-
-	NodePtr _NodeInCutClipboard;
 	NodePtr _ClonedNodeInCopyClipboard;
 
 	CommandManagerPtr				_TheCommandManager;

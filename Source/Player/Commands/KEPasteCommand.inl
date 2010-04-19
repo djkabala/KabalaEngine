@@ -3,26 +3,27 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-PasteCommand::PasteCommand(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel) : Inherited(),
-_ApplicationPlayer(ApplicationPlayer),
-_HierarchyPanel(HierarchyPanel),
-_CurrentAction(0),
-_NodeInCutClipboard(NullFC),
-_ClonedNodeInCopyClipboard(NullFC),
-_SelectedNode(NullFC)
+PasteCommand::PasteCommand(ApplicationPlayerPtr ApplicationPlayer,
+                           HierarchyPanelPtr HierarchyPanel,
+                           NodePtr ParentNode,
+                           bool DeepClone) : Inherited(),
+    _ApplicationPlayer(ApplicationPlayer),
+    _HierarchyPanel(HierarchyPanel),
+    _PastedNode(NullFC),
+    _ParentNode(ParentNode),
+    _DeepClone(DeepClone)
 {
 }
 
 inline
-PasteCommand::PasteCommand(const PasteCommand& source) : Inherited(source)
-{
-	_ApplicationPlayer = source._ApplicationPlayer;
-	_HierarchyPanel = source._HierarchyPanel;
-	_CurrentAction = source._CurrentAction;
-	_NodeInCutClipboard = source._NodeInCutClipboard;
-	_ClonedNodeInCopyClipboard = source._ClonedNodeInCopyClipboard;
-	_SelectedNode = source._SelectedNode;
+PasteCommand::PasteCommand(const PasteCommand& source) : Inherited(source),
+    _ApplicationPlayer(source._ApplicationPlayer),
+    _HierarchyPanel(source._HierarchyPanel),
+    _PastedNode(NullFC),
+    _ParentNode(source._ParentNode),
+    _DeepClone(source._DeepClone)
 
+{
 }
 
 inline 

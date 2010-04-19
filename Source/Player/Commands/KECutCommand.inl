@@ -3,13 +3,13 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-CutCommand::CutCommand(ApplicationPlayerPtr ApplicationPlayer,SceneGraphTreeModelPtr SceneGraphTreeModel) : Inherited(),
+CutCommand::CutCommand(ApplicationPlayerPtr ApplicationPlayer,
+                       SceneGraphTreeModelPtr SceneGraphTreeModel,
+                       NodePtr CutNode) : Inherited(),
 _ApplicationPlayer(ApplicationPlayer),
 _SceneGraphTreeModel(SceneGraphTreeModel),
-_NodeInClipboardBeforeCut(NullFC),
-_NodeInClipboardAfterCut(NullFC),
-_ParentOfCutNode(NullFC),
-_CurrentAction(0)
+_CutNode(CutNode),
+_Parent(NullFC)
 {
 }
 
@@ -18,11 +18,7 @@ CutCommand::CutCommand(const CutCommand& source) : Inherited(source)
 {
 	_ApplicationPlayer = source._ApplicationPlayer;
 	_SceneGraphTreeModel = source._SceneGraphTreeModel;
-	_NodeInClipboardBeforeCut= source._NodeInClipboardBeforeCut;
-	_NodeInClipboardAfterCut= source._NodeInClipboardAfterCut;
-	_ParentOfCutNode= source._ParentOfCutNode;
-	_CurrentAction= source._CurrentAction;
-
+    _CutNode = source._CutNode;
 }
 
 inline 

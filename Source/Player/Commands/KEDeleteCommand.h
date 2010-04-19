@@ -50,7 +50,9 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef DeleteCommandPtr Ptr;
 
-	DeleteCommand(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel);
+    DeleteCommand(ApplicationPlayerPtr ApplicationPlayer,
+                  HierarchyPanelPtr HierarchyPanel,
+                  NodePtr DeleteNode);
 
 	DeleteCommand(const DeleteCommand& source);
 
@@ -65,13 +67,9 @@ protected:
 
 	ApplicationPlayerPtr _ApplicationPlayer;
 	HierarchyPanelPtr _HierarchyPanel;
-	boost::any _LastSelectedPathComponent;
-	NodePtr _LastSelectedPathComponentNode;
+	NodePtr _DeletedNode;
 	NodePtr _Parent;
-
-	NodePtr _NodeInCutClipboard;
-	NodePtr _ClonedNodeInCutClipboard;
-	NodePtr _ClonedNodeInCopyClipboard;
+	UInt32 _IndexOfDeletion;
 	
 
 public:
@@ -84,7 +82,9 @@ public:
 
 	virtual ~DeleteCommand(void);
 	
-	static DeleteCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel);
+    static DeleteCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,
+                                   HierarchyPanelPtr HierarchyPanel,
+                                   NodePtr DeleteNode);
 };
 
 OSG_END_NAMESPACE

@@ -73,13 +73,6 @@
 
 #include "Player/HelperPanel/KEHelperPanelFields.h"
 
-#include "Player/Commands/KEShowHideCommand.h"
-#include "Player/Commands/KEDeleteCommand.h"
-#include "Player/Commands/KECutCommand.h"
-#include "Player/Commands/KECopyCommand.h"
-#include "Player/Commands/KEPasteCommand.h"
-#include "Player/Commands/KENewCommand.h"
-
 #include <OpenSG/UserInterface/OSGDerivedFieldContainerComboBoxModel.h>
 #include <OpenSG/UserInterface/OSGFlowLayout.h>
 #include <OpenSG/UserInterface/OSGMenuButton.h>
@@ -172,6 +165,7 @@ class KE_KABALAENGINELIB_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	MenuItemPtr _CutItem ;
 	MenuItemPtr _CopyItem ;
 	MenuItemPtr _PasteItem ;
+	MenuItemPtr _PasteInstanceItem ;
 	MenuItemPtr _DeleteItem ;
 	MenuItemPtr _FocusCamera ;
 

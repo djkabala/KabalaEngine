@@ -51,9 +51,10 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef PasteCommandPtr Ptr;
 
-	enum cActions{NONE,CUT,COPY};
-
-	PasteCommand(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel);
+    PasteCommand(ApplicationPlayerPtr ApplicationPlayer,
+                 HierarchyPanelPtr HierarchyPanel,
+                 NodePtr ParentNode,
+                 bool DeepClone);
 
 	PasteCommand(const PasteCommand& source);
 
@@ -69,10 +70,9 @@ protected:
 	ApplicationPlayerPtr _ApplicationPlayer;
 	HierarchyPanelPtr	 _HierarchyPanel;
 
-	UInt32 _CurrentAction;
-	NodePtr _NodeInCutClipboard;
-	NodePtr _ClonedNodeInCopyClipboard;
-	NodePtr _SelectedNode;
+	NodePtr _PastedNode;
+	NodePtr _ParentNode;
+    bool    _DeepClone;
 
 
 public:
@@ -85,7 +85,10 @@ public:
 
 	virtual ~PasteCommand(void);
 	
-	static PasteCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel);
+    static PasteCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,
+                                  HierarchyPanelPtr HierarchyPanel,
+                                  NodePtr ParentNode,
+                                  bool DeepClone);
 };
 
 OSG_END_NAMESPACE

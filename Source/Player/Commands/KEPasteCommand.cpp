@@ -67,9 +67,12 @@ CommandType PasteCommand::_Type("PasteCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-PasteCommandPtr PasteCommand::create(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel)
+PasteCommandPtr PasteCommand::create(ApplicationPlayerPtr ApplicationPlayer,
+                                     HierarchyPanelPtr HierarchyPanel,
+                                     NodePtr ParentNode,
+                                     bool DeepClone)
 {
-	return Ptr(new PasteCommand(ApplicationPlayer,HierarchyPanel));
+	return Ptr(new PasteCommand(ApplicationPlayer,HierarchyPanel,ParentNode,DeepClone));
 }
 
 /***************************************************************************\
@@ -78,24 +81,25 @@ PasteCommandPtr PasteCommand::create(ApplicationPlayerPtr ApplicationPlayer,Hier
 
 void PasteCommand::execute(void)
 {
+	NodePtr ClonedNodeInCopyClipboard = _ApplicationPlayer->getClonedNodeInCopyClipboard();
 
-	_CurrentAction = _ApplicationPlayer->getCurrentAction();
-	_NodeInCutClipboard = _ApplicationPlayer->getNodeInCutClipboard();
-	_ClonedNodeInCopyClipboard = _ApplicationPlayer->getClonedNodeInCopyClipboard();
-	_SelectedNode = _ApplicationPlayer->getSelectedNode();
+    if(_DeepClone)
+    {
+        _PastedNode = deepCloneTree(_ApplicationPlayer->getClonedNodeInCopyClipboard());
+    }
+    else
+    {
+        _PastedNode = cloneTree(_ApplicationPlayer->getClonedNodeInCopyClipboard());
+    }
 
-	if(_ApplicationPlayer->getCurrentAction() == CUT && _ApplicationPlayer->getNodeInCutClipboard()!=NullFC)
+	std::string _Name=getName(_ApplicationPlayer->getClonedNodeInCopyClipboard());
+	_Name+=" copy";
+	setName(_PastedNode,_Name);
+
+    if(_PastedNode!=NullFC)
 	{
-		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ApplicationPlayer->getSelectedNode()),boost::any(_ApplicationPlayer->getNodeInCutClipboard()));
-		subRefCP(_ApplicationPlayer->getNodeInCutClipboard());
-		_ApplicationPlayer->setNodeInCutClipboard(NullFC);
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ParentNode),boost::any(_PastedNode));
 	}
-	else if(_ApplicationPlayer->getCurrentAction() == COPY && _ApplicationPlayer->getClonedNodeInCopyClipboard()!=NullFC)
-	{
-		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ApplicationPlayer->getSelectedNode()),boost::any(_ApplicationPlayer->getClonedNodeInCopyClipboard()));
-		_ApplicationPlayer->setClonedNodeInCopyClipboard(NullFC);
-	}
-	_ApplicationPlayer->setCurrentAction(NONE);
 
 	_HasBeenDone = true;
 }
@@ -113,38 +117,15 @@ std::string PasteCommand::getPresentationName(void) const
 void PasteCommand::redo(void)
 {
     Inherited::redo();
-	if(_CurrentAction == CUT && _NodeInCutClipboard!=NullFC)
-	{
-		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_SelectedNode),boost::any(_NodeInCutClipboard));
-		subRefCP(_NodeInCutClipboard);
-		_ApplicationPlayer->setNodeInCutClipboard(NullFC);
-	}
-	else if(_ApplicationPlayer->getCurrentAction() == COPY && _ApplicationPlayer->getClonedNodeInCopyClipboard()!=NullFC)
-	{
-		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_SelectedNode),boost::any(_ClonedNodeInCopyClipboard));
-		subRefCP(_ClonedNodeInCopyClipboard);
-		_ApplicationPlayer->setClonedNodeInCopyClipboard(NullFC);
-	}
-	_ApplicationPlayer->setCurrentAction(NONE);
+    _HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ParentNode),boost::any(_PastedNode));
+    subRefCP(_PastedNode);
 }
 
 void PasteCommand::undo(void)
 {
     Inherited::undo();
-	if(_CurrentAction == CUT && _NodeInCutClipboard!=NullFC)
-	{
-		addRefCP(_NodeInCutClipboard);
-		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_NodeInCutClipboard));
-		_ApplicationPlayer->setNodeInCutClipboard(_NodeInCutClipboard);
-	}
-	else if(_CurrentAction == COPY && _ClonedNodeInCopyClipboard!=NullFC)
-	{
-		addRefCP(_ClonedNodeInCopyClipboard);
-		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_ClonedNodeInCopyClipboard));
-		_ApplicationPlayer->setClonedNodeInCopyClipboard(_ClonedNodeInCopyClipboard);
-	}
-	_ApplicationPlayer->setCurrentAction(_CurrentAction);
-
+    addRefCP(_PastedNode);
+    _HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_PastedNode));
 }
 
 const CommandType &PasteCommand::getType(void) const

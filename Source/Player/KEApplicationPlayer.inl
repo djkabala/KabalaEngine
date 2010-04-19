@@ -85,18 +85,6 @@ CommandManagerPtr ApplicationPlayer::getCommandManager(void)
 }
 
 inline
-void ApplicationPlayer::setCurrentAction(UInt32 action)
-{
-	currentAction = action;
-}
-
-inline
-UInt32 ApplicationPlayer::getCurrentAction(void)
-{
-	return currentAction;
-}
-
-inline
 void ApplicationPlayer::setClonedNodeInCopyClipboard(NodePtr node)
 {
 	_ClonedNodeInCopyClipboard = node;
@@ -106,18 +94,6 @@ inline
 NodePtr ApplicationPlayer::getClonedNodeInCopyClipboard(void)
 {
 	return _ClonedNodeInCopyClipboard;
-}
-
-inline
-void ApplicationPlayer::setNodeInCutClipboard(NodePtr node)
-{
-	_NodeInCutClipboard = node;
-}
-
-inline
-NodePtr ApplicationPlayer::getNodeInCutClipboard(void)
-{
-	return _NodeInCutClipboard;
 }
 
 inline 
