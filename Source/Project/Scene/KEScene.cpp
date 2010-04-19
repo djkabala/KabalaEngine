@@ -421,47 +421,68 @@ UInt32 Scene::registerNewGenericMethod(const std::string& MethodName)
         
         const_cast<EventProducerType&>(_Producer.getProducerType()).addDescription(newGenericDescription);
 
-    return Id;
+        return Id;
     }
     else
     {
+        SWARNING << "Scene::registerNewGenericMethod(): Attempted to reregister Method with name : " << MethodName << std::endl;
         return getGenericMethodId(MethodName);
     }
 }
 
 bool Scene::unregisterNewGenericMethod(UInt32 Id)
 {
-    EventProducerType producerType = _Producer.getProducerType();
-    return producerType.subDescription(Id);
+    if(SceneBase::NextMethodId > Id)
+    {
+        SWARNING << "Scene::unregisterNewGenericMethod(): Attempted to unregister Method Id : " << Id 
+                 << ".  Can only unregister Methods with Ids > " << SceneBase::NextMethodId << "." << std::endl;
+        return false;
+    }
+
+    if(!isGenericMethodDefined(Id))
+    {
+        SWARNING << "Scene::unregisterNewGenericMethod(): Attempted to unregister Method Id : " << Id 
+                 << ". That Id has not been registered."<< std::endl;
+        return false;
+    }
+    return const_cast<EventProducerType&>(_Producer.getProducerType()).subDescription(Id);
 }
 
 bool Scene::unregisterNewGenericMethod(const std::string& MethodName)
 {
     UInt32 Id = getGenericMethodId(MethodName);
+    if(Id == 0)
+    {
+        SWARNING << "Scene::unregisterNewGenericMethod(): Attempted to unregister Method Id : " << Id 
+                 << ". That Id has not been registered."<< std::endl;
+        return false;
+    }
     return unregisterNewGenericMethod(Id);
 }
 
 bool Scene::isGenericMethodDefined(UInt32 Id) const
 {
-    if(_Producer.getProducerType().getMethodDescription(Id)==NULL)
-        return false;
-    else
-        return true;
+    return(_Producer.getProducerType().getMethodDescription(Id) != NULL);
 }
 
 bool Scene::isGenericMethodDefined(const std::string& MethodName) const
 {
     UInt32 Id = getGenericMethodId(MethodName);
-    return isGenericMethodDefined(Id);
+    return Id != 0;
 }
 
 //const mismatch?
 UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
 {
-    EventProducerType p = _Producer.getProducerType();
-    MethodDescription* desc = p.findMethodDescription(MethodName.c_str());
-    UInt32 Id = desc->getMethodId();
-    return Id;
+    const MethodDescription* desc = _Producer.getProducerType().findMethodDescription(MethodName.c_str());
+    if(desc != NULL)
+    {
+        return desc->getMethodId();
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventPtr e)
@@ -472,7 +493,7 @@ void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventPtr e)
     }
     else
     {
-        SWARNING << "Generic Event ID" << GenericEventId << "Not Found.";
+        SWARNING << "Generic Event ID " << GenericEventId << " Not Found.";
     }
 }
 /*-------------------------------------------------------------------------*\
