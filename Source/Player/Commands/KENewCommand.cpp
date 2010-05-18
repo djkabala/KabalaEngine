@@ -1,19 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                     OpenSG ToolBox UserInterface                          *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *                         www.vrac.iastate.edu                              *
- *                                                                           *
- *   Authors: David Kabala, Alden Peterson, Lee Zaniewski, Jonathan Flory    *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -21,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -46,7 +43,7 @@
 
 #include "KENewCommand.h"
 
-#include <OpenSG/OSGSimpleAttachments.h>
+#include <OpenSG/OSGNameAttachment.h>
 
 OSG_USING_NAMESPACE
 
@@ -54,7 +51,7 @@ OSG_USING_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::NewCommand
+/*! \class OSG::NewCommand
 A NewCommand. 
 */
 
@@ -63,13 +60,14 @@ A NewCommand.
 \***************************************************************************/
 
 CommandType NewCommand::_Type("NewCommand", "UndoableCommand");
+
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-NewCommandPtr NewCommand::create(HierarchyPanelPtr HierarchyPanel,FieldContainerType* FCType)
+NewCommandPtr NewCommand::create(HierarchyPanelRefPtr HierarchyPanel,FieldContainerType* FCType)
 {
-	return Ptr(new NewCommand(HierarchyPanel,FCType));
+	return RefPtr(new NewCommand(HierarchyPanel,FCType));
 }
 
 /***************************************************************************\
@@ -79,12 +77,10 @@ NewCommandPtr NewCommand::create(HierarchyPanelPtr HierarchyPanel,FieldContainer
 void NewCommand::execute(void)
 {
 
-	NodeCorePtr newCore = FieldContainerFactory::the()->createNodeCore(_FCType->getCName());
+	NodeCoreRefPtr newCore = dynamic_pointer_cast<NodeCore>(FieldContainerFactory::the()->createContainer(_FCType->getCName()));
 
 	_NewNode = Node::create();
-	beginEditCP(_NewNode,Node::CoreFieldMask);
 	_NewNode->setCore(newCore);	
-	endEditCP(_NewNode,Node::CoreFieldMask);
 	_Name = _FCType->getCName();
 	_Name = "New "+_Name+" Node";
 	setName(_NewNode,_Name);
@@ -111,10 +107,9 @@ void NewCommand::redo(void)
 {
     Inherited::redo();
 
-	if(_NewNode!=NullFC)
+	if(_NewNode!=NULL)
 	{
 		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_HierarchyPanel->getApplicationPlayer()->getSelectedNode()),boost::any(_NewNode));
-		subRefCP(_NewNode);
 	}
 
 }
@@ -123,9 +118,8 @@ void NewCommand::undo(void)
 {
     Inherited::undo();
 
-	if(_NewNode!=NullFC)
+	if(_NewNode!=NULL)
 	{
-		addRefCP(_NewNode);
 		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_NewNode));
 	}
 
@@ -158,18 +152,4 @@ void NewCommand::operator =(const NewCommand& source)
 		_Name= source._Name;
     }
 }
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
 

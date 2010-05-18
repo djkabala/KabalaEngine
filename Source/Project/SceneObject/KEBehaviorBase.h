@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -54,64 +55,73 @@
 #endif
 
 
+
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGRefPtr.h>
-#include <OpenSG/OSGCoredNodePtr.h>
+//#include "OpenSG/OSGBaseTypes.h"
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <Project/SceneObject/KESceneObjectFields.h> // SceneObject type
-#include <OpenSG/OSGStringFields.h> // Dependencies type
+#include "Project/SceneObject/KESceneObjectFields.h" // SceneObject type
+#include <OpenSG/OSGBaseFields.h>       // Dependencies type
 
 #include "KEBehaviorFields.h"
+
 OSG_BEGIN_NAMESPACE
 
 class Behavior;
-class BinaryDataHandler;
 
 //! \brief Behavior Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING BehaviorBase : public AttachmentContainer
+class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
 {
-  private:
-
-    typedef AttachmentContainer    Inherited;
-
-    /*==========================  PUBLIC  =================================*/
   public:
 
-    typedef BehaviorPtr  Ptr;
+    typedef AttachmentContainer Inherited;
+    typedef AttachmentContainer ParentContainer;
+
+    typedef Inherited::TypeObject TypeObject;
+    typedef TypeObject::InitPhase InitPhase;
+
+    OSG_GEN_INTERNALPTR(Behavior);
+
+    /*==========================  PUBLIC  =================================*/
+
+  public:
 
     enum
     {
-        SceneObjectFieldId  = Inherited::NextFieldId,
-        DependenciesFieldId = SceneObjectFieldId  + 1,
-        NextFieldId         = DependenciesFieldId + 1
+        SceneObjectFieldId = Inherited::NextFieldId,
+        DependenciesFieldId = SceneObjectFieldId + 1,
+        NextFieldId = DependenciesFieldId + 1
     };
 
-    static const OSG::BitVector SceneObjectFieldMask;
-    static const OSG::BitVector DependenciesFieldMask;
-
-
-    static const OSG::BitVector MTInfluenceMask;
+    static const OSG::BitVector SceneObjectFieldMask =
+        (TypeTraits<BitVector>::One << SceneObjectFieldId);
+    static const OSG::BitVector DependenciesFieldMask =
+        (TypeTraits<BitVector>::One << DependenciesFieldId);
+    static const OSG::BitVector NextFieldMask =
+        (TypeTraits<BitVector>::One << NextFieldId);
+        
+    typedef SFUnrecSceneObjectPtr SFSceneObjectType;
+    typedef MFString          MFDependenciesType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
     /*! \{                                                                 */
 
-    static        FieldContainerType &getClassType    (void); 
-    static        UInt32              getClassTypeId  (void); 
+    static FieldContainerType &getClassType   (void);
+    static UInt32              getClassTypeId (void);
+    static UInt16              getClassGroupId(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                FieldContainer Get                            */
     /*! \{                                                                 */
 
-    virtual       FieldContainerType &getType  (void); 
-    virtual const FieldContainerType &getType  (void) const; 
+    virtual       FieldContainerType &getType         (void);
+    virtual const FieldContainerType &getType         (void) const;
 
     virtual       UInt32              getContainerSize(void) const;
 
@@ -120,20 +130,13 @@ class KE_KABALAENGINELIB_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-     const SFSceneObjectPtr    *getSFSceneObject    (void) const;
 
-           MFString            *editMFDependencies   (void);
-     const MFString            *getMFDependencies   (void) const;
+                  MFString            *editMFDependencies   (void);
+            const MFString            *getMFDependencies    (void) const;
 
 
-     const SceneObjectPtr      &getSceneObject    (void) const;
-
-           std::string         &editDependencies   (const UInt32 index);
-     const std::string         &getDependencies   (const UInt32 index) const;
-#ifndef OSG_2_PREP
-           MFString            &getDependencies   (void);
-     const MFString            &getDependencies   (void) const;
-#endif
+                  std::string         &editDependencies   (const UInt32 index);
+            const std::string         &getDependencies    (const UInt32 index) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -143,7 +146,12 @@ class KE_KABALAENGINELIB_DLLMAPPING BehaviorBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                       Sync                                   */
+    /*! \name                Ptr Field Set                                 */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
 
     /*! \}                                                                 */
@@ -151,39 +159,29 @@ class KE_KABALAENGINELIB_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual UInt32 getBinSize (const BitVector         &whichField);
-    virtual void   copyToBin  (      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
-    virtual void   copyFromBin(      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
+    virtual UInt32 getBinSize (ConstFieldMaskArg  whichField);
+    virtual void   copyToBin  (BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
+    virtual void   copyFromBin(BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
 
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                   Construction                               */
-    /*! \{                                                                 */
-
-    static  BehaviorPtr      create          (void); 
-    static  BehaviorPtr      createEmpty     (void); 
-
-    /*! \}                                                                 */
-
-    /*---------------------------------------------------------------------*/
-    /*! \name                       Copy                                   */
-    /*! \{                                                                 */
-
-    virtual FieldContainerPtr     shallowCopy     (void) const; 
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
+
+    static TypeObject _type;
+
+    static       void   classDescInserter(TypeObject &oType);
+    static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFSceneObjectPtr    _sfSceneObject;
-    MFString            _mfDependencies;
+    SFUnrecSceneObjectPtr _sfSceneObject;
+    MFString          _mfDependencies;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -198,82 +196,99 @@ class KE_KABALAENGINELIB_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~BehaviorBase(void); 
+    virtual ~BehaviorBase(void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     onCreate                                */
+    /*! \{                                                                 */
+
+    void onCreate(const Behavior *source = NULL);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Field Access                      */
+    /*! \{                                                                 */
+
+    GetFieldHandlePtr  getHandleSceneObject     (void) const;
+    EditFieldHandlePtr editHandleSceneObject    (void);
+    GetFieldHandlePtr  getHandleDependencies    (void) const;
+    EditFieldHandlePtr editHandleDependencies   (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-           SFSceneObjectPtr    *editSFSceneObject    (void);
+            const SFUnrecSceneObjectPtr *getSFSceneObject     (void) const;
+                  SFUnrecSceneObjectPtr *editSFSceneObject    (void);
 
-           SceneObjectPtr      &editSceneObject    (void);
+
+                  SceneObject * getSceneObject    (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-     void setSceneObject    (const SceneObjectPtr &value);
+            void setSceneObject    (SceneObject * const value);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
+    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
     /*! \{                                                                 */
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-    void executeSyncImpl(      BehaviorBase *pOther,
-                         const BitVector         &whichField);
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual void execSyncV(      FieldContainer    &oFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField);
-#else
-    void executeSyncImpl(      BehaviorBase *pOther,
-                         const BitVector         &whichField,
-                         const SyncInfo          &sInfo     );
-
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField,
-                               const SyncInfo          &sInfo);
-
-    virtual void execBeginEdit     (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-            void execBeginEditImpl (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
+            void execSync (      BehaviorBase *pFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 #endif
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Aspect Create                            */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
-
-    friend class FieldContainer;
-
-    static FieldDescription   *_desc[];
-    static FieldContainerType  _type;
-
+    /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const BehaviorBase &source);
 };
 
-//---------------------------------------------------------------------------
-//   Exported Types
-//---------------------------------------------------------------------------
-
-
 typedef BehaviorBase *BehaviorBaseP;
-
-typedef osgIF<BehaviorBase::isNodeCore,
-              CoredNodePtr<Behavior>,
-              FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-              >::_IRet BehaviorNodePtr;
-
-typedef RefPtr<BehaviorPtr> BehaviorRefPtr;
 
 OSG_END_NAMESPACE
 

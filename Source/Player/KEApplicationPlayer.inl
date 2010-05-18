@@ -1,16 +1,16 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -37,19 +37,16 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <OpenSG/OSGConfig.h>
-#include "KEApplicationPlayer.h"
-
 OSG_BEGIN_NAMESPACE
 
 inline
-ApplicationPlayer::PlayerKeyListener::PlayerKeyListener(ApplicationPlayerPtr TheApplicationPlayer) :
+ApplicationPlayer::PlayerKeyListener::PlayerKeyListener(ApplicationPlayerRefPtr TheApplicationPlayer) :
         _ApplicationPlayer(TheApplicationPlayer)
 {
 }
 
 inline
-ApplicationPlayer::BasicListener::BasicListener(ApplicationPlayerPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
+ApplicationPlayer::BasicListener::BasicListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
 {
 }
 
@@ -59,7 +56,7 @@ ApplicationPlayer::BasicListener::~BasicListener()
 }
 
 inline
-ApplicationPlayer::GotoSceneItemListener::GotoSceneItemListener(ApplicationPlayerPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
+ApplicationPlayer::GotoSceneItemListener::GotoSceneItemListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
 {
 }
 
@@ -69,7 +66,7 @@ ApplicationPlayer::GotoSceneItemListener::~GotoSceneItemListener()
 }
 
 inline
-ApplicationPlayer::ProjectListener::ProjectListener(ApplicationPlayerPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
+ApplicationPlayer::ProjectListener::ProjectListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
 {
 }
 
@@ -85,13 +82,13 @@ CommandManagerPtr ApplicationPlayer::getCommandManager(void)
 }
 
 inline
-void ApplicationPlayer::setClonedNodeInCopyClipboard(NodePtr node)
+void ApplicationPlayer::setClonedNodeInCopyClipboard(NodeRefPtr node)
 {
 	_ClonedNodeInCopyClipboard = node;
 }
 
 inline
-NodePtr ApplicationPlayer::getClonedNodeInCopyClipboard(void)
+NodeRefPtr ApplicationPlayer::getClonedNodeInCopyClipboard(void)
 {
 	return _ClonedNodeInCopyClipboard;
 }
@@ -103,49 +100,49 @@ UndoManagerPtr ApplicationPlayer::getUndoManager(void)
 }
 
 inline 
-NodePtr ApplicationPlayer::getHighlightNode(void)
+NodeRefPtr ApplicationPlayer::getHighlightNode(void)
 {
 	return _HighlightNode;
 }
 
 inline 
-void ApplicationPlayer::setHighlightNode(NodePtr selectedNode)
+void ApplicationPlayer::setHighlightNode(NodeRefPtr selectedNode)
 {
 	_HighlightNode = selectedNode;
 }
 
 inline 
-ViewportPtr ApplicationPlayer::getDebugViewport(void)
+ViewportRefPtr ApplicationPlayer::getDebugViewport(void)
 {
 	return _DebugViewport;
 }
 
 inline 
-void ApplicationPlayer::setDebugViewport(ViewportPtr viewport)
+void ApplicationPlayer::setDebugViewport(ViewportRefPtr viewport)
 {
 	_DebugViewport = viewport;
 }
 
 inline 
-HelperPanelPtr ApplicationPlayer::getHelperPanel(void)
+HelperPanelRefPtr ApplicationPlayer::getHelperPanel(void)
 {
 	return _HelperPanel;
 }
 
 inline 
-void ApplicationPlayer::setHelperPanel(HelperPanelPtr helperPanel)
+void ApplicationPlayer::setHelperPanel(HelperPanelRefPtr helperPanel)
 {
 	_HelperPanel = helperPanel;
 }
 
 inline 
-NodePtr ApplicationPlayer::getSelectedNode(void)
+NodeRefPtr ApplicationPlayer::getSelectedNode(void)
 {
 	return _SelectedNode;
 }
 
 inline 
-void ApplicationPlayer::setSelectedNode(NodePtr selectedNode)
+void ApplicationPlayer::setSelectedNode(NodeRefPtr selectedNode)
 {
     if(_SelectedNode != selectedNode)
     {
@@ -156,13 +153,13 @@ void ApplicationPlayer::setSelectedNode(NodePtr selectedNode)
 }
 
 inline 
-ContentPanelPtr ApplicationPlayer::getContentPanel(void)
+ContentPanelRefPtr ApplicationPlayer::getContentPanel(void)
 {
 	return _ContentPanel;
 }
 
 inline 
-void ApplicationPlayer::setContentPanel(ContentPanelPtr contentPanel)
+void ApplicationPlayer::setContentPanel(ContentPanelRefPtr contentPanel)
 {
 	_ContentPanel = contentPanel;
 }
@@ -174,4 +171,3 @@ Navigator& ApplicationPlayer::getDebugSceneNavigator(void)
 }
 
 OSG_END_NAMESPACE
-

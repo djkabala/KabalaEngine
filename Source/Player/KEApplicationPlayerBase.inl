@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,46 +54,45 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &ApplicationPlayerBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 ApplicationPlayerBase::getClassTypeId(void) 
+OSG::UInt32 ApplicationPlayerBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-ApplicationPlayerPtr ApplicationPlayerBase::create(void) 
-{
-    ApplicationPlayerPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = ApplicationPlayerPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-ApplicationPlayerPtr ApplicationPlayerBase::createEmpty(void) 
-{ 
-    ApplicationPlayerPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 ApplicationPlayerBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
 
+
+#ifdef OSG_MT_CPTR_ASPECT
+inline
+void ApplicationPlayerBase::execSync (      ApplicationPlayerBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
+}
+#endif
+
+
+inline
+const Char8 *ApplicationPlayerBase::getClassname(void)
+{
+    return "ApplicationPlayer";
+}
+OSG_GEN_CONTAINERPTR(ApplicationPlayer);
 
 OSG_END_NAMESPACE
 

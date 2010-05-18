@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,144 +47,220 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEBEHAVIORFACTORYINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
+#include "Project/SceneObject/KEBehaviorType.h" // BehaviorTypes Class
 
 #include "KEBehaviorFactoryBase.h"
 #include "KEBehaviorFactory.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  BehaviorFactoryBase::BehaviorTypesFieldMask = 
-    (TypeTraits<BitVector>::One << BehaviorFactoryBase::BehaviorTypesFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector BehaviorFactoryBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/*! \class OSG::BehaviorFactory
+    The Capability Factory.
+ */
 
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
-// Field descriptions
-
-/*! \var BehaviorTypePtr BehaviorFactoryBase::_mfBehaviorTypes
+/*! \var BehaviorType *  BehaviorFactoryBase::_mfBehaviorTypes
     
 */
 
-//! BehaviorFactory description
 
-FieldDescription *BehaviorFactoryBase::_desc[] = 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<BehaviorFactory *>::_type("BehaviorFactoryPtr", "AttachmentContainerPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(BehaviorFactory *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           BehaviorFactory *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           BehaviorFactory *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void BehaviorFactoryBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(MFBehaviorTypePtr::getClassType(), 
-                     "BehaviorTypes", 
-                     BehaviorTypesFieldId, BehaviorTypesFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&BehaviorFactoryBase::editMFBehaviorTypes))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType BehaviorFactoryBase::_type(
-    "BehaviorFactory",
-    "AttachmentContainer",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&BehaviorFactoryBase::createEmpty),
+    pDesc = new MFUnrecBehaviorTypePtr::Description(
+        MFUnrecBehaviorTypePtr::getClassType(),
+        "BehaviorTypes",
+        "",
+        BehaviorTypesFieldId, BehaviorTypesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&BehaviorFactory::editHandleBehaviorTypes),
+        static_cast<FieldGetMethodSig >(&BehaviorFactory::getHandleBehaviorTypes));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+BehaviorFactoryBase::TypeObject BehaviorFactoryBase::_type(
+    BehaviorFactoryBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&BehaviorFactoryBase::createEmptyLocal),
     BehaviorFactory::initMethod,
-    _desc,
-    sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(BehaviorFactoryBase, BehaviorFactoryPtr)
+    BehaviorFactory::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&BehaviorFactory::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"BehaviorFactory\"\n"
+    "\tparent=\"AttachmentContainer\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The Capability Factory.\n"
+    "\t<Field\n"
+    "\t\tname=\"BehaviorTypes\"\n"
+    "\t\ttype=\"BehaviorType\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/SceneObject/KEBehaviorTypeFields.h\"\n"
+    "\t\ttypeHeader=\"Project/SceneObject/KEBehaviorType.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "</FieldContainer>\n",
+    "The Capability Factory.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &BehaviorFactoryBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &BehaviorFactoryBase::getType(void) const 
+FieldContainerType &BehaviorFactoryBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr BehaviorFactoryBase::shallowCopy(void) const 
-{ 
-    BehaviorFactoryPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const BehaviorFactory *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 BehaviorFactoryBase::getContainerSize(void) const 
-{ 
-    return sizeof(BehaviorFactory); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void BehaviorFactoryBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &BehaviorFactoryBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<BehaviorFactoryBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void BehaviorFactoryBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 BehaviorFactoryBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((BehaviorFactoryBase *) &other, whichField, sInfo);
+    return sizeof(BehaviorFactory);
 }
-void BehaviorFactoryBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+/*------------------------- decorator get ------------------------------*/
+
+
+//! Get the BehaviorFactory::_mfBehaviorTypes field.
+const MFUnrecBehaviorTypePtr *BehaviorFactoryBase::getMFBehaviorTypes(void) const
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return &_mfBehaviorTypes;
 }
 
-void BehaviorFactoryBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+MFUnrecBehaviorTypePtr *BehaviorFactoryBase::editMFBehaviorTypes  (void)
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
+    editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
 
-    _mfBehaviorTypes.terminateShare(uiAspect, this->getContainerSize());
+    return &_mfBehaviorTypes;
 }
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-BehaviorFactoryBase::BehaviorFactoryBase(void) :
-    _mfBehaviorTypes          (), 
-    Inherited() 
+void BehaviorFactoryBase::pushToBehaviorTypes(BehaviorType * const value)
 {
+    editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
+
+    _mfBehaviorTypes.push_back(value);
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-BehaviorFactoryBase::BehaviorFactoryBase(const BehaviorFactoryBase &source) :
-    _mfBehaviorTypes          (source._mfBehaviorTypes          ), 
-    Inherited                 (source)
+void BehaviorFactoryBase::assignBehaviorTypes(const MFUnrecBehaviorTypePtr &value)
 {
+    MFUnrecBehaviorTypePtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecBehaviorTypePtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<BehaviorFactory *>(this)->clearBehaviorTypes();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToBehaviorTypes(*elemIt);
+
+        ++elemIt;
+    }
 }
 
-/*-------------------------- destructors ----------------------------------*/
-
-BehaviorFactoryBase::~BehaviorFactoryBase(void)
+void BehaviorFactoryBase::removeFromBehaviorTypes(UInt32 uiIndex)
 {
+    if(uiIndex < _mfBehaviorTypes.size())
+    {
+        editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
+
+        _mfBehaviorTypes.erase(uiIndex);
+    }
 }
+
+void BehaviorFactoryBase::removeObjFromBehaviorTypes(BehaviorType * const value)
+{
+    Int32 iElemIdx = _mfBehaviorTypes.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
+
+        _mfBehaviorTypes.erase(iElemIdx);
+    }
+}
+void BehaviorFactoryBase::clearBehaviorTypes(void)
+{
+    editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
+
+
+    _mfBehaviorTypes.clear();
+}
+
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 BehaviorFactoryBase::getBinSize(const BitVector &whichField)
+UInt32 BehaviorFactoryBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -192,12 +269,11 @@ UInt32 BehaviorFactoryBase::getBinSize(const BitVector &whichField)
         returnValue += _mfBehaviorTypes.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void BehaviorFactoryBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void BehaviorFactoryBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -205,12 +281,10 @@ void BehaviorFactoryBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _mfBehaviorTypes.copyToBin(pMem);
     }
-
-
 }
 
-void BehaviorFactoryBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void BehaviorFactoryBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -218,65 +292,248 @@ void BehaviorFactoryBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _mfBehaviorTypes.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void BehaviorFactoryBase::executeSyncImpl(      BehaviorFactoryBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+BehaviorFactoryTransitPtr BehaviorFactoryBase::createLocal(BitVector bFlags)
 {
+    BehaviorFactoryTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (BehaviorTypesFieldMask & whichField))
-        _mfBehaviorTypes.syncWith(pOther->_mfBehaviorTypes);
+        fc = dynamic_pointer_cast<BehaviorFactory>(tmpPtr);
+    }
 
-
-}
-#else
-void BehaviorFactoryBase::executeSyncImpl(      BehaviorFactoryBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-    if(FieldBits::NoField != (BehaviorTypesFieldMask & whichField))
-        _mfBehaviorTypes.syncWith(pOther->_mfBehaviorTypes, sInfo);
-
-
+    return fc;
 }
 
-void BehaviorFactoryBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+BehaviorFactoryTransitPtr BehaviorFactoryBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    BehaviorFactoryTransitPtr fc;
 
-    if(FieldBits::NoField != (BehaviorTypesFieldMask & whichField))
-        _mfBehaviorTypes.beginEdit(uiAspect, uiContainerSize);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
 
+        fc = dynamic_pointer_cast<BehaviorFactory>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+BehaviorFactoryTransitPtr BehaviorFactoryBase::create(void)
+{
+    BehaviorFactoryTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<BehaviorFactory>(tmpPtr);
+    }
+
+    return fc;
+}
+
+BehaviorFactory *BehaviorFactoryBase::createEmptyLocal(BitVector bFlags)
+{
+    BehaviorFactory *returnValue;
+
+    newPtr<BehaviorFactory>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+BehaviorFactory *BehaviorFactoryBase::createEmpty(void)
+{
+    BehaviorFactory *returnValue;
+
+    newPtr<BehaviorFactory>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr BehaviorFactoryBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    BehaviorFactory *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const BehaviorFactory *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr BehaviorFactoryBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    BehaviorFactory *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const BehaviorFactory *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr BehaviorFactoryBase::shallowCopy(void) const
+{
+    BehaviorFactory *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const BehaviorFactory *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+BehaviorFactoryBase::BehaviorFactoryBase(void) :
+    Inherited(),
+    _mfBehaviorTypes          ()
+{
+}
+
+BehaviorFactoryBase::BehaviorFactoryBase(const BehaviorFactoryBase &source) :
+    Inherited(source),
+    _mfBehaviorTypes          ()
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+BehaviorFactoryBase::~BehaviorFactoryBase(void)
+{
+}
+
+void BehaviorFactoryBase::onCreate(const BehaviorFactory *source)
+{
+    Inherited::onCreate(source);
+
+    if(source != NULL)
+    {
+        BehaviorFactory *pThis = static_cast<BehaviorFactory *>(this);
+
+        MFUnrecBehaviorTypePtr::const_iterator BehaviorTypesIt  =
+            source->_mfBehaviorTypes.begin();
+        MFUnrecBehaviorTypePtr::const_iterator BehaviorTypesEnd =
+            source->_mfBehaviorTypes.end  ();
+
+        while(BehaviorTypesIt != BehaviorTypesEnd)
+        {
+            pThis->pushToBehaviorTypes(*BehaviorTypesIt);
+
+            ++BehaviorTypesIt;
+        }
+    }
+}
+
+GetFieldHandlePtr BehaviorFactoryBase::getHandleBehaviorTypes   (void) const
+{
+    MFUnrecBehaviorTypePtr::GetHandlePtr returnValue(
+        new  MFUnrecBehaviorTypePtr::GetHandle(
+             &_mfBehaviorTypes,
+             this->getType().getFieldDesc(BehaviorTypesFieldId),
+             const_cast<BehaviorFactoryBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr BehaviorFactoryBase::editHandleBehaviorTypes  (void)
+{
+    MFUnrecBehaviorTypePtr::EditHandlePtr returnValue(
+        new  MFUnrecBehaviorTypePtr::EditHandle(
+             &_mfBehaviorTypes,
+             this->getType().getFieldDesc(BehaviorTypesFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&BehaviorFactory::pushToBehaviorTypes,
+                    static_cast<BehaviorFactory *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&BehaviorFactory::removeFromBehaviorTypes,
+                    static_cast<BehaviorFactory *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&BehaviorFactory::removeObjFromBehaviorTypes,
+                    static_cast<BehaviorFactory *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&BehaviorFactory::clearBehaviorTypes,
+                    static_cast<BehaviorFactory *>(this)));
+
+    editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void BehaviorFactoryBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    BehaviorFactory *pThis = static_cast<BehaviorFactory *>(this);
+
+    pThis->execSync(static_cast<BehaviorFactory *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *BehaviorFactoryBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    BehaviorFactory *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const BehaviorFactory *>(pRefAspect),
+                  dynamic_cast<const BehaviorFactory *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<BehaviorFactoryPtr>::_type("BehaviorFactoryPtr", "AttachmentContainerPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(BehaviorFactoryPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(BehaviorFactoryPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void BehaviorFactoryBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    static_cast<BehaviorFactory *>(this)->clearBehaviorTypes();
+
+
+}
 
 
 OSG_END_NAMESPACE
-

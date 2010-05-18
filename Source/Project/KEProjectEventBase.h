@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -54,70 +55,68 @@
 #endif
 
 
+
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGRefPtr.h>
-#include <OpenSG/OSGCoredNodePtr.h>
+//#include "OpenSG/OSGBaseTypes.h"
 
-#include <OpenSG/Toolbox/OSGEvent.h> // Parent
+#include <OpenSG/OSGEvent.h> // Parent
 
 
 #include "KEProjectEventFields.h"
+
 OSG_BEGIN_NAMESPACE
 
 class ProjectEvent;
-class BinaryDataHandler;
 
 //! \brief ProjectEvent Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING ProjectEventBase : public Event
+class KE_KABALAENGINE_DLLMAPPING ProjectEventBase : public Event
 {
-  private:
-
-    typedef Event    Inherited;
-
-    /*==========================  PUBLIC  =================================*/
   public:
 
-    typedef ProjectEventPtr  Ptr;
+    typedef Event Inherited;
+    typedef Event ParentContainer;
 
+    typedef Inherited::TypeObject TypeObject;
+    typedef TypeObject::InitPhase InitPhase;
 
-    static const OSG::BitVector MTInfluenceMask;
+    OSG_GEN_INTERNALPTR(ProjectEvent);
+
+    /*==========================  PUBLIC  =================================*/
+
+  public:
+
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
     /*! \{                                                                 */
 
-    static        FieldContainerType &getClassType    (void); 
-    static        UInt32              getClassTypeId  (void); 
+    static FieldContainerType &getClassType   (void);
+    static UInt32              getClassTypeId (void);
+    static UInt16              getClassGroupId(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                FieldContainer Get                            */
     /*! \{                                                                 */
 
-    virtual       FieldContainerType &getType  (void); 
-    virtual const FieldContainerType &getType  (void) const; 
+    virtual       FieldContainerType &getType         (void);
+    virtual const FieldContainerType &getType         (void) const;
 
     virtual       UInt32              getContainerSize(void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                       Sync                                   */
-    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual UInt32 getBinSize (const BitVector         &whichField);
-    virtual void   copyToBin  (      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
-    virtual void   copyFromBin(      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
+    virtual UInt32 getBinSize (ConstFieldMaskArg  whichField);
+    virtual void   copyToBin  (BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
+    virtual void   copyFromBin(BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
 
 
     /*! \}                                                                 */
@@ -125,20 +124,37 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectEventBase : public Event
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  ProjectEventPtr      create          (void); 
-    static  ProjectEventPtr      createEmpty     (void); 
+    static  ProjectEventTransitPtr  create          (void);
+    static  ProjectEvent           *createEmpty     (void);
+
+    static  ProjectEventTransitPtr  createLocal     (
+                                               BitVector bFlags = FCLocal::All);
+
+    static  ProjectEvent            *createEmptyLocal(
+                                              BitVector bFlags = FCLocal::All);
+
+    static  ProjectEventTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
-
     /*---------------------------------------------------------------------*/
     /*! \name                       Copy                                   */
     /*! \{                                                                 */
 
-    virtual FieldContainerPtr     shallowCopy     (void) const; 
+    virtual FieldContainerTransitPtr shallowCopy     (void) const;
+    virtual FieldContainerTransitPtr shallowCopyLocal(
+                                       BitVector bFlags = FCLocal::All) const;
+    virtual FieldContainerTransitPtr shallowCopyDependent(
+                                                      BitVector bFlags) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
+
+    static TypeObject _type;
+
+    static       void   classDescInserter(TypeObject &oType);
+    static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
@@ -152,65 +168,76 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectEventBase : public Event
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ProjectEventBase(void); 
+    virtual ~ProjectEventBase(void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     onCreate                                */
+    /*! \{                                                                 */
+
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Field Access                      */
+    /*! \{                                                                 */
+
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
     /*! \{                                                                 */
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-    void executeSyncImpl(      ProjectEventBase *pOther,
-                         const BitVector         &whichField);
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual void execSyncV(      FieldContainer    &oFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField);
-#else
-    void executeSyncImpl(      ProjectEventBase *pOther,
-                         const BitVector         &whichField,
-                         const SyncInfo          &sInfo     );
-
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField,
-                               const SyncInfo          &sInfo);
-
-    virtual void execBeginEdit     (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-            void execBeginEditImpl (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
+            void execSync (      ProjectEventBase *pFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 #endif
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Aspect Create                            */
+    /*! \{                                                                 */
+
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual FieldContainer *createAspectCopy(
+                                    const FieldContainer *pRefAspect) const;
+#endif
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
-
-    friend class FieldContainer;
-
-    static FieldContainerType  _type;
-
+    /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const ProjectEventBase &source);
 };
 
-//---------------------------------------------------------------------------
-//   Exported Types
-//---------------------------------------------------------------------------
-
-
 typedef ProjectEventBase *ProjectEventBaseP;
-
-typedef osgIF<ProjectEventBase::isNodeCore,
-              CoredNodePtr<ProjectEvent>,
-              FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-              >::_IRet ProjectEventNodePtr;
-
-typedef RefPtr<ProjectEventPtr> ProjectEventRefPtr;
 
 OSG_END_NAMESPACE
 

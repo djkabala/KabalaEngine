@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,25 +37,22 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
 
 #include "KEApplicationSettings.h"
-#include <OpenSG/Toolbox/OSGFCFileHandler.h>
+#include <OpenSG/OSGFCFileHandler.h>
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::ApplicationSettings
-The Main Application Settings. 	
-*/
+// Documentation for this class is emitted in the
+// OSGApplicationSettingsBase.cpp file.
+// To modify it, please change the .fcd file (OSGApplicationSettings.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -64,18 +62,21 @@ The Main Application Settings.
  *                           Class methods                                 *
 \***************************************************************************/
 
-void ApplicationSettings::initMethod (void)
+void ApplicationSettings::initMethod(InitPhase ePhase)
 {
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
-
-
-ApplicationSettingsPtr ApplicationSettings::load(const Path& FilePath)
+ApplicationSettingsUnrecPtr ApplicationSettings::load(const BoostPath& FilePath)
 {
 	return create(FilePath);
 }
 
-ApplicationSettingsPtr ApplicationSettings::create(const Path& FilePath)
+ApplicationSettingsUnrecPtr ApplicationSettings::create(const BoostPath& FilePath)
 {
 	FCFileType::FCPtrStore NewContainers;
 	NewContainers = FCFileHandler::the()->read(FilePath);
@@ -84,25 +85,26 @@ ApplicationSettingsPtr ApplicationSettings::create(const Path& FilePath)
 	{
 		if((*Itor)->getType() == ApplicationSettings::getClassType())
 		{
-			return ApplicationSettings::Ptr::dcast(*Itor);
+			return dynamic_pointer_cast<ApplicationSettings>(*Itor);
 		}
 	}
 
-	return NullFC;
+	return ApplicationSettingsTransitPtr();
 }
 
-ApplicationSettingsPtr ApplicationSettings::create(void)
+ApplicationSettingsTransitPtr ApplicationSettings::create(void)
 {
     return ApplicationSettingsBase::create();
 }
+
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
 
-void ApplicationSettings::save(const Path& FilePath)
+void ApplicationSettings::save(const BoostPath& FilePath)
 {
 	FCFileType::FCPtrStore Containers;
-	Containers.insert(ApplicationSettingsPtr(this));
+	Containers.insert(ApplicationSettingsRefPtr(this));
 
 	FCFileType::FCTypeVector IgnoreTypes;
 
@@ -131,17 +133,17 @@ ApplicationSettings::~ApplicationSettings(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void ApplicationSettings::changed(BitVector whichField, UInt32 origin)
+void ApplicationSettings::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 }
 
-void ApplicationSettings::dump(      UInt32    , 
+void ApplicationSettings::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump ApplicationSettings NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

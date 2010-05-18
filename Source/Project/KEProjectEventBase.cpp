@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,122 +47,120 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEPROJECTEVENTINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEProjectEventBase.h"
 #include "KEProjectEvent.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector ProjectEventBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
+
+/*! \class OSG::ProjectEvent
+    
+ */
+
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<ProjectEvent *>::_type("ProjectEventPtr", "EventPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(ProjectEvent *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           ProjectEvent *,
+                           0);
 
 
-FieldContainerType ProjectEventBase::_type(
-    "ProjectEvent",
-    "Event",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&ProjectEventBase::createEmpty),
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void ProjectEventBase::classDescInserter(TypeObject &oType)
+{
+}
+
+
+ProjectEventBase::TypeObject ProjectEventBase::_type(
+    ProjectEventBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&ProjectEventBase::createEmptyLocal),
     ProjectEvent::initMethod,
-    NULL,
-    0);
-
-//OSG_FIELD_CONTAINER_DEF(ProjectEventBase, ProjectEventPtr)
+    ProjectEvent::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&ProjectEvent::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"ProjectEvent\"\n"
+    "\tparent=\"Event\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"single\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "</FieldContainer>\n",
+    ""
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &ProjectEventBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &ProjectEventBase::getType(void) const 
+FieldContainerType &ProjectEventBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr ProjectEventBase::shallowCopy(void) const 
-{ 
-    ProjectEventPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const ProjectEvent *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 ProjectEventBase::getContainerSize(void) const 
-{ 
-    return sizeof(ProjectEvent); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ProjectEventBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &ProjectEventBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<ProjectEventBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void ProjectEventBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 ProjectEventBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((ProjectEventBase *) &other, whichField, sInfo);
-}
-void ProjectEventBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return sizeof(ProjectEvent);
 }
 
-void ProjectEventBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
+/*------------------------- decorator get ------------------------------*/
 
-}
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-ProjectEventBase::ProjectEventBase(void) :
-    Inherited() 
-{
-}
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-ProjectEventBase::ProjectEventBase(const ProjectEventBase &source) :
-    Inherited                 (source)
-{
-}
-
-/*-------------------------- destructors ----------------------------------*/
-
-ProjectEventBase::~ProjectEventBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 ProjectEventBase::getBinSize(const BitVector &whichField)
+UInt32 ProjectEventBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -169,66 +168,198 @@ UInt32 ProjectEventBase::getBinSize(const BitVector &whichField)
     return returnValue;
 }
 
-void ProjectEventBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void ProjectEventBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-
 }
 
-void ProjectEventBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void ProjectEventBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ProjectEventBase::executeSyncImpl(      ProjectEventBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+ProjectEventTransitPtr ProjectEventBase::createLocal(BitVector bFlags)
 {
+    ProjectEventTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
+        fc = dynamic_pointer_cast<ProjectEvent>(tmpPtr);
+    }
 
-}
-#else
-void ProjectEventBase::executeSyncImpl(      ProjectEventBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-
+    return fc;
 }
 
-void ProjectEventBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+ProjectEventTransitPtr ProjectEventBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    ProjectEventTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<ProjectEvent>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+ProjectEventTransitPtr ProjectEventBase::create(void)
+{
+    ProjectEventTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<ProjectEvent>(tmpPtr);
+    }
+
+    return fc;
+}
+
+ProjectEvent *ProjectEventBase::createEmptyLocal(BitVector bFlags)
+{
+    ProjectEvent *returnValue;
+
+    newPtr<ProjectEvent>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+ProjectEvent *ProjectEventBase::createEmpty(void)
+{
+    ProjectEvent *returnValue;
+
+    newPtr<ProjectEvent>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr ProjectEventBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    ProjectEvent *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ProjectEvent *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ProjectEventBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    ProjectEvent *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ProjectEvent *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ProjectEventBase::shallowCopy(void) const
+{
+    ProjectEvent *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const ProjectEvent *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+ProjectEventBase::ProjectEventBase(void) :
+    Inherited()
+{
+}
+
+ProjectEventBase::ProjectEventBase(const ProjectEventBase &source) :
+    Inherited(source)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+ProjectEventBase::~ProjectEventBase(void)
+{
+}
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void ProjectEventBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    ProjectEvent *pThis = static_cast<ProjectEvent *>(this);
+
+    pThis->execSync(static_cast<ProjectEvent *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *ProjectEventBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    ProjectEvent *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const ProjectEvent *>(pRefAspect),
+                  dynamic_cast<const ProjectEvent *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ProjectEventPtr>::_type("ProjectEventPtr", "EventPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(ProjectEventPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void ProjectEventBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+
+}
 
 
 OSG_END_NAMESPACE
-

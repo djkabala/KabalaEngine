@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include "Application/KEApplicationModeFields.h" // Parent
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class ApplicationPlayer;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ApplicationPlayerPtr
+OSG_GEN_CONTAINERPTR(ApplicationPlayer);
 
-typedef FCPtr<ApplicationModePtr, ApplicationPlayer> ApplicationPlayerPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ApplicationPlayerPtr> : 
-    public FieldTraitsRecurseMapper<ApplicationPlayerPtr, true>
+struct FieldTraits<ApplicationPlayer *> :
+    public FieldTraitsFCPtrBase<ApplicationPlayer *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFApplicationPlayerPtr"; }
-    static const char *getMName(void) { return "MFApplicationPlayerPtr"; }
+    typedef FieldTraits<ApplicationPlayer *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFApplicationPlayerPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFApplicationPlayerPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ApplicationPlayerPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<ApplicationPlayer *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecApplicationPlayerPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<ApplicationPlayer *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecApplicationPlayerPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationPlayer *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakApplicationPlayerPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationPlayer *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdApplicationPlayerPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationPlayer *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecApplicationPlayerPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationPlayer *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecApplicationPlayerPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationPlayer *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakApplicationPlayerPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationPlayer *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdApplicationPlayerPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationPlayer *,
+                      RecordedRefCountPolicy  > SFRecApplicationPlayerPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationPlayer *,
+                      UnrecordedRefCountPolicy> SFUnrecApplicationPlayerPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationPlayer *,
+                      WeakRefCountPolicy      > SFWeakApplicationPlayerPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationPlayer *,
+                      NoRefCountPolicy        > SFUncountedApplicationPlayerPtr;
 
-typedef SField<ApplicationPlayerPtr> SFApplicationPlayerPtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONPLAYERINST
-OSG_DLLEXPORT_DECL1(SField, ApplicationPlayerPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationPlayer *,
+                      RecordedRefCountPolicy  > MFRecApplicationPlayerPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationPlayer *,
+                      UnrecordedRefCountPolicy> MFUnrecApplicationPlayerPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationPlayer *,
+                      WeakRefCountPolicy      > MFWeakApplicationPlayerPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationPlayer *,
+                      NoRefCountPolicy        > MFUncountedApplicationPlayerPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ApplicationPlayerPtr> MFApplicationPlayerPtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONPLAYERINST
-OSG_DLLEXPORT_DECL1(MField, ApplicationPlayerPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecApplicationPlayerPtr : 
+    public PointerSField<ApplicationPlayer *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecApplicationPlayerPtr : 
+    public PointerSField<ApplicationPlayer *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakApplicationPlayerPtr :
+    public PointerSField<ApplicationPlayer *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedApplicationPlayerPtr :
+    public PointerSField<ApplicationPlayer *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecApplicationPlayerPtr :
+    public PointerMField<ApplicationPlayer *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecApplicationPlayerPtr :
+    public PointerMField<ApplicationPlayer *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakApplicationPlayerPtr :
+    public PointerMField<ApplicationPlayer *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedApplicationPlayerPtr :
+    public PointerMField<ApplicationPlayer *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

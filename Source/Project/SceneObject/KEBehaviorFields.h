@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/OSGAttachmentContainerFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class Behavior;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! BehaviorPtr
+OSG_GEN_CONTAINERPTR(Behavior);
 
-typedef FCPtr<AttachmentContainerPtr, Behavior> BehaviorPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<BehaviorPtr> : 
-    public FieldTraitsRecurseMapper<BehaviorPtr, true>
+struct FieldTraits<Behavior *> :
+    public FieldTraitsFCPtrBase<Behavior *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFBehaviorPtr"; }
-    static const char *getMName(void) { return "MFBehaviorPtr"; }
+    typedef FieldTraits<Behavior *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFBehaviorPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFBehaviorPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<BehaviorPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<Behavior *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecBehaviorPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<Behavior *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdBehaviorPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Behavior *,
+                      RecordedRefCountPolicy  > SFRecBehaviorPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Behavior *,
+                      UnrecordedRefCountPolicy> SFUnrecBehaviorPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Behavior *,
+                      WeakRefCountPolicy      > SFWeakBehaviorPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Behavior *,
+                      NoRefCountPolicy        > SFUncountedBehaviorPtr;
 
-typedef SField<BehaviorPtr> SFBehaviorPtr;
-#endif
 
-#ifndef KE_COMPILEBEHAVIORINST
-OSG_DLLEXPORT_DECL1(SField, BehaviorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Behavior *,
+                      RecordedRefCountPolicy  > MFRecBehaviorPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Behavior *,
+                      UnrecordedRefCountPolicy> MFUnrecBehaviorPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Behavior *,
+                      WeakRefCountPolicy      > MFWeakBehaviorPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Behavior *,
+                      NoRefCountPolicy        > MFUncountedBehaviorPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<BehaviorPtr> MFBehaviorPtr;
-#endif
 
-#ifndef KE_COMPILEBEHAVIORINST
-OSG_DLLEXPORT_DECL1(MField, BehaviorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecBehaviorPtr : 
+    public PointerSField<Behavior *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecBehaviorPtr : 
+    public PointerSField<Behavior *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakBehaviorPtr :
+    public PointerSField<Behavior *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedBehaviorPtr :
+    public PointerSField<Behavior *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecBehaviorPtr :
+    public PointerMField<Behavior *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecBehaviorPtr :
+    public PointerMField<Behavior *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakBehaviorPtr :
+    public PointerMField<Behavior *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedBehaviorPtr :
+    public PointerMField<Behavior *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

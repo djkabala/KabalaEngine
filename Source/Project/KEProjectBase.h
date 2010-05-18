@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -54,160 +55,195 @@
 #endif
 
 
+
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGRefPtr.h>
-#include <OpenSG/OSGCoredNodePtr.h>
+//#include "OpenSG/OSGBaseTypes.h"
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <OpenSG/OSGStringFields.h> // Version type
-#include <OpenSG/OSGStringFields.h> // MainWindowTitle type
-#include <OpenSG/Toolbox/OSGPathType.h> // FilePath type
-#include <Project/Scene/KESceneFields.h> // Scenes type
-#include <Project/Scene/KESceneFields.h> // InitialScene type
-#include <Project/Scene/KESceneFields.h> // InternalActiveScene type
+#include <OpenSG/OSGBaseFields.h>       // Version type
+#include <OpenSG/OSGBoostPathFields.h>  // FilePath type
+#include "Project/Scene/KESceneFields.h" // Scenes type
 #include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
-#include <OpenSG/OSGBackgroundFields.h> // InternalActiveBackground type
 #include <OpenSG/OSGForegroundFields.h> // Foregrounds type
-#include <OpenSG/OSGForegroundFields.h> // InternalActiveForegrounds type
-#include <OpenSG/OSGForegroundFields.h> // GlobalActiveForegrounds type
-#include <OpenSG/OSGNodeFields.h> // ModelNodes type
-#include <OpenSG/OSGNodeFields.h> // InternalActiveModelNodes type
-#include <OpenSG/OSGNodeFields.h> // GlobalActiveModelNodes type
-#include <OpenSG/OSGCameraFields.h> // Cameras type
-#include <OpenSG/OSGCameraFields.h> // InternalActiveCamera type
-#include <OpenSG/Animation/OSGAnimation.h> // ActiveAnimations type
-#include <OpenSG/ParticleSystem/OSGParticleSystem.h> // ActiveParticleSystems type
-#include <OpenSG/Toolbox/OSGPathType.h> // LuaModule type
-#include <OpenSG/Toolbox/OSGPathType.h> // LuaModulesDirectory type
+#include <OpenSG/OSGNodeFields.h>       // ModelNodes type
+#include <OpenSG/OSGCameraFields.h>     // Cameras type
+#include <OpenSG/OSGAnimationFields.h>  // ActiveAnimations type
+#include <OpenSG/OSGParticleSystemFields.h> // ActiveParticleSystems type
 
 #include "KEProjectFields.h"
-#include <OpenSG/Toolbox/OSGEventProducer.h>
-#include <OpenSG/Toolbox/OSGEventProducerType.h>
-#include <OpenSG/Toolbox/OSGMethodDescription.h>
-#include <OpenSG/Toolbox/OSGEventProducerPtrType.h>
+
+//Event Producer Headers
+#include <OpenSG/OSGEventProducer.h>
+#include <OpenSG/OSGEventProducerType.h>
+#include <OpenSG/OSGMethodDescription.h>
+#include <OpenSG/OSGEventProducerPtrType.h>
 
 OSG_BEGIN_NAMESPACE
 
 class Project;
-class BinaryDataHandler;
 
 //! \brief Project Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
+class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
 {
-  private:
-
-    typedef AttachmentContainer    Inherited;
-
-    /*==========================  PUBLIC  =================================*/
   public:
 
-    typedef ProjectPtr  Ptr;
+    typedef AttachmentContainer Inherited;
+    typedef AttachmentContainer ParentContainer;
+
+    typedef Inherited::TypeObject TypeObject;
+    typedef TypeObject::InitPhase InitPhase;
+
+    OSG_GEN_INTERNALPTR(Project);
+
+    /*==========================  PUBLIC  =================================*/
+
+  public:
 
     enum
     {
-        VersionFieldId                   = Inherited::NextFieldId,
-        MainWindowTitleFieldId           = VersionFieldId                   + 1,
-        FilePathFieldId                  = MainWindowTitleFieldId           + 1,
-        ScenesFieldId                    = FilePathFieldId                  + 1,
-        InitialSceneFieldId              = ScenesFieldId                    + 1,
-        InternalActiveSceneFieldId       = InitialSceneFieldId              + 1,
-        BackgroundsFieldId               = InternalActiveSceneFieldId       + 1,
-        InternalActiveBackgroundFieldId  = BackgroundsFieldId               + 1,
-        ForegroundsFieldId               = InternalActiveBackgroundFieldId  + 1,
-        InternalActiveForegroundsFieldId = ForegroundsFieldId               + 1,
-        GlobalActiveForegroundsFieldId   = InternalActiveForegroundsFieldId + 1,
-        ModelNodesFieldId                = GlobalActiveForegroundsFieldId   + 1,
-        InternalActiveModelNodesFieldId  = ModelNodesFieldId                + 1,
-        GlobalActiveModelNodesFieldId    = InternalActiveModelNodesFieldId  + 1,
-        CamerasFieldId                   = GlobalActiveModelNodesFieldId    + 1,
-        InternalActiveCameraFieldId      = CamerasFieldId                   + 1,
-        ActiveAnimationsFieldId          = InternalActiveCameraFieldId      + 1,
-        ActiveParticleSystemsFieldId     = ActiveAnimationsFieldId          + 1,
-        LuaModuleFieldId                 = ActiveParticleSystemsFieldId     + 1,
-        LuaModulesDirectoryFieldId       = LuaModuleFieldId                 + 1,
-        EventProducerFieldId             = LuaModulesDirectoryFieldId       + 1,
-        NextFieldId                      = EventProducerFieldId             + 1
+        VersionFieldId = Inherited::NextFieldId,
+        MainWindowTitleFieldId = VersionFieldId + 1,
+        FilePathFieldId = MainWindowTitleFieldId + 1,
+        ScenesFieldId = FilePathFieldId + 1,
+        InitialSceneFieldId = ScenesFieldId + 1,
+        InternalActiveSceneFieldId = InitialSceneFieldId + 1,
+        BackgroundsFieldId = InternalActiveSceneFieldId + 1,
+        InternalActiveBackgroundFieldId = BackgroundsFieldId + 1,
+        ForegroundsFieldId = InternalActiveBackgroundFieldId + 1,
+        InternalActiveForegroundsFieldId = ForegroundsFieldId + 1,
+        GlobalActiveForegroundsFieldId = InternalActiveForegroundsFieldId + 1,
+        ModelNodesFieldId = GlobalActiveForegroundsFieldId + 1,
+        InternalActiveModelNodesFieldId = ModelNodesFieldId + 1,
+        GlobalActiveModelNodesFieldId = InternalActiveModelNodesFieldId + 1,
+        CamerasFieldId = GlobalActiveModelNodesFieldId + 1,
+        InternalActiveCameraFieldId = CamerasFieldId + 1,
+        ActiveAnimationsFieldId = InternalActiveCameraFieldId + 1,
+        ActiveParticleSystemsFieldId = ActiveAnimationsFieldId + 1,
+        LuaModuleFieldId = ActiveParticleSystemsFieldId + 1,
+        LuaModulesDirectoryFieldId = LuaModuleFieldId + 1,
+        EventProducerFieldId = LuaModulesDirectoryFieldId + 1,
+        NextFieldId = EventProducerFieldId + 1
     };
 
-    static const OSG::BitVector VersionFieldMask;
-    static const OSG::BitVector MainWindowTitleFieldMask;
-    static const OSG::BitVector FilePathFieldMask;
-    static const OSG::BitVector ScenesFieldMask;
-    static const OSG::BitVector InitialSceneFieldMask;
-    static const OSG::BitVector InternalActiveSceneFieldMask;
-    static const OSG::BitVector BackgroundsFieldMask;
-    static const OSG::BitVector InternalActiveBackgroundFieldMask;
-    static const OSG::BitVector ForegroundsFieldMask;
-    static const OSG::BitVector InternalActiveForegroundsFieldMask;
-    static const OSG::BitVector GlobalActiveForegroundsFieldMask;
-    static const OSG::BitVector ModelNodesFieldMask;
-    static const OSG::BitVector InternalActiveModelNodesFieldMask;
-    static const OSG::BitVector GlobalActiveModelNodesFieldMask;
-    static const OSG::BitVector CamerasFieldMask;
-    static const OSG::BitVector InternalActiveCameraFieldMask;
-    static const OSG::BitVector ActiveAnimationsFieldMask;
-    static const OSG::BitVector ActiveParticleSystemsFieldMask;
-    static const OSG::BitVector LuaModuleFieldMask;
-    static const OSG::BitVector LuaModulesDirectoryFieldMask;
-    static const OSG::BitVector EventProducerFieldMask;
-
+    static const OSG::BitVector VersionFieldMask =
+        (TypeTraits<BitVector>::One << VersionFieldId);
+    static const OSG::BitVector MainWindowTitleFieldMask =
+        (TypeTraits<BitVector>::One << MainWindowTitleFieldId);
+    static const OSG::BitVector FilePathFieldMask =
+        (TypeTraits<BitVector>::One << FilePathFieldId);
+    static const OSG::BitVector ScenesFieldMask =
+        (TypeTraits<BitVector>::One << ScenesFieldId);
+    static const OSG::BitVector InitialSceneFieldMask =
+        (TypeTraits<BitVector>::One << InitialSceneFieldId);
+    static const OSG::BitVector InternalActiveSceneFieldMask =
+        (TypeTraits<BitVector>::One << InternalActiveSceneFieldId);
+    static const OSG::BitVector BackgroundsFieldMask =
+        (TypeTraits<BitVector>::One << BackgroundsFieldId);
+    static const OSG::BitVector InternalActiveBackgroundFieldMask =
+        (TypeTraits<BitVector>::One << InternalActiveBackgroundFieldId);
+    static const OSG::BitVector ForegroundsFieldMask =
+        (TypeTraits<BitVector>::One << ForegroundsFieldId);
+    static const OSG::BitVector InternalActiveForegroundsFieldMask =
+        (TypeTraits<BitVector>::One << InternalActiveForegroundsFieldId);
+    static const OSG::BitVector GlobalActiveForegroundsFieldMask =
+        (TypeTraits<BitVector>::One << GlobalActiveForegroundsFieldId);
+    static const OSG::BitVector ModelNodesFieldMask =
+        (TypeTraits<BitVector>::One << ModelNodesFieldId);
+    static const OSG::BitVector InternalActiveModelNodesFieldMask =
+        (TypeTraits<BitVector>::One << InternalActiveModelNodesFieldId);
+    static const OSG::BitVector GlobalActiveModelNodesFieldMask =
+        (TypeTraits<BitVector>::One << GlobalActiveModelNodesFieldId);
+    static const OSG::BitVector CamerasFieldMask =
+        (TypeTraits<BitVector>::One << CamerasFieldId);
+    static const OSG::BitVector InternalActiveCameraFieldMask =
+        (TypeTraits<BitVector>::One << InternalActiveCameraFieldId);
+    static const OSG::BitVector ActiveAnimationsFieldMask =
+        (TypeTraits<BitVector>::One << ActiveAnimationsFieldId);
+    static const OSG::BitVector ActiveParticleSystemsFieldMask =
+        (TypeTraits<BitVector>::One << ActiveParticleSystemsFieldId);
+    static const OSG::BitVector LuaModuleFieldMask =
+        (TypeTraits<BitVector>::One << LuaModuleFieldId);
+    static const OSG::BitVector LuaModulesDirectoryFieldMask =
+        (TypeTraits<BitVector>::One << LuaModulesDirectoryFieldId);
+    static const OSG::BitVector EventProducerFieldMask =
+        (TypeTraits<BitVector>::One << EventProducerFieldId);
+    static const OSG::BitVector NextFieldMask =
+        (TypeTraits<BitVector>::One << NextFieldId);
+        
+    typedef SFString          SFVersionType;
+    typedef SFString          SFMainWindowTitleType;
+    typedef SFBoostPath       SFFilePathType;
+    typedef MFUnrecScenePtr   MFScenesType;
+    typedef SFUnrecScenePtr   SFInitialSceneType;
+    typedef SFUnrecScenePtr   SFInternalActiveSceneType;
+    typedef MFUnrecBackgroundPtr MFBackgroundsType;
+    typedef SFUnrecBackgroundPtr SFInternalActiveBackgroundType;
+    typedef MFUnrecForegroundPtr MFForegroundsType;
+    typedef MFUnrecForegroundPtr MFInternalActiveForegroundsType;
+    typedef MFUnrecForegroundPtr MFGlobalActiveForegroundsType;
+    typedef MFUnrecNodePtr    MFModelNodesType;
+    typedef MFUnrecNodePtr    MFInternalActiveModelNodesType;
+    typedef MFUnrecNodePtr    MFGlobalActiveModelNodesType;
+    typedef MFUnrecCameraPtr  MFCamerasType;
+    typedef SFUnrecCameraPtr  SFInternalActiveCameraType;
+    typedef MFUnrecAnimationPtr MFActiveAnimationsType;
+    typedef MFUnrecParticleSystemPtr MFActiveParticleSystemsType;
+    typedef SFBoostPath       SFLuaModuleType;
+    typedef SFBoostPath       SFLuaModulesDirectoryType;
+    typedef SFEventProducerPtr          SFEventProducerType;
 
     enum
     {
-        ProjectStartedMethodId    = 1,
-        ProjectStoppingMethodId   = ProjectStartedMethodId    + 1,
-        ProjectStoppedMethodId    = ProjectStoppingMethodId   + 1,
-        ProjectResetMethodId      = ProjectStoppedMethodId    + 1,
-        SceneChangedMethodId      = ProjectResetMethodId      + 1,
-        WindowOpenedMethodId      = SceneChangedMethodId      + 1,
-        WindowClosingMethodId     = WindowOpenedMethodId      + 1,
-        WindowClosedMethodId      = WindowClosingMethodId     + 1,
-        WindowIconifiedMethodId   = WindowClosedMethodId      + 1,
-        WindowDeiconifiedMethodId = WindowIconifiedMethodId   + 1,
-        WindowActivatedMethodId   = WindowDeiconifiedMethodId + 1,
-        WindowDeactivatedMethodId = WindowActivatedMethodId   + 1,
-        WindowEnteredMethodId     = WindowDeactivatedMethodId + 1,
-        WindowExitedMethodId      = WindowEnteredMethodId     + 1,
-        MouseClickedMethodId      = WindowExitedMethodId      + 1,
-        MouseEnteredMethodId      = MouseClickedMethodId      + 1,
-        MouseExitedMethodId       = MouseEnteredMethodId      + 1,
-        MousePressedMethodId      = MouseExitedMethodId       + 1,
-        MouseReleasedMethodId     = MousePressedMethodId      + 1,
-        MouseMovedMethodId        = MouseReleasedMethodId     + 1,
-        MouseDraggedMethodId      = MouseMovedMethodId        + 1,
-        MouseWheelMovedMethodId   = MouseDraggedMethodId      + 1,
-        KeyPressedMethodId        = MouseWheelMovedMethodId   + 1,
-        KeyReleasedMethodId       = KeyPressedMethodId        + 1,
-        KeyTypedMethodId          = KeyReleasedMethodId       + 1,
-        UpdateMethodId            = KeyTypedMethodId          + 1,
-        NextMethodId              = UpdateMethodId            + 1
+        ProjectStartedMethodId = 1,
+        ProjectStoppingMethodId = ProjectStartedMethodId + 1,
+        ProjectStoppedMethodId = ProjectStoppingMethodId + 1,
+        ProjectResetMethodId = ProjectStoppedMethodId + 1,
+        SceneChangedMethodId = ProjectResetMethodId + 1,
+        WindowOpenedMethodId = SceneChangedMethodId + 1,
+        WindowClosingMethodId = WindowOpenedMethodId + 1,
+        WindowClosedMethodId = WindowClosingMethodId + 1,
+        WindowIconifiedMethodId = WindowClosedMethodId + 1,
+        WindowDeiconifiedMethodId = WindowIconifiedMethodId + 1,
+        WindowActivatedMethodId = WindowDeiconifiedMethodId + 1,
+        WindowDeactivatedMethodId = WindowActivatedMethodId + 1,
+        WindowEnteredMethodId = WindowDeactivatedMethodId + 1,
+        WindowExitedMethodId = WindowEnteredMethodId + 1,
+        MouseClickedMethodId = WindowExitedMethodId + 1,
+        MouseEnteredMethodId = MouseClickedMethodId + 1,
+        MouseExitedMethodId = MouseEnteredMethodId + 1,
+        MousePressedMethodId = MouseExitedMethodId + 1,
+        MouseReleasedMethodId = MousePressedMethodId + 1,
+        MouseMovedMethodId = MouseReleasedMethodId + 1,
+        MouseDraggedMethodId = MouseMovedMethodId + 1,
+        MouseWheelMovedMethodId = MouseDraggedMethodId + 1,
+        KeyPressedMethodId = MouseWheelMovedMethodId + 1,
+        KeyReleasedMethodId = KeyPressedMethodId + 1,
+        KeyTypedMethodId = KeyReleasedMethodId + 1,
+        UpdateMethodId = KeyTypedMethodId + 1,
+        NextProducedMethodId = UpdateMethodId + 1
     };
-
-
-
-    static const OSG::BitVector MTInfluenceMask;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
     /*! \{                                                                 */
 
-    static        FieldContainerType &getClassType    (void); 
-    static        UInt32              getClassTypeId  (void); 
-    static const  EventProducerType  &getProducerClassType  (void); 
-    static        UInt32              getProducerClassTypeId(void); 
+    static FieldContainerType &getClassType   (void);
+    static UInt32              getClassTypeId (void);
+    static UInt16              getClassGroupId(void);
+    static const  EventProducerType  &getProducerClassType  (void);
+    static        UInt32              getProducerClassTypeId(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                FieldContainer Get                            */
     /*! \{                                                                 */
 
-    virtual       FieldContainerType &getType  (void); 
-    virtual const FieldContainerType &getType  (void) const; 
+    virtual       FieldContainerType &getType         (void);
+    virtual const FieldContainerType &getType         (void) const;
 
     virtual       UInt32              getContainerSize(void) const;
 
@@ -217,131 +253,144 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \{                                                                 */
 
 
-           SFString            *editSFVersion        (void);
-     const SFString            *getSFVersion        (void) const;
+                  SFString            *editSFVersion        (void);
+            const SFString            *getSFVersion         (void) const;
 
-           SFString            *editSFMainWindowTitle(void);
-     const SFString            *getSFMainWindowTitle(void) const;
+                  SFString            *editSFMainWindowTitle(void);
+            const SFString            *getSFMainWindowTitle (void) const;
 
-           SFPath              *editSFFilePath       (void);
-     const SFPath              *getSFFilePath       (void) const;
+                  SFBoostPath         *editSFFilePath       (void);
+            const SFBoostPath         *getSFFilePath        (void) const;
+            const MFUnrecScenePtr     *getMFScenes         (void) const;
+                  MFUnrecScenePtr     *editMFScenes         (void);
+            const SFUnrecScenePtr     *getSFInitialScene   (void) const;
+                  SFUnrecScenePtr     *editSFInitialScene   (void);
+            const MFUnrecBackgroundPtr *getMFBackgrounds    (void) const;
+                  MFUnrecBackgroundPtr *editMFBackgrounds    (void);
+            const MFUnrecForegroundPtr *getMFForegrounds    (void) const;
+                  MFUnrecForegroundPtr *editMFForegrounds    (void);
+            const MFUnrecForegroundPtr *getMFGlobalActiveForegrounds(void) const;
+                  MFUnrecForegroundPtr *editMFGlobalActiveForegrounds(void);
+            const MFUnrecNodePtr      *getMFModelNodes     (void) const;
+                  MFUnrecNodePtr      *editMFModelNodes     (void);
+            const MFUnrecNodePtr      *getMFGlobalActiveModelNodes(void) const;
+                  MFUnrecNodePtr      *editMFGlobalActiveModelNodes(void);
+            const MFUnrecCameraPtr    *getMFCameras        (void) const;
+                  MFUnrecCameraPtr    *editMFCameras        (void);
 
-           MFScenePtr          *editMFScenes         (void);
-     const MFScenePtr          *getMFScenes         (void) const;
+                  SFBoostPath         *editSFLuaModule      (void);
+            const SFBoostPath         *getSFLuaModule       (void) const;
 
-           SFScenePtr          *editSFInitialScene   (void);
-     const SFScenePtr          *getSFInitialScene   (void) const;
-
-           MFBackgroundPtr     *editMFBackgrounds    (void);
-     const MFBackgroundPtr     *getMFBackgrounds    (void) const;
-
-           MFForegroundPtr     *editMFForegrounds    (void);
-     const MFForegroundPtr     *getMFForegrounds    (void) const;
-
-           MFForegroundPtr     *editMFGlobalActiveForegrounds(void);
-     const MFForegroundPtr     *getMFGlobalActiveForegrounds(void) const;
-
-           MFNodePtr           *editMFModelNodes     (void);
-     const MFNodePtr           *getMFModelNodes     (void) const;
-
-           MFNodePtr           *editMFGlobalActiveModelNodes(void);
-     const MFNodePtr           *getMFGlobalActiveModelNodes(void) const;
-
-           MFCameraPtr         *editMFCameras        (void);
-     const MFCameraPtr         *getMFCameras        (void) const;
-
-           SFPath              *editSFLuaModule      (void);
-     const SFPath              *getSFLuaModule      (void) const;
-
-           SFPath              *editSFLuaModulesDirectory(void);
-     const SFPath              *getSFLuaModulesDirectory(void) const;
+                  SFBoostPath         *editSFLuaModulesDirectory(void);
+            const SFBoostPath         *getSFLuaModulesDirectory (void) const;
 
 
-           std::string         &editVersion        (void);
-     const std::string         &getVersion        (void) const;
+                  std::string         &editVersion        (void);
+            const std::string         &getVersion         (void) const;
 
-           std::string         &editMainWindowTitle(void);
-     const std::string         &getMainWindowTitle(void) const;
+                  std::string         &editMainWindowTitle(void);
+            const std::string         &getMainWindowTitle (void) const;
 
-           Path                &editFilePath       (void);
-     const Path                &getFilePath       (void) const;
+                  BoostPath           &editFilePath       (void);
+            const BoostPath           &getFilePath        (void) const;
 
-           ScenePtr            &editInitialScene   (void);
-     const ScenePtr            &getInitialScene   (void) const;
+                  Scene * getScenes         (const UInt32 index) const;
 
+                  Scene * getInitialScene   (void) const;
 
+                  Background * getBackgrounds    (const UInt32 index) const;
 
+                  Foreground * getForegrounds    (const UInt32 index) const;
 
-           Path                &editLuaModule      (void);
-     const Path                &getLuaModule      (void) const;
+                  Foreground * getGlobalActiveForegrounds(const UInt32 index) const;
 
-           Path                &editLuaModulesDirectory(void);
-     const Path                &getLuaModulesDirectory(void) const;
+                  Node * getModelNodes     (const UInt32 index) const;
 
-           ScenePtr            &editScenes         (const UInt32 index);
-     const ScenePtr            &getScenes         (const UInt32 index) const;
-#ifndef OSG_2_PREP
-           MFScenePtr          &getScenes         (void);
-     const MFScenePtr          &getScenes         (void) const;
-#endif
+                  Node * getGlobalActiveModelNodes(const UInt32 index) const;
 
-           BackgroundPtr       &editBackgrounds    (const UInt32 index);
-     const BackgroundPtr       &getBackgrounds    (const UInt32 index) const;
-#ifndef OSG_2_PREP
-           MFBackgroundPtr     &getBackgrounds    (void);
-     const MFBackgroundPtr     &getBackgrounds    (void) const;
-#endif
+                  Camera * getCameras        (const UInt32 index) const;
 
-           ForegroundPtr       &editForegrounds    (const UInt32 index);
-     const ForegroundPtr       &getForegrounds    (const UInt32 index) const;
-#ifndef OSG_2_PREP
-           MFForegroundPtr     &getForegrounds    (void);
-     const MFForegroundPtr     &getForegrounds    (void) const;
-#endif
+                  BoostPath           &editLuaModule      (void);
+            const BoostPath           &getLuaModule       (void) const;
 
-
-           ForegroundPtr       &editGlobalActiveForegrounds(const UInt32 index);
-     const ForegroundPtr       &getGlobalActiveForegrounds(const UInt32 index) const;
-#ifndef OSG_2_PREP
-           MFForegroundPtr     &getGlobalActiveForegrounds(void);
-     const MFForegroundPtr     &getGlobalActiveForegrounds(void) const;
-#endif
-
-           NodePtr             &editModelNodes     (const UInt32 index);
-     const NodePtr             &getModelNodes     (const UInt32 index) const;
-#ifndef OSG_2_PREP
-           MFNodePtr           &getModelNodes     (void);
-     const MFNodePtr           &getModelNodes     (void) const;
-#endif
-
-
-           NodePtr             &editGlobalActiveModelNodes(const UInt32 index);
-     const NodePtr             &getGlobalActiveModelNodes(const UInt32 index) const;
-#ifndef OSG_2_PREP
-           MFNodePtr           &getGlobalActiveModelNodes(void);
-     const MFNodePtr           &getGlobalActiveModelNodes(void) const;
-#endif
-
-           CameraPtr           &editCameras        (const UInt32 index);
-     const CameraPtr           &getCameras        (const UInt32 index) const;
-#ifndef OSG_2_PREP
-           MFCameraPtr         &getCameras        (void);
-     const MFCameraPtr         &getCameras        (void) const;
-#endif
-
-
+                  BoostPath           &editLuaModulesDirectory(void);
+            const BoostPath           &getLuaModulesDirectory (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-     void setVersion        ( const std::string &value );
-     void setMainWindowTitle( const std::string &value );
-     void setFilePath       ( const Path &value );
-     void setInitialScene   ( const ScenePtr &value );
-     void setLuaModule      ( const Path &value );
-     void setLuaModulesDirectory( const Path &value );
+            void setVersion        (const std::string &value);
+            void setMainWindowTitle(const std::string &value);
+            void setFilePath       (const BoostPath &value);
+            void setInitialScene   (Scene * const value);
+            void setLuaModule      (const BoostPath &value);
+            void setLuaModulesDirectory(const BoostPath &value);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr Field Set                                 */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
+    /*! \{                                                                 */
+
+    void pushToScenes              (Scene * const value   );
+    void assignScenes             (const MFUnrecScenePtr   &value);
+    void removeFromScenes (UInt32               uiIndex );
+    void removeObjFromScenes(Scene * const value   );
+    void clearScenes                (void                         );
+
+    void pushToBackgrounds           (Background * const value   );
+    void assignBackgrounds          (const MFUnrecBackgroundPtr &value);
+    void removeFromBackgrounds (UInt32               uiIndex );
+    void removeObjFromBackgrounds(Background * const value   );
+    void clearBackgrounds            (void                         );
+
+    void pushToForegrounds           (Foreground * const value   );
+    void assignForegrounds          (const MFUnrecForegroundPtr &value);
+    void removeFromForegrounds (UInt32               uiIndex );
+    void removeObjFromForegrounds(Foreground * const value   );
+    void clearForegrounds            (void                         );
+
+    void pushToGlobalActiveForegrounds           (Foreground * const value   );
+    void assignGlobalActiveForegrounds          (const MFUnrecForegroundPtr &value);
+    void removeFromGlobalActiveForegrounds (UInt32               uiIndex );
+    void removeObjFromGlobalActiveForegrounds(Foreground * const value   );
+    void clearGlobalActiveForegrounds            (void                         );
+
+    void pushToModelNodes           (Node * const value   );
+    void assignModelNodes          (const MFUnrecNodePtr    &value);
+    void removeFromModelNodes (UInt32               uiIndex );
+    void removeObjFromModelNodes(Node * const value   );
+    void clearModelNodes            (void                         );
+
+    void pushToGlobalActiveModelNodes           (Node * const value   );
+    void assignGlobalActiveModelNodes          (const MFUnrecNodePtr    &value);
+    void removeFromGlobalActiveModelNodes (UInt32               uiIndex );
+    void removeObjFromGlobalActiveModelNodes(Node * const value   );
+    void clearGlobalActiveModelNodes            (void                         );
+
+    void pushToCameras             (Camera * const value   );
+    void assignCameras            (const MFUnrecCameraPtr  &value);
+    void removeFromCameras (UInt32               uiIndex );
+    void removeObjFromCameras(Camera * const value   );
+    void clearCameras               (void                         );
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                   Binary Access                              */
+    /*! \{                                                                 */
+
+    virtual UInt32 getBinSize (ConstFieldMaskArg  whichField);
+    virtual void   copyToBin  (BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
+    virtual void   copyFromBin(BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
+
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -349,84 +398,94 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \{                                                                 */
 
     virtual const EventProducerType &getProducerType(void) const; 
-    EventConnection attachActivity(ActivityPtr TheActivity, UInt32 ProducedEventId);
-    bool isActivityAttached(ActivityPtr TheActivity, UInt32 ProducedEventId) const;
-    UInt32 getNumActivitiesAttached(UInt32 ProducedEventId) const;
-    ActivityPtr getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const;
-    void detachActivity(ActivityPtr TheActivity, UInt32 ProducedEventId);
-    UInt32 getNumProducedEvents(void) const;
-    const MethodDescription *getProducedEventDescription(const Char8 *ProducedEventName) const;
+
+    EventConnection          attachActivity             (ActivityRefPtr TheActivity,
+                                                         UInt32 ProducedEventId);
+    bool                     isActivityAttached         (ActivityRefPtr TheActivity,
+                                                         UInt32 ProducedEventId) const;
+    UInt32                   getNumActivitiesAttached   (UInt32 ProducedEventId) const;
+    ActivityRefPtr           getAttachedActivity        (UInt32 ProducedEventId,
+                                                         UInt32 ActivityIndex) const;
+    void                     detachActivity             (ActivityRefPtr TheActivity,
+                                                         UInt32 ProducedEventId);
+    UInt32                   getNumProducedEvents       (void) const;
+    const MethodDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
     const MethodDescription *getProducedEventDescription(UInt32 ProducedEventId) const;
-    UInt32 getProducedEventId(const Char8 *ProducedEventName) const;
+    UInt32                   getProducedEventId         (const std::string &ProducedEventName) const;
 
     SFEventProducerPtr *editSFEventProducer(void);
-    EventProducerPtr &editEventProducer(void);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                       Sync                                   */
-    /*! \{                                                                 */
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                   Binary Access                              */
-    /*! \{                                                                 */
-
-    virtual UInt32 getBinSize (const BitVector         &whichField);
-    virtual void   copyToBin  (      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
-    virtual void   copyFromBin(      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
-
+    EventProducerPtr   &editEventProducer  (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  ProjectPtr      create          (void); 
-    static  ProjectPtr      createEmpty     (void); 
+    static  ProjectTransitPtr  create          (void);
+    static  Project           *createEmpty     (void);
+
+    static  ProjectTransitPtr  createLocal     (
+                                               BitVector bFlags = FCLocal::All);
+
+    static  Project            *createEmptyLocal(
+                                              BitVector bFlags = FCLocal::All);
+
+    static  ProjectTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
-
     /*---------------------------------------------------------------------*/
     /*! \name                       Copy                                   */
     /*! \{                                                                 */
 
-    virtual FieldContainerPtr     shallowCopy     (void) const; 
+    virtual FieldContainerTransitPtr shallowCopy     (void) const;
+    virtual FieldContainerTransitPtr shallowCopyLocal(
+                                       BitVector bFlags = FCLocal::All) const;
+    virtual FieldContainerTransitPtr shallowCopyDependent(
+                                                      BitVector bFlags) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Event Producer                            */
+    /*! \{                                                                 */
     EventProducer _Producer;
+
+    /*! \}                                                                 */
+
+    static TypeObject _type;
+
+    static       void   classDescInserter(TypeObject &oType);
+    static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFString            _sfVersion;
-    SFString            _sfMainWindowTitle;
-    SFPath              _sfFilePath;
-    MFScenePtr          _mfScenes;
-    SFScenePtr          _sfInitialScene;
-    SFScenePtr          _sfInternalActiveScene;
-    MFBackgroundPtr     _mfBackgrounds;
-    SFBackgroundPtr     _sfInternalActiveBackground;
-    MFForegroundPtr     _mfForegrounds;
-    MFForegroundPtr     _mfInternalActiveForegrounds;
-    MFForegroundPtr     _mfGlobalActiveForegrounds;
-    MFNodePtr           _mfModelNodes;
-    MFNodePtr           _mfInternalActiveModelNodes;
-    MFNodePtr           _mfGlobalActiveModelNodes;
-    MFCameraPtr         _mfCameras;
-    SFCameraPtr         _sfInternalActiveCamera;
-    MFAnimationPtr      _mfActiveAnimations;
-    MFParticleSystemPtr   _mfActiveParticleSystems;
-    SFPath              _sfLuaModule;
-    SFPath              _sfLuaModulesDirectory;
+    SFString          _sfVersion;
+    SFString          _sfMainWindowTitle;
+    SFBoostPath       _sfFilePath;
+    MFUnrecScenePtr   _mfScenes;
+    SFUnrecScenePtr   _sfInitialScene;
+    SFUnrecScenePtr   _sfInternalActiveScene;
+    MFUnrecBackgroundPtr _mfBackgrounds;
+    SFUnrecBackgroundPtr _sfInternalActiveBackground;
+    MFUnrecForegroundPtr _mfForegrounds;
+    MFUnrecForegroundPtr _mfInternalActiveForegrounds;
+    MFUnrecForegroundPtr _mfGlobalActiveForegrounds;
+    MFUnrecNodePtr    _mfModelNodes;
+    MFUnrecNodePtr    _mfInternalActiveModelNodes;
+    MFUnrecNodePtr    _mfGlobalActiveModelNodes;
+    MFUnrecCameraPtr  _mfCameras;
+    SFUnrecCameraPtr  _sfInternalActiveCamera;
+    MFUnrecAnimationPtr _mfActiveAnimations;
+    MFUnrecParticleSystemPtr _mfActiveParticleSystems;
+    SFBoostPath       _sfLuaModule;
+    SFBoostPath       _sfLuaModulesDirectory;
+    SFEventProducerPtr _sfEventProducer;
 
     /*! \}                                                                 */
-    SFEventProducerPtr _sfEventProducer;
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
@@ -439,129 +498,193 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ProjectBase(void); 
+    virtual ~ProjectBase(void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     onCreate                                */
+    /*! \{                                                                 */
+
+    void onCreate(const Project *source = NULL);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Field Access                      */
+    /*! \{                                                                 */
+
+    GetFieldHandlePtr  getHandleVersion         (void) const;
+    EditFieldHandlePtr editHandleVersion        (void);
+    GetFieldHandlePtr  getHandleMainWindowTitle (void) const;
+    EditFieldHandlePtr editHandleMainWindowTitle(void);
+    GetFieldHandlePtr  getHandleFilePath        (void) const;
+    EditFieldHandlePtr editHandleFilePath       (void);
+    GetFieldHandlePtr  getHandleScenes          (void) const;
+    EditFieldHandlePtr editHandleScenes         (void);
+    GetFieldHandlePtr  getHandleInitialScene    (void) const;
+    EditFieldHandlePtr editHandleInitialScene   (void);
+    GetFieldHandlePtr  getHandleInternalActiveScene (void) const;
+    EditFieldHandlePtr editHandleInternalActiveScene(void);
+    GetFieldHandlePtr  getHandleBackgrounds     (void) const;
+    EditFieldHandlePtr editHandleBackgrounds    (void);
+    GetFieldHandlePtr  getHandleInternalActiveBackground (void) const;
+    EditFieldHandlePtr editHandleInternalActiveBackground(void);
+    GetFieldHandlePtr  getHandleForegrounds     (void) const;
+    EditFieldHandlePtr editHandleForegrounds    (void);
+    GetFieldHandlePtr  getHandleInternalActiveForegrounds (void) const;
+    EditFieldHandlePtr editHandleInternalActiveForegrounds(void);
+    GetFieldHandlePtr  getHandleGlobalActiveForegrounds (void) const;
+    EditFieldHandlePtr editHandleGlobalActiveForegrounds(void);
+    GetFieldHandlePtr  getHandleModelNodes      (void) const;
+    EditFieldHandlePtr editHandleModelNodes     (void);
+    GetFieldHandlePtr  getHandleInternalActiveModelNodes (void) const;
+    EditFieldHandlePtr editHandleInternalActiveModelNodes(void);
+    GetFieldHandlePtr  getHandleGlobalActiveModelNodes (void) const;
+    EditFieldHandlePtr editHandleGlobalActiveModelNodes(void);
+    GetFieldHandlePtr  getHandleCameras         (void) const;
+    EditFieldHandlePtr editHandleCameras        (void);
+    GetFieldHandlePtr  getHandleInternalActiveCamera (void) const;
+    EditFieldHandlePtr editHandleInternalActiveCamera(void);
+    GetFieldHandlePtr  getHandleActiveAnimations (void) const;
+    EditFieldHandlePtr editHandleActiveAnimations(void);
+    GetFieldHandlePtr  getHandleActiveParticleSystems (void) const;
+    EditFieldHandlePtr editHandleActiveParticleSystems(void);
+    GetFieldHandlePtr  getHandleLuaModule       (void) const;
+    EditFieldHandlePtr editHandleLuaModule      (void);
+    GetFieldHandlePtr  getHandleLuaModulesDirectory (void) const;
+    EditFieldHandlePtr editHandleLuaModulesDirectory(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-           SFScenePtr          *editSFInternalActiveScene(void);
-     const SFScenePtr          *getSFInternalActiveScene(void) const;
-           SFBackgroundPtr     *editSFInternalActiveBackground(void);
-     const SFBackgroundPtr     *getSFInternalActiveBackground(void) const;
-           MFForegroundPtr     *editMFInternalActiveForegrounds(void);
-     const MFForegroundPtr     *getMFInternalActiveForegrounds(void) const;
-           MFNodePtr           *editMFInternalActiveModelNodes(void);
-     const MFNodePtr           *getMFInternalActiveModelNodes(void) const;
-           SFCameraPtr         *editSFInternalActiveCamera(void);
-     const SFCameraPtr         *getSFInternalActiveCamera(void) const;
-           MFAnimationPtr      *editMFActiveAnimations(void);
-     const MFAnimationPtr      *getMFActiveAnimations(void) const;
-           MFParticleSystemPtr *editMFActiveParticleSystems(void);
-     const MFParticleSystemPtr *getMFActiveParticleSystems(void) const;
+            const SFUnrecScenePtr     *getSFInternalActiveScene (void) const;
+                  SFUnrecScenePtr     *editSFInternalActiveScene(void);
+            const SFUnrecBackgroundPtr *getSFInternalActiveBackground (void) const;
+                  SFUnrecBackgroundPtr *editSFInternalActiveBackground(void);
+            const MFUnrecForegroundPtr *getMFInternalActiveForegrounds (void) const;
+                  MFUnrecForegroundPtr *editMFInternalActiveForegrounds(void);
+            const MFUnrecNodePtr      *getMFInternalActiveModelNodes (void) const;
+                  MFUnrecNodePtr      *editMFInternalActiveModelNodes(void);
+            const SFUnrecCameraPtr    *getSFInternalActiveCamera (void) const;
+                  SFUnrecCameraPtr    *editSFInternalActiveCamera(void);
+            const MFUnrecAnimationPtr *getMFActiveAnimations (void) const;
+                  MFUnrecAnimationPtr *editMFActiveAnimations(void);
+            const MFUnrecParticleSystemPtr *getMFActiveParticleSystems (void) const;
+                  MFUnrecParticleSystemPtr *editMFActiveParticleSystems(void);
 
-           ScenePtr            &editInternalActiveScene(void);
-     const ScenePtr            &getInternalActiveScene(void) const;
-           BackgroundPtr       &editInternalActiveBackground(void);
-     const BackgroundPtr       &getInternalActiveBackground(void) const;
-           CameraPtr           &editInternalActiveCamera(void);
-     const CameraPtr           &getInternalActiveCamera(void) const;
-           ForegroundPtr       &editInternalActiveForegrounds(UInt32 index);
-#ifndef OSG_2_PREP
-           MFForegroundPtr     &getInternalActiveForegrounds(void);
-     const MFForegroundPtr     &getInternalActiveForegrounds(void) const;
-#endif
-     const ForegroundPtr       &getInternalActiveForegrounds(UInt32 index) const;
-           NodePtr             &editInternalActiveModelNodes(UInt32 index);
-#ifndef OSG_2_PREP
-           MFNodePtr           &getInternalActiveModelNodes(void);
-     const MFNodePtr           &getInternalActiveModelNodes(void) const;
-#endif
-     const NodePtr             &getInternalActiveModelNodes(UInt32 index) const;
-           AnimationPtr        &editActiveAnimations(UInt32 index);
-#ifndef OSG_2_PREP
-           MFAnimationPtr      &getActiveAnimations(void);
-     const MFAnimationPtr      &getActiveAnimations(void) const;
-#endif
-     const AnimationPtr        &getActiveAnimations(UInt32 index) const;
-           ParticleSystemPtr   &editActiveParticleSystems(UInt32 index);
-#ifndef OSG_2_PREP
-           MFParticleSystemPtr &getActiveParticleSystems(void);
-     const MFParticleSystemPtr &getActiveParticleSystems(void) const;
-#endif
-     const ParticleSystemPtr   &getActiveParticleSystems(UInt32 index) const;
+
+                  Scene * getInternalActiveScene(void) const;
+
+                  Background * getInternalActiveBackground(void) const;
+
+                  Foreground * getInternalActiveForegrounds(const UInt32 index) const;
+
+                  Node * getInternalActiveModelNodes(const UInt32 index) const;
+
+                  Camera * getInternalActiveCamera(void) const;
+
+                  Animation * getActiveAnimations(const UInt32 index) const;
+
+                  ParticleSystem * getActiveParticleSystems(const UInt32 index) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-     void setInternalActiveScene(const ScenePtr &value);
-     void setInternalActiveBackground(const BackgroundPtr &value);
-     void setInternalActiveCamera(const CameraPtr &value);
+            void setInternalActiveScene(Scene * const value);
+            void setInternalActiveBackground(Background * const value);
+            void setInternalActiveCamera(Camera * const value);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
+    /*! \{                                                                 */
+
+    void pushToInternalActiveForegrounds           (Foreground * const value   );
+    void assignInternalActiveForegrounds           (const MFUnrecForegroundPtr &value);
+    void removeFromInternalActiveForegrounds (UInt32                uiIndex );
+    void removeObjFromInternalActiveForegrounds(Foreground * const value   );
+    void clearInternalActiveForegrounds            (void                          );
+
+    void pushToInternalActiveModelNodes           (Node * const value   );
+    void assignInternalActiveModelNodes           (const MFUnrecNodePtr    &value);
+    void removeFromInternalActiveModelNodes (UInt32                uiIndex );
+    void removeObjFromInternalActiveModelNodes(Node * const value   );
+    void clearInternalActiveModelNodes            (void                          );
+
+    void pushToActiveAnimations           (Animation * const value   );
+    void assignActiveAnimations           (const MFUnrecAnimationPtr &value);
+    void removeFromActiveAnimations (UInt32                uiIndex );
+    void removeObjFromActiveAnimations(Animation * const value   );
+    void clearActiveAnimations            (void                          );
+
+    void pushToActiveParticleSystems           (ParticleSystem * const value   );
+    void assignActiveParticleSystems           (const MFUnrecParticleSystemPtr &value);
+    void removeFromActiveParticleSystems (UInt32                uiIndex );
+    void removeObjFromActiveParticleSystems(ParticleSystem * const value   );
+    void clearActiveParticleSystems            (void                          );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
     /*! \{                                                                 */
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-    void executeSyncImpl(      ProjectBase *pOther,
-                         const BitVector         &whichField);
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual void execSyncV(      FieldContainer    &oFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField);
-#else
-    void executeSyncImpl(      ProjectBase *pOther,
-                         const BitVector         &whichField,
-                         const SyncInfo          &sInfo     );
-
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField,
-                               const SyncInfo          &sInfo);
-
-    virtual void execBeginEdit     (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-            void execBeginEditImpl (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
+            void execSync (      ProjectBase *pFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 #endif
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Aspect Create                            */
+    /*! \{                                                                 */
+
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual FieldContainer *createAspectCopy(
+                                    const FieldContainer *pRefAspect) const;
+#endif
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
-
-    friend class FieldContainer;
-
+    /*---------------------------------------------------------------------*/
     static MethodDescription   *_methodDesc[];
     static EventProducerType _producerType;
-
-    static FieldDescription   *_desc[];
-    static FieldContainerType  _type;
 
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const ProjectBase &source);
 };
 
-//---------------------------------------------------------------------------
-//   Exported Types
-//---------------------------------------------------------------------------
-
-
 typedef ProjectBase *ProjectBaseP;
-
-typedef osgIF<ProjectBase::isNodeCore,
-              CoredNodePtr<Project>,
-              FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-              >::_IRet ProjectNodePtr;
-
-typedef RefPtr<ProjectPtr> ProjectRefPtr;
 
 OSG_END_NAMESPACE
 

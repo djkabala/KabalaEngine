@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,6 +32,15 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 #ifndef _KEBEHAVIORFACTORY_H_
 #define _KEBEHAVIORFACTORY_H_
@@ -38,42 +48,45 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KEBehaviorFactoryBase.h"
+#include "KEBehaviorType.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief BehaviorFactory class. See \ref 
+/*! \brief BehaviorFactory class. See \ref
            PageKabalaEngineBehaviorFactory for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING BehaviorFactory : public BehaviorFactoryBase
+class KE_KABALAENGINE_DLLMAPPING BehaviorFactory : public BehaviorFactoryBase
 {
-  private:
-
-    typedef BehaviorFactoryBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef BehaviorFactoryBase Inherited;
+    typedef BehaviorFactory     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in BehaviorFactoryBase.
@@ -90,20 +103,24 @@ class KE_KABALAENGINELIB_DLLMAPPING BehaviorFactory : public BehaviorFactoryBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~BehaviorFactory(void); 
+    virtual ~BehaviorFactory(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class BehaviorFactoryBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const BehaviorFactory &source);
 };
 

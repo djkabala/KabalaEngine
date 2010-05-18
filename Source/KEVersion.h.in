@@ -8,19 +8,19 @@
 #include <string>
 
 inline
-::osg::UInt32 getKabalaEngineMajorVersion(void)
+::OSG::UInt32 getKabalaEngineMajorVersion(void)
 {
 	return @KABALA_ENGINE_MAJOR_VERSION@;
 }
 
 inline
-::osg::UInt32 getKabalaEngineMinorVersion(void)
+::OSG::UInt32 getKabalaEngineMinorVersion(void)
 {
 	return @KABALA_ENGINE_MINOR_VERSION@;
 }
 
 inline
-::osg::UInt32 getKabalaEnginePatchVersion(void)
+::OSG::UInt32 getKabalaEnginePatchVersion(void)
 {
 	return @KABALA_ENGINE_PATCH_VERSION@;
 }
@@ -32,19 +32,19 @@ std::string getKabalaEngineVersion(void)
 }
 
 inline
-::osg::UInt32 getKabalaEngineBuilderMajorVersion(void)
+::OSG::UInt32 getKabalaEngineBuilderMajorVersion(void)
 {
 	return @KABALA_ENGINE_MAJOR_VERSION@;
 }
 
 inline
-::osg::UInt32 getKabalaEngineBuilderMinorVersion(void)
+::OSG::UInt32 getKabalaEngineBuilderMinorVersion(void)
 {
 	return @KABALA_ENGINE_MINOR_VERSION@;
 }
 
 inline
-::osg::UInt32 getKabalaEngineBuilderPatchVersion(void)
+::OSG::UInt32 getKabalaEngineBuilderPatchVersion(void)
 {
 	return @KABALA_ENGINE_PATCH_VERSION@;
 }

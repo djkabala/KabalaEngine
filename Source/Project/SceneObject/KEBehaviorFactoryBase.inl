@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,89 +54,58 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &BehaviorFactoryBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 BehaviorFactoryBase::getClassTypeId(void) 
+OSG::UInt32 BehaviorFactoryBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-BehaviorFactoryPtr BehaviorFactoryBase::create(void) 
-{
-    BehaviorFactoryPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = BehaviorFactoryPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-BehaviorFactoryPtr BehaviorFactoryBase::createEmpty(void) 
-{ 
-    BehaviorFactoryPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 BehaviorFactoryBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the BehaviorFactory::_mfBehaviorTypes field.
-inline
-const MFBehaviorTypePtr *BehaviorFactoryBase::getMFBehaviorTypes(void) const
-{
-    return &_mfBehaviorTypes;
-}
-
-//! Get the BehaviorFactory::_mfBehaviorTypes field.
-inline
-MFBehaviorTypePtr *BehaviorFactoryBase::editMFBehaviorTypes(void)
-{
-    return &_mfBehaviorTypes;
-}
-
-
 
 //! Get the value of the \a index element the BehaviorFactory::_mfBehaviorTypes field.
 inline
-BehaviorTypePtr &BehaviorFactoryBase::editBehaviorTypes(const UInt32 index)
+BehaviorType * BehaviorFactoryBase::getBehaviorTypes(const UInt32 index) const
 {
     return _mfBehaviorTypes[index];
 }
 
-//! Get the value of the \a index element the BehaviorFactory::_mfBehaviorTypes field.
-inline
-const BehaviorTypePtr &BehaviorFactoryBase::getBehaviorTypes(const UInt32 index) const
-{
-    return _mfBehaviorTypes[index];
-}
 
-#ifndef OSG_2_PREP
-//! Get the BehaviorFactory::_mfBehaviorTypes field.
+#ifdef OSG_MT_CPTR_ASPECT
 inline
-MFBehaviorTypePtr &BehaviorFactoryBase::getBehaviorTypes(void)
+void BehaviorFactoryBase::execSync (      BehaviorFactoryBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
 {
-    return _mfBehaviorTypes;
-}
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
-//! Get the BehaviorFactory::_mfBehaviorTypes field.
-inline
-const MFBehaviorTypePtr &BehaviorFactoryBase::getBehaviorTypes(void) const
-{
-    return _mfBehaviorTypes;
+    if(FieldBits::NoField != (BehaviorTypesFieldMask & whichField))
+        _mfBehaviorTypes.syncWith(pFrom->_mfBehaviorTypes,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
 }
-
 #endif
+
+
+inline
+const Char8 *BehaviorFactoryBase::getClassname(void)
+{
+    return "BehaviorFactory";
+}
+OSG_GEN_CONTAINERPTR(BehaviorFactory);
+
 OSG_END_NAMESPACE
+

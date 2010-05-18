@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,6 +32,15 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 #ifndef _KESCENEEVENT_H_
 #define _KESCENEEVENT_H_
@@ -38,45 +48,48 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KESceneEventBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief SceneEvent class. See \ref 
+/*! \brief SceneEvent class. See \ref
            PageKabalaEngineSceneEvent for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING SceneEvent : public SceneEventBase
+class KE_KABALAENGINE_DLLMAPPING SceneEvent : public SceneEventBase
 {
-  private:
-
-    typedef SceneEventBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef SceneEventBase Inherited;
+    typedef SceneEvent     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
 
-    static SceneEventPtr create(FieldContainerPtr Source,
-                                Time TimeStamp); 
+    static SceneEventTransitPtr create(FieldContainerRefPtr Source,
+                                       Time TimeStamp); 
+    
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in SceneEventBase.
@@ -93,20 +106,24 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneEvent : public SceneEventBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~SceneEvent(void); 
+    virtual ~SceneEvent(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class SceneEventBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const SceneEvent &source);
 };
 

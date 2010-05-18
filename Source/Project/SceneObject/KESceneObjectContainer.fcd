@@ -7,17 +7,21 @@
 	pointerfieldtypes="both"
 	structure="concrete"
 	systemcomponent="false"
-	parentsystemcomponent="true"
+	parentsystemcomponent="false"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 The SceneObjectContainer.
 	<Field
 		name="SceneObjects"
-		type="SceneObjectPtr"
+		type="SceneObject"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="Project/SceneObject/KESceneObjectFields.h"
+		fieldHeader="Project/SceneObject/KESceneObjectFields.h"
+		typeHeader="Project/SceneObject/KESceneObject.h"
 		access="protected"
 	>
 	</Field>

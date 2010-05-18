@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,122 +47,125 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEHELPERPANELINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEHelperPanelBase.h"
 #include "KEHelperPanel.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector HelperPanelBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
+
+/*! \class OSG::HelperPanel
+    The HelperView.
+ */
+
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<HelperPanel *>::_type("HelperPanelPtr", "PanelPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(HelperPanel *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           HelperPanel *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           HelperPanel *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void HelperPanelBase::classDescInserter(TypeObject &oType)
+{
+}
 
 
-FieldContainerType HelperPanelBase::_type(
-    "HelperPanel",
-    "Panel",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&HelperPanelBase::createEmpty),
+HelperPanelBase::TypeObject HelperPanelBase::_type(
+    HelperPanelBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&HelperPanelBase::createEmptyLocal),
     HelperPanel::initMethod,
-    NULL,
-    0);
-
-//OSG_FIELD_CONTAINER_DEF(HelperPanelBase, HelperPanelPtr)
+    HelperPanel::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&HelperPanel::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"HelperPanel\"\n"
+    "\tparent=\"Panel\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The HelperView.\n"
+    "\n"
+    "</FieldContainer>\n",
+    "The HelperView.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &HelperPanelBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &HelperPanelBase::getType(void) const 
+FieldContainerType &HelperPanelBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr HelperPanelBase::shallowCopy(void) const 
-{ 
-    HelperPanelPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const HelperPanel *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 HelperPanelBase::getContainerSize(void) const 
-{ 
-    return sizeof(HelperPanel); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void HelperPanelBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &HelperPanelBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<HelperPanelBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void HelperPanelBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 HelperPanelBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((HelperPanelBase *) &other, whichField, sInfo);
-}
-void HelperPanelBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return sizeof(HelperPanel);
 }
 
-void HelperPanelBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
+/*------------------------- decorator get ------------------------------*/
 
-}
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-HelperPanelBase::HelperPanelBase(void) :
-    Inherited() 
-{
-}
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-HelperPanelBase::HelperPanelBase(const HelperPanelBase &source) :
-    Inherited                 (source)
-{
-}
-
-/*-------------------------- destructors ----------------------------------*/
-
-HelperPanelBase::~HelperPanelBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 HelperPanelBase::getBinSize(const BitVector &whichField)
+UInt32 HelperPanelBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -169,68 +173,198 @@ UInt32 HelperPanelBase::getBinSize(const BitVector &whichField)
     return returnValue;
 }
 
-void HelperPanelBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void HelperPanelBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-
 }
 
-void HelperPanelBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void HelperPanelBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void HelperPanelBase::executeSyncImpl(      HelperPanelBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+HelperPanelTransitPtr HelperPanelBase::createLocal(BitVector bFlags)
 {
+    HelperPanelTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
+        fc = dynamic_pointer_cast<HelperPanel>(tmpPtr);
+    }
 
-}
-#else
-void HelperPanelBase::executeSyncImpl(      HelperPanelBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-
+    return fc;
 }
 
-void HelperPanelBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+HelperPanelTransitPtr HelperPanelBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    HelperPanelTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<HelperPanel>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+HelperPanelTransitPtr HelperPanelBase::create(void)
+{
+    HelperPanelTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<HelperPanel>(tmpPtr);
+    }
+
+    return fc;
+}
+
+HelperPanel *HelperPanelBase::createEmptyLocal(BitVector bFlags)
+{
+    HelperPanel *returnValue;
+
+    newPtr<HelperPanel>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+HelperPanel *HelperPanelBase::createEmpty(void)
+{
+    HelperPanel *returnValue;
+
+    newPtr<HelperPanel>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr HelperPanelBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    HelperPanel *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const HelperPanel *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr HelperPanelBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    HelperPanel *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const HelperPanel *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr HelperPanelBase::shallowCopy(void) const
+{
+    HelperPanel *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const HelperPanel *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+HelperPanelBase::HelperPanelBase(void) :
+    Inherited()
+{
+}
+
+HelperPanelBase::HelperPanelBase(const HelperPanelBase &source) :
+    Inherited(source)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+HelperPanelBase::~HelperPanelBase(void)
+{
+}
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void HelperPanelBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    HelperPanel *pThis = static_cast<HelperPanel *>(this);
+
+    pThis->execSync(static_cast<HelperPanel *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *HelperPanelBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    HelperPanel *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const HelperPanel *>(pRefAspect),
+                  dynamic_cast<const HelperPanel *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<HelperPanelPtr>::_type("HelperPanelPtr", "PanelPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(HelperPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(HelperPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void HelperPanelBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+
+}
 
 
 OSG_END_NAMESPACE
-

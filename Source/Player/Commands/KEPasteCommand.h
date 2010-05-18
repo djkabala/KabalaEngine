@@ -1,17 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                            OpenSGToolbox                                  *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *   contact: dkabala@vrac.iastate.edu                                       *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -19,9 +18,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
@@ -34,7 +42,7 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGUndoableCommand.h>
+#include <OpenSG/OSGUndoableCommand.h>
 
 
 #include "Player/KEApplicationPlayer.h"
@@ -43,17 +51,17 @@
 OSG_BEGIN_NAMESPACE
 
 class PasteCommand;
-typedef boost::intrusive_ptr<PasteCommand> PasteCommandPtr;
+typedef boost::shared_ptr<PasteCommand> PasteCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING PasteCommand: public UndoableCommand
+class KE_KABALAENGINE_DLLMAPPING PasteCommand: public UndoableCommand
 {
 protected:
 	typedef UndoableCommand Inherited;
-	typedef PasteCommandPtr Ptr;
+	typedef PasteCommandPtr RefPtr;
 
-    PasteCommand(ApplicationPlayerPtr ApplicationPlayer,
-                 HierarchyPanelPtr HierarchyPanel,
-                 NodePtr ParentNode,
+    PasteCommand(ApplicationPlayerRefPtr ApplicationPlayer,
+                 HierarchyPanelRefPtr HierarchyPanel,
+                 NodeRefPtr ParentNode,
                  bool DeepClone);
 
 	PasteCommand(const PasteCommand& source);
@@ -67,11 +75,11 @@ protected:
 	virtual void redo(void);
 	virtual void undo(void);
 
-	ApplicationPlayerPtr _ApplicationPlayer;
-	HierarchyPanelPtr	 _HierarchyPanel;
+	ApplicationPlayerRefPtr _ApplicationPlayer;
+	HierarchyPanelRefPtr	 _HierarchyPanel;
 
-	NodePtr _PastedNode;
-	NodePtr _ParentNode;
+	NodeRefPtr _PastedNode;
+	NodeRefPtr _ParentNode;
     bool    _DeepClone;
 
 
@@ -85,9 +93,9 @@ public:
 
 	virtual ~PasteCommand(void);
 	
-    static PasteCommandPtr create(ApplicationPlayerPtr ApplicationPlayer,
-                                  HierarchyPanelPtr HierarchyPanel,
-                                  NodePtr ParentNode,
+    static PasteCommandPtr create(ApplicationPlayerRefPtr ApplicationPlayer,
+                                  HierarchyPanelRefPtr HierarchyPanel,
+                                  NodeRefPtr ParentNode,
                                   bool DeepClone);
 };
 

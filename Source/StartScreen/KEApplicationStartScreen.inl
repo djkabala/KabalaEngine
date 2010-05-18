@@ -1,16 +1,16 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -37,39 +37,35 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
-
 inline
-ApplicationStartScreen::StartScreenKeyListener::StartScreenKeyListener(ApplicationStartScreenPtr TheApplicationStartScreen) :
+ApplicationStartScreen::StartScreenKeyListener::StartScreenKeyListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) :
         _ApplicationStartScreen(TheApplicationStartScreen)
 {
 }
 
 inline
-ApplicationStartScreen::BuilderButtonActionListener::BuilderButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen) :
+ApplicationStartScreen::BuilderButtonActionListener::BuilderButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) :
         _ApplicationStartScreen(TheApplicationStartScreen)
 {
 }
 
 inline
-ApplicationStartScreen::PlayerButtonActionListener::PlayerButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen) :
+ApplicationStartScreen::PlayerButtonActionListener::PlayerButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) :
         _ApplicationStartScreen(TheApplicationStartScreen)
 {
 }
 
 inline
-ApplicationStartScreen::ExitButtonActionListener::ExitButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen) :
+ApplicationStartScreen::ExitButtonActionListener::ExitButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) :
         _ApplicationStartScreen(TheApplicationStartScreen)
 {
 }
 
 inline 
-ApplicationStartScreen::ScreenUpdateListener::ScreenUpdateListener(ApplicationStartScreenPtr TheApplicationStartScreen) : _ApplicationStartScreen(TheApplicationStartScreen)
+ApplicationStartScreen::ScreenUpdateListener::ScreenUpdateListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) : _ApplicationStartScreen(TheApplicationStartScreen)
 {
 }
 
 OSG_END_NAMESPACE
-

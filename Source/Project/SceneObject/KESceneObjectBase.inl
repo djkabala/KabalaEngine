@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,124 +54,77 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &SceneObjectBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 SceneObjectBase::getClassTypeId(void) 
+OSG::UInt32 SceneObjectBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-SceneObjectPtr SceneObjectBase::create(void) 
-{
-    SceneObjectPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = SceneObjectPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-SceneObjectPtr SceneObjectBase::createEmpty(void) 
-{ 
-    SceneObjectPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 SceneObjectBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the SceneObject::_mfBehaviors field.
-inline
-const MFBehaviorPtr *SceneObjectBase::getMFBehaviors(void) const
-{
-    return &_mfBehaviors;
-}
-
-//! Get the SceneObject::_mfBehaviors field.
-inline
-MFBehaviorPtr *SceneObjectBase::editMFBehaviors(void)
-{
-    return &_mfBehaviors;
-}
-
-//! Get the SceneObject::_sfNode field.
-inline
-const SFNodePtr *SceneObjectBase::getSFNode(void) const
-{
-    return &_sfNode;
-}
-
-//! Get the SceneObject::_sfNode field.
-inline
-SFNodePtr *SceneObjectBase::editSFNode(void)
-{
-    return &_sfNode;
-}
-
 
 //! Get the value of the SceneObject::_sfNode field.
 inline
-NodePtr &SceneObjectBase::editNode(void)
-{
-    return _sfNode.getValue();
-}
-
-//! Get the value of the SceneObject::_sfNode field.
-inline
-const NodePtr &SceneObjectBase::getNode(void) const
+Node * SceneObjectBase::getNode(void) const
 {
     return _sfNode.getValue();
 }
 
 //! Set the value of the SceneObject::_sfNode field.
 inline
-void SceneObjectBase::setNode(const NodePtr &value)
+void SceneObjectBase::setNode(Node * const value)
 {
+    editSField(NodeFieldMask);
+
     _sfNode.setValue(value);
 }
 
-
 //! Get the value of the \a index element the SceneObject::_mfBehaviors field.
 inline
-BehaviorPtr &SceneObjectBase::editBehaviors(const UInt32 index)
+Behavior * SceneObjectBase::getBehaviors(const UInt32 index) const
 {
     return _mfBehaviors[index];
 }
 
-//! Get the value of the \a index element the SceneObject::_mfBehaviors field.
-inline
-const BehaviorPtr &SceneObjectBase::getBehaviors(const UInt32 index) const
-{
-    return _mfBehaviors[index];
-}
 
-#ifndef OSG_2_PREP
-//! Get the SceneObject::_mfBehaviors field.
+#ifdef OSG_MT_CPTR_ASPECT
 inline
-MFBehaviorPtr &SceneObjectBase::getBehaviors(void)
+void SceneObjectBase::execSync (      SceneObjectBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
 {
-    return _mfBehaviors;
-}
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
-//! Get the SceneObject::_mfBehaviors field.
-inline
-const MFBehaviorPtr &SceneObjectBase::getBehaviors(void) const
-{
-    return _mfBehaviors;
-}
+    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
+        _mfBehaviors.syncWith(pFrom->_mfBehaviors,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
 
+    if(FieldBits::NoField != (NodeFieldMask & whichField))
+        _sfNode.syncWith(pFrom->_sfNode);
+}
 #endif
+
+
+inline
+const Char8 *SceneObjectBase::getClassname(void)
+{
+    return "SceneObject";
+}
+OSG_GEN_CONTAINERPTR(SceneObject);
+
 OSG_END_NAMESPACE
+

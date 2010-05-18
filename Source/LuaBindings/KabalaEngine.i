@@ -4,72 +4,63 @@
 %import  <OSGSystem.i>
 %import  <OSGToolbox.i>
 %{
+#include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGActivity.h>
+#include <OpenSG/OSGLuaActivity.h>
+//#include <OpenSG/OSGGenericEvent.h>
+//#include <OpenSG/OSGEventProducerType.h>
+#include <boost/bind.hpp>
 #include "KELuaBindings.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
 
-#include <OpenSG/Input/OSGWindowEventProducer.h>
-#include <OpenSG/Sound/OSGSound.h>
-#include <OpenSG/Sound/OSGSoundManager.h>
-#include <OpenSG/Animation/OSGAnimation.h>
-#include <OpenSG/UserInterface/OSGComponent.h>
-#include <OpenSG/ParticleSystem/OSGParticleSystem.h>
+//#include <OpenSG/OSGWindowEventProducer.h>
+#include <OpenSG/OSGSound.h>
+#include <OpenSG/OSGSoundGroup.h>
+#include <OpenSG/OSGSoundManager.h>
+#include <OpenSG/OSGAnimation.h>
+#include <OpenSG/OSGComponent.h>
+#include <OpenSG/OSGParticleSystem.h>
+#include <OpenSG/OSGDistribution1D.h>
+#include <OpenSG/OSGDistribution1D.h>
+#include <OpenSG/OSGDistribution2D.h>
+#include <OpenSG/OSGDistribution3D.h>
 
+#include <OpenSG/OSGPhysicsHandler.h>
+#include <OpenSG/OSGPhysicsBody.h>
+#include <OpenSG/OSGPhysicsSpace.h>
+#include <OpenSG/OSGPhysicsWorld.h>
 
-#include <OpenSG/OSGFieldContainerType.h>
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGFieldDescription.h>
-#include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGAttachment.h>
-#include <OpenSG/OSGAttachmentContainer.h>
-#include <OpenSG/OSGSimpleAttachments.h>
-#include <OpenSG/OSGAttachmentContainerPtr.h>
-#include <OpenSG/OSGSimpleGeometry.h>
-#include <OpenSG/OSGGeoFunctions.h>
-#include <OpenSG/OSGNode.h>
-#include <OpenSG/OSGNodeCore.h>
-#include <OpenSG/OSGGeometry.h>
-#include <OpenSG/OSGViewport.h>
-#include <OpenSG/OSGCamera.h>
-#include <OpenSG/OSGImage.h>S
-#include <OpenSG/OSGSysFieldDataType.h>
-#include <OpenSG/OSGVecFieldDataType.h>
-#include <OpenSG/OSGMathFieldDataType.h>
-#include <OpenSG/OSGSFVecTypes.h>
-#include <OpenSG/OSGSFMathTypes.h>
-#include <OpenSG/OSGSFSysTypes.h>
-#include <OpenSG/OSGMFVecTypes.h>
-#include <OpenSG/OSGMFMathTypes.h>
-#include <OpenSG/OSGMFSysTypes.h>
-#include <OpenSG/OSGMFBaseTypes.h>
-#include <OpenSG/OSGFieldContainerFields.h>
-#include <OpenSG/Toolbox/OSGFieldContainerUtils.h>
-#include <OpenSG/Toolbox/OSGActivity.h>
-#include <OpenSG/Toolbox/OSGGenericEvent.h>
-#include <OpenSG/Toolbox/OSGEventProducerType.h>
-#include <boost/bind.hpp>
+#include <OpenSG/OSGVideoWrapper.h>
+#include <OpenSG/OSGVideoManager.h>
 %}
 
-namespace osg {
+namespace OSG {
     class Scene;
     class Project;
-	class GenericEventPtr;
+    class GenericEventUnrecPtr;
     
     /******************************************************/
-    /*                    ScenePtr                        */
+    /*                    SceneRefPtr                        */
     /******************************************************/
-    class ScenePtr : public AttachmentContainerPtr
+    class SceneRefPtr : public AttachmentContainerRefPtr
     {
       public:
-         ScenePtr(void);
-         ScenePtr(const ScenePtr               &source);
-         /*ScenePtr(const NullFieldContainerPtr &source);*/
+         SceneRefPtr(void);
+         SceneRefPtr(const SceneRefPtr               &source);
+         /*SceneRefPtr(const NullFieldContainerRefPtr &source);*/
 
 
-        ~ScenePtr(void); 
+        ~SceneRefPtr(void); 
         Scene *operator->(void);
         
-        static ScenePtr dcast(const FieldContainerPtr oIn);
+    };
+    %extend SceneRefPtr
+    {
+        static SceneRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::Scene>(oIn);
+        }
     };
     
     /******************************************************/
@@ -83,7 +74,7 @@ namespace osg {
         void blockInput(bool block);
         bool isInputBlocked(void) const;
         
-        UInt32 registerNewGenericMethod(const std::string& MethodName);
+        UInt32 registerNewGenericMethod(const std::string& MethodName,const std::string& MethodDescriptionText = std::string(""));
 
         bool unregisterNewGenericMethod(UInt32 Id);
         bool unregisterNewGenericMethod(const std::string& MethodName);
@@ -92,29 +83,35 @@ namespace osg {
         bool isGenericMethodDefined(const std::string& MethodName) const;
         UInt32 getGenericMethodId(const std::string& MethodName) const;
     
-        void produceGenericEvent(UInt32 GenericEventId, GenericEventPtr e);
+        void produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e);
     
-	protected:
+      protected:
         Scene(void);
         Scene(const Scene &source);
         virtual ~Scene(void); 
     };
 
     /******************************************************/
-    /*                  ProjectPtr                        */
+    /*                  ProjectRefPtr                        */
     /******************************************************/
-    class ProjectPtr : public AttachmentContainerPtr
+    class ProjectRefPtr : public AttachmentContainerRefPtr
     {
       public:
-         ProjectPtr(void);
-         ProjectPtr(const ProjectPtr               &source);
-         /*ProjectPtr(const NullFieldContainerPtr &source);*/
+         ProjectRefPtr(void);
+         ProjectRefPtr(const ProjectRefPtr               &source);
+         /*ProjectRefPtr(const NullFieldContainerRefPtr &source);*/
 
 
-        ~ProjectPtr(void); 
+        ~ProjectRefPtr(void); 
         Project *operator->(void);
         
-        static ProjectPtr dcast(const FieldContainerPtr oIn);
+    };
+    %extend ProjectRefPtr
+    {
+        static ProjectRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::Project>(oIn);
+        }
     };
     
     /******************************************************/
@@ -130,37 +127,33 @@ namespace osg {
     
         void stop(void);
     
-        void setActiveScene(ScenePtr TheScene);
-        ScenePtr getActiveScene(void) const;
+        void setActiveScene(SceneRefPtr TheScene);
+        SceneRefPtr getActiveScene(void) const;
     
-        void setActiveNode(NodePtr TheNode);
+        void setActiveNode(NodeRefPtr TheNode);
         
-        void addActiveAnimation(AnimationPtr TheAnimation);
-        void removeActiveAnimation(AnimationPtr TheAnimation);
-        void addActiveParticleSystem(ParticleSystemPtr TheParticleSystem);
-        void removeActiveParticleSystem(ParticleSystemPtr TheParticleSystem);
+        void addActiveAnimation(AnimationRefPtr TheAnimation);
+        void removeActiveAnimation(AnimationRefPtr TheAnimation);
+        void addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
+        void removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
     
-        //void save(const Path& ProjectFile);
+        //void save(const BoostPath& ProjectFile);
     
-        //static ProjectPtr load(const Path& ProjectFile);
+        //static ProjectRefPtr load(const BoostPath& ProjectFile);
     
-        //static ProjectPtr create(const Path& ProjectFile);
+        //static ProjectRefPtr create(const BoostPath& ProjectFile);
     
         //void save(void);
     
         //void attachNames(void);
     
-        WindowEventProducerPtr getEventProducer(void) const;
+        WindowEventProducerRefPtr getEventProducer(void) const;
     
         void pauseActiveUpdates(void);
         void unpauseActiveUpdates(void);
         void togglePauseActiveUpdates(void);
     
-        void attachFlyNavigation(void);
-        void dettachFlyNavigation(void);
-        void toggleFlyNavigation(void);
-    
-        ScenePtr getLastActiveScene(void) const;
+        SceneRefPtr getLastActiveScene(void) const;
       protected:
         Project(void);
         Project(const Animation &source);

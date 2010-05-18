@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 
 <FieldContainer
-	name="ProjectEvent"
+	name="SceneEvent"
 	parent="Event"
-    parentHeader="OpenSG/Toolbox/OSGEvent"
 	library="KabalaEngine"
 	pointerfieldtypes="single"
 	structure="concrete"
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 </FieldContainer>

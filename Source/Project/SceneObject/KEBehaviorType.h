@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,6 +32,15 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 #ifndef _KEBEHAVIORTYPE_H_
 #define _KEBEHAVIORTYPE_H_
@@ -38,42 +48,44 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KEBehaviorTypeBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief BehaviorType class. See \ref 
+/*! \brief BehaviorType class. See \ref
            PageKabalaEngineBehaviorType for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING BehaviorType : public BehaviorTypeBase
+class KE_KABALAENGINE_DLLMAPPING BehaviorType : public BehaviorTypeBase
 {
-  private:
-
-    typedef BehaviorTypeBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef BehaviorTypeBase Inherited;
+    typedef BehaviorType     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in BehaviorTypeBase.
@@ -90,20 +102,24 @@ class KE_KABALAENGINELIB_DLLMAPPING BehaviorType : public BehaviorTypeBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~BehaviorType(void); 
+    virtual ~BehaviorType(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class BehaviorTypeBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const BehaviorType &source);
 };
 

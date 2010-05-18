@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -38,38 +39,35 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KEHelperPanelBase.h"
 
-
 //for lua
-#include <OpenSG/Lua/OSGLuaManager.h>
+#include <OpenSG/OSGLuaManager.h>
 
 // for tab panel contents
-#include <OpenSG/UserInterface/OSGTabPanel.h>
-#include <OpenSG/UserInterface/OSGTextArea.h>
+#include <OpenSG/OSGTabPanel.h>
+#include <OpenSG/OSGTextArea.h>
 #include <sstream>
-#include <OpenSG/UserInterface/OSGScrollPanel.h>
-#include <OpenSG/UserInterface/OSGPanel.h>
+#include <OpenSG/OSGScrollPanel.h>
+#include <OpenSG/OSGPanel.h>
 
 // for the buttons
-#include <OpenSG/UserInterface/OSGButton.h>
+#include <OpenSG/OSGButton.h>
 
 // spring layout
-#include <OpenSG/UserInterface/OSGSpringLayout.h>
-#include <OpenSG/UserInterface/OSGSpringLayoutConstraints.h>
+#include <OpenSG/OSGSpringLayout.h>
+#include <OpenSG/OSGSpringLayoutConstraints.h>
 
 // for labels
-#include <OpenSG/UserInterface/OSGLabel.h>
+#include <OpenSG/OSGLabel.h>
 
 // List header files
-#include <OpenSG/UserInterface/OSGList.h>
-#include <OpenSG/UserInterface/OSGDefaultListModel.h>
-#include <OpenSG/UserInterface/OSGDefaultListSelectionModel.h>
-#include <OpenSG/UserInterface/OSGFlowLayout.h>
+#include <OpenSG/OSGList.h>
+#include <OpenSG/OSGDefaultListModel.h>
+#include <OpenSG/OSGDefaultListSelectionModel.h>
+#include <OpenSG/OSGFlowLayout.h>
 
-#include <OpenSG/UserInterface/OSGGridLayout.h>
+#include <OpenSG/OSGGridLayout.h>
 
 #include "Application/KEMainApplication.h"
 
@@ -78,105 +76,51 @@
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief HelperPanel class. See \ref 
+/*! \brief HelperPanel class. See \ref
            PageKabalaEngineHelperPanel for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
+class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
 {
-   typedef HelperPanelBase Inherited;
-
-  private:
-
-	SpringLayoutPtr _Layout;
-	GridLayoutPtr _TabPanel4ContentLayout;
-
-	enum tab{LUA=1,ERR,CONSOLE,PROPERTIES};
-
-	LabelPtr					_HistoryLabel;
-	ListSelectionModelPtr		_HistoryListSelectionModel;
-	ListPtr						_HistoryList;
-	DefaultListModelPtr			_HistoryListModel;
-	ScrollPanelPtr				_HistoryScrollPanel;
-	std::vector<std::string>	_ListOfCommands;
-
-	ButtonPtr _ExecuteBtn;
-
-	TabPanelPtr _InfoTabPanel;
-	TextAreaPtr _CodeTextArea;
-	TextAreaPtr _ErrorTextArea;
-	TextAreaPtr _StackTraceTextArea;
-
-	LabelPtr _TabPanel1Label;
-	LabelPtr _TabPanel2Label;
-	LabelPtr _TabPanel3Label;
-	LabelPtr _TabPanel4Label;
-	
-	PanelPtr		_LuaConsoleContent;
-	ScrollPanelPtr	_LuaConsoleScrollPanel;
-	ScrollPanelPtr	_TabPanel2Content;
-	ScrollPanelPtr	_TabPanel3Content;
-	PanelPtr		_TabPanel4Content;
-
-	LabelPtr _NodeNameLabel;
-	LabelPtr _NodeCoreTypeLabel;
-	LabelPtr _NodeMinLabel;
-	LabelPtr _NodeMaxLabel;
-	LabelPtr _NodeCenterLabel;
-	LabelPtr _NodeTriCountLabel;
-	LabelPtr _NodeTravMaskLabel;
-	LabelPtr _NodeOcclusionMaskLabel;
-	LabelPtr _NodeActiveLabel;
-
-	LabelPtr _NodeNameValueLabel;
-	LabelPtr _NodeCoreTypeValueLabel;
-	LabelPtr _NodeMinValueLabel;
-	LabelPtr _NodeMaxValueLabel;
-	LabelPtr _NodeCenterValueLabel;
-	LabelPtr _NodeTriCountValueLabel;
-	LabelPtr _NodeTravMaskValueLabel;
-	LabelPtr _NodeOcclusionMaskValueLabel;
-	LabelPtr _NodeActiveValueLabel;
-
-    //Logging Panel
-	LabelPtr _LoggingContentLabel;
-	PanelPtr		_LoggingContent;
-	TextAreaPtr _LoggingArea;
-	ScrollPanelPtr	_LoggingScrollPanel;
-
-
-	void updateListBox(void);
-	void setLabelValues(NodePtr _SelectedNode);
-	void setLabelValuesToNull();
-
-	friend class ApplicationPlayer;
-	friend class HierarchyPanel;
-
-	void setupLuaTab(void);
-	void setupErrorTab(void);
-	void setupTraceTab(void);
-	void setupPropertiesTab(void);
-	void setupInfoTabLabels(void);
-	void setupInfoTabPanel(void);
-    void createLoggingTab(void);
-
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
 
+    typedef HelperPanelBase Inherited;
+    typedef HelperPanel     Self;
+
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Sync                                    */
+    /*! \{                                                                 */
+
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Output                                   */
+    /*! \{                                                                 */
+
+    virtual void dump(      UInt32     uiIndent = 0,
+                      const BitVector  bvFlags  = 0) const;
+
+    /*! \}                                                                 */
 	  	   /////////////////// Lua Listener - begin///////////////////
 	class LuaErrorListener : public LuaListener
     {
 
         public:
-            LuaErrorListener(HelperPanelPtr TheHelperPanel);
+            LuaErrorListener(HelperPanelRefPtr TheHelperPanel);
 
         protected :
-            HelperPanelPtr _HelperPanel;
+            HelperPanelRefPtr _HelperPanel;
 
         public:
 
-            virtual void error(const LuaErrorEventPtr e);
+            virtual void error(const LuaErrorEventUnrecPtr e);
     };
     friend class LuaErrorListener;
 	LuaErrorListener  _LuaErrorListener;
@@ -187,11 +131,11 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	class BasicListener : public ActionListener
 	{
 	public:
-		BasicListener(HelperPanelPtr TheHelperPanel);
+		BasicListener(HelperPanelRefPtr TheHelperPanel);
 
-		virtual void actionPerformed(const ActionEventPtr e);
+		virtual void actionPerformed(const ActionEventUnrecPtr e);
 	protected :
-		HelperPanelPtr _HelperPanel;
+		HelperPanelRefPtr _HelperPanel;
 	
 	};
 
@@ -205,11 +149,11 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	class PlayerKeyListener2 : public KeyAdapter
 	{
 	public:
-		PlayerKeyListener2(HelperPanelPtr TheHelperPanel);
+		PlayerKeyListener2(HelperPanelRefPtr TheHelperPanel);
 
-		virtual void keyTyped(const KeyEventPtr e);
+		virtual void keyTyped(const KeyEventUnrecPtr e);
 	protected :
-		HelperPanelPtr _HelperPanel;
+		HelperPanelRefPtr _HelperPanel;
 	};
 	
     friend class PlayerKeyListener2;
@@ -220,11 +164,11 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	class PlayerMouseListener : public MouseAdapter
 	{
 	public:
-		PlayerMouseListener(HelperPanelPtr TheHelperPanel);
+		PlayerMouseListener(HelperPanelRefPtr TheHelperPanel);
 
-		virtual void mouseClicked(const MouseEventPtr e);
+		virtual void mouseClicked(const MouseEventUnrecPtr e);
 	protected :
-		HelperPanelPtr _HelperPanel;
+		HelperPanelRefPtr _HelperPanel;
 	};
 	
     friend class PlayerMouseListener;
@@ -240,29 +184,11 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
 	void setupHistoryList(void);
 	void setupRest(void);
 
-	void actionPerformed(const ActionEventPtr e);
-	void keyTyped2(const KeyEventPtr e);
+	void actionPerformed(const ActionEventUnrecPtr e);
+	void keyTyped2(const KeyEventUnrecPtr e);
 	/////////////////// other function definitions - end///////////////////
-
-
-
-    /*---------------------------------------------------------------------*/
-    /*! \name                      Sync                                    */
-    /*! \{                                                                 */
-
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                     Output                                   */
-    /*! \{                                                                 */
-
-    virtual void dump(      UInt32     uiIndent = 0, 
-                      const BitVector  bvFlags  = 0) const;
-
-    /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in HelperPanelBase.
@@ -279,20 +205,96 @@ class KE_KABALAENGINELIB_DLLMAPPING HelperPanel : public HelperPanelBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~HelperPanel(void); 
+    virtual ~HelperPanel(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
+
+	SpringLayoutRefPtr _Layout;
+	GridLayoutRefPtr _TabPanel4ContentLayout;
+
+	enum tab{LUA=1,ERR,CONSOLE,PROPERTIES};
+
+	LabelRefPtr					_HistoryLabel;
+	ListSelectionModelPtr		_HistoryListSelectionModel;
+	ListRefPtr						_HistoryList;
+	DefaultListModelRefPtr			_HistoryListModel;
+	ScrollPanelRefPtr				_HistoryScrollPanel;
+	std::vector<std::string>	_ListOfCommands;
+
+	ButtonRefPtr _ExecuteBtn;
+
+	TabPanelRefPtr _InfoTabPanel;
+	TextAreaRefPtr _CodeTextArea;
+	TextAreaRefPtr _ErrorTextArea;
+	TextAreaRefPtr _StackTraceTextArea;
+
+	LabelRefPtr _TabPanel1Label;
+	LabelRefPtr _TabPanel2Label;
+	LabelRefPtr _TabPanel3Label;
+	LabelRefPtr _TabPanel4Label;
+	
+	PanelRefPtr		_LuaConsoleContent;
+	ScrollPanelRefPtr	_LuaConsoleScrollPanel;
+	ScrollPanelRefPtr	_TabPanel2Content;
+	ScrollPanelRefPtr	_TabPanel3Content;
+	PanelRefPtr		_TabPanel4Content;
+
+	LabelRefPtr _NodeNameLabel;
+	LabelRefPtr _NodeCoreTypeLabel;
+	LabelRefPtr _NodeMinLabel;
+	LabelRefPtr _NodeMaxLabel;
+	LabelRefPtr _NodeCenterLabel;
+	LabelRefPtr _NodeTriCountLabel;
+	LabelRefPtr _NodeTravMaskLabel;
+	LabelRefPtr _NodeOcclusionMaskLabel;
+	LabelRefPtr _NodeActiveLabel;
+
+	LabelRefPtr _NodeNameValueLabel;
+	LabelRefPtr _NodeCoreTypeValueLabel;
+	LabelRefPtr _NodeMinValueLabel;
+	LabelRefPtr _NodeMaxValueLabel;
+	LabelRefPtr _NodeCenterValueLabel;
+	LabelRefPtr _NodeTriCountValueLabel;
+	LabelRefPtr _NodeTravMaskValueLabel;
+	LabelRefPtr _NodeOcclusionMaskValueLabel;
+	LabelRefPtr _NodeActiveValueLabel;
+
+    //Logging Panel
+	LabelRefPtr _LoggingContentLabel;
+	PanelRefPtr		_LoggingContent;
+	TextAreaRefPtr _LoggingArea;
+	ScrollPanelRefPtr	_LoggingScrollPanel;
+
+
+	void updateListBox(void);
+	void setLabelValues(NodeRefPtr _SelectedNode);
+	void setLabelValuesToNull();
+
+	friend class ApplicationPlayer;
+	friend class HierarchyPanel;
+
+	void setupLuaTab(void);
+	void setupErrorTab(void);
+	void setupTraceTab(void);
+	void setupPropertiesTab(void);
+	void setupInfoTabLabels(void);
+	void setupInfoTabPanel(void);
+    void createLoggingTab(void);
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class HelperPanelBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const HelperPanel &source);
 };
 

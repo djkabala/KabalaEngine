@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include "Application/KEApplicationModeFields.h"
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class ApplicationStartScreen;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ApplicationStartScreenPtr
+OSG_GEN_CONTAINERPTR(ApplicationStartScreen);
 
-typedef FCPtr<ApplicationModePtr, ApplicationStartScreen> ApplicationStartScreenPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ApplicationStartScreenPtr> : 
-    public FieldTraitsRecurseMapper<ApplicationStartScreenPtr, true>
+struct FieldTraits<ApplicationStartScreen *> :
+    public FieldTraitsFCPtrBase<ApplicationStartScreen *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFApplicationStartScreenPtr"; }
-    static const char *getMName(void) { return "MFApplicationStartScreenPtr"; }
+    typedef FieldTraits<ApplicationStartScreen *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFApplicationStartScreenPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFApplicationStartScreenPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ApplicationStartScreenPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<ApplicationStartScreen *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecApplicationStartScreenPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<ApplicationStartScreen *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecApplicationStartScreenPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationStartScreen *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakApplicationStartScreenPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationStartScreen *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdApplicationStartScreenPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationStartScreen *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecApplicationStartScreenPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationStartScreen *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecApplicationStartScreenPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationStartScreen *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakApplicationStartScreenPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationStartScreen *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdApplicationStartScreenPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationStartScreen *,
+                      RecordedRefCountPolicy  > SFRecApplicationStartScreenPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationStartScreen *,
+                      UnrecordedRefCountPolicy> SFUnrecApplicationStartScreenPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationStartScreen *,
+                      WeakRefCountPolicy      > SFWeakApplicationStartScreenPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationStartScreen *,
+                      NoRefCountPolicy        > SFUncountedApplicationStartScreenPtr;
 
-typedef SField<ApplicationStartScreenPtr> SFApplicationStartScreenPtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONSTARTSCREENINST
-OSG_DLLEXPORT_DECL1(SField, ApplicationStartScreenPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationStartScreen *,
+                      RecordedRefCountPolicy  > MFRecApplicationStartScreenPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationStartScreen *,
+                      UnrecordedRefCountPolicy> MFUnrecApplicationStartScreenPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationStartScreen *,
+                      WeakRefCountPolicy      > MFWeakApplicationStartScreenPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationStartScreen *,
+                      NoRefCountPolicy        > MFUncountedApplicationStartScreenPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ApplicationStartScreenPtr> MFApplicationStartScreenPtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONSTARTSCREENINST
-OSG_DLLEXPORT_DECL1(MField, ApplicationStartScreenPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecApplicationStartScreenPtr : 
+    public PointerSField<ApplicationStartScreen *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecApplicationStartScreenPtr : 
+    public PointerSField<ApplicationStartScreen *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakApplicationStartScreenPtr :
+    public PointerSField<ApplicationStartScreen *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedApplicationStartScreenPtr :
+    public PointerSField<ApplicationStartScreen *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecApplicationStartScreenPtr :
+    public PointerMField<ApplicationStartScreen *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecApplicationStartScreenPtr :
+    public PointerMField<ApplicationStartScreen *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakApplicationStartScreenPtr :
+    public PointerMField<ApplicationStartScreen *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedApplicationStartScreenPtr :
+    public PointerMField<ApplicationStartScreen *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

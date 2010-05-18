@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,6 +32,15 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 #ifndef _KESCENEOBJECTCONTAINER_H_
 #define _KESCENEOBJECTCONTAINER_H_
@@ -38,42 +48,44 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KESceneObjectContainerBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief SceneObjectContainer class. See \ref 
+/*! \brief SceneObjectContainer class. See \ref
            PageKabalaEngineSceneObjectContainer for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING SceneObjectContainer : public SceneObjectContainerBase
+class KE_KABALAENGINE_DLLMAPPING SceneObjectContainer : public SceneObjectContainerBase
 {
-  private:
-
-    typedef SceneObjectContainerBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef SceneObjectContainerBase Inherited;
+    typedef SceneObjectContainer     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in SceneObjectContainerBase.
@@ -90,20 +102,24 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneObjectContainer : public SceneObjectCon
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~SceneObjectContainer(void); 
+    virtual ~SceneObjectContainer(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class SceneObjectContainerBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const SceneObjectContainer &source);
 };
 

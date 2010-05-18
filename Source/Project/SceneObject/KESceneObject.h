@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,6 +32,15 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 #ifndef _KESCENEOBJECT_H_
 #define _KESCENEOBJECT_H_
@@ -38,46 +48,45 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KESceneObjectBase.h"
+#include <OpenSG/OSGNode.h>
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief SceneObject class. See \ref 
+/*! \brief SceneObject class. See \ref
            PageKabalaEngineSceneObject for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING SceneObject : public SceneObjectBase
+class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
 {
-  private:
-
-    typedef SceneObjectBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
 
-	void update();
-
-	void getToWorld();
+    typedef SceneObjectBase Inherited;
+    typedef SceneObject     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in SceneObjectBase.
@@ -94,20 +103,24 @@ class KE_KABALAENGINELIB_DLLMAPPING SceneObject : public SceneObjectBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~SceneObject(void); 
+    virtual ~SceneObject(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class SceneObjectBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const SceneObject &source);
 };
 
@@ -115,6 +128,7 @@ typedef SceneObject *SceneObjectP;
 
 OSG_END_NAMESPACE
 
+#include "Project/SceneObject/KEBehavior.h"
 #include "KESceneObjectBase.inl"
 #include "KESceneObject.inl"
 

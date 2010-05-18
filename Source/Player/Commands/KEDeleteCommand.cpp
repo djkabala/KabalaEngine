@@ -1,19 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                     OpenSG ToolBox UserInterface                          *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *                         www.vrac.iastate.edu                              *
- *                                                                           *
- *   Authors: David Kabala, Alden Peterson, Lee Zaniewski, Jonathan Flory    *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -21,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -46,7 +43,7 @@
 
 #include "KEDeleteCommand.h"
 
-#include <OpenSG/OSGSimpleAttachments.h>
+#include <OpenSG/OSGNameAttachment.h>
 
 OSG_USING_NAMESPACE
 
@@ -54,7 +51,7 @@ OSG_USING_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::DeleteCommand
+/*! \class OSG::DeleteCommand
 A DeleteCommand. 
 */
 
@@ -63,14 +60,15 @@ A DeleteCommand.
 \***************************************************************************/
 
 CommandType DeleteCommand::_Type("DeleteCommand", "UndoableCommand");
+
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-DeleteCommandPtr DeleteCommand::create(ApplicationPlayerPtr ApplicationPlayer,HierarchyPanelPtr HierarchyPanel,
-                                 NodePtr DeleteNode)
+DeleteCommandPtr DeleteCommand::create(ApplicationPlayerRefPtr ApplicationPlayer,HierarchyPanelRefPtr HierarchyPanel,
+                                 NodeRefPtr DeleteNode)
 {
-	return Ptr(new DeleteCommand(ApplicationPlayer,HierarchyPanel,DeleteNode));
+	return RefPtr(new DeleteCommand(ApplicationPlayer,HierarchyPanel,DeleteNode));
 }
 
 /***************************************************************************\
@@ -91,7 +89,7 @@ void DeleteCommand::execute(void)
 std::string DeleteCommand::getCommandDescription(void) const
 {
 	std::string Description("Delete Node");
-	if(_DeletedNode != NullFC)
+	if(_DeletedNode != NULL)
 	{
 		const Char8 * ContainerName(getName(_DeletedNode));
 		if(ContainerName != NULL)
@@ -133,7 +131,6 @@ const CommandType &DeleteCommand::getType(void) const
 
 DeleteCommand::~DeleteCommand(void)
 {
-    subRefCP(_DeletedNode);
 }
 
 /*----------------------------- class specific ----------------------------*/
@@ -148,18 +145,4 @@ void DeleteCommand::operator =(const DeleteCommand& source)
 		_DeletedNode = source._DeletedNode;
     }
 }
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
 

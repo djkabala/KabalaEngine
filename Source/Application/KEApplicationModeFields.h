@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class ApplicationMode;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ApplicationModePtr
+OSG_GEN_CONTAINERPTR(ApplicationMode);
 
-typedef FCPtr<FieldContainerPtr, ApplicationMode> ApplicationModePtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ApplicationModePtr> : 
-    public FieldTraitsRecurseMapper<ApplicationModePtr, true>
+struct FieldTraits<ApplicationMode *> :
+    public FieldTraitsFCPtrBase<ApplicationMode *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFApplicationModePtr"; }
-    static const char *getMName(void) { return "MFApplicationModePtr"; }
+    typedef FieldTraits<ApplicationMode *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFApplicationModePtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFApplicationModePtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ApplicationModePtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<ApplicationMode *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecApplicationModePtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<ApplicationMode *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecApplicationModePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationMode *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakApplicationModePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationMode *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdApplicationModePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationMode *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecApplicationModePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationMode *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecApplicationModePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationMode *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakApplicationModePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationMode *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdApplicationModePtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationMode *,
+                      RecordedRefCountPolicy  > SFRecApplicationModePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationMode *,
+                      UnrecordedRefCountPolicy> SFUnrecApplicationModePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationMode *,
+                      WeakRefCountPolicy      > SFWeakApplicationModePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationMode *,
+                      NoRefCountPolicy        > SFUncountedApplicationModePtr;
 
-typedef SField<ApplicationModePtr> SFApplicationModePtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONMODEINST
-OSG_DLLEXPORT_DECL1(SField, ApplicationModePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationMode *,
+                      RecordedRefCountPolicy  > MFRecApplicationModePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationMode *,
+                      UnrecordedRefCountPolicy> MFUnrecApplicationModePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationMode *,
+                      WeakRefCountPolicy      > MFWeakApplicationModePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationMode *,
+                      NoRefCountPolicy        > MFUncountedApplicationModePtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ApplicationModePtr> MFApplicationModePtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONMODEINST
-OSG_DLLEXPORT_DECL1(MField, ApplicationModePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecApplicationModePtr : 
+    public PointerSField<ApplicationMode *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecApplicationModePtr : 
+    public PointerSField<ApplicationMode *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakApplicationModePtr :
+    public PointerSField<ApplicationMode *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedApplicationModePtr :
+    public PointerSField<ApplicationMode *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecApplicationModePtr :
+    public PointerMField<ApplicationMode *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecApplicationModePtr :
+    public PointerMField<ApplicationMode *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakApplicationModePtr :
+    public PointerMField<ApplicationMode *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedApplicationModePtr :
+    public PointerMField<ApplicationMode *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

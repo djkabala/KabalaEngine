@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,8 +37,8 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
@@ -47,13 +48,10 @@
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::ApplicationMode
-The ApplicationMode. 
-*/
+// Documentation for this class is emitted in the
+// OSGApplicationModeBase.cpp file.
+// To modify it, please change the .fcd file (OSGApplicationMode.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -63,8 +61,13 @@ The ApplicationMode.
  *                           Class methods                                 *
 \***************************************************************************/
 
-void ApplicationMode::initMethod (void)
+void ApplicationMode::initMethod(InitPhase ePhase)
 {
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
 
@@ -79,6 +82,7 @@ void ApplicationMode::attachApplication(void)
 void ApplicationMode::dettachApplication(void)
 {
 }
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -101,17 +105,17 @@ ApplicationMode::~ApplicationMode(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void ApplicationMode::changed(BitVector whichField, UInt32 origin)
+void ApplicationMode::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 }
 
-void ApplicationMode::dump(      UInt32    , 
+void ApplicationMode::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump ApplicationMode NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

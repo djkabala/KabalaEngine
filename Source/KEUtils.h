@@ -1,9 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -43,23 +43,21 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 #include <OpenSG/OSGAttachmentContainer.h>
-#include <OpenSG/OSGSimpleAttachments.h>
+#include <OpenSG/OSGNameAttachment.h>
 #include <OpenSG/OSGNode.h>
-
-#include <OpenSG/OSGConfig.h>
 
 #include <string>
 
 OSG_USING_NAMESPACE
 
-bool KE_KABALAENGINELIB_DLLMAPPING attachName (AttachmentContainerPtr AttContainer);
+bool KE_KABALAENGINE_DLLMAPPING attachName (AttachmentContainerRefPtr AttContainer);
 
-void KE_KABALAENGINELIB_DLLMAPPING recurseSetTravMask(NodePtr RootNode, 
+void KE_KABALAENGINE_DLLMAPPING recurseSetTravMask(NodeRefPtr RootNode, 
                                                       UInt32 TravMask);
 
-void KE_KABALAENGINELIB_DLLMAPPING recurseSetTravMasRecord(NodePtr RootNode, 
+void KE_KABALAENGINE_DLLMAPPING recurseSetTravMasRecord(NodeRefPtr RootNode, 
                                                            UInt32 TravMask,
-                                                           std::vector<std::pair<NodePtr, UInt32> >& NodesChanged);
+                                                           std::vector<std::pair<NodeRefPtr, UInt32> >& NodesChanged);
 
 #endif /* _KE_DEFINES_H_ */
 

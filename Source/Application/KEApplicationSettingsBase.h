@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -54,80 +55,94 @@
 #endif
 
 
+
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGRefPtr.h>
-#include <OpenSG/OSGCoredNodePtr.h>
+//#include "OpenSG/OSGBaseTypes.h"
 
 #include <OpenSG/OSGFieldContainer.h> // Parent
 
-#include <OpenSG/Toolbox/OSGPathType.h> // DataDirectory type
-#include <OpenSG/Toolbox/OSGPathType.h> // LastOpenedProjectFile type
-#include <OpenSG/Toolbox/OSGPathType.h> // RecentProjectFiles type
-#include <OpenSG/OSGPnt2fFields.h> // DefaultWindowPosition type
-#include <OpenSG/OSGVec2fFields.h> // DefaultWindowSize type
-#include <OpenSG/OSGBoolFields.h> // Fullscreen type
-#include <OpenSG/OSGBoolFields.h> // HideAdvancedFields type
+#include <OpenSG/OSGBoostPathFields.h>  // DataDirectory type
+#include <OpenSG/OSGVecFields.h>        // DefaultWindowPosition type
+#include <OpenSG/OSGSysFields.h>        // Fullscreen type
 
 #include "KEApplicationSettingsFields.h"
 
 OSG_BEGIN_NAMESPACE
 
 class ApplicationSettings;
-class BinaryDataHandler;
 
 //! \brief ApplicationSettings Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContainer
+class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
 {
-  private:
-
-    typedef FieldContainer    Inherited;
-
-    /*==========================  PUBLIC  =================================*/
   public:
 
-    typedef ApplicationSettingsPtr  Ptr;
+    typedef FieldContainer Inherited;
+    typedef FieldContainer ParentContainer;
+
+    typedef Inherited::TypeObject TypeObject;
+    typedef TypeObject::InitPhase InitPhase;
+
+    OSG_GEN_INTERNALPTR(ApplicationSettings);
+
+    /*==========================  PUBLIC  =================================*/
+
+  public:
 
     enum
     {
-        DataDirectoryFieldId         = Inherited::NextFieldId,
-        LastOpenedProjectFileFieldId = DataDirectoryFieldId         + 1,
-        RecentProjectFilesFieldId    = LastOpenedProjectFileFieldId + 1,
-        DefaultWindowPositionFieldId = RecentProjectFilesFieldId    + 1,
-        DefaultWindowSizeFieldId     = DefaultWindowPositionFieldId + 1,
-        FullscreenFieldId            = DefaultWindowSizeFieldId     + 1,
-        HideAdvancedFieldsFieldId    = FullscreenFieldId            + 1,
-        NextFieldId                  = HideAdvancedFieldsFieldId    + 1
+        DataDirectoryFieldId = Inherited::NextFieldId,
+        LastOpenedProjectFileFieldId = DataDirectoryFieldId + 1,
+        RecentProjectFilesFieldId = LastOpenedProjectFileFieldId + 1,
+        DefaultWindowPositionFieldId = RecentProjectFilesFieldId + 1,
+        DefaultWindowSizeFieldId = DefaultWindowPositionFieldId + 1,
+        FullscreenFieldId = DefaultWindowSizeFieldId + 1,
+        HideAdvancedFieldsFieldId = FullscreenFieldId + 1,
+        NextFieldId = HideAdvancedFieldsFieldId + 1
     };
 
-    static const OSG::BitVector DataDirectoryFieldMask;
-    static const OSG::BitVector LastOpenedProjectFileFieldMask;
-    static const OSG::BitVector RecentProjectFilesFieldMask;
-    static const OSG::BitVector DefaultWindowPositionFieldMask;
-    static const OSG::BitVector DefaultWindowSizeFieldMask;
-    static const OSG::BitVector FullscreenFieldMask;
-    static const OSG::BitVector HideAdvancedFieldsFieldMask;
-
-
-    static const OSG::BitVector MTInfluenceMask;
+    static const OSG::BitVector DataDirectoryFieldMask =
+        (TypeTraits<BitVector>::One << DataDirectoryFieldId);
+    static const OSG::BitVector LastOpenedProjectFileFieldMask =
+        (TypeTraits<BitVector>::One << LastOpenedProjectFileFieldId);
+    static const OSG::BitVector RecentProjectFilesFieldMask =
+        (TypeTraits<BitVector>::One << RecentProjectFilesFieldId);
+    static const OSG::BitVector DefaultWindowPositionFieldMask =
+        (TypeTraits<BitVector>::One << DefaultWindowPositionFieldId);
+    static const OSG::BitVector DefaultWindowSizeFieldMask =
+        (TypeTraits<BitVector>::One << DefaultWindowSizeFieldId);
+    static const OSG::BitVector FullscreenFieldMask =
+        (TypeTraits<BitVector>::One << FullscreenFieldId);
+    static const OSG::BitVector HideAdvancedFieldsFieldMask =
+        (TypeTraits<BitVector>::One << HideAdvancedFieldsFieldId);
+    static const OSG::BitVector NextFieldMask =
+        (TypeTraits<BitVector>::One << NextFieldId);
+        
+    typedef SFBoostPath       SFDataDirectoryType;
+    typedef SFBoostPath       SFLastOpenedProjectFileType;
+    typedef MFBoostPath       MFRecentProjectFilesType;
+    typedef SFPnt2f           SFDefaultWindowPositionType;
+    typedef SFVec2f           SFDefaultWindowSizeType;
+    typedef SFBool            SFFullscreenType;
+    typedef SFBool            SFHideAdvancedFieldsType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
     /*! \{                                                                 */
 
-    static        FieldContainerType &getClassType    (void); 
-    static        UInt32              getClassTypeId  (void); 
+    static FieldContainerType &getClassType   (void);
+    static UInt32              getClassTypeId (void);
+    static UInt16              getClassGroupId(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                FieldContainer Get                            */
     /*! \{                                                                 */
 
-    virtual       FieldContainerType &getType  (void); 
-    virtual const FieldContainerType &getType  (void) const; 
+    virtual       FieldContainerType &getType         (void);
+    virtual const FieldContainerType &getType         (void) const;
 
     virtual       UInt32              getContainerSize(void) const;
 
@@ -137,108 +152,64 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     /*! \{                                                                 */
 
 
-           SFPath              *editSFDataDirectory  (void);
-     const SFPath              *getSFDataDirectory  (void) const;
-#ifndef OSG_2_PREP
-           SFPath              *getSFDataDirectory  (void);
-#endif
+                  SFBoostPath         *editSFDataDirectory  (void);
+            const SFBoostPath         *getSFDataDirectory   (void) const;
 
-           SFPath              *editSFLastOpenedProjectFile(void);
-     const SFPath              *getSFLastOpenedProjectFile(void) const;
-#ifndef OSG_2_PREP
-           SFPath              *getSFLastOpenedProjectFile(void);
-#endif
+                  SFBoostPath         *editSFLastOpenedProjectFile(void);
+            const SFBoostPath         *getSFLastOpenedProjectFile (void) const;
 
-           MFPath              *editMFRecentProjectFiles(void);
-     const MFPath              *getMFRecentProjectFiles(void) const;
-#ifndef OSG_2_PREP
-           MFPath              *getMFRecentProjectFiles(void);
-#endif
+                  MFBoostPath         *editMFRecentProjectFiles(void);
+            const MFBoostPath         *getMFRecentProjectFiles (void) const;
 
-           SFPnt2f             *editSFDefaultWindowPosition(void);
-     const SFPnt2f             *getSFDefaultWindowPosition(void) const;
-#ifndef OSG_2_PREP
-           SFPnt2f             *getSFDefaultWindowPosition(void);
-#endif
+                  SFPnt2f             *editSFDefaultWindowPosition(void);
+            const SFPnt2f             *getSFDefaultWindowPosition (void) const;
 
-           SFVec2f             *editSFDefaultWindowSize(void);
-     const SFVec2f             *getSFDefaultWindowSize(void) const;
-#ifndef OSG_2_PREP
-           SFVec2f             *getSFDefaultWindowSize(void);
-#endif
+                  SFVec2f             *editSFDefaultWindowSize(void);
+            const SFVec2f             *getSFDefaultWindowSize (void) const;
 
-           SFBool              *editSFFullscreen     (void);
-     const SFBool              *getSFFullscreen     (void) const;
-#ifndef OSG_2_PREP
-           SFBool              *getSFFullscreen     (void);
-#endif
+                  SFBool              *editSFFullscreen     (void);
+            const SFBool              *getSFFullscreen      (void) const;
 
-           SFBool              *editSFHideAdvancedFields(void);
-     const SFBool              *getSFHideAdvancedFields(void) const;
-#ifndef OSG_2_PREP
-           SFBool              *getSFHideAdvancedFields(void);
-#endif
+                  SFBool              *editSFHideAdvancedFields(void);
+            const SFBool              *getSFHideAdvancedFields (void) const;
 
 
-           Path                &editDataDirectory  (void);
-     const Path                &getDataDirectory  (void) const;
-#ifndef OSG_2_PREP
-           Path                &getDataDirectory  (void);
-#endif
+                  BoostPath           &editDataDirectory  (void);
+            const BoostPath           &getDataDirectory   (void) const;
 
-           Path                &editLastOpenedProjectFile(void);
-     const Path                &getLastOpenedProjectFile(void) const;
-#ifndef OSG_2_PREP
-           Path                &getLastOpenedProjectFile(void);
-#endif
+                  BoostPath           &editLastOpenedProjectFile(void);
+            const BoostPath           &getLastOpenedProjectFile (void) const;
 
-           Pnt2f               &editDefaultWindowPosition(void);
-     const Pnt2f               &getDefaultWindowPosition(void) const;
-#ifndef OSG_2_PREP
-           Pnt2f               &getDefaultWindowPosition(void);
-#endif
+                  BoostPath           &editRecentProjectFiles(const UInt32 index);
+            const BoostPath           &getRecentProjectFiles (const UInt32 index) const;
 
-           Vec2f               &editDefaultWindowSize(void);
-     const Vec2f               &getDefaultWindowSize(void) const;
-#ifndef OSG_2_PREP
-           Vec2f               &getDefaultWindowSize(void);
-#endif
+                  Pnt2f               &editDefaultWindowPosition(void);
+            const Pnt2f               &getDefaultWindowPosition (void) const;
 
-           bool                &editFullscreen     (void);
-     const bool                &getFullscreen     (void) const;
-#ifndef OSG_2_PREP
-           bool                &getFullscreen     (void);
-#endif
+                  Vec2f               &editDefaultWindowSize(void);
+            const Vec2f               &getDefaultWindowSize (void) const;
 
-           bool                &editHideAdvancedFields(void);
-     const bool                &getHideAdvancedFields(void) const;
-#ifndef OSG_2_PREP
-           bool                &getHideAdvancedFields(void);
-#endif
+                  bool                &editFullscreen     (void);
+                  bool                 getFullscreen      (void) const;
 
-           Path                &editRecentProjectFiles(const UInt32 index);
-     const Path                &getRecentProjectFiles(const UInt32 index) const;
-#ifndef OSG_2_PREP
-           Path                &getRecentProjectFiles(const UInt32 index);
-           MFPath              &getRecentProjectFiles(void);
-     const MFPath              &getRecentProjectFiles(void) const;
-#endif
+                  bool                &editHideAdvancedFields(void);
+                  bool                 getHideAdvancedFields (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-     void setDataDirectory  ( const Path &value );
-     void setLastOpenedProjectFile( const Path &value );
-     void setDefaultWindowPosition( const Pnt2f &value );
-     void setDefaultWindowSize( const Vec2f &value );
-     void setFullscreen     ( const bool &value );
-     void setHideAdvancedFields( const bool &value );
+            void setDataDirectory  (const BoostPath &value);
+            void setLastOpenedProjectFile(const BoostPath &value);
+            void setDefaultWindowPosition(const Pnt2f &value);
+            void setDefaultWindowSize(const Vec2f &value);
+            void setFullscreen     (const bool value);
+            void setHideAdvancedFields(const bool value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                       Sync                                   */
+    /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
 
     /*! \}                                                                 */
@@ -246,11 +217,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual UInt32 getBinSize (const BitVector         &whichField);
-    virtual void   copyToBin  (      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
-    virtual void   copyFromBin(      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
+    virtual UInt32 getBinSize (ConstFieldMaskArg  whichField);
+    virtual void   copyToBin  (BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
+    virtual void   copyFromBin(BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
 
 
     /*! \}                                                                 */
@@ -258,32 +229,49 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  ApplicationSettingsPtr      create          (void); 
-    static  ApplicationSettingsPtr      createEmpty     (void); 
+    static  ApplicationSettingsTransitPtr  create          (void);
+    static  ApplicationSettings           *createEmpty     (void);
+
+    static  ApplicationSettingsTransitPtr  createLocal     (
+                                               BitVector bFlags = FCLocal::All);
+
+    static  ApplicationSettings            *createEmptyLocal(
+                                              BitVector bFlags = FCLocal::All);
+
+    static  ApplicationSettingsTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
-
     /*---------------------------------------------------------------------*/
     /*! \name                       Copy                                   */
     /*! \{                                                                 */
 
-    virtual FieldContainerPtr     shallowCopy     (void) const; 
+    virtual FieldContainerTransitPtr shallowCopy     (void) const;
+    virtual FieldContainerTransitPtr shallowCopyLocal(
+                                       BitVector bFlags = FCLocal::All) const;
+    virtual FieldContainerTransitPtr shallowCopyDependent(
+                                                      BitVector bFlags) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
+
+    static TypeObject _type;
+
+    static       void   classDescInserter(TypeObject &oType);
+    static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFPath              _sfDataDirectory;
-    SFPath              _sfLastOpenedProjectFile;
-    MFPath              _mfRecentProjectFiles;
-    SFPnt2f             _sfDefaultWindowPosition;
-    SFVec2f             _sfDefaultWindowSize;
-    SFBool              _sfFullscreen;
-    SFBool              _sfHideAdvancedFields;
+    SFBoostPath       _sfDataDirectory;
+    SFBoostPath       _sfLastOpenedProjectFile;
+    MFBoostPath       _mfRecentProjectFiles;
+    SFPnt2f           _sfDefaultWindowPosition;
+    SFVec2f           _sfDefaultWindowSize;
+    SFBool            _sfFullscreen;
+    SFBool            _sfHideAdvancedFields;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -298,66 +286,90 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettingsBase : public FieldContai
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ApplicationSettingsBase(void); 
+    virtual ~ApplicationSettingsBase(void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     onCreate                                */
+    /*! \{                                                                 */
+
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Field Access                      */
+    /*! \{                                                                 */
+
+    GetFieldHandlePtr  getHandleDataDirectory   (void) const;
+    EditFieldHandlePtr editHandleDataDirectory  (void);
+    GetFieldHandlePtr  getHandleLastOpenedProjectFile (void) const;
+    EditFieldHandlePtr editHandleLastOpenedProjectFile(void);
+    GetFieldHandlePtr  getHandleRecentProjectFiles (void) const;
+    EditFieldHandlePtr editHandleRecentProjectFiles(void);
+    GetFieldHandlePtr  getHandleDefaultWindowPosition (void) const;
+    EditFieldHandlePtr editHandleDefaultWindowPosition(void);
+    GetFieldHandlePtr  getHandleDefaultWindowSize (void) const;
+    EditFieldHandlePtr editHandleDefaultWindowSize(void);
+    GetFieldHandlePtr  getHandleFullscreen      (void) const;
+    EditFieldHandlePtr editHandleFullscreen     (void);
+    GetFieldHandlePtr  getHandleHideAdvancedFields (void) const;
+    EditFieldHandlePtr editHandleHideAdvancedFields(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
     /*! \{                                                                 */
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-    void executeSyncImpl(      ApplicationSettingsBase *pOther,
-                         const BitVector         &whichField);
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual void execSyncV(      FieldContainer    &oFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField);
-#else
-    void executeSyncImpl(      ApplicationSettingsBase *pOther,
-                         const BitVector         &whichField,
-                         const SyncInfo          &sInfo     );
-
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField,
-                               const SyncInfo          &sInfo);
-
-    virtual void execBeginEdit     (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-            void execBeginEditImpl (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
+            void execSync (      ApplicationSettingsBase *pFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 #endif
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Aspect Create                            */
+    /*! \{                                                                 */
+
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual FieldContainer *createAspectCopy(
+                                    const FieldContainer *pRefAspect) const;
+#endif
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
-
-    friend class FieldContainer;
-
-    static FieldDescription   *_desc[];
-    static FieldContainerType  _type;
-
+    /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const ApplicationSettingsBase &source);
 };
 
-//---------------------------------------------------------------------------
-//   Exported Types
-//---------------------------------------------------------------------------
-
-
 typedef ApplicationSettingsBase *ApplicationSettingsBaseP;
-
-typedef osgIF<ApplicationSettingsBase::isNodeCore,
-              CoredNodePtr<ApplicationSettings>,
-              FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-              >::_IRet ApplicationSettingsNodePtr;
-
-typedef RefPtr<ApplicationSettingsPtr> ApplicationSettingsRefPtr;
 
 OSG_END_NAMESPACE
 

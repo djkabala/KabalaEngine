@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,8 +37,8 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
@@ -51,31 +52,28 @@
 #include <OpenSG/OSGPerspectiveCamera.h>
 #include <OpenSG/OSGOrthographicCamera.h>
 #include "Project/Scene/KEScene.h"
-#include <OpenSG/Input/OSGWindowEventProducer.h>
-#include <OpenSG/Toolbox/OSGFCFileHandler.h>
-#include <OpenSG/Toolbox/OSGFilePathAttachment.h>
-#include "Application/KEMainApplication.h"
-#include <OpenSG/Input/OSGWindowEventProducer.h>
+#include <OpenSG/OSGWindowEventProducer.h>
+#include <OpenSG/OSGFCFileHandler.h>
+#include <OpenSG/OSGFilePathAttachment.h>
+#include <OpenSG/OSGWindowEventProducer.h>
 
-#include <OpenSG/Sound/OSGSoundManager.h>
-#include <OpenSG/Lua/OSGLuaManager.h>
+#include <OpenSG/OSGSoundManager.h>
+#include <OpenSG/OSGLuaManager.h>
 
 
 //Bindings for the OSGToolbox libraries
-#include <OpenSG/ToolboxLuaBindings/OSGToolbox_wrap.h>
+#include <OpenSG/OSGToolbox_wrap.h>
 
 //Kabala Engine Lua Bindings
-#include "LuaBindings/KELuaBindings.h"
+//TODO: Uncomment
+//#include "LuaBindings/KELuaBindings.h"
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::Project
-The Project. 	
-*/
+// Documentation for this class is emitted in the
+// OSGProjectBase.cpp file.
+// To modify it, please change the .fcd file (OSGProject.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -85,49 +83,49 @@ The Project.
  *                           Class methods                                 *
 \***************************************************************************/
 
-void Project::initMethod (void)
+void Project::initMethod(InitPhase ePhase)
 {
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
-
-
-
-ProjectPtr Project::load(const Path& ProjectFile)
+ProjectRefPtr Project::load(const BoostPath& ProjectFile)
 {
-	return create(ProjectFile);
+    return create(ProjectFile);
 }
 
-ProjectPtr Project::create(const Path& ProjectFile)
+ProjectRefPtr Project::create(const BoostPath& ProjectFile)
 {
-	FCFileType::FCPtrStore NewContainers;
-	NewContainers = FCFileHandler::the()->read(ProjectFile);
+    FCFileType::FCPtrStore NewContainers;
+    NewContainers = FCFileHandler::the()->read(ProjectFile);
 
-	for(FCFileType::FCPtrStore::iterator Itor(NewContainers.begin()) ; Itor!= NewContainers.end() ; ++Itor)
-	{
-		if((*Itor)->getType() == Project::getClassType())
-		{
-			beginEditCP(Project::Ptr::dcast(*Itor), Project::FilePathFieldMask);
-				Project::Ptr::dcast(*Itor)->setFilePath(ProjectFile);
-			endEditCP(Project::Ptr::dcast(*Itor), Project::FilePathFieldMask);
-			Project::Ptr::dcast(*Itor)->attachNames();
+    for(FCFileType::FCPtrStore::iterator Itor(NewContainers.begin()) ; Itor!= NewContainers.end() ; ++Itor)
+    {
+        if((*Itor)->getType() == Project::getClassType())
+        {
+            dynamic_pointer_cast<Project>(*Itor)->setFilePath(ProjectFile);
+            dynamic_pointer_cast<Project>(*Itor)->attachNames();
 
-            FilePathAttachment::setFilePath(Project::Ptr::dcast(*Itor), ProjectFile);
+            FilePathAttachment::setFilePath(dynamic_pointer_cast<Project>(*Itor), ProjectFile);
 
             //Attach the FilePath to me
-			return Project::Ptr::dcast(*Itor);
-		}
-	}
-	return NullFC;
+            return dynamic_pointer_cast<Project>(*Itor);
+        }
+    }
+    return NULL;
 }
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
 
-ScenePtr Project::getSceneByName(const std::string& FindSceneName) const
+SceneRefPtr Project::getSceneByName(const std::string& FindSceneName) const
 {
     const Char8* SceneName;
-    for(UInt32 i(0) ; i<getScenes().size() ; ++i)
+    for(UInt32 i(0) ; i<getMFScenes()->size() ; ++i)
     {
         //Get the Name of the Scene
         SceneName = getName(getScenes(i));
@@ -138,81 +136,72 @@ ScenePtr Project::getSceneByName(const std::string& FindSceneName) const
             return getScenes(i);
         }
     }
-    return NullFC;
+    return NULL;
 }
 
-WindowEventProducerPtr Project::getEventProducer(void) const
+WindowEventProducerRefPtr Project::getEventProducer(void) const
 {
-	return MainApplication::the()->getMainWindowEventProducer();
+    return MainApplication::the()->getMainWindow();
 }
 
 void Project::save(void)
 {
-	FCFileType::FCPtrStore Containers;
-	Containers.insert(ProjectPtr(this));
+    FCFileType::FCPtrStore Containers;
+    Containers.insert(ProjectRefPtr(this));
 
-	FCFileType::FCTypeVector IgnoreTypes;
+    FCFileType::FCTypeVector IgnoreTypes;
 
-	FCFileHandler::the()->write(Containers,getFilePath(),IgnoreTypes);
+    FCFileHandler::the()->write(Containers,getFilePath(),IgnoreTypes);
 }
 
-void Project::save(const Path& ProjectFile)
+void Project::save(const BoostPath& ProjectFile)
 {
-	beginEditCP(ProjectPtr(this), Project::FilePathFieldMask);
-		setFilePath(ProjectFile);
-	endEditCP(ProjectPtr(this), Project::FilePathFieldMask);
-	
-	save();
+    setFilePath(ProjectFile);
+
+    save();
 }
 
 void Project::start(void)
 {
     //Temporarily validate all openGL Objects
     //SLOG << "Starting to validate all OpenGL Objects." << std::endl;
-    //MainApplication::the()->getMainWindowEventProducer()->getWindow()->validateAllGLObjects();
+    //MainApplication::the()->getMainWindow()->validateAllGLObjects();
     //SLOG << "Finished validating all OpenGL Objects." << std::endl;
 
     //Attach the listeners
-    MainApplication::the()->getMainWindowEventProducer()->addUpdateListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->addMouseListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->addMouseMotionListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->addMouseWheelListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->addKeyListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->addWindowListener(&_ProjectUpdateListener);
-    
+    MainApplication::the()->getMainWindow()->addUpdateListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->addMouseListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->addMouseMotionListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->addMouseWheelListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->addKeyListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->addWindowListener(&_ProjectUpdateListener);
+
     //Attach the SoundManager
-    SoundManager::the()->attachUpdateProducer(MainApplication::the()->getMainWindowEventProducer());
+    SoundManager::the()->attachUpdateProducer(MainApplication::the()->getMainWindow());
 
-    if(_AnimationAdvancer == NullFC)
+    //If I have an initial Scene then enter it
+    if(getInitialScene() != NULL)
     {
-        _AnimationAdvancer = ElapsedTimeAnimationAdvancer::create();
+        setActiveScene(getInitialScene());
     }
-
-	//If I have an initial Scene then enter it
-	if(getInitialScene() != NullFC)
-	{
-		setActiveScene(getInitialScene());
-	}
     else
     {
         SFATAL << "Project has no Initial Scene set." << std::endl;
     }
 
-    setDefaults();
-
     loadScripts();
 
 
-    produceProjectStarted(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
+    produceProjectStarted(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
 }
 
 void Project::reset(void)
 {
-    //Scene Active Scene To NullFC
-    setActiveScene(NullFC);
+    //Scene Active Scene To NULL
+    setActiveScene(NULL);
 
     //Send end to all scenes
-    for(UInt32 i(0) ; i<getScenes().size() ; ++i)
+    for(UInt32 i(0) ; i<getMFScenes()->size() ; ++i)
     {
         getScenes(i)->end();
     }
@@ -224,59 +213,60 @@ void Project::reset(void)
 
     //Toolbox Bindings
     LuaManager::the()->openLuaBindingLib(getOSGToolboxLuaBindingsLibFunctor());
-    
+
     //Kabala Engine Bindings
-    LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
+    //TODO: Uncomment
+    //LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
 
     //Reload this projects Script
     loadScripts();
 
     //Reset all scenes
-    for(UInt32 i(0) ; i<getScenes().size() ; ++i)
+    for(UInt32 i(0) ; i<getMFScenes()->size() ; ++i)
     {
         getScenes(i)->reset();
     }
 
 
-	//If I have an initial Scene then enter it
-	if(getInitialScene() != NullFC)
-	{
-		setActiveScene(getInitialScene());
-	}
+    //If I have an initial Scene then enter it
+    if(getInitialScene() != NULL)
+    {
+        setActiveScene(getInitialScene());
+    }
 
-    produceProjectReset(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
+    produceProjectReset(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
 }
 
 void Project::stop(void)
 {
-    produceProjectStopping(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
+    produceProjectStopping(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
 
-	setActiveScene(NullFC);
+    setActiveScene(NULL);
 
     //Detach the listeners
-    MainApplication::the()->getMainWindowEventProducer()->removeUpdateListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->removeMouseListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->removeMouseMotionListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->removeMouseWheelListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->removeKeyListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindowEventProducer()->removeWindowListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->removeUpdateListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->removeMouseListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->removeMouseMotionListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->removeMouseWheelListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->removeKeyListener(&_ProjectUpdateListener);
+    MainApplication::the()->getMainWindow()->removeWindowListener(&_ProjectUpdateListener);
 
     //Detach the SoundManager
-    SoundManager::the()->detachUpdateProducer(MainApplication::the()->getMainWindowEventProducer());
-    
+    SoundManager::the()->detachUpdateProducer(MainApplication::the()->getMainWindow());
+
     //End all Scenes
-    for(UInt32 i(0) ; i<getScenes().size(); ++i)
+    for(UInt32 i(0) ; i<getMFScenes()->size(); ++i)
     {
         getScenes(i)->end();
     }
 
-    produceProjectStopped(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
+    produceProjectStopped(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
 }
 
-Path Project::getProjectFilePath(void) const
+BoostPath Project::getProjectFilePath(void) const
 {
-    Path ProjectBaseDir("");
-    const Path* ProjectFilePath = FilePathAttachment::getFilePath(ProjectPtr(this));
+    BoostPath ProjectBaseDir("");
+    const BoostPath* ProjectFilePath = FilePathAttachment::getFilePath(this);
     if(ProjectFilePath != NULL)
     {
         ProjectBaseDir = ProjectFilePath->parent_path();
@@ -285,7 +275,7 @@ Path Project::getProjectFilePath(void) const
     return ProjectBaseDir;
 }
 
-Path Project::getLuaModulePath(void) const
+BoostPath Project::getLuaModulePath(void) const
 {
     return getLuaModulesDirectory();
 }
@@ -294,19 +284,19 @@ void Project::loadScripts(void)
 {
     //Get the directory that the project is located in
 
-    //Set the Path used for finding modules by lua
+    //Set the BoostPath used for finding modules by lua
     std::string PackagePath("?;"
-            + (getLuaModulePath() / "?" ).file_string() + ";"
-            + (getLuaModulePath() / "?.lua" ).file_string() + ";"
-            + (getLuaModulePath() / "?" /  "init.lua").file_string());
+                            + (getLuaModulePath() / "?" ).file_string() + ";"
+                            + (getLuaModulePath() / "?.lua" ).file_string() + ";"
+                            + (getLuaModulePath() / "?" /  "init.lua").file_string());
 
     LuaManager::the()->setPackagePath(PackagePath);
 
     std::string PackageCPath("?;"
-            + (getLuaModulePath() / "?" ).file_string() + ";"
-            + (getLuaModulePath() / "?.so" ).file_string() + ";"
-            + (getLuaModulePath() / "?.dylib" ).file_string() + ";"
-            + (getLuaModulePath() / "?.dll" ).file_string());
+                             + (getLuaModulePath() / "?" ).file_string() + ";"
+                             + (getLuaModulePath() / "?.so" ).file_string() + ";"
+                             + (getLuaModulePath() / "?.dylib" ).file_string() + ";"
+                             + (getLuaModulePath() / "?.dll" ).file_string());
     LuaManager::the()->setPackageCPath(PackageCPath);
 
     //If I have a Lua Module then load it
@@ -317,408 +307,158 @@ void Project::loadScripts(void)
 
 }
 
-void Project::setActiveScene(ScenePtr TheScene)
+void Project::setActiveScene(SceneRefPtr TheScene)
 {
-	if(getInternalActiveScene() != TheScene)
-	{
-		if(getInternalActiveScene() != NullFC)
-		{
+    if(getInternalActiveScene() != TheScene)
+    {
+        if(getInternalActiveScene() != NULL)
+        {
             _LastActiveScene = getInternalActiveScene();
-			getInternalActiveScene()->exit();
-		}
+            getInternalActiveScene()->exit();
+        }
 
-		beginEditCP(ProjectPtr(this), InternalActiveSceneFieldMask);
-			setInternalActiveScene(TheScene);
-		endEditCP(ProjectPtr(this), InternalActiveSceneFieldMask);
-		if(getInternalActiveScene() != NullFC)
-		{
+        setInternalActiveScene(TheScene);
+        if(getInternalActiveScene() != NULL)
+        {
             //Start the scene if it hasn't allready
             if(!getInternalActiveScene()->isStarted())
             {    
                 getInternalActiveScene()->start();
             }
 
-			getInternalActiveScene()->enter();
+            getInternalActiveScene()->enter();
+        }
 
-            if(_NavigatorAttached)
-            {
-                updateNavigatorSceneAttachment();
-            }
-		}
-
-        produceSceneChanged(ProjectEvent::create(ProjectPtr(this), getTimeStamp()));
-
-        //Reset Animation Advancer
-        _AnimationAdvancer->reset();
-	}
+        produceSceneChanged(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
+    }
 }
 
-void Project::setActiveNode(NodePtr TheNode)
+void Project::setActiveNode(NodeRefPtr TheNode)
 {
     //TODO: Implement
 }
 
-NodePtr Project::getActiveNode(void)
+NodeRefPtr Project::getActiveNode(void)
 {
-    return NullFC;
+    return NULL;
 }
 
 void Project::attachNames(void)
 {
-	//Backgrounds
-	for(::osg::UInt32 i(0); i<getBackgrounds().size() ; ++i)
-	{
-		attachName(getBackgrounds(i));
-	}
+    //Backgrounds
+    for(::OSG::UInt32 i(0); i<getMFBackgrounds()->size() ; ++i)
+    {
+        attachName(getBackgrounds(i));
+    }
 
-	//Foregrounds
-	for(::osg::UInt32 i(0); i<getForegrounds().size() ; ++i)
-	{
-		attachName(getForegrounds(i));
-	}
+    //Foregrounds
+    for(::OSG::UInt32 i(0); i<getMFForegrounds()->size() ; ++i)
+    {
+        attachName(getForegrounds(i));
+    }
 
-	//Cameras
-	for(::osg::UInt32 i(0); i<getCameras().size() ; ++i)
-	{
-		attachName(getCameras(i));
-	}
+    //Cameras
+    for(::OSG::UInt32 i(0); i<getMFCameras()->size() ; ++i)
+    {
+        attachName(getCameras(i));
+    }
 
-	//ModelNodes
-	for(::osg::UInt32 i(0); i<getModelNodes().size() ; ++i)
-	{
-		attachName(getModelNodes(i));
-	}
+    //ModelNodes
+    for(::OSG::UInt32 i(0); i<getMFModelNodes()->size() ; ++i)
+    {
+        attachName(getModelNodes(i));
+    }
 
-	//Scenes
-	for(::osg::UInt32 i(0) ; i<getScenes().size() ; ++i)
-	{
-		getScenes(i)->attachNames();
-	}
+    //Scenes
+    for(::OSG::UInt32 i(0) ; i<getMFScenes()->size() ; ++i)
+    {
+        getScenes(i)->attachNames();
+    }
 
 }
 
-void Project::addActiveAnimation(AnimationPtr TheAnimation)
+void Project::addActiveAnimation(AnimationRefPtr TheAnimation)
 {
-    if(getActiveAnimations().find(TheAnimation) == getActiveAnimations().end())
+    if(editMFActiveAnimations()->find(TheAnimation) == editMFActiveAnimations()->end())
     {
-        beginEditCP(ProjectPtr(this), ActiveAnimationsFieldMask);
-            getActiveAnimations().push_back(TheAnimation);
-        endEditCP(ProjectPtr(this), ActiveAnimationsFieldMask);
+        pushToActiveAnimations(TheAnimation);
     }
 }
 
-void Project::removeActiveAnimation(AnimationPtr TheAnimation)
+void Project::removeActiveAnimation(AnimationRefPtr TheAnimation)
 {
-    if(getActiveAnimations().find(TheAnimation) != getActiveAnimations().end())
+    if(editMFActiveAnimations()->find(TheAnimation) != editMFActiveAnimations()->end())
     {
-        beginEditCP(ProjectPtr(this), ActiveAnimationsFieldMask);
-            getActiveAnimations().erase(getActiveAnimations().find(TheAnimation));
-        endEditCP(ProjectPtr(this), ActiveAnimationsFieldMask);
+        removeObjFromActiveAnimations(TheAnimation);
     }
 }
 
 
-void Project::addActiveParticleSystem(ParticleSystemPtr TheParticleSystem)
+void Project::addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem)
 {
-    if(getActiveParticleSystems().find(TheParticleSystem) == getActiveParticleSystems().end())
+    if(editMFActiveParticleSystems()->find(TheParticleSystem) ==
+       editMFActiveParticleSystems()->end())
     {
-        beginEditCP(ProjectPtr(this), ActiveParticleSystemsFieldMask);
-            getActiveParticleSystems().push_back(TheParticleSystem);
-        endEditCP(ProjectPtr(this), ActiveParticleSystemsFieldMask);
-        TheParticleSystem->attachUpdateListener(MainApplication::the()->getMainWindowEventProducer());
+        pushToActiveParticleSystems(TheParticleSystem);
+        TheParticleSystem->attachUpdateListener(MainApplication::the()->getMainWindow());
     }
 }
 
-void Project::removeActiveParticleSystem(ParticleSystemPtr TheParticleSystem)
+void Project::removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem)
 {
-    if(getActiveParticleSystems().find(TheParticleSystem) != getActiveParticleSystems().end())
+    if(editMFActiveParticleSystems()->find(TheParticleSystem) ==
+       editMFActiveParticleSystems()->end())
     {
-        beginEditCP(ProjectPtr(this), ActiveParticleSystemsFieldMask);
-            getActiveParticleSystems().erase(getActiveParticleSystems().find(TheParticleSystem));
-        endEditCP(ProjectPtr(this), ActiveParticleSystemsFieldMask);
+        removeObjFromActiveParticleSystems(TheParticleSystem);
     }
 }
 
-void Project::update(const UpdateEventPtr e)
-{
-    //Update Fmod Manager
-
-    //if(_NavigatorAttached)
-    //{
-    //    _navigator.idle(_mousebuttons,_lastx, _lasty);
-    //    _navigator.updateCameraTransformation();
-    //}
-    if(!_PauseActiveUpdates)
-    {
-        _AnimationAdvancer->update(e->getElapsedTime());
-
-        for(UInt32 i(0) ; i<getActiveAnimations().size() ; ++i)
-        {
-            getActiveAnimations(i)->update(_AnimationAdvancer);
-        }
-    }
-
-    ////Translation
-    //Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-    //Vec3f Local_x(1.0,0.0,0.0),Local_z(0.0,0.0,1.0);
-    //m.multMatrixVec(Local_x);
-    //m.multMatrixVec(Local_z);
-
-    //Vec3f Direction(0.0,0.0,0.0);
-    //float TranlateSpeed;
-    //if(_IsShiftKeyDown)
-    //{
-        //TranlateSpeed = _ScaledMotionFactor * _FastMotionFactor;
-    //}
-    //else
-    //{
-        //TranlateSpeed = _ScaledMotionFactor * _MotionFactor;
-    //}
-
-    //if(_IsAKeyDown)
-    //{
-        //Direction -= Local_x;
-    //}
-    //if(_IsDKeyDown)
-    //{
-        //Direction += Local_x;
-    //}
-    //if(_IsSKeyDown)
-    //{
-        //Direction += Local_z;
-    //}
-    //if(_IsWKeyDown)
-    //{
-        //Direction -= Local_z;
-    //}
-
-    //if(Direction != Vec2f(0.0,0.0,0.0))
-    //{
-        //Direction.normalize();
-        //Matrix t;
-        //t.setTranslate(TranlateSpeed*Direction*e->getElapsedTime());
-        //m.multLeft(t);
-        //setCameraBeaconMatrix(m);
-    //}
-}
-
-void Project::updateNavigatorSceneAttachment(void)
-{
-    //getInternalActiveViewport()->getRoot()->updateVolume();
-
-    //Vec3f min,max;
-    //getInternalActiveViewport()->getRoot()->getVolume().getBounds( min, max );
-    //Vec3f d = max - min;
-
-    //if(d.length() < Eps) // Nothing loaded? Use a unity box
-    //{
-        //min.setValues(-1.f,-1.f,-1.f);
-        //max.setValues( 1.f, 1.f, 1.f);
-        //d = max - min;
-    //}
-
-    //// adjust the translation factors so that motions are sort of scaled
-    //_ScaledMotionFactor = (d[0] + d[1] + d[2]) / 1000.f;
-}
-
-void Project::attachFlyNavigation(void)
-{
-
-
-    updateNavigatorSceneAttachment();
-    _NavigatorAttached = true;
-    
-
-    /*
-    _navigator.setMode(Navigator::TRACKBALL);
-    _navigator.setViewport(getInternalActiveViewport());
-
-    updateNavigatorSceneAttachment();*/
-}
-
-void Project::dettachFlyNavigation(void)
-{
-    _NavigatorAttached = false;
-}
-
-void Project::toggleFlyNavigation(void)
-{
-    if(_NavigatorAttached)
-    {
-        dettachFlyNavigation();
-    }
-    else
-    {
-        attachFlyNavigation();
-    }
-}
-
-
-void Project::mousePressed(const MouseEventPtr e)
-{
-
-}
-
-void Project::mouseReleased(const MouseEventPtr e)
-{
-}
-
-void Project::keyPressed(const KeyEventPtr e)
-{
-    if(_NavigatorAttached)
-    {
-       switch(e->getKey())
-       {
-       case KeyEvent::KEY_A:
-           _IsAKeyDown = true;
-	       break;
-       case KeyEvent::KEY_S:
-           _IsSKeyDown = true;
-	       break;
-       case KeyEvent::KEY_D:
-           _IsDKeyDown = true;
-	       break;
-       case KeyEvent::KEY_W:
-           _IsWKeyDown = true;
-	       break;
-       case KeyEvent::KEY_SHIFT:
-           _IsShiftKeyDown = true;
-	       break;
-       default:
-	       break;
-       }
-   }
-}
-
-void Project::keyReleased(const KeyEventPtr e)
-{
-    if(_NavigatorAttached)
-    {
-       switch(e->getKey())
-       {
-       case KeyEvent::KEY_A:
-           _IsAKeyDown = false;
-	       break;
-       case KeyEvent::KEY_S:
-           _IsSKeyDown = false;
-	       break;
-       case KeyEvent::KEY_D:
-           _IsDKeyDown = false;
-	       break;
-       case KeyEvent::KEY_W:
-           _IsWKeyDown = false;
-	       break;
-       case KeyEvent::KEY_SHIFT:
-           _IsShiftKeyDown = false;
-	       break;
-       default:
-	       break;
-       }
-    }
-}
-
-void Project::setCameraBeaconMatrix(const Matrix& m)
-{
-    //if(getInternalActiveViewport()->getCamera()->getBeacon()->getCore()->getType().isDerivedFrom(Transform::getClassType()))
-    //{
-        //TransformPtr TransCore = Transform::Ptr::dcast(getInternalActiveViewport()->getCamera()->getBeacon()->getCore());
-        //beginEditCP(TransCore, Transform::MatrixFieldMask);
-            //TransCore->setMatrix(m);
-        //endEditCP(TransCore, Transform::MatrixFieldMask);
-    //}
-}
-
-void Project::mouseMoved(const MouseEventPtr e)
-{
-}
-
-void Project::mouseDragged(const MouseEventPtr e)
-{
-	//if(_NavigatorAttached && e->getButton() == MouseEvent::BUTTON1)
-	//{
-			//Matrix m(getInternalActiveViewport()->getCamera()->getBeacon()->getToWorld());
-		////Vec3f Local_x(1.0,0.0,0.0),Local_y(0.0,1.0,0.0);
-		////m.multMatrixVec(Local_x);
-		////m.multMatrixVec(Local_y);
-
-		//Quaternion YRot_Quat(Vec3f(0.0,1.0,0.0), -e->getDelta().x() * _YRotMotionFactor);
-		//Matrix YRot_Mat;
-		//YRot_Mat.setRotate(YRot_Quat);
-		//Quaternion XRot_Quat(Vec3f(1.0,0.0,0.0),-e->getDelta().y() * _XRotMotionFactor);
-		//Matrix XRot_Mat;
-		//XRot_Mat.setRotate(XRot_Quat);
-
-		//m.mult(YRot_Mat);
-		////m.mult(XRot_Mat);
-		//setCameraBeaconMatrix(m);
-	//}
-}
-
-void Project::setDefaults(void)
-{
-    _YRotMotionFactor = 0.003f;
-    _XRotMotionFactor = 0.003f;
-
-    _FastMotionFactor = 200.0f;
-    _MotionFactor = 50.0f;
-}
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-void Project::produceSceneChanged(const ProjectEventPtr e)
+void Project::produceSceneChanged(const ProjectEventUnrecPtr e)
 {
     _Producer.produceEvent(SceneChangedMethodId, e);
 }
 
-void Project::produceProjectStarted(const ProjectEventPtr e)
+void Project::produceProjectStarted(const ProjectEventUnrecPtr e)
 {
     _Producer.produceEvent(ProjectStartedMethodId, e);
 }
 
-void Project::produceProjectStopping(const ProjectEventPtr e)
+void Project::produceProjectStopping(const ProjectEventUnrecPtr e)
 {
     _Producer.produceEvent(ProjectStoppingMethodId, e);
 }
 
-void Project::produceProjectStopped(const ProjectEventPtr e)
+void Project::produceProjectStopped(const ProjectEventUnrecPtr e)
 {
     _Producer.produceEvent(ProjectStoppedMethodId, e);
 }
 
-void Project::produceProjectReset(const ProjectEventPtr e)
+void Project::produceProjectReset(const ProjectEventUnrecPtr e)
 {
     _Producer.produceEvent(ProjectResetMethodId, e);
 }
+
 /*----------------------- constructors & destructors ----------------------*/
 
 Project::Project(void) :
     Inherited(),
-        _ProjectUpdateListener(ProjectPtr(this)),
-        _PauseActiveUpdates(false),
-        _NavigatorAttached(false),
-        _IsAKeyDown(false),
-        _IsSKeyDown(false),
-        _IsDKeyDown(false),
-        _IsWKeyDown(false),
-        _IsShiftKeyDown(false),
-        _LastActiveScene(NullFC),
-        _BlockInput(false)
+    _ProjectUpdateListener(ProjectRefPtr(this)),
+    _PauseActiveUpdates(false),
+    _LastActiveScene(NULL),
+    _BlockInput(false)
 {
 }
 
 Project::Project(const Project &source) :
     Inherited(source),
-        _ProjectUpdateListener(ProjectPtr(this)),
-        _PauseActiveUpdates(source._PauseActiveUpdates),
-        _NavigatorAttached(false),
-        _IsAKeyDown(false),
-        _IsSKeyDown(false),
-        _IsDKeyDown(false),
-        _IsWKeyDown(false),
-        _IsShiftKeyDown(false),
-        _LastActiveScene(NullFC),
-        _BlockInput(source._BlockInput)
+    _ProjectUpdateListener(ProjectRefPtr(this)),
+    _PauseActiveUpdates(source._PauseActiveUpdates),
+    _LastActiveScene(NULL),
+    _BlockInput(source._BlockInput)
 {
 }
 
@@ -728,27 +468,25 @@ Project::~Project(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void Project::changed(BitVector whichField, UInt32 origin)
+void Project::changed(ConstFieldMaskArg whichField, 
+                      UInt32            origin,
+                      BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 
-	if((whichField & ScenesFieldMask))
-	{
-		for(::osg::UInt32 i(0) ; i<getScenes().size() ; ++i)
-		{
-			beginEditCP(getScenes()[i], Scene::InternalParentProjectFieldMask);
-				getScenes()[i]->setInternalParentProject(ProjectPtr(this));
-			endEditCP(getScenes()[i], Scene::InternalParentProjectFieldMask);
-		}
-	}
+    if((whichField & ScenesFieldMask))
+    {
+        for(::OSG::UInt32 i(0) ; i<getMFScenes()->size() ; ++i)
+        {
+            getScenes(i)->setInternalParentProject(ProjectRefPtr(this));
+        }
+    }
 }
 
-void Project::dump(      UInt32    , 
+void Project::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump Project NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -38,49 +39,51 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KEApplicationSettingsBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief ApplicationSettings class. See \ref 
+/*! \brief ApplicationSettings class. See \ref
            PageKabalaEngineApplicationSettings for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettings : public ApplicationSettingsBase
+class KE_KABALAENGINE_DLLMAPPING ApplicationSettings : public ApplicationSettingsBase
 {
-  private:
-
-    typedef ApplicationSettingsBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef ApplicationSettingsBase Inherited;
+    typedef ApplicationSettings     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
 
-	void save(const Path& FilePath);
+	void save(const BoostPath& FilePath);
 
-	static ApplicationSettingsPtr load(const Path& FilePath);
+	static ApplicationSettingsUnrecPtr load(const BoostPath& FilePath);
 
-	static ApplicationSettingsPtr create(const Path& FilePath);
-	static ApplicationSettingsPtr create(void);
+	static ApplicationSettingsUnrecPtr create(const BoostPath& FilePath);
+	static ApplicationSettingsTransitPtr create(void);
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in ApplicationSettingsBase.
@@ -97,20 +100,24 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationSettings : public ApplicationSett
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ApplicationSettings(void); 
+    virtual ~ApplicationSettings(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class ApplicationSettingsBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const ApplicationSettings &source);
 };
 

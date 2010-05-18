@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -54,61 +55,68 @@
 #endif
 
 
+
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGRefPtr.h>
-#include <OpenSG/OSGCoredNodePtr.h>
+//#include "OpenSG/OSGBaseTypes.h"
 
-#include <OpenSG/Toolbox/OSGActivity.h> // Parent
+#include <OpenSG/OSGActivity.h> // Parent
 
-#include <Project/Scene/KESceneFields.h> // GotoScene type
+#include "Project/Scene/KESceneFields.h" // GotoScene type
 
 #include "KEChangeSceneActivityFields.h"
+
 OSG_BEGIN_NAMESPACE
 
 class ChangeSceneActivity;
-class BinaryDataHandler;
 
 //! \brief ChangeSceneActivity Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING ChangeSceneActivityBase : public Activity
+class KE_KABALAENGINE_DLLMAPPING ChangeSceneActivityBase : public Activity
 {
-  private:
-
-    typedef Activity    Inherited;
-
-    /*==========================  PUBLIC  =================================*/
   public:
 
-    typedef ChangeSceneActivityPtr  Ptr;
+    typedef Activity Inherited;
+    typedef Activity ParentContainer;
+
+    typedef Inherited::TypeObject TypeObject;
+    typedef TypeObject::InitPhase InitPhase;
+
+    OSG_GEN_INTERNALPTR(ChangeSceneActivity);
+
+    /*==========================  PUBLIC  =================================*/
+
+  public:
 
     enum
     {
         GotoSceneFieldId = Inherited::NextFieldId,
-        NextFieldId      = GotoSceneFieldId + 1
+        NextFieldId = GotoSceneFieldId + 1
     };
 
-    static const OSG::BitVector GotoSceneFieldMask;
-
-
-    static const OSG::BitVector MTInfluenceMask;
+    static const OSG::BitVector GotoSceneFieldMask =
+        (TypeTraits<BitVector>::One << GotoSceneFieldId);
+    static const OSG::BitVector NextFieldMask =
+        (TypeTraits<BitVector>::One << NextFieldId);
+        
+    typedef SFUnrecScenePtr   SFGotoSceneType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
     /*! \{                                                                 */
 
-    static        FieldContainerType &getClassType    (void); 
-    static        UInt32              getClassTypeId  (void); 
+    static FieldContainerType &getClassType   (void);
+    static UInt32              getClassTypeId (void);
+    static UInt16              getClassGroupId(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                FieldContainer Get                            */
     /*! \{                                                                 */
 
-    virtual       FieldContainerType &getType  (void); 
-    virtual const FieldContainerType &getType  (void) const; 
+    virtual       FieldContainerType &getType         (void);
+    virtual const FieldContainerType &getType         (void) const;
 
     virtual       UInt32              getContainerSize(void) const;
 
@@ -117,24 +125,27 @@ class KE_KABALAENGINELIB_DLLMAPPING ChangeSceneActivityBase : public Activity
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
+            const SFUnrecScenePtr     *getSFGotoScene      (void) const;
+                  SFUnrecScenePtr     *editSFGotoScene      (void);
 
-           SFScenePtr          *editSFGotoScene      (void);
-     const SFScenePtr          *getSFGotoScene      (void) const;
 
-
-           ScenePtr            &editGotoScene      (void);
-     const ScenePtr            &getGotoScene      (void) const;
+                  Scene * getGotoScene      (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-     void setGotoScene      ( const ScenePtr &value );
+            void setGotoScene      (Scene * const value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                       Sync                                   */
+    /*! \name                Ptr Field Set                                 */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
 
     /*! \}                                                                 */
@@ -142,11 +153,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ChangeSceneActivityBase : public Activity
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual UInt32 getBinSize (const BitVector         &whichField);
-    virtual void   copyToBin  (      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
-    virtual void   copyFromBin(      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
+    virtual UInt32 getBinSize (ConstFieldMaskArg  whichField);
+    virtual void   copyToBin  (BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
+    virtual void   copyFromBin(BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
 
 
     /*! \}                                                                 */
@@ -154,26 +165,43 @@ class KE_KABALAENGINELIB_DLLMAPPING ChangeSceneActivityBase : public Activity
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  ChangeSceneActivityPtr      create          (void); 
-    static  ChangeSceneActivityPtr      createEmpty     (void); 
+    static  ChangeSceneActivityTransitPtr  create          (void);
+    static  ChangeSceneActivity           *createEmpty     (void);
+
+    static  ChangeSceneActivityTransitPtr  createLocal     (
+                                               BitVector bFlags = FCLocal::All);
+
+    static  ChangeSceneActivity            *createEmptyLocal(
+                                              BitVector bFlags = FCLocal::All);
+
+    static  ChangeSceneActivityTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
-
     /*---------------------------------------------------------------------*/
     /*! \name                       Copy                                   */
     /*! \{                                                                 */
 
-    virtual FieldContainerPtr     shallowCopy     (void) const; 
+    virtual FieldContainerTransitPtr shallowCopy     (void) const;
+    virtual FieldContainerTransitPtr shallowCopyLocal(
+                                       BitVector bFlags = FCLocal::All) const;
+    virtual FieldContainerTransitPtr shallowCopyDependent(
+                                                      BitVector bFlags) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
+
+    static TypeObject _type;
+
+    static       void   classDescInserter(TypeObject &oType);
+    static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFScenePtr          _sfGotoScene;
+    SFUnrecScenePtr   _sfGotoScene;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -188,66 +216,79 @@ class KE_KABALAENGINELIB_DLLMAPPING ChangeSceneActivityBase : public Activity
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ChangeSceneActivityBase(void); 
+    virtual ~ChangeSceneActivityBase(void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     onCreate                                */
+    /*! \{                                                                 */
+
+    void onCreate(const ChangeSceneActivity *source = NULL);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Field Access                      */
+    /*! \{                                                                 */
+
+    GetFieldHandlePtr  getHandleGotoScene       (void) const;
+    EditFieldHandlePtr editHandleGotoScene      (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
     /*! \{                                                                 */
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-    void executeSyncImpl(      ChangeSceneActivityBase *pOther,
-                         const BitVector         &whichField);
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual void execSyncV(      FieldContainer    &oFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField);
-#else
-    void executeSyncImpl(      ChangeSceneActivityBase *pOther,
-                         const BitVector         &whichField,
-                         const SyncInfo          &sInfo     );
-
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField,
-                               const SyncInfo          &sInfo);
-
-    virtual void execBeginEdit     (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-            void execBeginEditImpl (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
+            void execSync (      ChangeSceneActivityBase *pFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 #endif
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Aspect Create                            */
+    /*! \{                                                                 */
+
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual FieldContainer *createAspectCopy(
+                                    const FieldContainer *pRefAspect) const;
+#endif
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
-
-    friend class FieldContainer;
-
-    static FieldDescription   *_desc[];
-    static FieldContainerType  _type;
-
+    /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const ChangeSceneActivityBase &source);
 };
 
-//---------------------------------------------------------------------------
-//   Exported Types
-//---------------------------------------------------------------------------
-
-
 typedef ChangeSceneActivityBase *ChangeSceneActivityBaseP;
-
-typedef osgIF<ChangeSceneActivityBase::isNodeCore,
-              CoredNodePtr<ChangeSceneActivity>,
-              FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-              >::_IRet ChangeSceneActivityNodePtr;
-
-typedef RefPtr<ChangeSceneActivityPtr> ChangeSceneActivityRefPtr;
 
 OSG_END_NAMESPACE
 

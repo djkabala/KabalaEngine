@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,12 +32,19 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 //---------------------------------------------------------------------------
 //  Includes
 //---------------------------------------------------------------------------
-
-#include <OpenSG/OSGConfig.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -59,12 +67,12 @@ bool Scene::isStarted(void) const
 }
 
 inline
-Scene::SceneUpdateListener::SceneUpdateListener(ScenePtr TheScene) : _Scene(TheScene)
+Scene::SceneUpdateListener::SceneUpdateListener(SceneRefPtr TheScene) : _Scene(TheScene)
 {
 }
 
 inline
-void Scene::SceneUpdateListener::update(const UpdateEventPtr e)
+void Scene::SceneUpdateListener::update(const UpdateEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput && e->getElapsedTime() < 1.0)
     {
@@ -73,7 +81,7 @@ void Scene::SceneUpdateListener::update(const UpdateEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::mouseClicked(const MouseEventPtr e)
+void Scene::SceneUpdateListener::mouseClicked(const MouseEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -82,7 +90,7 @@ void Scene::SceneUpdateListener::mouseClicked(const MouseEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::mouseEntered(const MouseEventPtr e)
+void Scene::SceneUpdateListener::mouseEntered(const MouseEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -91,7 +99,7 @@ void Scene::SceneUpdateListener::mouseEntered(const MouseEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::mouseExited(const MouseEventPtr e)
+void Scene::SceneUpdateListener::mouseExited(const MouseEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -100,15 +108,16 @@ void Scene::SceneUpdateListener::mouseExited(const MouseEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::mousePressed(const MouseEventPtr e)
+void Scene::SceneUpdateListener::mousePressed(const MouseEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
         _Scene->_Producer.produceEvent(MousePressedMethodId,e);
     }
 }
+
 inline
-void Scene::SceneUpdateListener::mouseReleased(const MouseEventPtr e)
+void Scene::SceneUpdateListener::mouseReleased(const MouseEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -117,7 +126,7 @@ void Scene::SceneUpdateListener::mouseReleased(const MouseEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::mouseMoved(const MouseEventPtr e)
+void Scene::SceneUpdateListener::mouseMoved(const MouseEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -126,7 +135,7 @@ void Scene::SceneUpdateListener::mouseMoved(const MouseEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::mouseDragged(const MouseEventPtr e)
+void Scene::SceneUpdateListener::mouseDragged(const MouseEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -135,7 +144,7 @@ void Scene::SceneUpdateListener::mouseDragged(const MouseEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::mouseWheelMoved(const MouseWheelEventPtr e)
+void Scene::SceneUpdateListener::mouseWheelMoved(const MouseWheelEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -145,7 +154,7 @@ void Scene::SceneUpdateListener::mouseWheelMoved(const MouseWheelEventPtr e)
 
 
 inline
-void Scene::SceneUpdateListener::keyPressed(const KeyEventPtr e)
+void Scene::SceneUpdateListener::keyPressed(const KeyEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -154,7 +163,7 @@ void Scene::SceneUpdateListener::keyPressed(const KeyEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::keyReleased(const KeyEventPtr e)
+void Scene::SceneUpdateListener::keyReleased(const KeyEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -163,7 +172,7 @@ void Scene::SceneUpdateListener::keyReleased(const KeyEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::keyTyped(const KeyEventPtr e)
+void Scene::SceneUpdateListener::keyTyped(const KeyEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -172,7 +181,7 @@ void Scene::SceneUpdateListener::keyTyped(const KeyEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowOpened(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowOpened(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -181,7 +190,7 @@ void Scene::SceneUpdateListener::windowOpened(const WindowEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowClosing(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowClosing(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -190,7 +199,7 @@ void Scene::SceneUpdateListener::windowClosing(const WindowEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowClosed(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowClosed(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -199,7 +208,7 @@ void Scene::SceneUpdateListener::windowClosed(const WindowEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowIconified(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowIconified(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -208,7 +217,7 @@ void Scene::SceneUpdateListener::windowIconified(const WindowEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowDeiconified(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowDeiconified(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -217,7 +226,7 @@ void Scene::SceneUpdateListener::windowDeiconified(const WindowEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowActivated(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowActivated(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -226,7 +235,7 @@ void Scene::SceneUpdateListener::windowActivated(const WindowEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowDeactivated(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowDeactivated(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -235,7 +244,7 @@ void Scene::SceneUpdateListener::windowDeactivated(const WindowEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowEntered(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowEntered(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {
@@ -244,7 +253,7 @@ void Scene::SceneUpdateListener::windowEntered(const WindowEventPtr e)
 }
 
 inline
-void Scene::SceneUpdateListener::windowExited(const WindowEventPtr e)
+void Scene::SceneUpdateListener::windowExited(const WindowEventUnrecPtr e)
 {
     if(!_Scene->_BlockInput)
     {

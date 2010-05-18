@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,33 +37,29 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 inline
-SceneGraphTreeModelPtr HierarchyPanel::getSceneGraphTreeModel(void)
+SceneGraphTreeModelRefPtr HierarchyPanel::getSceneGraphTreeModel(void)
 {
 	return _TheSceneGraphTreeModel;
 }
 inline
-TreePtr HierarchyPanel::getSceneGraphTree(void)
+TreeRefPtr HierarchyPanel::getSceneGraphTree(void)
 {
 	return _TheSceneGraphTree;
 }
 
 inline
-ApplicationPlayerPtr HierarchyPanel::getApplicationPlayer(void)
+ApplicationPlayerRefPtr HierarchyPanel::getApplicationPlayer(void)
 {
 	return _ApplicationPlayer;
 }
 
 inline
-HierarchyPanel::SceneGraphPopupListener::SceneGraphPopupListener(HierarchyPanelPtr TheHierarchyPanel)
+HierarchyPanel::SceneGraphPopupListener::SceneGraphPopupListener(HierarchyPanelRefPtr TheHierarchyPanel)
     : _HierarchyPanel(TheHierarchyPanel)
 {
 }
 
-
 OSG_END_NAMESPACE
-

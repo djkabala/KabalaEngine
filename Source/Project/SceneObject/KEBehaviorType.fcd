@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <FieldContainer
-	name="Behavior"
+	name="BehaviorType"
 	parent="AttachmentContainer"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
@@ -9,22 +9,34 @@
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 The SceneObject.
 	<Field
-		name="SceneObject"
-		type="SceneObjectPtr"
+		name="Name"
+		type="std::string"
+		category="data"
 		cardinality="single"
 		visibility="external"
-		header="Project/SceneObject/KESceneObjectFields.h"
 		access="protected"
 	>
 	</Field>
 	<Field
-		name="Dependencies"
+		name="Description"
 		type="std::string"
+		category="data"
 		cardinality="multi"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="ID"
+		type="UInt32"
+		category="data"
+		cardinality="single"
 		visibility="external"
 		access="public"
 	>

@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,6 +32,15 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 #ifndef _KESCENE_H_
 #define _KESCENE_H_
@@ -38,46 +48,59 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KESceneBase.h"
+#include <OpenSG/OSGViewport.h>         // Viewports Class
+#include <OpenSG/OSGBackground.h>       // Backgrounds Class
+#include <OpenSG/OSGUIDrawingSurface.h> // UIDrawingSurfaces Class
+#include <OpenSG/OSGForeground.h>       // Foregrounds Class
+#include <OpenSG/OSGNode.h>             // ModelNodes Class
+#include <OpenSG/OSGTransform.h>        // RootCore Class
+#include <OpenSG/OSGCamera.h>           // Cameras Class
+#include <OpenSG/OSGAnimation.h>        // Animations Class
+#include <OpenSG/OSGParticleSystem.h>   // ParticleSystems Class
+#include <OpenSG/OSGPhysicsHandler.h>   // PhysicsHandler Class
+#include <OpenSG/OSGPhysicsWorld.h>     // PhysicsWorld Class
+
 #include "KESceneEvent.h"
-#include <OpenSG/Input/OSGUpdateListener.h>
-#include <OpenSG/Input/OSGMouseListener.h>
-#include <OpenSG/Input/OSGMouseMotionListener.h>
-#include <OpenSG/Input/OSGMouseWheelListener.h>
-#include <OpenSG/Input/OSGKeyListener.h>
-#include <OpenSG/Input/OSGWindowListener.h>
-#include <OpenSG/Toolbox/OSGGenericEvent.h>
+#include <OpenSG/OSGUpdateListener.h>
+#include <OpenSG/OSGMouseListener.h>
+#include <OpenSG/OSGMouseMotionListener.h>
+#include <OpenSG/OSGMouseWheelListener.h>
+#include <OpenSG/OSGKeyListener.h>
+#include <OpenSG/OSGWindowListener.h>
+#include <OpenSG/OSGGenericEvent.h>
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief Scene class. See \ref 
+/*! \brief Scene class. See \ref
            PageKabalaEngineScene for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
+class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
 {
-  private:
-
-    typedef SceneBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef SceneBase Inherited;
+    typedef Scene     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
@@ -86,18 +109,20 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
     void blockInput(bool block);
     bool isInputBlocked(void) const;
 	
-	UInt32 registerNewGenericMethod(const std::string& MethodName);
+	UInt32 registerNewGenericMethod(const std::string& MethodName,
+                                    const std::string& MethodDescriptionText = std::string(""));
 
 	bool unregisterNewGenericMethod(UInt32 Id);
 	bool unregisterNewGenericMethod(const std::string& MethodName);
 
-	bool isGenericMethodDefined(UInt32 Id) const;
-	bool isGenericMethodDefined(const std::string& MethodName) const;
-	UInt32 getGenericMethodId(const std::string& MethodName) const;
+	bool   isGenericMethodDefined(      UInt32       Id        ) const;
+	bool   isGenericMethodDefined(const std::string& MethodName) const;
+	UInt32 getGenericMethodId    (const std::string& MethodName) const;
 
-	void produceGenericEvent(UInt32 GenericEventId, GenericEventPtr e);
+	void produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e);
 
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in SceneBase.
@@ -114,89 +139,94 @@ class KE_KABALAENGINELIB_DLLMAPPING Scene : public SceneBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~Scene(void); 
+    virtual ~Scene(void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
 
     /*! \}                                                                 */
 
-	void enter(void);
-	void exit(void);
-	void start(void);
-	void end(void);
-	void reset(void);
+    void enter(void);
+    void exit(void);
+    void start(void);
+    void end(void);
+    void reset(void);
 
-	void createDefaults(void);
-	void initDefaults(void);
+    void createDefaults(void);
+    void initDefaults(void);
 
-	friend class Project;
+    friend class Project;
 
-	void attachNames(void);
+    void attachNames(void);
 
-    
-    void producerSceneEntered(const SceneEventPtr e);
-    void producerSceneExited(const SceneEventPtr e);
-    void producerSceneStarted(const SceneEventPtr e);
-    void producerSceneEnded(const SceneEventPtr e);
-    void producerSceneReset(const SceneEventPtr e);
-    
-	class SceneUpdateListener : public UpdateListener,
-                                  public MouseListener,
-                                  public MouseMotionListener,
-                                  public MouseWheelListener,
-                                  public KeyListener,
-                                  public WindowListener
-	{
-	public:
-		SceneUpdateListener(ScenePtr TheScene);
 
-        virtual void update(const UpdateEventPtr e);
-        
-        virtual void mouseClicked(const MouseEventPtr e);
-        virtual void mouseEntered(const MouseEventPtr e);
-        virtual void mouseExited(const MouseEventPtr e);
-        virtual void mousePressed(const MouseEventPtr e);
-        virtual void mouseReleased(const MouseEventPtr e);
+    void producerSceneEntered(const SceneEventUnrecPtr e);
+    void producerSceneExited(const SceneEventUnrecPtr e);
+    void producerSceneStarted(const SceneEventUnrecPtr e);
+    void producerSceneEnded(const SceneEventUnrecPtr e);
+    void producerSceneReset(const SceneEventUnrecPtr e);
 
-        virtual void mouseMoved(const MouseEventPtr e);
-        virtual void mouseDragged(const MouseEventPtr e);
-        
-        virtual void mouseWheelMoved(const MouseWheelEventPtr e);
-        
-        virtual void keyPressed(const KeyEventPtr e);
-        virtual void keyReleased(const KeyEventPtr e);
-        virtual void keyTyped(const KeyEventPtr e);
-        
-        virtual void windowOpened(const WindowEventPtr e);
-        virtual void windowClosing(const WindowEventPtr e);
-        virtual void windowClosed(const WindowEventPtr e);
-        virtual void windowIconified(const WindowEventPtr e);
-        virtual void windowDeiconified(const WindowEventPtr e);
-        virtual void windowActivated(const WindowEventPtr e);
-        virtual void windowDeactivated(const WindowEventPtr e);
-        virtual void windowEntered(const WindowEventPtr e);
-        virtual void windowExited(const WindowEventPtr e);
-	protected :
-		ScenePtr _Scene;
-	};
+    class SceneUpdateListener : public UpdateListener,
+                                public MouseListener,
+                                public MouseMotionListener,
+                                public MouseWheelListener,
+                                public KeyListener,
+                                public WindowListener
+    {
+      public:
+        SceneUpdateListener(SceneRefPtr TheScene);
+
+        virtual void update(const UpdateEventUnrecPtr e);
+
+        virtual void mouseClicked(const MouseEventUnrecPtr e);
+        virtual void mouseEntered(const MouseEventUnrecPtr e);
+        virtual void mouseExited(const MouseEventUnrecPtr e);
+        virtual void mousePressed(const MouseEventUnrecPtr e);
+        virtual void mouseReleased(const MouseEventUnrecPtr e);
+
+        virtual void mouseMoved(const MouseEventUnrecPtr e);
+        virtual void mouseDragged(const MouseEventUnrecPtr e);
+
+        virtual void mouseWheelMoved(const MouseWheelEventUnrecPtr e);
+
+        virtual void keyPressed(const KeyEventUnrecPtr e);
+        virtual void keyReleased(const KeyEventUnrecPtr e);
+        virtual void keyTyped(const KeyEventUnrecPtr e);
+
+        virtual void windowOpened(const WindowEventUnrecPtr e);
+        virtual void windowClosing(const WindowEventUnrecPtr e);
+        virtual void windowClosed(const WindowEventUnrecPtr e);
+        virtual void windowIconified(const WindowEventUnrecPtr e);
+        virtual void windowDeiconified(const WindowEventUnrecPtr e);
+        virtual void windowActivated(const WindowEventUnrecPtr e);
+        virtual void windowDeactivated(const WindowEventUnrecPtr e);
+        virtual void windowEntered(const WindowEventUnrecPtr e);
+        virtual void windowExited(const WindowEventUnrecPtr e);
+      protected :
+        SceneRefPtr _Scene;
+    };
 
     friend class SceneUpdateListener;
 
-	SceneUpdateListener _SceneUpdateListener;
-    
+    SceneUpdateListener _SceneUpdateListener;
+
     bool _IsStarted;
     bool _BlockInput;
 
     UInt32 _GenericMethodIDCount;
 
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class SceneBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const Scene &source);
 };
 
@@ -204,6 +234,7 @@ typedef Scene *SceneP;
 
 OSG_END_NAMESPACE
 
+#include "Project/KEProject.h"    // InternalParentProject Class
 #include "KESceneBase.inl"
 #include "KEScene.inl"
 

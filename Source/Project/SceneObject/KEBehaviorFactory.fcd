@@ -9,15 +9,19 @@
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 The Capability Factory.
 	<Field
 		name="BehaviorTypes"
-		type="BehaviorTypePtr"
+		type="BehaviorType"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="Project/SceneObject/KEBehaviorTypeFields.h"
+		fieldHeader="Project/SceneObject/KEBehaviorTypeFields.h"
+		typeHeader="Project/SceneObject/KEBehaviorType.h"
 		access="public"
 	>
 	</Field>

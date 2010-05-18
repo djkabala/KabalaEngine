@@ -1,17 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                            OpenSGToolbox                                  *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *   contact: dkabala@vrac.iastate.edu                                       *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -19,9 +18,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
@@ -34,7 +42,7 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGUndoableCommand.h>
+#include <OpenSG/OSGUndoableCommand.h>
 
 #include "Player/KEApplicationPlayer.h"
 #include "Player/HierarchyPanel/KEHierarchyPanel.h"
@@ -42,15 +50,15 @@
 OSG_BEGIN_NAMESPACE
 
 class NewCommand;
-typedef boost::intrusive_ptr<NewCommand> NewCommandPtr;
+typedef boost::shared_ptr<NewCommand> NewCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING NewCommand: public UndoableCommand
+class KE_KABALAENGINE_DLLMAPPING NewCommand: public UndoableCommand
 {
 protected:
 	typedef UndoableCommand Inherited;
-	typedef NewCommandPtr Ptr;
+	typedef NewCommandPtr RefPtr;
 
-	NewCommand(HierarchyPanelPtr HierarchyPanel,FieldContainerType* FCType);
+	NewCommand(HierarchyPanelRefPtr HierarchyPanel,FieldContainerType* FCType);
 
 	NewCommand(const NewCommand& source);
 
@@ -63,8 +71,8 @@ protected:
 	virtual void redo(void);
 	virtual void undo(void);
 
-	HierarchyPanelPtr _HierarchyPanel;
-	NodePtr _NewNode;
+	HierarchyPanelRefPtr _HierarchyPanel;
+	NodeRefPtr _NewNode;
 	FieldContainerType* _FCType;
 	std::string _Name;
 
@@ -79,7 +87,7 @@ public:
 
 	virtual ~NewCommand(void);
 	
-	static NewCommandPtr create(HierarchyPanelPtr HierarchyPanel,FieldContainerType* FCType);
+	static NewCommandPtr create(HierarchyPanelRefPtr HierarchyPanel,FieldContainerType* FCType);
 };
 
 OSG_END_NAMESPACE

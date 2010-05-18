@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,170 +47,240 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEBEHAVIORTYPEINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEBehaviorTypeBase.h"
 #include "KEBehaviorType.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  BehaviorTypeBase::NameFieldMask = 
-    (TypeTraits<BitVector>::One << BehaviorTypeBase::NameFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector  BehaviorTypeBase::DescriptionFieldMask = 
-    (TypeTraits<BitVector>::One << BehaviorTypeBase::DescriptionFieldId);
+/*! \class OSG::BehaviorType
+    The SceneObject.
+ */
 
-const OSG::BitVector  BehaviorTypeBase::IDFieldMask = 
-    (TypeTraits<BitVector>::One << BehaviorTypeBase::IDFieldId);
-
-const OSG::BitVector BehaviorTypeBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
-
-
-// Field descriptions
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 /*! \var std::string     BehaviorTypeBase::_sfName
     
 */
+
 /*! \var std::string     BehaviorTypeBase::_mfDescription
     
 */
+
 /*! \var UInt32          BehaviorTypeBase::_sfID
     
 */
 
-//! BehaviorType description
 
-FieldDescription *BehaviorTypeBase::_desc[] = 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<BehaviorType *>::_type("BehaviorTypePtr", "AttachmentContainerPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(BehaviorType *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           BehaviorType *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           BehaviorType *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void BehaviorTypeBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(SFString::getClassType(), 
-                     "Name", 
-                     NameFieldId, NameFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&BehaviorTypeBase::editSFName)),
-    new FieldDescription(MFString::getClassType(), 
-                     "Description", 
-                     DescriptionFieldId, DescriptionFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&BehaviorTypeBase::editMFDescription)),
-    new FieldDescription(SFUInt32::getClassType(), 
-                     "ID", 
-                     IDFieldId, IDFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&BehaviorTypeBase::editSFID))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType BehaviorTypeBase::_type(
-    "BehaviorType",
-    "AttachmentContainer",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&BehaviorTypeBase::createEmpty),
+    pDesc = new SFString::Description(
+        SFString::getClassType(),
+        "Name",
+        "",
+        NameFieldId, NameFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&BehaviorType::editHandleName),
+        static_cast<FieldGetMethodSig >(&BehaviorType::getHandleName));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFString::Description(
+        MFString::getClassType(),
+        "Description",
+        "",
+        DescriptionFieldId, DescriptionFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&BehaviorType::editHandleDescription),
+        static_cast<FieldGetMethodSig >(&BehaviorType::getHandleDescription));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUInt32::Description(
+        SFUInt32::getClassType(),
+        "ID",
+        "",
+        IDFieldId, IDFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&BehaviorType::editHandleID),
+        static_cast<FieldGetMethodSig >(&BehaviorType::getHandleID));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+BehaviorTypeBase::TypeObject BehaviorTypeBase::_type(
+    BehaviorTypeBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&BehaviorTypeBase::createEmptyLocal),
     BehaviorType::initMethod,
-    _desc,
-    sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(BehaviorTypeBase, BehaviorTypePtr)
+    BehaviorType::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&BehaviorType::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"BehaviorType\"\n"
+    "\tparent=\"AttachmentContainer\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The SceneObject.\n"
+    "\t<Field\n"
+    "\t\tname=\"Name\"\n"
+    "\t\ttype=\"std::string\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Description\"\n"
+    "\t\ttype=\"std::string\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"ID\"\n"
+    "\t\ttype=\"UInt32\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "</FieldContainer>\n",
+    "The SceneObject.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &BehaviorTypeBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &BehaviorTypeBase::getType(void) const 
+FieldContainerType &BehaviorTypeBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr BehaviorTypeBase::shallowCopy(void) const 
-{ 
-    BehaviorTypePtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const BehaviorType *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 BehaviorTypeBase::getContainerSize(void) const 
-{ 
-    return sizeof(BehaviorType); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void BehaviorTypeBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &BehaviorTypeBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<BehaviorTypeBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void BehaviorTypeBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 BehaviorTypeBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((BehaviorTypeBase *) &other, whichField, sInfo);
+    return sizeof(BehaviorType);
 }
-void BehaviorTypeBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+/*------------------------- decorator get ------------------------------*/
+
+
+SFString *BehaviorTypeBase::editSFName(void)
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    editSField(NameFieldMask);
+
+    return &_sfName;
 }
 
-void BehaviorTypeBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+const SFString *BehaviorTypeBase::getSFName(void) const
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
-
-    _mfDescription.terminateShare(uiAspect, this->getContainerSize());
+    return &_sfName;
 }
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
-
-BehaviorTypeBase::BehaviorTypeBase(void) :
-    _sfName                   (), 
-    _mfDescription            (), 
-    _sfID                     (), 
-    Inherited() 
+MFString *BehaviorTypeBase::editMFDescription(void)
 {
+    editMField(DescriptionFieldMask, _mfDescription);
+
+    return &_mfDescription;
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-BehaviorTypeBase::BehaviorTypeBase(const BehaviorTypeBase &source) :
-    _sfName                   (source._sfName                   ), 
-    _mfDescription            (source._mfDescription            ), 
-    _sfID                     (source._sfID                     ), 
-    Inherited                 (source)
+const MFString *BehaviorTypeBase::getMFDescription(void) const
 {
+    return &_mfDescription;
 }
 
-/*-------------------------- destructors ----------------------------------*/
 
-BehaviorTypeBase::~BehaviorTypeBase(void)
+SFUInt32 *BehaviorTypeBase::editSFID(void)
 {
+    editSField(IDFieldMask);
+
+    return &_sfID;
 }
+
+const SFUInt32 *BehaviorTypeBase::getSFID(void) const
+{
+    return &_sfID;
+}
+
+
+
+
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 BehaviorTypeBase::getBinSize(const BitVector &whichField)
+UInt32 BehaviorTypeBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -217,23 +288,20 @@ UInt32 BehaviorTypeBase::getBinSize(const BitVector &whichField)
     {
         returnValue += _sfName.getBinSize();
     }
-
     if(FieldBits::NoField != (DescriptionFieldMask & whichField))
     {
         returnValue += _mfDescription.getBinSize();
     }
-
     if(FieldBits::NoField != (IDFieldMask & whichField))
     {
         returnValue += _sfID.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void BehaviorTypeBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void BehaviorTypeBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -241,22 +309,18 @@ void BehaviorTypeBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _sfName.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (DescriptionFieldMask & whichField))
     {
         _mfDescription.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (IDFieldMask & whichField))
     {
         _sfID.copyToBin(pMem);
     }
-
-
 }
 
-void BehaviorTypeBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void BehaviorTypeBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -264,87 +328,284 @@ void BehaviorTypeBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _sfName.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (DescriptionFieldMask & whichField))
     {
         _mfDescription.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (IDFieldMask & whichField))
     {
         _sfID.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void BehaviorTypeBase::executeSyncImpl(      BehaviorTypeBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+BehaviorTypeTransitPtr BehaviorTypeBase::createLocal(BitVector bFlags)
 {
+    BehaviorTypeTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pOther->_sfName);
+        fc = dynamic_pointer_cast<BehaviorType>(tmpPtr);
+    }
 
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
-        _mfDescription.syncWith(pOther->_mfDescription);
-
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-        _sfID.syncWith(pOther->_sfID);
-
-
-}
-#else
-void BehaviorTypeBase::executeSyncImpl(      BehaviorTypeBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pOther->_sfName);
-
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-        _sfID.syncWith(pOther->_sfID);
-
-
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
-        _mfDescription.syncWith(pOther->_mfDescription, sInfo);
-
-
+    return fc;
 }
 
-void BehaviorTypeBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+BehaviorTypeTransitPtr BehaviorTypeBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    BehaviorTypeTransitPtr fc;
 
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
-        _mfDescription.beginEdit(uiAspect, uiContainerSize);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
 
+        fc = dynamic_pointer_cast<BehaviorType>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+BehaviorTypeTransitPtr BehaviorTypeBase::create(void)
+{
+    BehaviorTypeTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<BehaviorType>(tmpPtr);
+    }
+
+    return fc;
+}
+
+BehaviorType *BehaviorTypeBase::createEmptyLocal(BitVector bFlags)
+{
+    BehaviorType *returnValue;
+
+    newPtr<BehaviorType>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+BehaviorType *BehaviorTypeBase::createEmpty(void)
+{
+    BehaviorType *returnValue;
+
+    newPtr<BehaviorType>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr BehaviorTypeBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    BehaviorType *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const BehaviorType *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr BehaviorTypeBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    BehaviorType *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const BehaviorType *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr BehaviorTypeBase::shallowCopy(void) const
+{
+    BehaviorType *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const BehaviorType *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+BehaviorTypeBase::BehaviorTypeBase(void) :
+    Inherited(),
+    _sfName                   (),
+    _mfDescription            (),
+    _sfID                     ()
+{
+}
+
+BehaviorTypeBase::BehaviorTypeBase(const BehaviorTypeBase &source) :
+    Inherited(source),
+    _sfName                   (source._sfName                   ),
+    _mfDescription            (source._mfDescription            ),
+    _sfID                     (source._sfID                     )
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+BehaviorTypeBase::~BehaviorTypeBase(void)
+{
+}
+
+
+GetFieldHandlePtr BehaviorTypeBase::getHandleName            (void) const
+{
+    SFString::GetHandlePtr returnValue(
+        new  SFString::GetHandle(
+             &_sfName,
+             this->getType().getFieldDesc(NameFieldId),
+             const_cast<BehaviorTypeBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr BehaviorTypeBase::editHandleName           (void)
+{
+    SFString::EditHandlePtr returnValue(
+        new  SFString::EditHandle(
+             &_sfName,
+             this->getType().getFieldDesc(NameFieldId),
+             this));
+
+
+    editSField(NameFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr BehaviorTypeBase::getHandleDescription     (void) const
+{
+    MFString::GetHandlePtr returnValue(
+        new  MFString::GetHandle(
+             &_mfDescription,
+             this->getType().getFieldDesc(DescriptionFieldId),
+             const_cast<BehaviorTypeBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr BehaviorTypeBase::editHandleDescription    (void)
+{
+    MFString::EditHandlePtr returnValue(
+        new  MFString::EditHandle(
+             &_mfDescription,
+             this->getType().getFieldDesc(DescriptionFieldId),
+             this));
+
+
+    editMField(DescriptionFieldMask, _mfDescription);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr BehaviorTypeBase::getHandleID              (void) const
+{
+    SFUInt32::GetHandlePtr returnValue(
+        new  SFUInt32::GetHandle(
+             &_sfID,
+             this->getType().getFieldDesc(IDFieldId),
+             const_cast<BehaviorTypeBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr BehaviorTypeBase::editHandleID             (void)
+{
+    SFUInt32::EditHandlePtr returnValue(
+        new  SFUInt32::EditHandle(
+             &_sfID,
+             this->getType().getFieldDesc(IDFieldId),
+             this));
+
+
+    editSField(IDFieldMask);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void BehaviorTypeBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    BehaviorType *pThis = static_cast<BehaviorType *>(this);
+
+    pThis->execSync(static_cast<BehaviorType *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *BehaviorTypeBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    BehaviorType *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const BehaviorType *>(pRefAspect),
+                  dynamic_cast<const BehaviorType *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<BehaviorTypePtr>::_type("BehaviorTypePtr", "AttachmentContainerPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(BehaviorTypePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(BehaviorTypePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void BehaviorTypeBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+#ifdef OSG_MT_CPTR_ASPECT
+    AspectOffsetStore oOffsets;
+
+    _pAspectStore->fillOffsetArray(oOffsets, this);
+#endif
+
+#ifdef OSG_MT_CPTR_ASPECT
+    _mfDescription.terminateShare(Thread::getCurrentAspect(),
+                                      oOffsets);
+#endif
+}
 
 
 OSG_END_NAMESPACE
-

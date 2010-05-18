@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,8 +37,8 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
@@ -47,13 +48,10 @@
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::ProjectEvent
-
-*/
+// Documentation for this class is emitted in the
+// OSGProjectEventBase.cpp file.
+// To modify it, please change the .fcd file (OSGProjectEvent.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -63,19 +61,24 @@ OSG_BEGIN_NAMESPACE
  *                           Class methods                                 *
 \***************************************************************************/
 
-void ProjectEvent::initMethod (void)
+void ProjectEvent::initMethod(InitPhase ePhase)
 {
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
-ProjectEventPtr ProjectEvent::create(FieldContainerPtr Source,
-                                 Time TimeStamp)
+ProjectEventTransitPtr ProjectEvent::create(FieldContainerRefPtr Source,
+                                            Time TimeStamp)
 {
-    ProjectEventPtr TheEvent(ProjectEvent::createEmpty());
+    ProjectEvent* TheEvent(ProjectEvent::createEmpty());
 
     TheEvent->setSource(Source);
     TheEvent->setTimeStamp(TimeStamp);
 
-    return TheEvent;
+    return ProjectEventTransitPtr(TheEvent);
 }
 
 /***************************************************************************\
@@ -104,17 +107,17 @@ ProjectEvent::~ProjectEvent(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void ProjectEvent::changed(BitVector whichField, UInt32 origin)
+void ProjectEvent::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 }
 
-void ProjectEvent::dump(      UInt32    , 
+void ProjectEvent::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump ProjectEvent NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

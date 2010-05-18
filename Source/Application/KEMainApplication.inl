@@ -49,97 +49,97 @@ MainApplication::MainWindowListener::MainWindowListener(MainApplication* TheMain
         
 
 inline
-ApplicationSettingsPtr &MainApplication::getSettings(void)
+ApplicationSettingsRefPtr &MainApplication::getSettings(void)
 {
     return _Settings;
 }
 
 inline
-const ApplicationSettingsPtr &MainApplication::getSettings(void) const
+const ApplicationSettingsRefPtr &MainApplication::getSettings(void) const
 {
     return _Settings;
 }
 
 inline
-Path  &MainApplication::getSettingsLoadFile(void)
+BoostPath  &MainApplication::getSettingsLoadFile(void)
 {
     return _SettingsPath;
 }
 
 inline
-const Path  &MainApplication::getSettingsLoadFile(void) const
+const BoostPath  &MainApplication::getSettingsLoadFile(void) const
 {
     return _SettingsPath;
 }
 
 inline
-WindowEventProducerPtr &MainApplication::getMainWindowEventProducer(void)
+WindowEventProducerRefPtr &MainApplication::getMainWindow(void)
 {
-    return _MainWindowEventProducer;
+    return _MainWindow;
 }
 
 inline
-const WindowEventProducerPtr &MainApplication::getMainWindowEventProducer(void) const
+const WindowEventProducerRefPtr &MainApplication::getMainWindow(void) const
 {
-    return _MainWindowEventProducer;
+    return _MainWindow;
 }
 
 inline
-ProjectPtr &MainApplication::getProject(void)
-{
-    return _Project;
-}
-
-inline
-const ProjectPtr &MainApplication::getProject(void) const
+ProjectRefPtr &MainApplication::getProject(void)
 {
     return _Project;
 }
 
 inline
-ApplicationModePtr &MainApplication::getBuilderMode(void)
+const ProjectRefPtr &MainApplication::getProject(void) const
+{
+    return _Project;
+}
+
+inline
+ApplicationModeRefPtr &MainApplication::getBuilderMode(void)
 {
     return _BuilderMode;
 }
 
 inline
-const ApplicationModePtr  &MainApplication::getBuilderMode(void) const
+const ApplicationModeRefPtr  &MainApplication::getBuilderMode(void) const
 {
     return _BuilderMode;
 }
 
 inline
-ApplicationModePtr &MainApplication::getPlayerMode(void)
+ApplicationModeRefPtr &MainApplication::getPlayerMode(void)
 {
     return _PlayerMode;
 }
 
 inline
-const ApplicationModePtr &MainApplication::getPlayerMode(void) const
+const ApplicationModeRefPtr &MainApplication::getPlayerMode(void) const
 {
     return _PlayerMode;
 }
 
 inline
-ApplicationModePtr &MainApplication::getStartScreenMode(void)
+ApplicationModeRefPtr &MainApplication::getStartScreenMode(void)
 {
     return _StartScreenMode;
 }
 
 inline
-const ApplicationModePtr &MainApplication::getStartScreenMode(void) const
+const ApplicationModeRefPtr &MainApplication::getStartScreenMode(void) const
 {
     return _StartScreenMode;
 }
 
 inline
-ApplicationModePtr &MainApplication::getCurrentMode(void)
+ApplicationModeRefPtr &MainApplication::getCurrentMode(void)
 {
     return _CurrentMode;
 }
 
 inline
-const ApplicationModePtr &MainApplication::getCurrentMode(void) const
+const ApplicationModeRefPtr &MainApplication::getCurrentMode(void) const
 {
     return _CurrentMode;
 }

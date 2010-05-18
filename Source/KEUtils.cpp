@@ -1,41 +1,37 @@
 #include "KEUtils.h"
-
-
+#include <boost/lexical_cast.hpp>
 
 OSG_USING_NAMESPACE
 
-bool attachName (AttachmentContainerPtr AttContainer)
+bool attachName (AttachmentContainerRefPtr AttContainer)
 {
     // Get attachment pointer
-    AttachmentPtr att = 
+    AttachmentRefPtr att = 
         AttContainer->findAttachment(Name::getClassType().getGroupId());
 
-    if(att == NullFC ||
-		NamePtr::dcast(att) == NullFC)
-	{
-		std::string DefaultName(AttContainer->getType().getCName());
+    if(att == NULL ||
+       dynamic_pointer_cast<Name>(att) == NULL)
+    {
+        std::string DefaultName(AttContainer->getType().getCName()
+                              + std::string(" ")
+                              + boost::lexical_cast<std::string>(AttContainer->getId()));
 
-		DefaultName.append(" ");
-		DefaultName.append(TypeTraits< ::osg::UInt32>::putToString(AttContainer.getFieldContainerId()));
-
-		setName(AttContainer,DefaultName);
+        setName(AttContainer,DefaultName);
 
         return true;
-	}
-	else
-	{
-		return false;
-	}
+    }
+    else
+    {
+        return false;
+    }
 }
 
-void recurseSetTravMask(NodePtr RootNode, 
+void recurseSetTravMask(NodeRefPtr RootNode, 
                         UInt32 TravMask)
 {
     if(RootNode->getTravMask() != TravMask)
     {
-        beginEditCP(RootNode, Node::TravMaskFieldMask);
-            RootNode->setTravMask(TravMask);
-        endEditCP(RootNode, Node::TravMaskFieldMask);
+        RootNode->setTravMask(TravMask);
     }
 
     for(UInt32 i(0) ; i<RootNode->getNChildren() ; ++i)
@@ -44,16 +40,14 @@ void recurseSetTravMask(NodePtr RootNode,
     }
 }
 
-void recurseSetTravMasRecord(NodePtr RootNode, 
+void recurseSetTravMasRecord(NodeRefPtr RootNode, 
                              UInt32 TravMask,
-                             std::vector<std::pair<NodePtr, UInt32> >& NodesChanged)
+                             std::vector<std::pair<NodeRefPtr, UInt32> >& NodesChanged)
 {
     if(RootNode->getTravMask() != TravMask)
     {
-        NodesChanged.push_back(std::pair<NodePtr, UInt32>(RootNode, RootNode->getTravMask()));
-        beginEditCP(RootNode, Node::TravMaskFieldMask);
-            RootNode->setTravMask(TravMask);
-        endEditCP(RootNode, Node::TravMaskFieldMask);
+        NodesChanged.push_back(std::pair<NodeRefPtr, UInt32>(RootNode, RootNode->getTravMask()));
+        RootNode->setTravMask(TravMask);
     }
 
     for(UInt32 i(0) ; i<RootNode->getNChildren() ; ++i)

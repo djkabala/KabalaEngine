@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/Toolbox/OSGActivityFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class ChangeSceneActivity;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ChangeSceneActivityPtr
+OSG_GEN_CONTAINERPTR(ChangeSceneActivity);
 
-typedef FCPtr<ActivityPtr, ChangeSceneActivity> ChangeSceneActivityPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ChangeSceneActivityPtr> : 
-    public FieldTraitsRecurseMapper<ChangeSceneActivityPtr, true>
+struct FieldTraits<ChangeSceneActivity *> :
+    public FieldTraitsFCPtrBase<ChangeSceneActivity *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFChangeSceneActivityPtr"; }
-    static const char *getMName(void) { return "MFChangeSceneActivityPtr"; }
+    typedef FieldTraits<ChangeSceneActivity *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFChangeSceneActivityPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFChangeSceneActivityPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ChangeSceneActivityPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<ChangeSceneActivity *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecChangeSceneActivityPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<ChangeSceneActivity *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecChangeSceneActivityPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ChangeSceneActivity *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakChangeSceneActivityPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ChangeSceneActivity *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdChangeSceneActivityPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ChangeSceneActivity *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecChangeSceneActivityPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ChangeSceneActivity *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecChangeSceneActivityPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ChangeSceneActivity *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakChangeSceneActivityPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ChangeSceneActivity *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdChangeSceneActivityPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ChangeSceneActivity *,
+                      RecordedRefCountPolicy  > SFRecChangeSceneActivityPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ChangeSceneActivity *,
+                      UnrecordedRefCountPolicy> SFUnrecChangeSceneActivityPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ChangeSceneActivity *,
+                      WeakRefCountPolicy      > SFWeakChangeSceneActivityPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ChangeSceneActivity *,
+                      NoRefCountPolicy        > SFUncountedChangeSceneActivityPtr;
 
-typedef SField<ChangeSceneActivityPtr> SFChangeSceneActivityPtr;
-#endif
 
-#ifndef KE_COMPILECHANGESCENEACTIVITYINST
-OSG_DLLEXPORT_DECL1(SField, ChangeSceneActivityPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ChangeSceneActivity *,
+                      RecordedRefCountPolicy  > MFRecChangeSceneActivityPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ChangeSceneActivity *,
+                      UnrecordedRefCountPolicy> MFUnrecChangeSceneActivityPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ChangeSceneActivity *,
+                      WeakRefCountPolicy      > MFWeakChangeSceneActivityPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ChangeSceneActivity *,
+                      NoRefCountPolicy        > MFUncountedChangeSceneActivityPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ChangeSceneActivityPtr> MFChangeSceneActivityPtr;
-#endif
 
-#ifndef KE_COMPILECHANGESCENEACTIVITYINST
-OSG_DLLEXPORT_DECL1(MField, ChangeSceneActivityPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecChangeSceneActivityPtr : 
+    public PointerSField<ChangeSceneActivity *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecChangeSceneActivityPtr : 
+    public PointerSField<ChangeSceneActivity *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakChangeSceneActivityPtr :
+    public PointerSField<ChangeSceneActivity *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedChangeSceneActivityPtr :
+    public PointerSField<ChangeSceneActivity *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecChangeSceneActivityPtr :
+    public PointerMField<ChangeSceneActivity *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecChangeSceneActivityPtr :
+    public PointerMField<ChangeSceneActivity *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakChangeSceneActivityPtr :
+    public PointerMField<ChangeSceneActivity *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedChangeSceneActivityPtr :
+    public PointerMField<ChangeSceneActivity *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,6 +32,15 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 #ifndef _KECHANGESCENEACTIVITY_H_
 #define _KECHANGESCENEACTIVITY_H_
@@ -38,43 +48,48 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
+#include "KEChangeSceneActivityBase.h"
 #include "KEChangeSceneActivityBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief ChangeSceneActivity class. See \ref 
+/*! \brief ChangeSceneActivity class. See \ref
            PageKabalaEngineChangeSceneActivity for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING ChangeSceneActivity : public ChangeSceneActivityBase
+class KE_KABALAENGINE_DLLMAPPING ChangeSceneActivity : public ChangeSceneActivityBase
 {
-  private:
-
-    typedef ChangeSceneActivityBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef ChangeSceneActivityBase Inherited;
+    typedef ChangeSceneActivity     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
-    virtual void eventProduced(const EventPtr EventDetails, UInt32 ProducedEventId);
+
+    virtual void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
+
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in ChangeSceneActivityBase.
@@ -91,20 +106,24 @@ class KE_KABALAENGINELIB_DLLMAPPING ChangeSceneActivity : public ChangeSceneActi
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ChangeSceneActivity(void); 
+    virtual ~ChangeSceneActivity(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class ChangeSceneActivityBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const ChangeSceneActivity &source);
 };
 

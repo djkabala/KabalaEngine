@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,63 +52,109 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/Toolbox/OSGEventFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class ProjectEvent;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ProjectEventPtr
+OSG_GEN_CONTAINERPTR(ProjectEvent);
 
-typedef FCPtr<EventPtr, ProjectEvent> ProjectEventPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ProjectEventPtr> : 
-    public FieldTraitsRecurseMapper<ProjectEventPtr, true>
+struct FieldTraits<ProjectEvent *> :
+    public FieldTraitsFCPtrBase<ProjectEvent *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFProjectEventPtr"; }
+    typedef FieldTraits<ProjectEvent *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFProjectEventPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ProjectEventPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<ProjectEvent *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecProjectEventPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<ProjectEvent *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecProjectEventPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ProjectEvent *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakProjectEventPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ProjectEvent *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdProjectEventPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
 
-typedef SField<ProjectEventPtr> SFProjectEventPtr;
-#endif
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ProjectEvent *,
+                      RecordedRefCountPolicy  > SFRecProjectEventPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ProjectEvent *,
+                      UnrecordedRefCountPolicy> SFUnrecProjectEventPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ProjectEvent *,
+                      WeakRefCountPolicy      > SFWeakProjectEventPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ProjectEvent *,
+                      NoRefCountPolicy        > SFUncountedProjectEventPtr;
 
-#ifndef KE_COMPILEPROJECTEVENTINST
-OSG_DLLEXPORT_DECL1(SField, ProjectEventPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecProjectEventPtr : 
+    public PointerSField<ProjectEvent *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecProjectEventPtr : 
+    public PointerSField<ProjectEvent *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakProjectEventPtr :
+    public PointerSField<ProjectEvent *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedProjectEventPtr :
+    public PointerSField<ProjectEvent *,
+                         NoRefCountPolicy> {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

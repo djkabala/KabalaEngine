@@ -1,19 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                     OpenSG ToolBox UserInterface                          *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *                         www.vrac.iastate.edu                              *
- *                                                                           *
- *   Authors: David Kabala, Alden Peterson, Lee Zaniewski, Jonathan Flory    *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -21,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -46,7 +43,7 @@
 
 #include "KECopyCommand.h"
 
-#include <OpenSG/OSGSimpleAttachments.h>
+#include <OpenSG/OSGNameAttachment.h>
 
 OSG_USING_NAMESPACE
 
@@ -54,7 +51,7 @@ OSG_USING_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::CopyCommand
+/*! \class OSG::CopyCommand
 A CopyCommand. 
 */
 
@@ -63,13 +60,14 @@ A CopyCommand.
 \***************************************************************************/
 
 CommandType CopyCommand::_Type("CopyCommand", "Command");
+
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-CopyCommandPtr CopyCommand::create(ApplicationPlayerPtr ApplicationPlayer, NodePtr CopyNode)
+CopyCommandPtr CopyCommand::create(ApplicationPlayerRefPtr ApplicationPlayer, NodeRefPtr CopyNode)
 {
-	return Ptr(new CopyCommand(ApplicationPlayer, CopyNode));
+	return RefPtr(new CopyCommand(ApplicationPlayer, CopyNode));
 }
 
 /***************************************************************************\
@@ -115,21 +113,6 @@ void CopyCommand::operator =(const CopyCommand& source)
     {
 	    Inherited::operator=(source);
 		_ApplicationPlayer = source._ApplicationPlayer;
-
     }
 }
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
 

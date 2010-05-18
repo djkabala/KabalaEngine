@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,576 +47,1950 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILESCENEINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
+#include "Project/KEProjectFields.h"    // InternalParentProject Class
+#include <OpenSG/OSGViewport.h>         // Viewports Class
+#include <OpenSG/OSGBackground.h>       // Backgrounds Class
+#include <OpenSG/OSGUIDrawingSurface.h> // UIDrawingSurfaces Class
+#include <OpenSG/OSGForeground.h>       // Foregrounds Class
+#include <OpenSG/OSGNode.h>             // ModelNodes Class
+#include <OpenSG/OSGTransform.h>        // RootCore Class
+#include <OpenSG/OSGCamera.h>           // Cameras Class
+#include <OpenSG/OSGAnimation.h>        // Animations Class
+#include <OpenSG/OSGParticleSystem.h>   // ParticleSystems Class
+#include <OpenSG/OSGPhysicsHandler.h>   // PhysicsHandler Class
+#include <OpenSG/OSGPhysicsWorld.h>     // PhysicsWorld Class
 
 #include "KESceneBase.h"
 #include "KEScene.h"
 
+#include <boost/bind.hpp>
+
+#include <OpenSG/OSGEvent.h>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  SceneBase::InternalParentProjectFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::InternalParentProjectFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector  SceneBase::ViewportsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::ViewportsFieldId);
+/*! \class OSG::Scene
+    The Scene.
+ */
 
-const OSG::BitVector  SceneBase::BackgroundsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::BackgroundsFieldId);
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
-const OSG::BitVector  SceneBase::UIDrawingSurfacesFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::UIDrawingSurfacesFieldId);
-
-const OSG::BitVector  SceneBase::InitialBackgroundFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::InitialBackgroundFieldId);
-
-const OSG::BitVector  SceneBase::ForegroundsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::ForegroundsFieldId);
-
-const OSG::BitVector  SceneBase::InitialForegroundsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::InitialForegroundsFieldId);
-
-const OSG::BitVector  SceneBase::ModelNodesFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::ModelNodesFieldId);
-
-const OSG::BitVector  SceneBase::InitialModelNodesFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::InitialModelNodesFieldId);
-
-const OSG::BitVector  SceneBase::RootFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::RootFieldId);
-
-const OSG::BitVector  SceneBase::RootCoreFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::RootCoreFieldId);
-
-const OSG::BitVector  SceneBase::DefaultCameraBeaconFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::DefaultCameraBeaconFieldId);
-
-const OSG::BitVector  SceneBase::DefaultCameraBeaconCoreFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::DefaultCameraBeaconCoreFieldId);
-
-const OSG::BitVector  SceneBase::CamerasFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::CamerasFieldId);
-
-const OSG::BitVector  SceneBase::InitialCameraFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::InitialCameraFieldId);
-
-const OSG::BitVector  SceneBase::AnimationsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::AnimationsFieldId);
-
-const OSG::BitVector  SceneBase::InitialAnimationsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::InitialAnimationsFieldId);
-
-const OSG::BitVector  SceneBase::ParticleSystemsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::ParticleSystemsFieldId);
-
-const OSG::BitVector  SceneBase::InitialParticleSystemsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::InitialParticleSystemsFieldId);
-
-const OSG::BitVector  SceneBase::LuaModuleFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::LuaModuleFieldId);
-
-const OSG::BitVector  SceneBase::PhysicsHandlerFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::PhysicsHandlerFieldId);
-
-const OSG::BitVector  SceneBase::PhysicsWorldFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::PhysicsWorldFieldId);
-
-const OSG::BitVector  SceneBase::GenericMethodIDsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneBase::GenericMethodIDsFieldId);
-
-const OSG::BitVector  SceneBase::EventProducerFieldMask =
-    (TypeTraits<BitVector>::One << SceneBase::EventProducerFieldId);
-
-const OSG::BitVector SceneBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
-
-
-// Field descriptions
-
-/*! \var ProjectPtr      SceneBase::_sfInternalParentProject
+/*! \var Project *       SceneBase::_sfInternalParentProject
     
 */
-/*! \var ViewportPtr     SceneBase::_mfViewports
+
+/*! \var Viewport *      SceneBase::_mfViewports
     
 */
-/*! \var BackgroundPtr   SceneBase::_mfBackgrounds
+
+/*! \var Background *    SceneBase::_mfBackgrounds
     
 */
-/*! \var UIDrawingSurfacePtr SceneBase::_mfUIDrawingSurfaces
+
+/*! \var UIDrawingSurface * SceneBase::_mfUIDrawingSurfaces
     
 */
-/*! \var BackgroundPtr   SceneBase::_sfInitialBackground
+
+/*! \var Background *    SceneBase::_sfInitialBackground
     
 */
-/*! \var ForegroundPtr   SceneBase::_mfForegrounds
+
+/*! \var Foreground *    SceneBase::_mfForegrounds
     
 */
-/*! \var ForegroundPtr   SceneBase::_mfInitialForegrounds
+
+/*! \var Foreground *    SceneBase::_mfInitialForegrounds
     
 */
-/*! \var NodePtr         SceneBase::_mfModelNodes
+
+/*! \var Node *          SceneBase::_mfModelNodes
     
 */
-/*! \var NodePtr         SceneBase::_mfInitialModelNodes
+
+/*! \var Node *          SceneBase::_mfInitialModelNodes
     
 */
-/*! \var NodePtr         SceneBase::_sfRoot
+
+/*! \var Node *          SceneBase::_sfRoot
     
 */
-/*! \var TransformPtr    SceneBase::_sfRootCore
+
+/*! \var Transform *     SceneBase::_sfRootCore
     
 */
-/*! \var NodePtr         SceneBase::_sfDefaultCameraBeacon
+
+/*! \var Node *          SceneBase::_sfDefaultCameraBeacon
     
 */
-/*! \var TransformPtr    SceneBase::_sfDefaultCameraBeaconCore
+
+/*! \var Transform *     SceneBase::_sfDefaultCameraBeaconCore
     
 */
-/*! \var CameraPtr       SceneBase::_mfCameras
+
+/*! \var Camera *        SceneBase::_mfCameras
     
 */
-/*! \var CameraPtr       SceneBase::_sfInitialCamera
+
+/*! \var Camera *        SceneBase::_sfInitialCamera
     
 */
-/*! \var AnimationPtr    SceneBase::_mfAnimations
+
+/*! \var Animation *     SceneBase::_mfAnimations
     
 */
-/*! \var AnimationPtr    SceneBase::_mfInitialAnimations
+
+/*! \var Animation *     SceneBase::_mfInitialAnimations
     
 */
-/*! \var ParticleSystemPtr SceneBase::_mfParticleSystems
+
+/*! \var ParticleSystem * SceneBase::_mfParticleSystems
     
 */
-/*! \var ParticleSystemPtr SceneBase::_mfInitialParticleSystems
+
+/*! \var ParticleSystem * SceneBase::_mfInitialParticleSystems
     
 */
-/*! \var Path            SceneBase::_sfLuaModule
+
+/*! \var BoostPath       SceneBase::_sfLuaModule
     
 */
-/*! \var PhysicsHandlerPtr SceneBase::_sfPhysicsHandler
+
+/*! \var PhysicsHandler * SceneBase::_sfPhysicsHandler
     
 */
-/*! \var PhysicsWorldPtr SceneBase::_sfPhysicsWorld
+
+/*! \var PhysicsWorld *  SceneBase::_sfPhysicsWorld
     
 */
+
 /*! \var UInt32          SceneBase::_sfGenericMethodIDs
     
 */
 
-//! Scene description
 
-FieldDescription *SceneBase::_desc[] = 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<Scene *>::_type("ScenePtr", "AttachmentContainerPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(Scene *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           Scene *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           Scene *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void SceneBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(SFProjectPtr::getClassType(), 
-                     "InternalParentProject", 
-                     InternalParentProjectFieldId, InternalParentProjectFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFInternalParentProject)),
-    new FieldDescription(MFViewportPtr::getClassType(), 
-                     "Viewports", 
-                     ViewportsFieldId, ViewportsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFViewports)),
-    new FieldDescription(MFBackgroundPtr::getClassType(), 
-                     "Backgrounds", 
-                     BackgroundsFieldId, BackgroundsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFBackgrounds)),
-    new FieldDescription(MFUIDrawingSurfacePtr::getClassType(), 
-                     "UIDrawingSurfaces", 
-                     UIDrawingSurfacesFieldId, UIDrawingSurfacesFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFUIDrawingSurfaces)),
-    new FieldDescription(SFBackgroundPtr::getClassType(), 
-                     "InitialBackground", 
-                     InitialBackgroundFieldId, InitialBackgroundFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFInitialBackground)),
-    new FieldDescription(MFForegroundPtr::getClassType(), 
-                     "Foregrounds", 
-                     ForegroundsFieldId, ForegroundsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFForegrounds)),
-    new FieldDescription(MFForegroundPtr::getClassType(), 
-                     "InitialForegrounds", 
-                     InitialForegroundsFieldId, InitialForegroundsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialForegrounds)),
-    new FieldDescription(MFNodePtr::getClassType(), 
-                     "ModelNodes", 
-                     ModelNodesFieldId, ModelNodesFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFModelNodes)),
-    new FieldDescription(MFNodePtr::getClassType(), 
-                     "InitialModelNodes", 
-                     InitialModelNodesFieldId, InitialModelNodesFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialModelNodes)),
-    new FieldDescription(SFNodePtr::getClassType(), 
-                     "Root", 
-                     RootFieldId, RootFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFRoot)),
-    new FieldDescription(SFTransformPtr::getClassType(), 
-                     "RootCore", 
-                     RootCoreFieldId, RootCoreFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFRootCore)),
-    new FieldDescription(SFNodePtr::getClassType(), 
-                     "DefaultCameraBeacon", 
-                     DefaultCameraBeaconFieldId, DefaultCameraBeaconFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFDefaultCameraBeacon)),
-    new FieldDescription(SFTransformPtr::getClassType(), 
-                     "DefaultCameraBeaconCore", 
-                     DefaultCameraBeaconCoreFieldId, DefaultCameraBeaconCoreFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFDefaultCameraBeaconCore)),
-    new FieldDescription(MFCameraPtr::getClassType(), 
-                     "Cameras", 
-                     CamerasFieldId, CamerasFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFCameras)),
-    new FieldDescription(SFCameraPtr::getClassType(), 
-                     "InitialCamera", 
-                     InitialCameraFieldId, InitialCameraFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFInitialCamera)),
-    new FieldDescription(MFAnimationPtr::getClassType(), 
-                     "Animations", 
-                     AnimationsFieldId, AnimationsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFAnimations)),
-    new FieldDescription(MFAnimationPtr::getClassType(), 
-                     "InitialAnimations", 
-                     InitialAnimationsFieldId, InitialAnimationsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialAnimations)),
-    new FieldDescription(MFParticleSystemPtr::getClassType(), 
-                     "ParticleSystems", 
-                     ParticleSystemsFieldId, ParticleSystemsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFParticleSystems)),
-    new FieldDescription(MFParticleSystemPtr::getClassType(), 
-                     "InitialParticleSystems", 
-                     InitialParticleSystemsFieldId, InitialParticleSystemsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editMFInitialParticleSystems)),
-    new FieldDescription(SFPath::getClassType(), 
-                     "LuaModule", 
-                     LuaModuleFieldId, LuaModuleFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFLuaModule)),
-    new FieldDescription(SFPhysicsHandlerPtr::getClassType(), 
-                     "PhysicsHandler", 
-                     PhysicsHandlerFieldId, PhysicsHandlerFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFPhysicsHandler)),
-    new FieldDescription(SFPhysicsWorldPtr::getClassType(), 
-                     "PhysicsWorld", 
-                     PhysicsWorldFieldId, PhysicsWorldFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFPhysicsWorld)),
-    new FieldDescription(SFUInt32::getClassType(), 
-                     "GenericMethodIDs", 
-                     GenericMethodIDsFieldId, GenericMethodIDsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFGenericMethodIDs))
-    , 
-    new FieldDescription(SFEventProducerPtr::getClassType(), 
-                     "EventProducer", 
-                     EventProducerFieldId,EventProducerFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&SceneBase::editSFEventProducer))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType SceneBase::_type(
-    "Scene",
-    "AttachmentContainer",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&SceneBase::createEmpty),
+    pDesc = new SFUnrecProjectPtr::Description(
+        SFUnrecProjectPtr::getClassType(),
+        "InternalParentProject",
+        "",
+        InternalParentProjectFieldId, InternalParentProjectFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleInternalParentProject),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleInternalParentProject));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecViewportPtr::Description(
+        MFUnrecViewportPtr::getClassType(),
+        "Viewports",
+        "",
+        ViewportsFieldId, ViewportsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleViewports),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleViewports));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecBackgroundPtr::Description(
+        MFUnrecBackgroundPtr::getClassType(),
+        "Backgrounds",
+        "",
+        BackgroundsFieldId, BackgroundsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleBackgrounds),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleBackgrounds));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecUIDrawingSurfacePtr::Description(
+        MFUnrecUIDrawingSurfacePtr::getClassType(),
+        "UIDrawingSurfaces",
+        "",
+        UIDrawingSurfacesFieldId, UIDrawingSurfacesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleUIDrawingSurfaces),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleUIDrawingSurfaces));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecBackgroundPtr::Description(
+        SFUnrecBackgroundPtr::getClassType(),
+        "InitialBackground",
+        "",
+        InitialBackgroundFieldId, InitialBackgroundFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleInitialBackground),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleInitialBackground));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecForegroundPtr::Description(
+        MFUnrecForegroundPtr::getClassType(),
+        "Foregrounds",
+        "",
+        ForegroundsFieldId, ForegroundsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleForegrounds),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleForegrounds));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecForegroundPtr::Description(
+        MFUnrecForegroundPtr::getClassType(),
+        "InitialForegrounds",
+        "",
+        InitialForegroundsFieldId, InitialForegroundsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleInitialForegrounds),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleInitialForegrounds));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecNodePtr::Description(
+        MFUnrecNodePtr::getClassType(),
+        "ModelNodes",
+        "",
+        ModelNodesFieldId, ModelNodesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleModelNodes),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleModelNodes));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecNodePtr::Description(
+        MFUnrecNodePtr::getClassType(),
+        "InitialModelNodes",
+        "",
+        InitialModelNodesFieldId, InitialModelNodesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleInitialModelNodes),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleInitialModelNodes));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecNodePtr::Description(
+        SFUnrecNodePtr::getClassType(),
+        "Root",
+        "",
+        RootFieldId, RootFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleRoot),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleRoot));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecTransformPtr::Description(
+        SFUnrecTransformPtr::getClassType(),
+        "RootCore",
+        "",
+        RootCoreFieldId, RootCoreFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleRootCore),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleRootCore));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecNodePtr::Description(
+        SFUnrecNodePtr::getClassType(),
+        "DefaultCameraBeacon",
+        "",
+        DefaultCameraBeaconFieldId, DefaultCameraBeaconFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleDefaultCameraBeacon),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleDefaultCameraBeacon));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecTransformPtr::Description(
+        SFUnrecTransformPtr::getClassType(),
+        "DefaultCameraBeaconCore",
+        "",
+        DefaultCameraBeaconCoreFieldId, DefaultCameraBeaconCoreFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleDefaultCameraBeaconCore),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleDefaultCameraBeaconCore));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecCameraPtr::Description(
+        MFUnrecCameraPtr::getClassType(),
+        "Cameras",
+        "",
+        CamerasFieldId, CamerasFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleCameras),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleCameras));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecCameraPtr::Description(
+        SFUnrecCameraPtr::getClassType(),
+        "InitialCamera",
+        "",
+        InitialCameraFieldId, InitialCameraFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleInitialCamera),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleInitialCamera));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecAnimationPtr::Description(
+        MFUnrecAnimationPtr::getClassType(),
+        "Animations",
+        "",
+        AnimationsFieldId, AnimationsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleAnimations),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleAnimations));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecAnimationPtr::Description(
+        MFUnrecAnimationPtr::getClassType(),
+        "InitialAnimations",
+        "",
+        InitialAnimationsFieldId, InitialAnimationsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleInitialAnimations),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleInitialAnimations));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecParticleSystemPtr::Description(
+        MFUnrecParticleSystemPtr::getClassType(),
+        "ParticleSystems",
+        "",
+        ParticleSystemsFieldId, ParticleSystemsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleParticleSystems),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleParticleSystems));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecParticleSystemPtr::Description(
+        MFUnrecParticleSystemPtr::getClassType(),
+        "InitialParticleSystems",
+        "",
+        InitialParticleSystemsFieldId, InitialParticleSystemsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleInitialParticleSystems),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleInitialParticleSystems));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFBoostPath::Description(
+        SFBoostPath::getClassType(),
+        "LuaModule",
+        "",
+        LuaModuleFieldId, LuaModuleFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleLuaModule),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleLuaModule));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecPhysicsHandlerPtr::Description(
+        SFUnrecPhysicsHandlerPtr::getClassType(),
+        "PhysicsHandler",
+        "",
+        PhysicsHandlerFieldId, PhysicsHandlerFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandlePhysicsHandler),
+        static_cast<FieldGetMethodSig >(&Scene::getHandlePhysicsHandler));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecPhysicsWorldPtr::Description(
+        SFUnrecPhysicsWorldPtr::getClassType(),
+        "PhysicsWorld",
+        "",
+        PhysicsWorldFieldId, PhysicsWorldFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandlePhysicsWorld),
+        static_cast<FieldGetMethodSig >(&Scene::getHandlePhysicsWorld));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUInt32::Description(
+        SFUInt32::getClassType(),
+        "GenericMethodIDs",
+        "",
+        GenericMethodIDsFieldId, GenericMethodIDsFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleGenericMethodIDs),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleGenericMethodIDs));
+
+    oType.addInitialDesc(pDesc);
+    pDesc = new SFEventProducerPtr::Description(
+        SFEventProducerPtr::getClassType(),
+        "EventProducer",
+        "Event Producer",
+        EventProducerFieldId,EventProducerFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast     <FieldEditMethodSig>(&Scene::invalidEditField),
+        static_cast     <FieldGetMethodSig >(&Scene::invalidGetField));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+SceneBase::TypeObject SceneBase::_type(
+    SceneBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&SceneBase::createEmptyLocal),
     Scene::initMethod,
-    _desc,
-    sizeof(_desc));
+    Scene::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&Scene::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"Scene\"\n"
+    "\tparent=\"AttachmentContainer\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The Scene.\n"
+    "\t<Field\n"
+    "\t\tname=\"InternalParentProject\"\n"
+    "\t\ttype=\"Project\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t\tfieldHeader=\"Project/KEProjectFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEProjectFields.h\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Viewports\"\n"
+    "\t\ttype=\"Viewport\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Backgrounds\"\n"
+    "\t\ttype=\"Background\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"UIDrawingSurfaces\"\n"
+    "\t\ttype=\"UIDrawingSurface\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InitialBackground\"\n"
+    "\t\ttype=\"Background\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Foregrounds\"\n"
+    "\t\ttype=\"Foreground\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InitialForegrounds\"\n"
+    "\t\ttype=\"Foreground\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"ModelNodes\"\n"
+    "\t\ttype=\"Node\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InitialModelNodes\"\n"
+    "\t\ttype=\"Node\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Root\"\n"
+    "\t\ttype=\"Node\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"RootCore\"\n"
+    "\t\ttype=\"Transform\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"DefaultCameraBeacon\"\n"
+    "\t\ttype=\"Node\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"DefaultCameraBeaconCore\"\n"
+    "\t\ttype=\"Transform\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Cameras\"\n"
+    "\t\ttype=\"Camera\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InitialCamera\"\n"
+    "\t\ttype=\"Camera\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Animations\"\n"
+    "\t\ttype=\"Animation\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InitialAnimations\"\n"
+    "\t\ttype=\"Animation\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"ParticleSystems\"\n"
+    "\t\ttype=\"ParticleSystem\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InitialParticleSystems\"\n"
+    "\t\ttype=\"ParticleSystem\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"LuaModule\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"PhysicsHandler\"\n"
+    "\t\ttype=\"PhysicsHandler\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        defaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"PhysicsWorld\"\n"
+    "\t\ttype=\"PhysicsWorld\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        defaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"GenericMethodIDs\"\n"
+    "\t\ttype=\"UInt32\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"SceneEntered\"\n"
+    "\t\ttype=\"SceneEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"SceneExited\"\n"
+    "\t\ttype=\"SceneEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"SceneStarted\"\n"
+    "\t\ttype=\"SceneEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"SceneEnded\"\n"
+    "\t\ttype=\"SceneEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"SceneReset\"\n"
+    "\t\ttype=\"SceneEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowOpened\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowClosing\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowClosed\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowIconified\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowDeiconified\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowActivated\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowDeactivated\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowEntered\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowExited\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseClicked\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseEntered\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseExited\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MousePressed\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseReleased\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseMoved\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseDragged\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseWheelMoved\"\n"
+    "\t\ttype=\"MouseWheelEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"KeyPressed\"\n"
+    "\t\ttype=\"KeyEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"KeyReleased\"\n"
+    "\t\ttype=\"KeyEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"KeyTyped\"\n"
+    "\t\ttype=\"KeyEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"Update\"\n"
+    "\t\ttype=\"UpdateEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "</FieldContainer>\n",
+    "The Scene.\n"
+    );
 
 //! Scene Produced Methods
 
 MethodDescription *SceneBase::_methodDesc[] =
 {
     new MethodDescription("SceneEntered", 
+                    "",
                      SceneEnteredMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("SceneExited", 
+                    "",
                      SceneExitedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("SceneStarted", 
+                    "",
                      SceneStartedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("SceneEnded", 
+                    "",
                      SceneEndedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("SceneReset", 
+                    "",
                      SceneResetMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowOpened", 
+                    "",
                      WindowOpenedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowClosing", 
+                    "",
                      WindowClosingMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowClosed", 
+                    "",
                      WindowClosedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowIconified", 
+                    "",
                      WindowIconifiedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowDeiconified", 
+                    "",
                      WindowDeiconifiedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowActivated", 
+                    "",
                      WindowActivatedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowDeactivated", 
+                    "",
                      WindowDeactivatedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowEntered", 
+                    "",
                      WindowEnteredMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowExited", 
+                    "",
                      WindowExitedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseClicked", 
+                    "",
                      MouseClickedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseEntered", 
+                    "",
                      MouseEnteredMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseExited", 
+                    "",
                      MouseExitedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MousePressed", 
+                    "",
                      MousePressedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseReleased", 
+                    "",
                      MouseReleasedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseMoved", 
+                    "",
                      MouseMovedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseDragged", 
+                    "",
                      MouseDraggedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseWheelMoved", 
+                    "",
                      MouseWheelMovedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("KeyPressed", 
+                    "",
                      KeyPressedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("KeyReleased", 
+                    "",
                      KeyReleasedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("KeyTyped", 
+                    "",
                      KeyTypedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("Update", 
+                    "",
                      UpdateMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod())
 };
 
 EventProducerType SceneBase::_producerType(
     "SceneProducerType",
     "EventProducerType",
-    NULL,
+    "",
     InitEventProducerFunctor(),
     _methodDesc,
     sizeof(_methodDesc));
-//OSG_FIELD_CONTAINER_DEF(SceneBase, ScenePtr)
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &SceneBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &SceneBase::getType(void) const 
+FieldContainerType &SceneBase::getType(void)
 {
     return _type;
-} 
+}
+
+const FieldContainerType &SceneBase::getType(void) const
+{
+    return _type;
+}
 
 const EventProducerType &SceneBase::getProducerType(void) const
 {
     return _producerType;
 }
 
-
-FieldContainerPtr SceneBase::shallowCopy(void) const 
-{ 
-    ScenePtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const Scene *>(this)); 
-
-    return returnValue; 
-}
-
-UInt32 SceneBase::getContainerSize(void) const 
-{ 
-    return sizeof(Scene); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void SceneBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+UInt32 SceneBase::getContainerSize(void) const
 {
-    this->executeSyncImpl(static_cast<SceneBase *>(&other),
-                          whichField);
+    return sizeof(Scene);
 }
-#else
-void SceneBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+/*------------------------- decorator get ------------------------------*/
+
+
+//! Get the Scene::_sfInternalParentProject field.
+const SFUnrecProjectPtr *SceneBase::getSFInternalParentProject(void) const
 {
-    this->executeSyncImpl((SceneBase *) &other, whichField, sInfo);
+    return &_sfInternalParentProject;
 }
-void SceneBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+SFUnrecProjectPtr   *SceneBase::editSFInternalParentProject(void)
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    editSField(InternalParentProjectFieldMask);
+
+    return &_sfInternalParentProject;
 }
 
-void SceneBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+//! Get the Scene::_mfViewports field.
+const MFUnrecViewportPtr *SceneBase::getMFViewports(void) const
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
-
-    _mfViewports.terminateShare(uiAspect, this->getContainerSize());
-    _mfBackgrounds.terminateShare(uiAspect, this->getContainerSize());
-    _mfUIDrawingSurfaces.terminateShare(uiAspect, this->getContainerSize());
-    _mfForegrounds.terminateShare(uiAspect, this->getContainerSize());
-    _mfInitialForegrounds.terminateShare(uiAspect, this->getContainerSize());
-    _mfModelNodes.terminateShare(uiAspect, this->getContainerSize());
-    _mfInitialModelNodes.terminateShare(uiAspect, this->getContainerSize());
-    _mfCameras.terminateShare(uiAspect, this->getContainerSize());
-    _mfAnimations.terminateShare(uiAspect, this->getContainerSize());
-    _mfInitialAnimations.terminateShare(uiAspect, this->getContainerSize());
-    _mfParticleSystems.terminateShare(uiAspect, this->getContainerSize());
-    _mfInitialParticleSystems.terminateShare(uiAspect, this->getContainerSize());
+    return &_mfViewports;
 }
-#endif
 
-/*------------------------- constructors ----------------------------------*/
-
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
-
-SceneBase::SceneBase(void) :
-    _Producer(&getProducerType()),
-    _sfInternalParentProject  (ProjectPtr(NullFC)), 
-    _mfViewports              (), 
-    _mfBackgrounds            (), 
-    _mfUIDrawingSurfaces      (), 
-    _sfInitialBackground      (BackgroundPtr(NullFC)), 
-    _mfForegrounds            (), 
-    _mfInitialForegrounds     (), 
-    _mfModelNodes             (), 
-    _mfInitialModelNodes      (), 
-    _sfRoot                   (NodePtr(NullFC)), 
-    _sfRootCore               (TransformPtr(NullFC)), 
-    _sfDefaultCameraBeacon    (NodePtr(NullFC)), 
-    _sfDefaultCameraBeaconCore(TransformPtr(NullFC)), 
-    _mfCameras                (), 
-    _sfInitialCamera          (CameraPtr(NullFC)), 
-    _mfAnimations             (), 
-    _mfInitialAnimations      (), 
-    _mfParticleSystems        (), 
-    _mfInitialParticleSystems (), 
-    _sfLuaModule              (), 
-    _sfPhysicsHandler         (PhysicsHandlerPtr(NullFC)), 
-    _sfPhysicsWorld           (PhysicsWorldPtr(NullFC)), 
-    _sfGenericMethodIDs       (), 
-    _sfEventProducer(&_Producer),
-    Inherited() 
+MFUnrecViewportPtr  *SceneBase::editMFViewports      (void)
 {
+    editMField(ViewportsFieldMask, _mfViewports);
+
+    return &_mfViewports;
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-SceneBase::SceneBase(const SceneBase &source) :
-    _Producer(&source.getProducerType()),
-    _sfInternalParentProject  (source._sfInternalParentProject  ), 
-    _mfViewports              (source._mfViewports              ), 
-    _mfBackgrounds            (source._mfBackgrounds            ), 
-    _mfUIDrawingSurfaces      (source._mfUIDrawingSurfaces      ), 
-    _sfInitialBackground      (source._sfInitialBackground      ), 
-    _mfForegrounds            (source._mfForegrounds            ), 
-    _mfInitialForegrounds     (source._mfInitialForegrounds     ), 
-    _mfModelNodes             (source._mfModelNodes             ), 
-    _mfInitialModelNodes      (source._mfInitialModelNodes      ), 
-    _sfRoot                   (source._sfRoot                   ), 
-    _sfRootCore               (source._sfRootCore               ), 
-    _sfDefaultCameraBeacon    (source._sfDefaultCameraBeacon    ), 
-    _sfDefaultCameraBeaconCore(source._sfDefaultCameraBeaconCore), 
-    _mfCameras                (source._mfCameras                ), 
-    _sfInitialCamera          (source._sfInitialCamera          ), 
-    _mfAnimations             (source._mfAnimations             ), 
-    _mfInitialAnimations      (source._mfInitialAnimations      ), 
-    _mfParticleSystems        (source._mfParticleSystems        ), 
-    _mfInitialParticleSystems (source._mfInitialParticleSystems ), 
-    _sfLuaModule              (source._sfLuaModule              ), 
-    _sfPhysicsHandler         (source._sfPhysicsHandler         ), 
-    _sfPhysicsWorld           (source._sfPhysicsWorld           ), 
-    _sfGenericMethodIDs       (source._sfGenericMethodIDs       ), 
-    _sfEventProducer(&_Producer),
-    Inherited                 (source)
+//! Get the Scene::_mfBackgrounds field.
+const MFUnrecBackgroundPtr *SceneBase::getMFBackgrounds(void) const
 {
+    return &_mfBackgrounds;
 }
 
-/*-------------------------- destructors ----------------------------------*/
-
-SceneBase::~SceneBase(void)
+MFUnrecBackgroundPtr *SceneBase::editMFBackgrounds    (void)
 {
+    editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+    return &_mfBackgrounds;
 }
+
+//! Get the Scene::_mfUIDrawingSurfaces field.
+const MFUnrecUIDrawingSurfacePtr *SceneBase::getMFUIDrawingSurfaces(void) const
+{
+    return &_mfUIDrawingSurfaces;
+}
+
+MFUnrecUIDrawingSurfacePtr *SceneBase::editMFUIDrawingSurfaces(void)
+{
+    editMField(UIDrawingSurfacesFieldMask, _mfUIDrawingSurfaces);
+
+    return &_mfUIDrawingSurfaces;
+}
+
+//! Get the Scene::_sfInitialBackground field.
+const SFUnrecBackgroundPtr *SceneBase::getSFInitialBackground(void) const
+{
+    return &_sfInitialBackground;
+}
+
+SFUnrecBackgroundPtr *SceneBase::editSFInitialBackground(void)
+{
+    editSField(InitialBackgroundFieldMask);
+
+    return &_sfInitialBackground;
+}
+
+//! Get the Scene::_mfForegrounds field.
+const MFUnrecForegroundPtr *SceneBase::getMFForegrounds(void) const
+{
+    return &_mfForegrounds;
+}
+
+MFUnrecForegroundPtr *SceneBase::editMFForegrounds    (void)
+{
+    editMField(ForegroundsFieldMask, _mfForegrounds);
+
+    return &_mfForegrounds;
+}
+
+//! Get the Scene::_mfInitialForegrounds field.
+const MFUnrecForegroundPtr *SceneBase::getMFInitialForegrounds(void) const
+{
+    return &_mfInitialForegrounds;
+}
+
+MFUnrecForegroundPtr *SceneBase::editMFInitialForegrounds(void)
+{
+    editMField(InitialForegroundsFieldMask, _mfInitialForegrounds);
+
+    return &_mfInitialForegrounds;
+}
+
+//! Get the Scene::_mfModelNodes field.
+const MFUnrecNodePtr *SceneBase::getMFModelNodes(void) const
+{
+    return &_mfModelNodes;
+}
+
+MFUnrecNodePtr      *SceneBase::editMFModelNodes     (void)
+{
+    editMField(ModelNodesFieldMask, _mfModelNodes);
+
+    return &_mfModelNodes;
+}
+
+//! Get the Scene::_mfInitialModelNodes field.
+const MFUnrecNodePtr *SceneBase::getMFInitialModelNodes(void) const
+{
+    return &_mfInitialModelNodes;
+}
+
+MFUnrecNodePtr      *SceneBase::editMFInitialModelNodes(void)
+{
+    editMField(InitialModelNodesFieldMask, _mfInitialModelNodes);
+
+    return &_mfInitialModelNodes;
+}
+
+//! Get the Scene::_sfRoot field.
+const SFUnrecNodePtr *SceneBase::getSFRoot(void) const
+{
+    return &_sfRoot;
+}
+
+SFUnrecNodePtr      *SceneBase::editSFRoot           (void)
+{
+    editSField(RootFieldMask);
+
+    return &_sfRoot;
+}
+
+//! Get the Scene::_sfRootCore field.
+const SFUnrecTransformPtr *SceneBase::getSFRootCore(void) const
+{
+    return &_sfRootCore;
+}
+
+SFUnrecTransformPtr *SceneBase::editSFRootCore       (void)
+{
+    editSField(RootCoreFieldMask);
+
+    return &_sfRootCore;
+}
+
+//! Get the Scene::_sfDefaultCameraBeacon field.
+const SFUnrecNodePtr *SceneBase::getSFDefaultCameraBeacon(void) const
+{
+    return &_sfDefaultCameraBeacon;
+}
+
+SFUnrecNodePtr      *SceneBase::editSFDefaultCameraBeacon(void)
+{
+    editSField(DefaultCameraBeaconFieldMask);
+
+    return &_sfDefaultCameraBeacon;
+}
+
+//! Get the Scene::_sfDefaultCameraBeaconCore field.
+const SFUnrecTransformPtr *SceneBase::getSFDefaultCameraBeaconCore(void) const
+{
+    return &_sfDefaultCameraBeaconCore;
+}
+
+SFUnrecTransformPtr *SceneBase::editSFDefaultCameraBeaconCore(void)
+{
+    editSField(DefaultCameraBeaconCoreFieldMask);
+
+    return &_sfDefaultCameraBeaconCore;
+}
+
+//! Get the Scene::_mfCameras field.
+const MFUnrecCameraPtr *SceneBase::getMFCameras(void) const
+{
+    return &_mfCameras;
+}
+
+MFUnrecCameraPtr    *SceneBase::editMFCameras        (void)
+{
+    editMField(CamerasFieldMask, _mfCameras);
+
+    return &_mfCameras;
+}
+
+//! Get the Scene::_sfInitialCamera field.
+const SFUnrecCameraPtr *SceneBase::getSFInitialCamera(void) const
+{
+    return &_sfInitialCamera;
+}
+
+SFUnrecCameraPtr    *SceneBase::editSFInitialCamera  (void)
+{
+    editSField(InitialCameraFieldMask);
+
+    return &_sfInitialCamera;
+}
+
+//! Get the Scene::_mfAnimations field.
+const MFUnrecAnimationPtr *SceneBase::getMFAnimations(void) const
+{
+    return &_mfAnimations;
+}
+
+MFUnrecAnimationPtr *SceneBase::editMFAnimations     (void)
+{
+    editMField(AnimationsFieldMask, _mfAnimations);
+
+    return &_mfAnimations;
+}
+
+//! Get the Scene::_mfInitialAnimations field.
+const MFUnrecAnimationPtr *SceneBase::getMFInitialAnimations(void) const
+{
+    return &_mfInitialAnimations;
+}
+
+MFUnrecAnimationPtr *SceneBase::editMFInitialAnimations(void)
+{
+    editMField(InitialAnimationsFieldMask, _mfInitialAnimations);
+
+    return &_mfInitialAnimations;
+}
+
+//! Get the Scene::_mfParticleSystems field.
+const MFUnrecParticleSystemPtr *SceneBase::getMFParticleSystems(void) const
+{
+    return &_mfParticleSystems;
+}
+
+MFUnrecParticleSystemPtr *SceneBase::editMFParticleSystems(void)
+{
+    editMField(ParticleSystemsFieldMask, _mfParticleSystems);
+
+    return &_mfParticleSystems;
+}
+
+//! Get the Scene::_mfInitialParticleSystems field.
+const MFUnrecParticleSystemPtr *SceneBase::getMFInitialParticleSystems(void) const
+{
+    return &_mfInitialParticleSystems;
+}
+
+MFUnrecParticleSystemPtr *SceneBase::editMFInitialParticleSystems(void)
+{
+    editMField(InitialParticleSystemsFieldMask, _mfInitialParticleSystems);
+
+    return &_mfInitialParticleSystems;
+}
+
+SFBoostPath *SceneBase::editSFLuaModule(void)
+{
+    editSField(LuaModuleFieldMask);
+
+    return &_sfLuaModule;
+}
+
+const SFBoostPath *SceneBase::getSFLuaModule(void) const
+{
+    return &_sfLuaModule;
+}
+
+
+//! Get the Scene::_sfPhysicsHandler field.
+const SFUnrecPhysicsHandlerPtr *SceneBase::getSFPhysicsHandler(void) const
+{
+    return &_sfPhysicsHandler;
+}
+
+SFUnrecPhysicsHandlerPtr *SceneBase::editSFPhysicsHandler (void)
+{
+    editSField(PhysicsHandlerFieldMask);
+
+    return &_sfPhysicsHandler;
+}
+
+//! Get the Scene::_sfPhysicsWorld field.
+const SFUnrecPhysicsWorldPtr *SceneBase::getSFPhysicsWorld(void) const
+{
+    return &_sfPhysicsWorld;
+}
+
+SFUnrecPhysicsWorldPtr *SceneBase::editSFPhysicsWorld   (void)
+{
+    editSField(PhysicsWorldFieldMask);
+
+    return &_sfPhysicsWorld;
+}
+
+SFUInt32 *SceneBase::editSFGenericMethodIDs(void)
+{
+    editSField(GenericMethodIDsFieldMask);
+
+    return &_sfGenericMethodIDs;
+}
+
+const SFUInt32 *SceneBase::getSFGenericMethodIDs(void) const
+{
+    return &_sfGenericMethodIDs;
+}
+
+
+
+
+void SceneBase::pushToViewports(Viewport * const value)
+{
+    editMField(ViewportsFieldMask, _mfViewports);
+
+    _mfViewports.push_back(value);
+}
+
+void SceneBase::assignViewports(const MFUnrecViewportPtr &value)
+{
+    MFUnrecViewportPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecViewportPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearViewports();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToViewports(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromViewports(UInt32 uiIndex)
+{
+    if(uiIndex < _mfViewports.size())
+    {
+        editMField(ViewportsFieldMask, _mfViewports);
+
+        _mfViewports.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromViewports(Viewport * const value)
+{
+    Int32 iElemIdx = _mfViewports.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ViewportsFieldMask, _mfViewports);
+
+        _mfViewports.erase(iElemIdx);
+    }
+}
+void SceneBase::clearViewports(void)
+{
+    editMField(ViewportsFieldMask, _mfViewports);
+
+
+    _mfViewports.clear();
+}
+
+void SceneBase::pushToBackgrounds(Background * const value)
+{
+    editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+    _mfBackgrounds.push_back(value);
+}
+
+void SceneBase::assignBackgrounds(const MFUnrecBackgroundPtr &value)
+{
+    MFUnrecBackgroundPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecBackgroundPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearBackgrounds();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToBackgrounds(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromBackgrounds(UInt32 uiIndex)
+{
+    if(uiIndex < _mfBackgrounds.size())
+    {
+        editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+        _mfBackgrounds.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromBackgrounds(Background * const value)
+{
+    Int32 iElemIdx = _mfBackgrounds.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+        _mfBackgrounds.erase(iElemIdx);
+    }
+}
+void SceneBase::clearBackgrounds(void)
+{
+    editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+
+    _mfBackgrounds.clear();
+}
+
+void SceneBase::pushToUIDrawingSurfaces(UIDrawingSurface * const value)
+{
+    editMField(UIDrawingSurfacesFieldMask, _mfUIDrawingSurfaces);
+
+    _mfUIDrawingSurfaces.push_back(value);
+}
+
+void SceneBase::assignUIDrawingSurfaces(const MFUnrecUIDrawingSurfacePtr &value)
+{
+    MFUnrecUIDrawingSurfacePtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecUIDrawingSurfacePtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearUIDrawingSurfaces();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToUIDrawingSurfaces(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromUIDrawingSurfaces(UInt32 uiIndex)
+{
+    if(uiIndex < _mfUIDrawingSurfaces.size())
+    {
+        editMField(UIDrawingSurfacesFieldMask, _mfUIDrawingSurfaces);
+
+        _mfUIDrawingSurfaces.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromUIDrawingSurfaces(UIDrawingSurface * const value)
+{
+    Int32 iElemIdx = _mfUIDrawingSurfaces.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(UIDrawingSurfacesFieldMask, _mfUIDrawingSurfaces);
+
+        _mfUIDrawingSurfaces.erase(iElemIdx);
+    }
+}
+void SceneBase::clearUIDrawingSurfaces(void)
+{
+    editMField(UIDrawingSurfacesFieldMask, _mfUIDrawingSurfaces);
+
+
+    _mfUIDrawingSurfaces.clear();
+}
+
+void SceneBase::pushToForegrounds(Foreground * const value)
+{
+    editMField(ForegroundsFieldMask, _mfForegrounds);
+
+    _mfForegrounds.push_back(value);
+}
+
+void SceneBase::assignForegrounds(const MFUnrecForegroundPtr &value)
+{
+    MFUnrecForegroundPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecForegroundPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearForegrounds();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToForegrounds(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromForegrounds(UInt32 uiIndex)
+{
+    if(uiIndex < _mfForegrounds.size())
+    {
+        editMField(ForegroundsFieldMask, _mfForegrounds);
+
+        _mfForegrounds.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromForegrounds(Foreground * const value)
+{
+    Int32 iElemIdx = _mfForegrounds.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ForegroundsFieldMask, _mfForegrounds);
+
+        _mfForegrounds.erase(iElemIdx);
+    }
+}
+void SceneBase::clearForegrounds(void)
+{
+    editMField(ForegroundsFieldMask, _mfForegrounds);
+
+
+    _mfForegrounds.clear();
+}
+
+void SceneBase::pushToInitialForegrounds(Foreground * const value)
+{
+    editMField(InitialForegroundsFieldMask, _mfInitialForegrounds);
+
+    _mfInitialForegrounds.push_back(value);
+}
+
+void SceneBase::assignInitialForegrounds(const MFUnrecForegroundPtr &value)
+{
+    MFUnrecForegroundPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecForegroundPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearInitialForegrounds();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToInitialForegrounds(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromInitialForegrounds(UInt32 uiIndex)
+{
+    if(uiIndex < _mfInitialForegrounds.size())
+    {
+        editMField(InitialForegroundsFieldMask, _mfInitialForegrounds);
+
+        _mfInitialForegrounds.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromInitialForegrounds(Foreground * const value)
+{
+    Int32 iElemIdx = _mfInitialForegrounds.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(InitialForegroundsFieldMask, _mfInitialForegrounds);
+
+        _mfInitialForegrounds.erase(iElemIdx);
+    }
+}
+void SceneBase::clearInitialForegrounds(void)
+{
+    editMField(InitialForegroundsFieldMask, _mfInitialForegrounds);
+
+
+    _mfInitialForegrounds.clear();
+}
+
+void SceneBase::pushToModelNodes(Node * const value)
+{
+    editMField(ModelNodesFieldMask, _mfModelNodes);
+
+    _mfModelNodes.push_back(value);
+}
+
+void SceneBase::assignModelNodes(const MFUnrecNodePtr    &value)
+{
+    MFUnrecNodePtr   ::const_iterator elemIt  =
+        value.begin();
+    MFUnrecNodePtr   ::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearModelNodes();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToModelNodes(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromModelNodes(UInt32 uiIndex)
+{
+    if(uiIndex < _mfModelNodes.size())
+    {
+        editMField(ModelNodesFieldMask, _mfModelNodes);
+
+        _mfModelNodes.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromModelNodes(Node * const value)
+{
+    Int32 iElemIdx = _mfModelNodes.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ModelNodesFieldMask, _mfModelNodes);
+
+        _mfModelNodes.erase(iElemIdx);
+    }
+}
+void SceneBase::clearModelNodes(void)
+{
+    editMField(ModelNodesFieldMask, _mfModelNodes);
+
+
+    _mfModelNodes.clear();
+}
+
+void SceneBase::pushToInitialModelNodes(Node * const value)
+{
+    editMField(InitialModelNodesFieldMask, _mfInitialModelNodes);
+
+    _mfInitialModelNodes.push_back(value);
+}
+
+void SceneBase::assignInitialModelNodes(const MFUnrecNodePtr    &value)
+{
+    MFUnrecNodePtr   ::const_iterator elemIt  =
+        value.begin();
+    MFUnrecNodePtr   ::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearInitialModelNodes();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToInitialModelNodes(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromInitialModelNodes(UInt32 uiIndex)
+{
+    if(uiIndex < _mfInitialModelNodes.size())
+    {
+        editMField(InitialModelNodesFieldMask, _mfInitialModelNodes);
+
+        _mfInitialModelNodes.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromInitialModelNodes(Node * const value)
+{
+    Int32 iElemIdx = _mfInitialModelNodes.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(InitialModelNodesFieldMask, _mfInitialModelNodes);
+
+        _mfInitialModelNodes.erase(iElemIdx);
+    }
+}
+void SceneBase::clearInitialModelNodes(void)
+{
+    editMField(InitialModelNodesFieldMask, _mfInitialModelNodes);
+
+
+    _mfInitialModelNodes.clear();
+}
+
+void SceneBase::pushToCameras(Camera * const value)
+{
+    editMField(CamerasFieldMask, _mfCameras);
+
+    _mfCameras.push_back(value);
+}
+
+void SceneBase::assignCameras  (const MFUnrecCameraPtr  &value)
+{
+    MFUnrecCameraPtr ::const_iterator elemIt  =
+        value.begin();
+    MFUnrecCameraPtr ::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearCameras();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToCameras(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromCameras(UInt32 uiIndex)
+{
+    if(uiIndex < _mfCameras.size())
+    {
+        editMField(CamerasFieldMask, _mfCameras);
+
+        _mfCameras.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromCameras(Camera * const value)
+{
+    Int32 iElemIdx = _mfCameras.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(CamerasFieldMask, _mfCameras);
+
+        _mfCameras.erase(iElemIdx);
+    }
+}
+void SceneBase::clearCameras(void)
+{
+    editMField(CamerasFieldMask, _mfCameras);
+
+
+    _mfCameras.clear();
+}
+
+void SceneBase::pushToAnimations(Animation * const value)
+{
+    editMField(AnimationsFieldMask, _mfAnimations);
+
+    _mfAnimations.push_back(value);
+}
+
+void SceneBase::assignAnimations(const MFUnrecAnimationPtr &value)
+{
+    MFUnrecAnimationPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecAnimationPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearAnimations();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToAnimations(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromAnimations(UInt32 uiIndex)
+{
+    if(uiIndex < _mfAnimations.size())
+    {
+        editMField(AnimationsFieldMask, _mfAnimations);
+
+        _mfAnimations.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromAnimations(Animation * const value)
+{
+    Int32 iElemIdx = _mfAnimations.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(AnimationsFieldMask, _mfAnimations);
+
+        _mfAnimations.erase(iElemIdx);
+    }
+}
+void SceneBase::clearAnimations(void)
+{
+    editMField(AnimationsFieldMask, _mfAnimations);
+
+
+    _mfAnimations.clear();
+}
+
+void SceneBase::pushToInitialAnimations(Animation * const value)
+{
+    editMField(InitialAnimationsFieldMask, _mfInitialAnimations);
+
+    _mfInitialAnimations.push_back(value);
+}
+
+void SceneBase::assignInitialAnimations(const MFUnrecAnimationPtr &value)
+{
+    MFUnrecAnimationPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecAnimationPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearInitialAnimations();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToInitialAnimations(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromInitialAnimations(UInt32 uiIndex)
+{
+    if(uiIndex < _mfInitialAnimations.size())
+    {
+        editMField(InitialAnimationsFieldMask, _mfInitialAnimations);
+
+        _mfInitialAnimations.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromInitialAnimations(Animation * const value)
+{
+    Int32 iElemIdx = _mfInitialAnimations.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(InitialAnimationsFieldMask, _mfInitialAnimations);
+
+        _mfInitialAnimations.erase(iElemIdx);
+    }
+}
+void SceneBase::clearInitialAnimations(void)
+{
+    editMField(InitialAnimationsFieldMask, _mfInitialAnimations);
+
+
+    _mfInitialAnimations.clear();
+}
+
+void SceneBase::pushToParticleSystems(ParticleSystem * const value)
+{
+    editMField(ParticleSystemsFieldMask, _mfParticleSystems);
+
+    _mfParticleSystems.push_back(value);
+}
+
+void SceneBase::assignParticleSystems(const MFUnrecParticleSystemPtr &value)
+{
+    MFUnrecParticleSystemPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecParticleSystemPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearParticleSystems();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToParticleSystems(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromParticleSystems(UInt32 uiIndex)
+{
+    if(uiIndex < _mfParticleSystems.size())
+    {
+        editMField(ParticleSystemsFieldMask, _mfParticleSystems);
+
+        _mfParticleSystems.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromParticleSystems(ParticleSystem * const value)
+{
+    Int32 iElemIdx = _mfParticleSystems.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ParticleSystemsFieldMask, _mfParticleSystems);
+
+        _mfParticleSystems.erase(iElemIdx);
+    }
+}
+void SceneBase::clearParticleSystems(void)
+{
+    editMField(ParticleSystemsFieldMask, _mfParticleSystems);
+
+
+    _mfParticleSystems.clear();
+}
+
+void SceneBase::pushToInitialParticleSystems(ParticleSystem * const value)
+{
+    editMField(InitialParticleSystemsFieldMask, _mfInitialParticleSystems);
+
+    _mfInitialParticleSystems.push_back(value);
+}
+
+void SceneBase::assignInitialParticleSystems(const MFUnrecParticleSystemPtr &value)
+{
+    MFUnrecParticleSystemPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecParticleSystemPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearInitialParticleSystems();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToInitialParticleSystems(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromInitialParticleSystems(UInt32 uiIndex)
+{
+    if(uiIndex < _mfInitialParticleSystems.size())
+    {
+        editMField(InitialParticleSystemsFieldMask, _mfInitialParticleSystems);
+
+        _mfInitialParticleSystems.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromInitialParticleSystems(ParticleSystem * const value)
+{
+    Int32 iElemIdx = _mfInitialParticleSystems.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(InitialParticleSystemsFieldMask, _mfInitialParticleSystems);
+
+        _mfInitialParticleSystems.erase(iElemIdx);
+    }
+}
+void SceneBase::clearInitialParticleSystems(void)
+{
+    editMField(InitialParticleSystemsFieldMask, _mfInitialParticleSystems);
+
+
+    _mfInitialParticleSystems.clear();
+}
+
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 SceneBase::getBinSize(const BitVector &whichField)
+UInt32 SceneBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -623,128 +1998,104 @@ UInt32 SceneBase::getBinSize(const BitVector &whichField)
     {
         returnValue += _sfInternalParentProject.getBinSize();
     }
-
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))
     {
         returnValue += _mfViewports.getBinSize();
     }
-
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
     {
         returnValue += _mfBackgrounds.getBinSize();
     }
-
     if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
     {
         returnValue += _mfUIDrawingSurfaces.getBinSize();
     }
-
     if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
     {
         returnValue += _sfInitialBackground.getBinSize();
     }
-
     if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
     {
         returnValue += _mfForegrounds.getBinSize();
     }
-
     if(FieldBits::NoField != (InitialForegroundsFieldMask & whichField))
     {
         returnValue += _mfInitialForegrounds.getBinSize();
     }
-
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         returnValue += _mfModelNodes.getBinSize();
     }
-
     if(FieldBits::NoField != (InitialModelNodesFieldMask & whichField))
     {
         returnValue += _mfInitialModelNodes.getBinSize();
     }
-
     if(FieldBits::NoField != (RootFieldMask & whichField))
     {
         returnValue += _sfRoot.getBinSize();
     }
-
     if(FieldBits::NoField != (RootCoreFieldMask & whichField))
     {
         returnValue += _sfRootCore.getBinSize();
     }
-
     if(FieldBits::NoField != (DefaultCameraBeaconFieldMask & whichField))
     {
         returnValue += _sfDefaultCameraBeacon.getBinSize();
     }
-
     if(FieldBits::NoField != (DefaultCameraBeaconCoreFieldMask & whichField))
     {
         returnValue += _sfDefaultCameraBeaconCore.getBinSize();
     }
-
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
     {
         returnValue += _mfCameras.getBinSize();
     }
-
     if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
     {
         returnValue += _sfInitialCamera.getBinSize();
     }
-
     if(FieldBits::NoField != (AnimationsFieldMask & whichField))
     {
         returnValue += _mfAnimations.getBinSize();
     }
-
     if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
     {
         returnValue += _mfInitialAnimations.getBinSize();
     }
-
     if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
     {
         returnValue += _mfParticleSystems.getBinSize();
     }
-
     if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
     {
         returnValue += _mfInitialParticleSystems.getBinSize();
     }
-
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
         returnValue += _sfLuaModule.getBinSize();
     }
-
     if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
     {
         returnValue += _sfPhysicsHandler.getBinSize();
     }
-
     if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
     {
         returnValue += _sfPhysicsWorld.getBinSize();
     }
-
     if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
     {
         returnValue += _sfGenericMethodIDs.getBinSize();
     }
-
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         returnValue += _sfEventProducer.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void SceneBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void SceneBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -752,127 +2103,102 @@ void SceneBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _sfInternalParentProject.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))
     {
         _mfViewports.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
     {
         _mfBackgrounds.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
     {
         _mfUIDrawingSurfaces.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
     {
         _sfInitialBackground.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
     {
         _mfForegrounds.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialForegroundsFieldMask & whichField))
     {
         _mfInitialForegrounds.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         _mfModelNodes.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialModelNodesFieldMask & whichField))
     {
         _mfInitialModelNodes.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (RootFieldMask & whichField))
     {
         _sfRoot.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (RootCoreFieldMask & whichField))
     {
         _sfRootCore.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (DefaultCameraBeaconFieldMask & whichField))
     {
         _sfDefaultCameraBeacon.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (DefaultCameraBeaconCoreFieldMask & whichField))
     {
         _sfDefaultCameraBeaconCore.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
     {
         _mfCameras.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
     {
         _sfInitialCamera.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (AnimationsFieldMask & whichField))
     {
         _mfAnimations.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
     {
         _mfInitialAnimations.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
     {
         _mfParticleSystems.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
     {
         _mfInitialParticleSystems.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
         _sfLuaModule.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
     {
         _sfPhysicsHandler.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
     {
         _sfPhysicsWorld.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
     {
         _sfGenericMethodIDs.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyToBin(pMem);
     }
-
-
 }
 
-void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void SceneBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -880,348 +2206,1287 @@ void SceneBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _sfInternalParentProject.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))
     {
         _mfViewports.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
     {
         _mfBackgrounds.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
     {
         _mfUIDrawingSurfaces.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
     {
         _sfInitialBackground.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
     {
         _mfForegrounds.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialForegroundsFieldMask & whichField))
     {
         _mfInitialForegrounds.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         _mfModelNodes.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialModelNodesFieldMask & whichField))
     {
         _mfInitialModelNodes.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (RootFieldMask & whichField))
     {
         _sfRoot.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (RootCoreFieldMask & whichField))
     {
         _sfRootCore.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (DefaultCameraBeaconFieldMask & whichField))
     {
         _sfDefaultCameraBeacon.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (DefaultCameraBeaconCoreFieldMask & whichField))
     {
         _sfDefaultCameraBeaconCore.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
     {
         _mfCameras.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
     {
         _sfInitialCamera.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (AnimationsFieldMask & whichField))
     {
         _mfAnimations.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
     {
         _mfInitialAnimations.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
     {
         _mfParticleSystems.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
     {
         _mfInitialParticleSystems.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
         _sfLuaModule.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
     {
         _sfPhysicsHandler.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
     {
         _sfPhysicsWorld.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
     {
         _sfGenericMethodIDs.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void SceneBase::executeSyncImpl(      SceneBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+SceneTransitPtr SceneBase::createLocal(BitVector bFlags)
 {
+    SceneTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
-        _sfInternalParentProject.syncWith(pOther->_sfInternalParentProject);
+        fc = dynamic_pointer_cast<Scene>(tmpPtr);
+    }
 
-    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
-        _mfViewports.syncWith(pOther->_mfViewports);
-
-    if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
-        _mfBackgrounds.syncWith(pOther->_mfBackgrounds);
-
-    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
-        _mfUIDrawingSurfaces.syncWith(pOther->_mfUIDrawingSurfaces);
-
-    if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
-        _sfInitialBackground.syncWith(pOther->_sfInitialBackground);
-
-    if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
-        _mfForegrounds.syncWith(pOther->_mfForegrounds);
-
-    if(FieldBits::NoField != (InitialForegroundsFieldMask & whichField))
-        _mfInitialForegrounds.syncWith(pOther->_mfInitialForegrounds);
-
-    if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
-        _mfModelNodes.syncWith(pOther->_mfModelNodes);
-
-    if(FieldBits::NoField != (InitialModelNodesFieldMask & whichField))
-        _mfInitialModelNodes.syncWith(pOther->_mfInitialModelNodes);
-
-    if(FieldBits::NoField != (RootFieldMask & whichField))
-        _sfRoot.syncWith(pOther->_sfRoot);
-
-    if(FieldBits::NoField != (RootCoreFieldMask & whichField))
-        _sfRootCore.syncWith(pOther->_sfRootCore);
-
-    if(FieldBits::NoField != (DefaultCameraBeaconFieldMask & whichField))
-        _sfDefaultCameraBeacon.syncWith(pOther->_sfDefaultCameraBeacon);
-
-    if(FieldBits::NoField != (DefaultCameraBeaconCoreFieldMask & whichField))
-        _sfDefaultCameraBeaconCore.syncWith(pOther->_sfDefaultCameraBeaconCore);
-
-    if(FieldBits::NoField != (CamerasFieldMask & whichField))
-        _mfCameras.syncWith(pOther->_mfCameras);
-
-    if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
-        _sfInitialCamera.syncWith(pOther->_sfInitialCamera);
-
-    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
-        _mfAnimations.syncWith(pOther->_mfAnimations);
-
-    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
-        _mfInitialAnimations.syncWith(pOther->_mfInitialAnimations);
-
-    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
-        _mfParticleSystems.syncWith(pOther->_mfParticleSystems);
-
-    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
-        _mfInitialParticleSystems.syncWith(pOther->_mfInitialParticleSystems);
-
-    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
-        _sfLuaModule.syncWith(pOther->_sfLuaModule);
-
-    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
-        _sfPhysicsHandler.syncWith(pOther->_sfPhysicsHandler);
-
-    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
-        _sfPhysicsWorld.syncWith(pOther->_sfPhysicsWorld);
-
-    if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
-        _sfGenericMethodIDs.syncWith(pOther->_sfGenericMethodIDs);
-
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-        _sfEventProducer.syncWith(pOther->_sfEventProducer);
-
-
-}
-#else
-void SceneBase::executeSyncImpl(      SceneBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
-        _sfInternalParentProject.syncWith(pOther->_sfInternalParentProject);
-
-    if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
-        _sfInitialBackground.syncWith(pOther->_sfInitialBackground);
-
-    if(FieldBits::NoField != (RootFieldMask & whichField))
-        _sfRoot.syncWith(pOther->_sfRoot);
-
-    if(FieldBits::NoField != (RootCoreFieldMask & whichField))
-        _sfRootCore.syncWith(pOther->_sfRootCore);
-
-    if(FieldBits::NoField != (DefaultCameraBeaconFieldMask & whichField))
-        _sfDefaultCameraBeacon.syncWith(pOther->_sfDefaultCameraBeacon);
-
-    if(FieldBits::NoField != (DefaultCameraBeaconCoreFieldMask & whichField))
-        _sfDefaultCameraBeaconCore.syncWith(pOther->_sfDefaultCameraBeaconCore);
-
-    if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
-        _sfInitialCamera.syncWith(pOther->_sfInitialCamera);
-
-    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
-        _sfLuaModule.syncWith(pOther->_sfLuaModule);
-
-    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
-        _sfPhysicsHandler.syncWith(pOther->_sfPhysicsHandler);
-
-    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
-        _sfPhysicsWorld.syncWith(pOther->_sfPhysicsWorld);
-
-    if(FieldBits::NoField != (GenericMethodIDsFieldMask & whichField))
-        _sfGenericMethodIDs.syncWith(pOther->_sfGenericMethodIDs);
-
-
-    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
-        _mfViewports.syncWith(pOther->_mfViewports, sInfo);
-
-    if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
-        _mfBackgrounds.syncWith(pOther->_mfBackgrounds, sInfo);
-
-    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
-        _mfUIDrawingSurfaces.syncWith(pOther->_mfUIDrawingSurfaces, sInfo);
-
-    if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
-        _mfForegrounds.syncWith(pOther->_mfForegrounds, sInfo);
-
-    if(FieldBits::NoField != (InitialForegroundsFieldMask & whichField))
-        _mfInitialForegrounds.syncWith(pOther->_mfInitialForegrounds, sInfo);
-
-    if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
-        _mfModelNodes.syncWith(pOther->_mfModelNodes, sInfo);
-
-    if(FieldBits::NoField != (InitialModelNodesFieldMask & whichField))
-        _mfInitialModelNodes.syncWith(pOther->_mfInitialModelNodes, sInfo);
-
-    if(FieldBits::NoField != (CamerasFieldMask & whichField))
-        _mfCameras.syncWith(pOther->_mfCameras, sInfo);
-
-    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
-        _mfAnimations.syncWith(pOther->_mfAnimations, sInfo);
-
-    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
-        _mfInitialAnimations.syncWith(pOther->_mfInitialAnimations, sInfo);
-
-    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
-        _mfParticleSystems.syncWith(pOther->_mfParticleSystems, sInfo);
-
-    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
-        _mfInitialParticleSystems.syncWith(pOther->_mfInitialParticleSystems, sInfo);
-
-
+    return fc;
 }
 
-void SceneBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+SceneTransitPtr SceneBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    SceneTransitPtr fc;
 
-    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
-        _mfViewports.beginEdit(uiAspect, uiContainerSize);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
 
-    if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
-        _mfBackgrounds.beginEdit(uiAspect, uiContainerSize);
+        fc = dynamic_pointer_cast<Scene>(tmpPtr);
+    }
 
-    if(FieldBits::NoField != (UIDrawingSurfacesFieldMask & whichField))
-        _mfUIDrawingSurfaces.beginEdit(uiAspect, uiContainerSize);
+    return fc;
+}
 
-    if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
-        _mfForegrounds.beginEdit(uiAspect, uiContainerSize);
+//! create a new instance of the class
+SceneTransitPtr SceneBase::create(void)
+{
+    SceneTransitPtr fc;
 
-    if(FieldBits::NoField != (InitialForegroundsFieldMask & whichField))
-        _mfInitialForegrounds.beginEdit(uiAspect, uiContainerSize);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
 
-    if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
-        _mfModelNodes.beginEdit(uiAspect, uiContainerSize);
+        fc = dynamic_pointer_cast<Scene>(tmpPtr);
+    }
 
-    if(FieldBits::NoField != (InitialModelNodesFieldMask & whichField))
-        _mfInitialModelNodes.beginEdit(uiAspect, uiContainerSize);
+    return fc;
+}
 
-    if(FieldBits::NoField != (CamerasFieldMask & whichField))
-        _mfCameras.beginEdit(uiAspect, uiContainerSize);
+Scene *SceneBase::createEmptyLocal(BitVector bFlags)
+{
+    Scene *returnValue;
 
-    if(FieldBits::NoField != (AnimationsFieldMask & whichField))
-        _mfAnimations.beginEdit(uiAspect, uiContainerSize);
+    newPtr<Scene>(returnValue, bFlags);
 
-    if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
-        _mfInitialAnimations.beginEdit(uiAspect, uiContainerSize);
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
 
-    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
-        _mfParticleSystems.beginEdit(uiAspect, uiContainerSize);
+    return returnValue;
+}
 
-    if(FieldBits::NoField != (InitialParticleSystemsFieldMask & whichField))
-        _mfInitialParticleSystems.beginEdit(uiAspect, uiContainerSize);
+//! create an empty new instance of the class, do not copy the prototype
+Scene *SceneBase::createEmpty(void)
+{
+    Scene *returnValue;
 
+    newPtr<Scene>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr SceneBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    Scene *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const Scene *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr SceneBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    Scene *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const Scene *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr SceneBase::shallowCopy(void) const
+{
+    Scene *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const Scene *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+SceneBase::SceneBase(void) :
+    _Producer(&getProducerType()),
+    Inherited(),
+    _sfInternalParentProject  (NULL),
+    _mfViewports              (),
+    _mfBackgrounds            (),
+    _mfUIDrawingSurfaces      (),
+    _sfInitialBackground      (NULL),
+    _mfForegrounds            (),
+    _mfInitialForegrounds     (),
+    _mfModelNodes             (),
+    _mfInitialModelNodes      (),
+    _sfRoot                   (NULL),
+    _sfRootCore               (NULL),
+    _sfDefaultCameraBeacon    (NULL),
+    _sfDefaultCameraBeaconCore(NULL),
+    _mfCameras                (),
+    _sfInitialCamera          (NULL),
+    _mfAnimations             (),
+    _mfInitialAnimations      (),
+    _mfParticleSystems        (),
+    _mfInitialParticleSystems (),
+    _sfLuaModule              (),
+    _sfPhysicsHandler         (NULL),
+    _sfPhysicsWorld           (NULL),
+    _sfGenericMethodIDs       ()
+    ,_sfEventProducer(&_Producer)
+{
+}
+
+SceneBase::SceneBase(const SceneBase &source) :
+    _Producer(&source.getProducerType()),
+    Inherited(source),
+    _sfInternalParentProject  (NULL),
+    _mfViewports              (),
+    _mfBackgrounds            (),
+    _mfUIDrawingSurfaces      (),
+    _sfInitialBackground      (NULL),
+    _mfForegrounds            (),
+    _mfInitialForegrounds     (),
+    _mfModelNodes             (),
+    _mfInitialModelNodes      (),
+    _sfRoot                   (NULL),
+    _sfRootCore               (NULL),
+    _sfDefaultCameraBeacon    (NULL),
+    _sfDefaultCameraBeaconCore(NULL),
+    _mfCameras                (),
+    _sfInitialCamera          (NULL),
+    _mfAnimations             (),
+    _mfInitialAnimations      (),
+    _mfParticleSystems        (),
+    _mfInitialParticleSystems (),
+    _sfLuaModule              (source._sfLuaModule              ),
+    _sfPhysicsHandler         (NULL),
+    _sfPhysicsWorld           (NULL),
+    _sfGenericMethodIDs       (source._sfGenericMethodIDs       )
+    ,_sfEventProducer(&_Producer)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+SceneBase::~SceneBase(void)
+{
+}
+
+void SceneBase::onCreate(const Scene *source)
+{
+    Inherited::onCreate(source);
+
+    if(source != NULL)
+    {
+        Scene *pThis = static_cast<Scene *>(this);
+
+        pThis->setInternalParentProject(source->getInternalParentProject());
+
+        MFUnrecViewportPtr::const_iterator ViewportsIt  =
+            source->_mfViewports.begin();
+        MFUnrecViewportPtr::const_iterator ViewportsEnd =
+            source->_mfViewports.end  ();
+
+        while(ViewportsIt != ViewportsEnd)
+        {
+            pThis->pushToViewports(*ViewportsIt);
+
+            ++ViewportsIt;
+        }
+
+        MFUnrecBackgroundPtr::const_iterator BackgroundsIt  =
+            source->_mfBackgrounds.begin();
+        MFUnrecBackgroundPtr::const_iterator BackgroundsEnd =
+            source->_mfBackgrounds.end  ();
+
+        while(BackgroundsIt != BackgroundsEnd)
+        {
+            pThis->pushToBackgrounds(*BackgroundsIt);
+
+            ++BackgroundsIt;
+        }
+
+        MFUnrecUIDrawingSurfacePtr::const_iterator UIDrawingSurfacesIt  =
+            source->_mfUIDrawingSurfaces.begin();
+        MFUnrecUIDrawingSurfacePtr::const_iterator UIDrawingSurfacesEnd =
+            source->_mfUIDrawingSurfaces.end  ();
+
+        while(UIDrawingSurfacesIt != UIDrawingSurfacesEnd)
+        {
+            pThis->pushToUIDrawingSurfaces(*UIDrawingSurfacesIt);
+
+            ++UIDrawingSurfacesIt;
+        }
+
+        pThis->setInitialBackground(source->getInitialBackground());
+
+        MFUnrecForegroundPtr::const_iterator ForegroundsIt  =
+            source->_mfForegrounds.begin();
+        MFUnrecForegroundPtr::const_iterator ForegroundsEnd =
+            source->_mfForegrounds.end  ();
+
+        while(ForegroundsIt != ForegroundsEnd)
+        {
+            pThis->pushToForegrounds(*ForegroundsIt);
+
+            ++ForegroundsIt;
+        }
+
+        MFUnrecForegroundPtr::const_iterator InitialForegroundsIt  =
+            source->_mfInitialForegrounds.begin();
+        MFUnrecForegroundPtr::const_iterator InitialForegroundsEnd =
+            source->_mfInitialForegrounds.end  ();
+
+        while(InitialForegroundsIt != InitialForegroundsEnd)
+        {
+            pThis->pushToInitialForegrounds(*InitialForegroundsIt);
+
+            ++InitialForegroundsIt;
+        }
+
+        MFUnrecNodePtr::const_iterator ModelNodesIt  =
+            source->_mfModelNodes.begin();
+        MFUnrecNodePtr::const_iterator ModelNodesEnd =
+            source->_mfModelNodes.end  ();
+
+        while(ModelNodesIt != ModelNodesEnd)
+        {
+            pThis->pushToModelNodes(*ModelNodesIt);
+
+            ++ModelNodesIt;
+        }
+
+        MFUnrecNodePtr::const_iterator InitialModelNodesIt  =
+            source->_mfInitialModelNodes.begin();
+        MFUnrecNodePtr::const_iterator InitialModelNodesEnd =
+            source->_mfInitialModelNodes.end  ();
+
+        while(InitialModelNodesIt != InitialModelNodesEnd)
+        {
+            pThis->pushToInitialModelNodes(*InitialModelNodesIt);
+
+            ++InitialModelNodesIt;
+        }
+
+        pThis->setRoot(source->getRoot());
+
+        pThis->setRootCore(source->getRootCore());
+
+        pThis->setDefaultCameraBeacon(source->getDefaultCameraBeacon());
+
+        pThis->setDefaultCameraBeaconCore(source->getDefaultCameraBeaconCore());
+
+        MFUnrecCameraPtr::const_iterator CamerasIt  =
+            source->_mfCameras.begin();
+        MFUnrecCameraPtr::const_iterator CamerasEnd =
+            source->_mfCameras.end  ();
+
+        while(CamerasIt != CamerasEnd)
+        {
+            pThis->pushToCameras(*CamerasIt);
+
+            ++CamerasIt;
+        }
+
+        pThis->setInitialCamera(source->getInitialCamera());
+
+        MFUnrecAnimationPtr::const_iterator AnimationsIt  =
+            source->_mfAnimations.begin();
+        MFUnrecAnimationPtr::const_iterator AnimationsEnd =
+            source->_mfAnimations.end  ();
+
+        while(AnimationsIt != AnimationsEnd)
+        {
+            pThis->pushToAnimations(*AnimationsIt);
+
+            ++AnimationsIt;
+        }
+
+        MFUnrecAnimationPtr::const_iterator InitialAnimationsIt  =
+            source->_mfInitialAnimations.begin();
+        MFUnrecAnimationPtr::const_iterator InitialAnimationsEnd =
+            source->_mfInitialAnimations.end  ();
+
+        while(InitialAnimationsIt != InitialAnimationsEnd)
+        {
+            pThis->pushToInitialAnimations(*InitialAnimationsIt);
+
+            ++InitialAnimationsIt;
+        }
+
+        MFUnrecParticleSystemPtr::const_iterator ParticleSystemsIt  =
+            source->_mfParticleSystems.begin();
+        MFUnrecParticleSystemPtr::const_iterator ParticleSystemsEnd =
+            source->_mfParticleSystems.end  ();
+
+        while(ParticleSystemsIt != ParticleSystemsEnd)
+        {
+            pThis->pushToParticleSystems(*ParticleSystemsIt);
+
+            ++ParticleSystemsIt;
+        }
+
+        MFUnrecParticleSystemPtr::const_iterator InitialParticleSystemsIt  =
+            source->_mfInitialParticleSystems.begin();
+        MFUnrecParticleSystemPtr::const_iterator InitialParticleSystemsEnd =
+            source->_mfInitialParticleSystems.end  ();
+
+        while(InitialParticleSystemsIt != InitialParticleSystemsEnd)
+        {
+            pThis->pushToInitialParticleSystems(*InitialParticleSystemsIt);
+
+            ++InitialParticleSystemsIt;
+        }
+
+        pThis->setPhysicsHandler(source->getPhysicsHandler());
+
+        pThis->setPhysicsWorld(source->getPhysicsWorld());
+    }
+}
+
+GetFieldHandlePtr SceneBase::getHandleInternalParentProject (void) const
+{
+    SFUnrecProjectPtr::GetHandlePtr returnValue(
+        new  SFUnrecProjectPtr::GetHandle(
+             &_sfInternalParentProject,
+             this->getType().getFieldDesc(InternalParentProjectFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleInternalParentProject(void)
+{
+    SFUnrecProjectPtr::EditHandlePtr returnValue(
+        new  SFUnrecProjectPtr::EditHandle(
+             &_sfInternalParentProject,
+             this->getType().getFieldDesc(InternalParentProjectFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setInternalParentProject,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(InternalParentProjectFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleViewports       (void) const
+{
+    MFUnrecViewportPtr::GetHandlePtr returnValue(
+        new  MFUnrecViewportPtr::GetHandle(
+             &_mfViewports,
+             this->getType().getFieldDesc(ViewportsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleViewports      (void)
+{
+    MFUnrecViewportPtr::EditHandlePtr returnValue(
+        new  MFUnrecViewportPtr::EditHandle(
+             &_mfViewports,
+             this->getType().getFieldDesc(ViewportsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToViewports,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromViewports,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromViewports,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearViewports,
+                    static_cast<Scene *>(this)));
+
+    editMField(ViewportsFieldMask, _mfViewports);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleBackgrounds     (void) const
+{
+    MFUnrecBackgroundPtr::GetHandlePtr returnValue(
+        new  MFUnrecBackgroundPtr::GetHandle(
+             &_mfBackgrounds,
+             this->getType().getFieldDesc(BackgroundsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleBackgrounds    (void)
+{
+    MFUnrecBackgroundPtr::EditHandlePtr returnValue(
+        new  MFUnrecBackgroundPtr::EditHandle(
+             &_mfBackgrounds,
+             this->getType().getFieldDesc(BackgroundsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToBackgrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromBackgrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromBackgrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearBackgrounds,
+                    static_cast<Scene *>(this)));
+
+    editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleUIDrawingSurfaces (void) const
+{
+    MFUnrecUIDrawingSurfacePtr::GetHandlePtr returnValue(
+        new  MFUnrecUIDrawingSurfacePtr::GetHandle(
+             &_mfUIDrawingSurfaces,
+             this->getType().getFieldDesc(UIDrawingSurfacesFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleUIDrawingSurfaces(void)
+{
+    MFUnrecUIDrawingSurfacePtr::EditHandlePtr returnValue(
+        new  MFUnrecUIDrawingSurfacePtr::EditHandle(
+             &_mfUIDrawingSurfaces,
+             this->getType().getFieldDesc(UIDrawingSurfacesFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToUIDrawingSurfaces,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromUIDrawingSurfaces,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromUIDrawingSurfaces,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearUIDrawingSurfaces,
+                    static_cast<Scene *>(this)));
+
+    editMField(UIDrawingSurfacesFieldMask, _mfUIDrawingSurfaces);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleInitialBackground (void) const
+{
+    SFUnrecBackgroundPtr::GetHandlePtr returnValue(
+        new  SFUnrecBackgroundPtr::GetHandle(
+             &_sfInitialBackground,
+             this->getType().getFieldDesc(InitialBackgroundFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleInitialBackground(void)
+{
+    SFUnrecBackgroundPtr::EditHandlePtr returnValue(
+        new  SFUnrecBackgroundPtr::EditHandle(
+             &_sfInitialBackground,
+             this->getType().getFieldDesc(InitialBackgroundFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setInitialBackground,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(InitialBackgroundFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleForegrounds     (void) const
+{
+    MFUnrecForegroundPtr::GetHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::GetHandle(
+             &_mfForegrounds,
+             this->getType().getFieldDesc(ForegroundsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleForegrounds    (void)
+{
+    MFUnrecForegroundPtr::EditHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::EditHandle(
+             &_mfForegrounds,
+             this->getType().getFieldDesc(ForegroundsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToForegrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromForegrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromForegrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearForegrounds,
+                    static_cast<Scene *>(this)));
+
+    editMField(ForegroundsFieldMask, _mfForegrounds);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleInitialForegrounds (void) const
+{
+    MFUnrecForegroundPtr::GetHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::GetHandle(
+             &_mfInitialForegrounds,
+             this->getType().getFieldDesc(InitialForegroundsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleInitialForegrounds(void)
+{
+    MFUnrecForegroundPtr::EditHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::EditHandle(
+             &_mfInitialForegrounds,
+             this->getType().getFieldDesc(InitialForegroundsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToInitialForegrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromInitialForegrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromInitialForegrounds,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearInitialForegrounds,
+                    static_cast<Scene *>(this)));
+
+    editMField(InitialForegroundsFieldMask, _mfInitialForegrounds);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleModelNodes      (void) const
+{
+    MFUnrecNodePtr::GetHandlePtr returnValue(
+        new  MFUnrecNodePtr::GetHandle(
+             &_mfModelNodes,
+             this->getType().getFieldDesc(ModelNodesFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleModelNodes     (void)
+{
+    MFUnrecNodePtr::EditHandlePtr returnValue(
+        new  MFUnrecNodePtr::EditHandle(
+             &_mfModelNodes,
+             this->getType().getFieldDesc(ModelNodesFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToModelNodes,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromModelNodes,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromModelNodes,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearModelNodes,
+                    static_cast<Scene *>(this)));
+
+    editMField(ModelNodesFieldMask, _mfModelNodes);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleInitialModelNodes (void) const
+{
+    MFUnrecNodePtr::GetHandlePtr returnValue(
+        new  MFUnrecNodePtr::GetHandle(
+             &_mfInitialModelNodes,
+             this->getType().getFieldDesc(InitialModelNodesFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleInitialModelNodes(void)
+{
+    MFUnrecNodePtr::EditHandlePtr returnValue(
+        new  MFUnrecNodePtr::EditHandle(
+             &_mfInitialModelNodes,
+             this->getType().getFieldDesc(InitialModelNodesFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToInitialModelNodes,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromInitialModelNodes,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromInitialModelNodes,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearInitialModelNodes,
+                    static_cast<Scene *>(this)));
+
+    editMField(InitialModelNodesFieldMask, _mfInitialModelNodes);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleRoot            (void) const
+{
+    SFUnrecNodePtr::GetHandlePtr returnValue(
+        new  SFUnrecNodePtr::GetHandle(
+             &_sfRoot,
+             this->getType().getFieldDesc(RootFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleRoot           (void)
+{
+    SFUnrecNodePtr::EditHandlePtr returnValue(
+        new  SFUnrecNodePtr::EditHandle(
+             &_sfRoot,
+             this->getType().getFieldDesc(RootFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setRoot,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(RootFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleRootCore        (void) const
+{
+    SFUnrecTransformPtr::GetHandlePtr returnValue(
+        new  SFUnrecTransformPtr::GetHandle(
+             &_sfRootCore,
+             this->getType().getFieldDesc(RootCoreFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleRootCore       (void)
+{
+    SFUnrecTransformPtr::EditHandlePtr returnValue(
+        new  SFUnrecTransformPtr::EditHandle(
+             &_sfRootCore,
+             this->getType().getFieldDesc(RootCoreFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setRootCore,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(RootCoreFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleDefaultCameraBeacon (void) const
+{
+    SFUnrecNodePtr::GetHandlePtr returnValue(
+        new  SFUnrecNodePtr::GetHandle(
+             &_sfDefaultCameraBeacon,
+             this->getType().getFieldDesc(DefaultCameraBeaconFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleDefaultCameraBeacon(void)
+{
+    SFUnrecNodePtr::EditHandlePtr returnValue(
+        new  SFUnrecNodePtr::EditHandle(
+             &_sfDefaultCameraBeacon,
+             this->getType().getFieldDesc(DefaultCameraBeaconFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setDefaultCameraBeacon,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(DefaultCameraBeaconFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleDefaultCameraBeaconCore (void) const
+{
+    SFUnrecTransformPtr::GetHandlePtr returnValue(
+        new  SFUnrecTransformPtr::GetHandle(
+             &_sfDefaultCameraBeaconCore,
+             this->getType().getFieldDesc(DefaultCameraBeaconCoreFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleDefaultCameraBeaconCore(void)
+{
+    SFUnrecTransformPtr::EditHandlePtr returnValue(
+        new  SFUnrecTransformPtr::EditHandle(
+             &_sfDefaultCameraBeaconCore,
+             this->getType().getFieldDesc(DefaultCameraBeaconCoreFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setDefaultCameraBeaconCore,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(DefaultCameraBeaconCoreFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleCameras         (void) const
+{
+    MFUnrecCameraPtr::GetHandlePtr returnValue(
+        new  MFUnrecCameraPtr::GetHandle(
+             &_mfCameras,
+             this->getType().getFieldDesc(CamerasFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleCameras        (void)
+{
+    MFUnrecCameraPtr::EditHandlePtr returnValue(
+        new  MFUnrecCameraPtr::EditHandle(
+             &_mfCameras,
+             this->getType().getFieldDesc(CamerasFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToCameras,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromCameras,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromCameras,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearCameras,
+                    static_cast<Scene *>(this)));
+
+    editMField(CamerasFieldMask, _mfCameras);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleInitialCamera   (void) const
+{
+    SFUnrecCameraPtr::GetHandlePtr returnValue(
+        new  SFUnrecCameraPtr::GetHandle(
+             &_sfInitialCamera,
+             this->getType().getFieldDesc(InitialCameraFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleInitialCamera  (void)
+{
+    SFUnrecCameraPtr::EditHandlePtr returnValue(
+        new  SFUnrecCameraPtr::EditHandle(
+             &_sfInitialCamera,
+             this->getType().getFieldDesc(InitialCameraFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setInitialCamera,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(InitialCameraFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleAnimations      (void) const
+{
+    MFUnrecAnimationPtr::GetHandlePtr returnValue(
+        new  MFUnrecAnimationPtr::GetHandle(
+             &_mfAnimations,
+             this->getType().getFieldDesc(AnimationsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleAnimations     (void)
+{
+    MFUnrecAnimationPtr::EditHandlePtr returnValue(
+        new  MFUnrecAnimationPtr::EditHandle(
+             &_mfAnimations,
+             this->getType().getFieldDesc(AnimationsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToAnimations,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromAnimations,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromAnimations,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearAnimations,
+                    static_cast<Scene *>(this)));
+
+    editMField(AnimationsFieldMask, _mfAnimations);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleInitialAnimations (void) const
+{
+    MFUnrecAnimationPtr::GetHandlePtr returnValue(
+        new  MFUnrecAnimationPtr::GetHandle(
+             &_mfInitialAnimations,
+             this->getType().getFieldDesc(InitialAnimationsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleInitialAnimations(void)
+{
+    MFUnrecAnimationPtr::EditHandlePtr returnValue(
+        new  MFUnrecAnimationPtr::EditHandle(
+             &_mfInitialAnimations,
+             this->getType().getFieldDesc(InitialAnimationsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToInitialAnimations,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromInitialAnimations,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromInitialAnimations,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearInitialAnimations,
+                    static_cast<Scene *>(this)));
+
+    editMField(InitialAnimationsFieldMask, _mfInitialAnimations);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleParticleSystems (void) const
+{
+    MFUnrecParticleSystemPtr::GetHandlePtr returnValue(
+        new  MFUnrecParticleSystemPtr::GetHandle(
+             &_mfParticleSystems,
+             this->getType().getFieldDesc(ParticleSystemsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleParticleSystems(void)
+{
+    MFUnrecParticleSystemPtr::EditHandlePtr returnValue(
+        new  MFUnrecParticleSystemPtr::EditHandle(
+             &_mfParticleSystems,
+             this->getType().getFieldDesc(ParticleSystemsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToParticleSystems,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromParticleSystems,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromParticleSystems,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearParticleSystems,
+                    static_cast<Scene *>(this)));
+
+    editMField(ParticleSystemsFieldMask, _mfParticleSystems);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleInitialParticleSystems (void) const
+{
+    MFUnrecParticleSystemPtr::GetHandlePtr returnValue(
+        new  MFUnrecParticleSystemPtr::GetHandle(
+             &_mfInitialParticleSystems,
+             this->getType().getFieldDesc(InitialParticleSystemsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleInitialParticleSystems(void)
+{
+    MFUnrecParticleSystemPtr::EditHandlePtr returnValue(
+        new  MFUnrecParticleSystemPtr::EditHandle(
+             &_mfInitialParticleSystems,
+             this->getType().getFieldDesc(InitialParticleSystemsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToInitialParticleSystems,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromInitialParticleSystems,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromInitialParticleSystems,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearInitialParticleSystems,
+                    static_cast<Scene *>(this)));
+
+    editMField(InitialParticleSystemsFieldMask, _mfInitialParticleSystems);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleLuaModule       (void) const
+{
+    SFBoostPath::GetHandlePtr returnValue(
+        new  SFBoostPath::GetHandle(
+             &_sfLuaModule,
+             this->getType().getFieldDesc(LuaModuleFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleLuaModule      (void)
+{
+    SFBoostPath::EditHandlePtr returnValue(
+        new  SFBoostPath::EditHandle(
+             &_sfLuaModule,
+             this->getType().getFieldDesc(LuaModuleFieldId),
+             this));
+
+
+    editSField(LuaModuleFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandlePhysicsHandler  (void) const
+{
+    SFUnrecPhysicsHandlerPtr::GetHandlePtr returnValue(
+        new  SFUnrecPhysicsHandlerPtr::GetHandle(
+             &_sfPhysicsHandler,
+             this->getType().getFieldDesc(PhysicsHandlerFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandlePhysicsHandler (void)
+{
+    SFUnrecPhysicsHandlerPtr::EditHandlePtr returnValue(
+        new  SFUnrecPhysicsHandlerPtr::EditHandle(
+             &_sfPhysicsHandler,
+             this->getType().getFieldDesc(PhysicsHandlerFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setPhysicsHandler,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(PhysicsHandlerFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandlePhysicsWorld    (void) const
+{
+    SFUnrecPhysicsWorldPtr::GetHandlePtr returnValue(
+        new  SFUnrecPhysicsWorldPtr::GetHandle(
+             &_sfPhysicsWorld,
+             this->getType().getFieldDesc(PhysicsWorldFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandlePhysicsWorld   (void)
+{
+    SFUnrecPhysicsWorldPtr::EditHandlePtr returnValue(
+        new  SFUnrecPhysicsWorldPtr::EditHandle(
+             &_sfPhysicsWorld,
+             this->getType().getFieldDesc(PhysicsWorldFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setPhysicsWorld,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(PhysicsWorldFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleGenericMethodIDs (void) const
+{
+    SFUInt32::GetHandlePtr returnValue(
+        new  SFUInt32::GetHandle(
+             &_sfGenericMethodIDs,
+             this->getType().getFieldDesc(GenericMethodIDsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleGenericMethodIDs(void)
+{
+    SFUInt32::EditHandlePtr returnValue(
+        new  SFUInt32::EditHandle(
+             &_sfGenericMethodIDs,
+             this->getType().getFieldDesc(GenericMethodIDsFieldId),
+             this));
+
+
+    editSField(GenericMethodIDsFieldMask);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void SceneBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Scene *pThis = static_cast<Scene *>(this);
+
+    pThis->execSync(static_cast<Scene *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *SceneBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    Scene *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const Scene *>(pRefAspect),
+                  dynamic_cast<const Scene *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ScenePtr>::_type("ScenePtr", "AttachmentContainerPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void SceneBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    static_cast<Scene *>(this)->setInternalParentProject(NULL);
+
+    static_cast<Scene *>(this)->clearViewports();
+
+    static_cast<Scene *>(this)->clearBackgrounds();
+
+    static_cast<Scene *>(this)->clearUIDrawingSurfaces();
+
+    static_cast<Scene *>(this)->setInitialBackground(NULL);
+
+    static_cast<Scene *>(this)->clearForegrounds();
+
+    static_cast<Scene *>(this)->clearInitialForegrounds();
+
+    static_cast<Scene *>(this)->clearModelNodes();
+
+    static_cast<Scene *>(this)->clearInitialModelNodes();
+
+    static_cast<Scene *>(this)->setRoot(NULL);
+
+    static_cast<Scene *>(this)->setRootCore(NULL);
+
+    static_cast<Scene *>(this)->setDefaultCameraBeacon(NULL);
+
+    static_cast<Scene *>(this)->setDefaultCameraBeaconCore(NULL);
+
+    static_cast<Scene *>(this)->clearCameras();
+
+    static_cast<Scene *>(this)->setInitialCamera(NULL);
+
+    static_cast<Scene *>(this)->clearAnimations();
+
+    static_cast<Scene *>(this)->clearInitialAnimations();
+
+    static_cast<Scene *>(this)->clearParticleSystems();
+
+    static_cast<Scene *>(this)->clearInitialParticleSystems();
+
+    static_cast<Scene *>(this)->setPhysicsHandler(NULL);
+
+    static_cast<Scene *>(this)->setPhysicsWorld(NULL);
+
+
+}
 
 
 OSG_END_NAMESPACE
-

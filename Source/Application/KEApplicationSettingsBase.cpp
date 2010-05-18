@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,222 +47,398 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEAPPLICATIONSETTINGSINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEApplicationSettingsBase.h"
 #include "KEApplicationSettings.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  ApplicationSettingsBase::DataDirectoryFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationSettingsBase::DataDirectoryFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector  ApplicationSettingsBase::LastOpenedProjectFileFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationSettingsBase::LastOpenedProjectFileFieldId);
+/*! \class OSG::ApplicationSettings
+    The Main Application Settings.
+ */
 
-const OSG::BitVector  ApplicationSettingsBase::RecentProjectFilesFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationSettingsBase::RecentProjectFilesFieldId);
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
-const OSG::BitVector  ApplicationSettingsBase::DefaultWindowPositionFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationSettingsBase::DefaultWindowPositionFieldId);
-
-const OSG::BitVector  ApplicationSettingsBase::DefaultWindowSizeFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationSettingsBase::DefaultWindowSizeFieldId);
-
-const OSG::BitVector  ApplicationSettingsBase::FullscreenFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationSettingsBase::FullscreenFieldId);
-
-const OSG::BitVector  ApplicationSettingsBase::HideAdvancedFieldsFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationSettingsBase::HideAdvancedFieldsFieldId);
-
-const OSG::BitVector ApplicationSettingsBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
-
-
-// Field descriptions
-
-/*! \var Path            ApplicationSettingsBase::_sfDataDirectory
+/*! \var BoostPath       ApplicationSettingsBase::_sfDataDirectory
     
 */
-/*! \var Path            ApplicationSettingsBase::_sfLastOpenedProjectFile
+
+/*! \var BoostPath       ApplicationSettingsBase::_sfLastOpenedProjectFile
     
 */
-/*! \var Path            ApplicationSettingsBase::_mfRecentProjectFiles
+
+/*! \var BoostPath       ApplicationSettingsBase::_mfRecentProjectFiles
     
 */
+
 /*! \var Pnt2f           ApplicationSettingsBase::_sfDefaultWindowPosition
     
 */
+
 /*! \var Vec2f           ApplicationSettingsBase::_sfDefaultWindowSize
     
 */
+
 /*! \var bool            ApplicationSettingsBase::_sfFullscreen
     
 */
+
 /*! \var bool            ApplicationSettingsBase::_sfHideAdvancedFields
     
 */
 
-//! ApplicationSettings description
 
-FieldDescription *ApplicationSettingsBase::_desc[] = 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<ApplicationSettings *>::_type("ApplicationSettingsPtr", "FieldContainerPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(ApplicationSettings *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           ApplicationSettings *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           ApplicationSettings *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void ApplicationSettingsBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(SFPath::getClassType(), 
-                     "DataDirectory", 
-                     DataDirectoryFieldId, DataDirectoryFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFDataDirectory)),
-    new FieldDescription(SFPath::getClassType(), 
-                     "LastOpenedProjectFile", 
-                     LastOpenedProjectFileFieldId, LastOpenedProjectFileFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFLastOpenedProjectFile)),
-    new FieldDescription(MFPath::getClassType(), 
-                     "RecentProjectFiles", 
-                     RecentProjectFilesFieldId, RecentProjectFilesFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editMFRecentProjectFiles)),
-    new FieldDescription(SFPnt2f::getClassType(), 
-                     "DefaultWindowPosition", 
-                     DefaultWindowPositionFieldId, DefaultWindowPositionFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFDefaultWindowPosition)),
-    new FieldDescription(SFVec2f::getClassType(), 
-                     "DefaultWindowSize", 
-                     DefaultWindowSizeFieldId, DefaultWindowSizeFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFDefaultWindowSize)),
-    new FieldDescription(SFBool::getClassType(), 
-                     "Fullscreen", 
-                     FullscreenFieldId, FullscreenFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFFullscreen)),
-    new FieldDescription(SFBool::getClassType(), 
-                     "HideAdvancedFields", 
-                     HideAdvancedFieldsFieldId, HideAdvancedFieldsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ApplicationSettingsBase::editSFHideAdvancedFields))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType ApplicationSettingsBase::_type(
-    "ApplicationSettings",
-    "FieldContainer",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&ApplicationSettingsBase::createEmpty),
+    pDesc = new SFBoostPath::Description(
+        SFBoostPath::getClassType(),
+        "DataDirectory",
+        "",
+        DataDirectoryFieldId, DataDirectoryFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleDataDirectory),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleDataDirectory));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFBoostPath::Description(
+        SFBoostPath::getClassType(),
+        "LastOpenedProjectFile",
+        "",
+        LastOpenedProjectFileFieldId, LastOpenedProjectFileFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleLastOpenedProjectFile),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleLastOpenedProjectFile));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFBoostPath::Description(
+        MFBoostPath::getClassType(),
+        "RecentProjectFiles",
+        "",
+        RecentProjectFilesFieldId, RecentProjectFilesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleRecentProjectFiles),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleRecentProjectFiles));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFPnt2f::Description(
+        SFPnt2f::getClassType(),
+        "DefaultWindowPosition",
+        "",
+        DefaultWindowPositionFieldId, DefaultWindowPositionFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleDefaultWindowPosition),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleDefaultWindowPosition));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFVec2f::Description(
+        SFVec2f::getClassType(),
+        "DefaultWindowSize",
+        "",
+        DefaultWindowSizeFieldId, DefaultWindowSizeFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleDefaultWindowSize),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleDefaultWindowSize));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFBool::Description(
+        SFBool::getClassType(),
+        "Fullscreen",
+        "",
+        FullscreenFieldId, FullscreenFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleFullscreen),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleFullscreen));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFBool::Description(
+        SFBool::getClassType(),
+        "HideAdvancedFields",
+        "",
+        HideAdvancedFieldsFieldId, HideAdvancedFieldsFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleHideAdvancedFields),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleHideAdvancedFields));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+ApplicationSettingsBase::TypeObject ApplicationSettingsBase::_type(
+    ApplicationSettingsBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&ApplicationSettingsBase::createEmptyLocal),
     ApplicationSettings::initMethod,
-    _desc,
-    sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(ApplicationSettingsBase, ApplicationSettingsPtr)
+    ApplicationSettings::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&ApplicationSettings::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"ApplicationSettings\"\n"
+    "\tparent=\"FieldContainer\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The Main Application Settings.\n"
+    "\t<Field\n"
+    "\t\tname=\"DataDirectory\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"LastOpenedProjectFile\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"RecentProjectFiles\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"DefaultWindowPosition\"\n"
+    "\t\ttype=\"Pnt2f\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"0.5f,0.5f\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"DefaultWindowSize\"\n"
+    "\t\ttype=\"Vec2f\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"0.85f,0.85f\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Fullscreen\"\n"
+    "\t\ttype=\"bool\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"false\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"HideAdvancedFields\"\n"
+    "\t\ttype=\"bool\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"true\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "</FieldContainer>\n",
+    "The Main Application Settings.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &ApplicationSettingsBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &ApplicationSettingsBase::getType(void) const 
+FieldContainerType &ApplicationSettingsBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr ApplicationSettingsBase::shallowCopy(void) const 
-{ 
-    ApplicationSettingsPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const ApplicationSettings *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 ApplicationSettingsBase::getContainerSize(void) const 
-{ 
-    return sizeof(ApplicationSettings); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ApplicationSettingsBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &ApplicationSettingsBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<ApplicationSettingsBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void ApplicationSettingsBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 ApplicationSettingsBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((ApplicationSettingsBase *) &other, whichField, sInfo);
+    return sizeof(ApplicationSettings);
 }
-void ApplicationSettingsBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+/*------------------------- decorator get ------------------------------*/
+
+
+SFBoostPath *ApplicationSettingsBase::editSFDataDirectory(void)
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    editSField(DataDirectoryFieldMask);
+
+    return &_sfDataDirectory;
 }
 
-void ApplicationSettingsBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+const SFBoostPath *ApplicationSettingsBase::getSFDataDirectory(void) const
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
-
-    _mfRecentProjectFiles.terminateShare(uiAspect, this->getContainerSize());
+    return &_sfDataDirectory;
 }
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
-
-ApplicationSettingsBase::ApplicationSettingsBase(void) :
-    _sfDataDirectory          (), 
-    _sfLastOpenedProjectFile  (), 
-    _mfRecentProjectFiles     (), 
-    _sfDefaultWindowPosition  (Pnt2f(0.0f,0.0f)), 
-    _sfDefaultWindowSize      (Vec2f(900.0f,800.0f)), 
-    _sfFullscreen             (bool(false)), 
-    _sfHideAdvancedFields     (bool(true)), 
-    Inherited() 
+SFBoostPath *ApplicationSettingsBase::editSFLastOpenedProjectFile(void)
 {
+    editSField(LastOpenedProjectFileFieldMask);
+
+    return &_sfLastOpenedProjectFile;
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-ApplicationSettingsBase::ApplicationSettingsBase(const ApplicationSettingsBase &source) :
-    _sfDataDirectory          (source._sfDataDirectory          ), 
-    _sfLastOpenedProjectFile  (source._sfLastOpenedProjectFile  ), 
-    _mfRecentProjectFiles     (source._mfRecentProjectFiles     ), 
-    _sfDefaultWindowPosition  (source._sfDefaultWindowPosition  ), 
-    _sfDefaultWindowSize      (source._sfDefaultWindowSize      ), 
-    _sfFullscreen             (source._sfFullscreen             ), 
-    _sfHideAdvancedFields     (source._sfHideAdvancedFields     ), 
-    Inherited                 (source)
+const SFBoostPath *ApplicationSettingsBase::getSFLastOpenedProjectFile(void) const
 {
+    return &_sfLastOpenedProjectFile;
 }
 
-/*-------------------------- destructors ----------------------------------*/
 
-ApplicationSettingsBase::~ApplicationSettingsBase(void)
+MFBoostPath *ApplicationSettingsBase::editMFRecentProjectFiles(void)
 {
+    editMField(RecentProjectFilesFieldMask, _mfRecentProjectFiles);
+
+    return &_mfRecentProjectFiles;
 }
+
+const MFBoostPath *ApplicationSettingsBase::getMFRecentProjectFiles(void) const
+{
+    return &_mfRecentProjectFiles;
+}
+
+
+SFPnt2f *ApplicationSettingsBase::editSFDefaultWindowPosition(void)
+{
+    editSField(DefaultWindowPositionFieldMask);
+
+    return &_sfDefaultWindowPosition;
+}
+
+const SFPnt2f *ApplicationSettingsBase::getSFDefaultWindowPosition(void) const
+{
+    return &_sfDefaultWindowPosition;
+}
+
+
+SFVec2f *ApplicationSettingsBase::editSFDefaultWindowSize(void)
+{
+    editSField(DefaultWindowSizeFieldMask);
+
+    return &_sfDefaultWindowSize;
+}
+
+const SFVec2f *ApplicationSettingsBase::getSFDefaultWindowSize(void) const
+{
+    return &_sfDefaultWindowSize;
+}
+
+
+SFBool *ApplicationSettingsBase::editSFFullscreen(void)
+{
+    editSField(FullscreenFieldMask);
+
+    return &_sfFullscreen;
+}
+
+const SFBool *ApplicationSettingsBase::getSFFullscreen(void) const
+{
+    return &_sfFullscreen;
+}
+
+
+SFBool *ApplicationSettingsBase::editSFHideAdvancedFields(void)
+{
+    editSField(HideAdvancedFieldsFieldMask);
+
+    return &_sfHideAdvancedFields;
+}
+
+const SFBool *ApplicationSettingsBase::getSFHideAdvancedFields(void) const
+{
+    return &_sfHideAdvancedFields;
+}
+
+
+
+
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 ApplicationSettingsBase::getBinSize(const BitVector &whichField)
+UInt32 ApplicationSettingsBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -269,43 +446,36 @@ UInt32 ApplicationSettingsBase::getBinSize(const BitVector &whichField)
     {
         returnValue += _sfDataDirectory.getBinSize();
     }
-
     if(FieldBits::NoField != (LastOpenedProjectFileFieldMask & whichField))
     {
         returnValue += _sfLastOpenedProjectFile.getBinSize();
     }
-
     if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
     {
         returnValue += _mfRecentProjectFiles.getBinSize();
     }
-
     if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
     {
         returnValue += _sfDefaultWindowPosition.getBinSize();
     }
-
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
     {
         returnValue += _sfDefaultWindowSize.getBinSize();
     }
-
     if(FieldBits::NoField != (FullscreenFieldMask & whichField))
     {
         returnValue += _sfFullscreen.getBinSize();
     }
-
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
     {
         returnValue += _sfHideAdvancedFields.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void ApplicationSettingsBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void ApplicationSettingsBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -313,42 +483,34 @@ void ApplicationSettingsBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _sfDataDirectory.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (LastOpenedProjectFileFieldMask & whichField))
     {
         _sfLastOpenedProjectFile.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
     {
         _mfRecentProjectFiles.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
     {
         _sfDefaultWindowPosition.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
     {
         _sfDefaultWindowSize.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (FullscreenFieldMask & whichField))
     {
         _sfFullscreen.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
     {
         _sfHideAdvancedFields.copyToBin(pMem);
     }
-
-
 }
 
-void ApplicationSettingsBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void ApplicationSettingsBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -356,130 +518,408 @@ void ApplicationSettingsBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _sfDataDirectory.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (LastOpenedProjectFileFieldMask & whichField))
     {
         _sfLastOpenedProjectFile.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
     {
         _mfRecentProjectFiles.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
     {
         _sfDefaultWindowPosition.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
     {
         _sfDefaultWindowSize.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (FullscreenFieldMask & whichField))
     {
         _sfFullscreen.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
     {
         _sfHideAdvancedFields.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ApplicationSettingsBase::executeSyncImpl(      ApplicationSettingsBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+ApplicationSettingsTransitPtr ApplicationSettingsBase::createLocal(BitVector bFlags)
 {
+    ApplicationSettingsTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (DataDirectoryFieldMask & whichField))
-        _sfDataDirectory.syncWith(pOther->_sfDataDirectory);
+        fc = dynamic_pointer_cast<ApplicationSettings>(tmpPtr);
+    }
 
-    if(FieldBits::NoField != (LastOpenedProjectFileFieldMask & whichField))
-        _sfLastOpenedProjectFile.syncWith(pOther->_sfLastOpenedProjectFile);
-
-    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
-        _mfRecentProjectFiles.syncWith(pOther->_mfRecentProjectFiles);
-
-    if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
-        _sfDefaultWindowPosition.syncWith(pOther->_sfDefaultWindowPosition);
-
-    if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
-        _sfDefaultWindowSize.syncWith(pOther->_sfDefaultWindowSize);
-
-    if(FieldBits::NoField != (FullscreenFieldMask & whichField))
-        _sfFullscreen.syncWith(pOther->_sfFullscreen);
-
-    if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
-        _sfHideAdvancedFields.syncWith(pOther->_sfHideAdvancedFields);
-
-
-}
-#else
-void ApplicationSettingsBase::executeSyncImpl(      ApplicationSettingsBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (DataDirectoryFieldMask & whichField))
-        _sfDataDirectory.syncWith(pOther->_sfDataDirectory);
-
-    if(FieldBits::NoField != (LastOpenedProjectFileFieldMask & whichField))
-        _sfLastOpenedProjectFile.syncWith(pOther->_sfLastOpenedProjectFile);
-
-    if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
-        _sfDefaultWindowPosition.syncWith(pOther->_sfDefaultWindowPosition);
-
-    if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
-        _sfDefaultWindowSize.syncWith(pOther->_sfDefaultWindowSize);
-
-    if(FieldBits::NoField != (FullscreenFieldMask & whichField))
-        _sfFullscreen.syncWith(pOther->_sfFullscreen);
-
-    if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
-        _sfHideAdvancedFields.syncWith(pOther->_sfHideAdvancedFields);
-
-
-    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
-        _mfRecentProjectFiles.syncWith(pOther->_mfRecentProjectFiles, sInfo);
-
-
+    return fc;
 }
 
-void ApplicationSettingsBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+ApplicationSettingsTransitPtr ApplicationSettingsBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    ApplicationSettingsTransitPtr fc;
 
-    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
-        _mfRecentProjectFiles.beginEdit(uiAspect, uiContainerSize);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
 
+        fc = dynamic_pointer_cast<ApplicationSettings>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+ApplicationSettingsTransitPtr ApplicationSettingsBase::create(void)
+{
+    ApplicationSettingsTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<ApplicationSettings>(tmpPtr);
+    }
+
+    return fc;
+}
+
+ApplicationSettings *ApplicationSettingsBase::createEmptyLocal(BitVector bFlags)
+{
+    ApplicationSettings *returnValue;
+
+    newPtr<ApplicationSettings>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+ApplicationSettings *ApplicationSettingsBase::createEmpty(void)
+{
+    ApplicationSettings *returnValue;
+
+    newPtr<ApplicationSettings>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr ApplicationSettingsBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    ApplicationSettings *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ApplicationSettings *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ApplicationSettingsBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    ApplicationSettings *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ApplicationSettings *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ApplicationSettingsBase::shallowCopy(void) const
+{
+    ApplicationSettings *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const ApplicationSettings *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+ApplicationSettingsBase::ApplicationSettingsBase(void) :
+    Inherited(),
+    _sfDataDirectory          (),
+    _sfLastOpenedProjectFile  (),
+    _mfRecentProjectFiles     (),
+    _sfDefaultWindowPosition  (Pnt2f(0.5f,0.5f)),
+    _sfDefaultWindowSize      (Vec2f(0.85f,0.85f)),
+    _sfFullscreen             (bool(false)),
+    _sfHideAdvancedFields     (bool(true))
+{
+}
+
+ApplicationSettingsBase::ApplicationSettingsBase(const ApplicationSettingsBase &source) :
+    Inherited(source),
+    _sfDataDirectory          (source._sfDataDirectory          ),
+    _sfLastOpenedProjectFile  (source._sfLastOpenedProjectFile  ),
+    _mfRecentProjectFiles     (source._mfRecentProjectFiles     ),
+    _sfDefaultWindowPosition  (source._sfDefaultWindowPosition  ),
+    _sfDefaultWindowSize      (source._sfDefaultWindowSize      ),
+    _sfFullscreen             (source._sfFullscreen             ),
+    _sfHideAdvancedFields     (source._sfHideAdvancedFields     )
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+ApplicationSettingsBase::~ApplicationSettingsBase(void)
+{
+}
+
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleDataDirectory   (void) const
+{
+    SFBoostPath::GetHandlePtr returnValue(
+        new  SFBoostPath::GetHandle(
+             &_sfDataDirectory,
+             this->getType().getFieldDesc(DataDirectoryFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleDataDirectory  (void)
+{
+    SFBoostPath::EditHandlePtr returnValue(
+        new  SFBoostPath::EditHandle(
+             &_sfDataDirectory,
+             this->getType().getFieldDesc(DataDirectoryFieldId),
+             this));
+
+
+    editSField(DataDirectoryFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleLastOpenedProjectFile (void) const
+{
+    SFBoostPath::GetHandlePtr returnValue(
+        new  SFBoostPath::GetHandle(
+             &_sfLastOpenedProjectFile,
+             this->getType().getFieldDesc(LastOpenedProjectFileFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleLastOpenedProjectFile(void)
+{
+    SFBoostPath::EditHandlePtr returnValue(
+        new  SFBoostPath::EditHandle(
+             &_sfLastOpenedProjectFile,
+             this->getType().getFieldDesc(LastOpenedProjectFileFieldId),
+             this));
+
+
+    editSField(LastOpenedProjectFileFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleRecentProjectFiles (void) const
+{
+    MFBoostPath::GetHandlePtr returnValue(
+        new  MFBoostPath::GetHandle(
+             &_mfRecentProjectFiles,
+             this->getType().getFieldDesc(RecentProjectFilesFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleRecentProjectFiles(void)
+{
+    MFBoostPath::EditHandlePtr returnValue(
+        new  MFBoostPath::EditHandle(
+             &_mfRecentProjectFiles,
+             this->getType().getFieldDesc(RecentProjectFilesFieldId),
+             this));
+
+
+    editMField(RecentProjectFilesFieldMask, _mfRecentProjectFiles);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleDefaultWindowPosition (void) const
+{
+    SFPnt2f::GetHandlePtr returnValue(
+        new  SFPnt2f::GetHandle(
+             &_sfDefaultWindowPosition,
+             this->getType().getFieldDesc(DefaultWindowPositionFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleDefaultWindowPosition(void)
+{
+    SFPnt2f::EditHandlePtr returnValue(
+        new  SFPnt2f::EditHandle(
+             &_sfDefaultWindowPosition,
+             this->getType().getFieldDesc(DefaultWindowPositionFieldId),
+             this));
+
+
+    editSField(DefaultWindowPositionFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleDefaultWindowSize (void) const
+{
+    SFVec2f::GetHandlePtr returnValue(
+        new  SFVec2f::GetHandle(
+             &_sfDefaultWindowSize,
+             this->getType().getFieldDesc(DefaultWindowSizeFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleDefaultWindowSize(void)
+{
+    SFVec2f::EditHandlePtr returnValue(
+        new  SFVec2f::EditHandle(
+             &_sfDefaultWindowSize,
+             this->getType().getFieldDesc(DefaultWindowSizeFieldId),
+             this));
+
+
+    editSField(DefaultWindowSizeFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleFullscreen      (void) const
+{
+    SFBool::GetHandlePtr returnValue(
+        new  SFBool::GetHandle(
+             &_sfFullscreen,
+             this->getType().getFieldDesc(FullscreenFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleFullscreen     (void)
+{
+    SFBool::EditHandlePtr returnValue(
+        new  SFBool::EditHandle(
+             &_sfFullscreen,
+             this->getType().getFieldDesc(FullscreenFieldId),
+             this));
+
+
+    editSField(FullscreenFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleHideAdvancedFields (void) const
+{
+    SFBool::GetHandlePtr returnValue(
+        new  SFBool::GetHandle(
+             &_sfHideAdvancedFields,
+             this->getType().getFieldDesc(HideAdvancedFieldsFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleHideAdvancedFields(void)
+{
+    SFBool::EditHandlePtr returnValue(
+        new  SFBool::EditHandle(
+             &_sfHideAdvancedFields,
+             this->getType().getFieldDesc(HideAdvancedFieldsFieldId),
+             this));
+
+
+    editSField(HideAdvancedFieldsFieldMask);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void ApplicationSettingsBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    ApplicationSettings *pThis = static_cast<ApplicationSettings *>(this);
+
+    pThis->execSync(static_cast<ApplicationSettings *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *ApplicationSettingsBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    ApplicationSettings *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const ApplicationSettings *>(pRefAspect),
+                  dynamic_cast<const ApplicationSettings *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ApplicationSettingsPtr>::_type("ApplicationSettingsPtr", "FieldContainerPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(ApplicationSettingsPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(ApplicationSettingsPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void ApplicationSettingsBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+#ifdef OSG_MT_CPTR_ASPECT
+    AspectOffsetStore oOffsets;
+
+    _pAspectStore->fillOffsetArray(oOffsets, this);
+#endif
+
+#ifdef OSG_MT_CPTR_ASPECT
+    _mfRecentProjectFiles.terminateShare(Thread::getCurrentAspect(),
+                                      oOffsets);
+#endif
+}
+
 
 OSG_END_NAMESPACE
-

@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,121 +47,124 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEAPPLICATIONPLAYERINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEApplicationPlayerBase.h"
 #include "KEApplicationPlayer.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector ApplicationPlayerBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
+
+/*! \class OSG::ApplicationPlayer
+    The ApplicationPlayer.
+ */
+
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
 
-FieldContainerType ApplicationPlayerBase::_type(
-    "ApplicationPlayer",
-    "ApplicationMode",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&ApplicationPlayerBase::createEmpty),
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<ApplicationPlayer *>::_type("ApplicationPlayerPtr", "ApplicationModePtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(ApplicationPlayer *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           ApplicationPlayer *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           ApplicationPlayer *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void ApplicationPlayerBase::classDescInserter(TypeObject &oType)
+{
+}
+
+
+ApplicationPlayerBase::TypeObject ApplicationPlayerBase::_type(
+    ApplicationPlayerBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&ApplicationPlayerBase::createEmptyLocal),
     ApplicationPlayer::initMethod,
-    NULL,
-    0);
-
-//OSG_FIELD_CONTAINER_DEF(ApplicationPlayerBase, ApplicationPlayerPtr)
+    ApplicationPlayer::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&ApplicationPlayer::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"ApplicationPlayer\"\n"
+    "\tparent=\"ApplicationMode\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"false\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The ApplicationPlayer.\n"
+    "</FieldContainer>\n",
+    "The ApplicationPlayer.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &ApplicationPlayerBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &ApplicationPlayerBase::getType(void) const 
+FieldContainerType &ApplicationPlayerBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr ApplicationPlayerBase::shallowCopy(void) const 
-{ 
-    ApplicationPlayerPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const ApplicationPlayer *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 ApplicationPlayerBase::getContainerSize(void) const 
-{ 
-    return sizeof(ApplicationPlayer); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ApplicationPlayerBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &ApplicationPlayerBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<ApplicationPlayerBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void ApplicationPlayerBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 ApplicationPlayerBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((ApplicationPlayerBase *) &other, whichField, sInfo);
-}
-void ApplicationPlayerBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return sizeof(ApplicationPlayer);
 }
 
-void ApplicationPlayerBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
+/*------------------------- decorator get ------------------------------*/
 
-}
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-ApplicationPlayerBase::ApplicationPlayerBase(void) :
-    Inherited() 
-{
-}
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-ApplicationPlayerBase::ApplicationPlayerBase(const ApplicationPlayerBase &source) :
-    Inherited                 (source)
-{
-}
-
-/*-------------------------- destructors ----------------------------------*/
-
-ApplicationPlayerBase::~ApplicationPlayerBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 ApplicationPlayerBase::getBinSize(const BitVector &whichField)
+UInt32 ApplicationPlayerBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -168,67 +172,198 @@ UInt32 ApplicationPlayerBase::getBinSize(const BitVector &whichField)
     return returnValue;
 }
 
-void ApplicationPlayerBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void ApplicationPlayerBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-
 }
 
-void ApplicationPlayerBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void ApplicationPlayerBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ApplicationPlayerBase::executeSyncImpl(      ApplicationPlayerBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+ApplicationPlayerTransitPtr ApplicationPlayerBase::createLocal(BitVector bFlags)
 {
+    ApplicationPlayerTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
+        fc = dynamic_pointer_cast<ApplicationPlayer>(tmpPtr);
+    }
 
-}
-#else
-void ApplicationPlayerBase::executeSyncImpl(      ApplicationPlayerBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-
+    return fc;
 }
 
-void ApplicationPlayerBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+ApplicationPlayerTransitPtr ApplicationPlayerBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    ApplicationPlayerTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<ApplicationPlayer>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+ApplicationPlayerTransitPtr ApplicationPlayerBase::create(void)
+{
+    ApplicationPlayerTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<ApplicationPlayer>(tmpPtr);
+    }
+
+    return fc;
+}
+
+ApplicationPlayer *ApplicationPlayerBase::createEmptyLocal(BitVector bFlags)
+{
+    ApplicationPlayer *returnValue;
+
+    newPtr<ApplicationPlayer>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+ApplicationPlayer *ApplicationPlayerBase::createEmpty(void)
+{
+    ApplicationPlayer *returnValue;
+
+    newPtr<ApplicationPlayer>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr ApplicationPlayerBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    ApplicationPlayer *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ApplicationPlayer *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ApplicationPlayerBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    ApplicationPlayer *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ApplicationPlayer *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ApplicationPlayerBase::shallowCopy(void) const
+{
+    ApplicationPlayer *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const ApplicationPlayer *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+ApplicationPlayerBase::ApplicationPlayerBase(void) :
+    Inherited()
+{
+}
+
+ApplicationPlayerBase::ApplicationPlayerBase(const ApplicationPlayerBase &source) :
+    Inherited(source)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+ApplicationPlayerBase::~ApplicationPlayerBase(void)
+{
+}
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void ApplicationPlayerBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    ApplicationPlayer *pThis = static_cast<ApplicationPlayer *>(this);
+
+    pThis->execSync(static_cast<ApplicationPlayer *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *ApplicationPlayerBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    ApplicationPlayer *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const ApplicationPlayer *>(pRefAspect),
+                  dynamic_cast<const ApplicationPlayer *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ApplicationPlayerPtr>::_type("ApplicationPlayerPtr", "ApplicationModePtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(ApplicationPlayerPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(ApplicationPlayerPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void ApplicationPlayerBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+
+}
+
 
 OSG_END_NAMESPACE
-

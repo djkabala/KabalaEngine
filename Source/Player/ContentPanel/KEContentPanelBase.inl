@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,45 +54,45 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &ContentPanelBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 ContentPanelBase::getClassTypeId(void) 
+OSG::UInt32 ContentPanelBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-ContentPanelPtr ContentPanelBase::create(void) 
-{
-    ContentPanelPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = ContentPanelPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-ContentPanelPtr ContentPanelBase::createEmpty(void) 
-{ 
-    ContentPanelPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 ContentPanelBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+inline
+void ContentPanelBase::execSync (      ContentPanelBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
+}
+#endif
+
+
+inline
+const Char8 *ContentPanelBase::getClassname(void)
+{
+    return "ContentPanel";
+}
+OSG_GEN_CONTAINERPTR(ContentPanel);
+
 OSG_END_NAMESPACE
+

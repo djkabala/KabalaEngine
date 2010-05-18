@@ -1,17 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                            OpenSGToolbox                                  *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *   contact: dkabala@vrac.iastate.edu                                       *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -19,9 +18,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
@@ -34,13 +42,13 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
-#include <OpenSG/UserInterface/OSGCommandManager.h>
-#include <OpenSG/UserInterface/OSGActionListener.h>
+#include <OpenSG/OSGCommand.h>
+#include <OpenSG/OSGCommandManager.h>
+#include <OpenSG/OSGActionListener.h>
 
 OSG_BEGIN_NAMESPACE
 
-class KE_KABALAENGINELIB_DLLMAPPING CommandActionListenerForPlayer : public ActionListener
+class KE_KABALAENGINE_DLLMAPPING CommandActionListenerForPlayer : public ActionListener
 {
 protected:
 	typedef ActionListener Inherited;
@@ -49,9 +57,11 @@ protected:
 	CommandManagerPtr _TheCommandManager;
 public:
 
-	virtual void actionPerformed(const ActionEventPtr e);
+	virtual void actionPerformed(const ActionEventUnrecPtr e);
 
 	virtual ~CommandActionListenerForPlayer(void);
+
+	CommandActionListenerForPlayer(void);
 
 	CommandActionListenerForPlayer(CommandPtr TheCommand, CommandManagerPtr TheCommandManager);
 

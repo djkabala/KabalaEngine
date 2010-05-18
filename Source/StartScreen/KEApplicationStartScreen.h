@@ -1,16 +1,16 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *                         www.vrac.iastate.edu                              *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -39,55 +39,57 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KEApplicationStartScreenBase.h"
 #include <OpenSG/OSGForegroundFields.h>
-#include <OpenSG/Input/OSGKeyAdapter.h>
-#include <OpenSG/UserInterface/OSGActionListener.h>
-#include <OpenSG/UserInterface/OSGUIDrawingSurfaceFields.h>
-#include <OpenSG/Animation/OSGElapsedTimeAnimationAdvancer.h>
-#include <OpenSG/Animation/OSGFieldAnimation.h>
-#include <OpenSG/Input/OSGUpdateListener.h>
+#include <OpenSG/OSGKeyAdapter.h>
+#include <OpenSG/OSGAnimator.h>
+#include <OpenSG/OSGActionListener.h>
+#include <OpenSG/OSGUIDrawingSurfaceFields.h>
+#include <OpenSG/OSGFieldAnimation.h>
+#include <OpenSG/OSGUpdateListener.h>
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief ApplicationStartScreen class. See \ref 
+/*! \brief ApplicationStartScreen class. See \ref
            PageKabalaEngineApplicationStartScreen for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationStartScreenBase
+class KE_KABALAENGINE_DLLMAPPING ApplicationStartScreen : public ApplicationStartScreenBase
 {
-  private:
-
-    typedef ApplicationStartScreenBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef ApplicationStartScreenBase Inherited;
+    typedef ApplicationStartScreen     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         ::osg::UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      ::osg::UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
 	virtual void attachApplication(void);
 	virtual void dettachApplication(void);
-	ForegroundPtr createInterface(void);
+	ForegroundRefPtr createInterface(void);
 	virtual void start(void);
 	virtual void stop(void);
     virtual void reset(void);
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in ApplicationStartScreenBase.
@@ -104,98 +106,101 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationStartScreen : public ApplicationS
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ApplicationStartScreen(void); 
+    virtual ~ApplicationStartScreen(void);
 
     /*! \}                                                                 */
-    
-	class StartScreenKeyListener : public KeyAdapter
-	{
-	public:
-		StartScreenKeyListener(ApplicationStartScreenPtr TheApplicationStartScreen);
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
 
-		virtual void keyTyped(const KeyEventPtr e);
-	protected :
-		ApplicationStartScreenPtr _ApplicationStartScreen;
-	};
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
+
+    class StartScreenKeyListener : public KeyAdapter
+    {
+      public:
+        StartScreenKeyListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
+
+        virtual void keyTyped(const KeyEventUnrecPtr e);
+      protected :
+        ApplicationStartScreenRefPtr _ApplicationStartScreen;
+    };
 
     friend class StartScreenKeyListener;
 
-	StartScreenKeyListener _StartScreenKeyListener;
+    StartScreenKeyListener _StartScreenKeyListener;
 
-	//Builder ::osg::Button Action Listener
-	class BuilderButtonActionListener : public ActionListener
-	{
-	public:
-		BuilderButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen);
+    //Builder ::OSG::Button Action Listener
+    class BuilderButtonActionListener : public ActionListener
+    {
+      public:
+        BuilderButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
 
-		virtual void actionPerformed(const ActionEventPtr e);
-	protected :
-		ApplicationStartScreenPtr _ApplicationStartScreen;
-	};
+        virtual void actionPerformed(const ActionEventUnrecPtr e);
+      protected :
+        ApplicationStartScreenRefPtr _ApplicationStartScreen;
+    };
 
     friend class BuilderButtonActionListener;
 
-	BuilderButtonActionListener _BuilderButtonActionListener;
-	
-	//Player ::osg::Button Action Listener
-	class PlayerButtonActionListener : public ActionListener
-	{
-	public:
-		PlayerButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen);
+    BuilderButtonActionListener _BuilderButtonActionListener;
 
-		virtual void actionPerformed(const ActionEventPtr e);
-	protected :
-		ApplicationStartScreenPtr _ApplicationStartScreen;
-	};
+    //Player ::OSG::Button Action Listener
+    class PlayerButtonActionListener : public ActionListener
+    {
+      public:
+        PlayerButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
+
+        virtual void actionPerformed(const ActionEventUnrecPtr e);
+      protected :
+        ApplicationStartScreenRefPtr _ApplicationStartScreen;
+    };
 
     friend class PlayerButtonActionListener;
 
-	PlayerButtonActionListener _PlayerButtonActionListener;
-	
-	//Exit ::osg::Button Action Listener
-	class ExitButtonActionListener : public ActionListener
-	{
-	public:
-		ExitButtonActionListener(ApplicationStartScreenPtr TheApplicationStartScreen);
+    PlayerButtonActionListener _PlayerButtonActionListener;
 
-		virtual void actionPerformed(const ActionEventPtr e);
-	protected :
-		ApplicationStartScreenPtr _ApplicationStartScreen;
-	};
+    //Exit ::OSG::Button Action Listener
+    class ExitButtonActionListener : public ActionListener
+    {
+      public:
+        ExitButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
+
+        virtual void actionPerformed(const ActionEventUnrecPtr e);
+      protected :
+        ApplicationStartScreenRefPtr _ApplicationStartScreen;
+    };
 
     friend class ExitButtonActionListener;
 
-	ExitButtonActionListener _ExitButtonActionListener;
-    
-	class ScreenUpdateListener : public UpdateListener
-	{
-	public:
-		ScreenUpdateListener(ApplicationStartScreenPtr TheApplicationStartScreen);
-        virtual void update(const UpdateEventPtr e);
-	private:
-		ApplicationStartScreenPtr _ApplicationStartScreen;
-	};
+    ExitButtonActionListener _ExitButtonActionListener;
 
-	friend class ScreenUpdateListener;
+    class ScreenUpdateListener : public UpdateListener
+    {
+      public:
+        ScreenUpdateListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
+        virtual void update(const UpdateEventUnrecPtr e);
+      private:
+        ApplicationStartScreenRefPtr _ApplicationStartScreen;
+    };
 
-	ScreenUpdateListener _ScreenUpdateListener;
+    friend class ScreenUpdateListener;
 
-    UIDrawingSurfacePtr _TheUIDrawingSurface;
+    ScreenUpdateListener _ScreenUpdateListener;
 
-    ElapsedTimeAnimationAdvancerPtr _AnimationAdvancer;
-    FieldAnimationPtr _TorusAnimation;
+    UIDrawingSurfaceRefPtr _TheUIDrawingSurface;
+    FieldAnimationRefPtr _TorusAnimation;
 
     void updateAnimation(const Time& Elps);
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class ApplicationStartScreenBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const ApplicationStartScreen &source);
 };
 

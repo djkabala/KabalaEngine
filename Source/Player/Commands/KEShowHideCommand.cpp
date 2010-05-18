@@ -1,19 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                     OpenSG ToolBox UserInterface                          *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *                         www.vrac.iastate.edu                              *
- *                                                                           *
- *   Authors: David Kabala, Alden Peterson, Lee Zaniewski, Jonathan Flory    *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -21,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -47,7 +44,7 @@
 #include "KEShowHideCommand.h"
 #include "KEUtils.h"
 
-#include <OpenSG/OSGSimpleAttachments.h>
+#include <OpenSG/OSGNameAttachment.h>
 
 OSG_USING_NAMESPACE
 
@@ -55,7 +52,7 @@ OSG_USING_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::ShowHideCommand
+/*! \class OSG::ShowHideCommand
 A ShowHideCommand. 
 */
 
@@ -64,13 +61,14 @@ A ShowHideCommand.
 \***************************************************************************/
 
 CommandType ShowHideCommand::_Type("ShowHideCommand", "UndoableCommand");
+
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-ShowHideCommandPtr ShowHideCommand::create(NodePtr SelectedNode, bool Show, bool Recursive)
+ShowHideCommandPtr ShowHideCommand::create(NodeRefPtr SelectedNode, bool Show, bool Recursive)
 {
-	return Ptr(new ShowHideCommand(SelectedNode,Show,Recursive));
+	return RefPtr(new ShowHideCommand(SelectedNode,Show,Recursive));
 }
 
 /***************************************************************************\
@@ -86,10 +84,8 @@ void ShowHideCommand::execute(void)
     }
     else if(_SelectedNode->getTravMask() != (_Show ? UInt32(-1) : 0))
     {
-        _ChangedNodes.push_back(std::pair<NodePtr, UInt32>(_SelectedNode, _SelectedNode->getTravMask()));
-        beginEditCP(_SelectedNode, Node::TravMaskFieldMask);
-            _SelectedNode->setTravMask((_Show ? UInt32(-1) : 0));
-        endEditCP(_SelectedNode, Node::TravMaskFieldMask);
+        _ChangedNodes.push_back(std::pair<NodeRefPtr, UInt32>(_SelectedNode, _SelectedNode->getTravMask()));
+        _SelectedNode->setTravMask((_Show ? UInt32(-1) : 0));
     }
     else
     {
@@ -136,9 +132,7 @@ void ShowHideCommand::undo(void)
     Inherited::undo();
     for(UInt32 i = 0; i < _ChangedNodes.size(); ++i)
     {
-        beginEditCP(_ChangedNodes[i].first, Node::TravMaskFieldMask);
             _ChangedNodes[i].first->setTravMask(_ChangedNodes[i].second);
-        endEditCP(_ChangedNodes[i].first, Node::TravMaskFieldMask);
     }
 }
 
@@ -168,18 +162,4 @@ void ShowHideCommand::operator =(const ShowHideCommand& source)
 		_Show = source._Show;
     }
 }
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
 

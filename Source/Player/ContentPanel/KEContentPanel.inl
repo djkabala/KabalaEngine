@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,12 +37,10 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 inline
-ContentPanel::CloseButtonListener::CloseButtonListener(ContentPanelPtr TheContentPanel) : 
+ContentPanel::CloseButtonListener::CloseButtonListener(ContentPanelRefPtr TheContentPanel) : 
 	_ContentPanel(TheContentPanel)
 {
 }
@@ -52,7 +51,7 @@ ContentPanel::CloseButtonListener::~CloseButtonListener()
 }
 
 inline
-ContentPanel::SceneEditorPanelListener::SceneEditorPanelListener(ContentPanelPtr TheContentPanel) : 
+ContentPanel::SceneEditorPanelListener::SceneEditorPanelListener(ContentPanelRefPtr TheContentPanel) : 
 	_ContentPanel(TheContentPanel)
 {
 }
@@ -63,9 +62,9 @@ ContentPanel::SceneEditorPanelListener::~SceneEditorPanelListener()
 }
 
 inline
-void ContentPanel::setApplicationPlayer(ApplicationPlayerPtr TheApplicationPlayer)
+void ContentPanel::setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer)
 {
 	_ApplicationPlayer = TheApplicationPlayer;
 }
-OSG_END_NAMESPACE
 
+OSG_END_NAMESPACE

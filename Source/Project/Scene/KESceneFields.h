@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/OSGAttachmentContainerFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class Scene;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ScenePtr
+OSG_GEN_CONTAINERPTR(Scene);
 
-typedef FCPtr<AttachmentContainerPtr, Scene> ScenePtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ScenePtr> : 
-    public FieldTraitsRecurseMapper<ScenePtr, true>
+struct FieldTraits<Scene *> :
+    public FieldTraitsFCPtrBase<Scene *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFScenePtr"; }
-    static const char *getMName(void) { return "MFScenePtr"; }
+    typedef FieldTraits<Scene *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFScenePtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFScenePtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ScenePtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<Scene *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecScenePtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<Scene *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecScenePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Scene *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakScenePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Scene *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdScenePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Scene *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecScenePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Scene *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecScenePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Scene *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakScenePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Scene *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdScenePtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Scene *,
+                      RecordedRefCountPolicy  > SFRecScenePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Scene *,
+                      UnrecordedRefCountPolicy> SFUnrecScenePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Scene *,
+                      WeakRefCountPolicy      > SFWeakScenePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Scene *,
+                      NoRefCountPolicy        > SFUncountedScenePtr;
 
-typedef SField<ScenePtr> SFScenePtr;
-#endif
 
-#ifndef KE_COMPILESCENEINST
-OSG_DLLEXPORT_DECL1(SField, ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Scene *,
+                      RecordedRefCountPolicy  > MFRecScenePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Scene *,
+                      UnrecordedRefCountPolicy> MFUnrecScenePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Scene *,
+                      WeakRefCountPolicy      > MFWeakScenePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Scene *,
+                      NoRefCountPolicy        > MFUncountedScenePtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ScenePtr> MFScenePtr;
-#endif
 
-#ifndef KE_COMPILESCENEINST
-OSG_DLLEXPORT_DECL1(MField, ScenePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecScenePtr : 
+    public PointerSField<Scene *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecScenePtr : 
+    public PointerSField<Scene *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakScenePtr :
+    public PointerSField<Scene *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedScenePtr :
+    public PointerSField<Scene *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecScenePtr :
+    public PointerMField<Scene *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecScenePtr :
+    public PointerMField<Scene *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakScenePtr :
+    public PointerMField<Scene *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedScenePtr :
+    public PointerMField<Scene *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

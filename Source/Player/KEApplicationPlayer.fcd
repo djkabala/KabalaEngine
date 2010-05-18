@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <FieldContainer
-	name="ApplicationStartScreen"
+	name="ApplicationPlayer"
 	parent="ApplicationMode"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
@@ -9,7 +9,9 @@
 	systemcomponent="false"
 	parentsystemcomponent="false"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
-The ApplicationStartScreen.
+The ApplicationPlayer.
 </FieldContainer>

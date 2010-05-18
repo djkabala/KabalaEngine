@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,144 +47,220 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILESCENEOBJECTCONTAINERINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
+#include "Project/SceneObject/KESceneObject.h" // SceneObjects Class
 
 #include "KESceneObjectContainerBase.h"
 #include "KESceneObjectContainer.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  SceneObjectContainerBase::SceneObjectsFieldMask = 
-    (TypeTraits<BitVector>::One << SceneObjectContainerBase::SceneObjectsFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector SceneObjectContainerBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/*! \class OSG::SceneObjectContainer
+    The SceneObjectContainer.
+ */
 
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
-// Field descriptions
-
-/*! \var SceneObjectPtr  SceneObjectContainerBase::_mfSceneObjects
+/*! \var SceneObject *   SceneObjectContainerBase::_mfSceneObjects
     
 */
 
-//! SceneObjectContainer description
 
-FieldDescription *SceneObjectContainerBase::_desc[] = 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<SceneObjectContainer *>::_type("SceneObjectContainerPtr", "SceneObjectPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(SceneObjectContainer *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           SceneObjectContainer *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           SceneObjectContainer *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void SceneObjectContainerBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(MFSceneObjectPtr::getClassType(), 
-                     "SceneObjects", 
-                     SceneObjectsFieldId, SceneObjectsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&SceneObjectContainerBase::editMFSceneObjects))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType SceneObjectContainerBase::_type(
-    "SceneObjectContainer",
-    "SceneObject",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&SceneObjectContainerBase::createEmpty),
+    pDesc = new MFUnrecSceneObjectPtr::Description(
+        MFUnrecSceneObjectPtr::getClassType(),
+        "SceneObjects",
+        "",
+        SceneObjectsFieldId, SceneObjectsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&SceneObjectContainer::editHandleSceneObjects),
+        static_cast<FieldGetMethodSig >(&SceneObjectContainer::getHandleSceneObjects));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+SceneObjectContainerBase::TypeObject SceneObjectContainerBase::_type(
+    SceneObjectContainerBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&SceneObjectContainerBase::createEmptyLocal),
     SceneObjectContainer::initMethod,
-    _desc,
-    sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(SceneObjectContainerBase, SceneObjectContainerPtr)
+    SceneObjectContainer::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&SceneObjectContainer::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"SceneObjectContainer\"\n"
+    "\tparent=\"SceneObject\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"false\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The SceneObjectContainer.\n"
+    "\t<Field\n"
+    "\t\tname=\"SceneObjects\"\n"
+    "\t\ttype=\"SceneObject\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/SceneObject/KESceneObjectFields.h\"\n"
+    "\t\ttypeHeader=\"Project/SceneObject/KESceneObject.h\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "</FieldContainer>\n",
+    "The SceneObjectContainer.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &SceneObjectContainerBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &SceneObjectContainerBase::getType(void) const 
+FieldContainerType &SceneObjectContainerBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr SceneObjectContainerBase::shallowCopy(void) const 
-{ 
-    SceneObjectContainerPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const SceneObjectContainer *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 SceneObjectContainerBase::getContainerSize(void) const 
-{ 
-    return sizeof(SceneObjectContainer); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void SceneObjectContainerBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &SceneObjectContainerBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<SceneObjectContainerBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void SceneObjectContainerBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 SceneObjectContainerBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((SceneObjectContainerBase *) &other, whichField, sInfo);
+    return sizeof(SceneObjectContainer);
 }
-void SceneObjectContainerBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+/*------------------------- decorator get ------------------------------*/
+
+
+//! Get the SceneObjectContainer::_mfSceneObjects field.
+const MFUnrecSceneObjectPtr *SceneObjectContainerBase::getMFSceneObjects(void) const
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return &_mfSceneObjects;
 }
 
-void SceneObjectContainerBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+MFUnrecSceneObjectPtr *SceneObjectContainerBase::editMFSceneObjects   (void)
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
+    editMField(SceneObjectsFieldMask, _mfSceneObjects);
 
-    _mfSceneObjects.terminateShare(uiAspect, this->getContainerSize());
+    return &_mfSceneObjects;
 }
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-SceneObjectContainerBase::SceneObjectContainerBase(void) :
-    _mfSceneObjects           (), 
-    Inherited() 
+void SceneObjectContainerBase::pushToSceneObjects(SceneObject * const value)
 {
+    editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+    _mfSceneObjects.push_back(value);
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-SceneObjectContainerBase::SceneObjectContainerBase(const SceneObjectContainerBase &source) :
-    _mfSceneObjects           (source._mfSceneObjects           ), 
-    Inherited                 (source)
+void SceneObjectContainerBase::assignSceneObjects(const MFUnrecSceneObjectPtr &value)
 {
+    MFUnrecSceneObjectPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecSceneObjectPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<SceneObjectContainer *>(this)->clearSceneObjects();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToSceneObjects(*elemIt);
+
+        ++elemIt;
+    }
 }
 
-/*-------------------------- destructors ----------------------------------*/
-
-SceneObjectContainerBase::~SceneObjectContainerBase(void)
+void SceneObjectContainerBase::removeFromSceneObjects(UInt32 uiIndex)
 {
+    if(uiIndex < _mfSceneObjects.size())
+    {
+        editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+        _mfSceneObjects.erase(uiIndex);
+    }
 }
+
+void SceneObjectContainerBase::removeObjFromSceneObjects(SceneObject * const value)
+{
+    Int32 iElemIdx = _mfSceneObjects.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+        _mfSceneObjects.erase(iElemIdx);
+    }
+}
+void SceneObjectContainerBase::clearSceneObjects(void)
+{
+    editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+
+    _mfSceneObjects.clear();
+}
+
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 SceneObjectContainerBase::getBinSize(const BitVector &whichField)
+UInt32 SceneObjectContainerBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -192,12 +269,11 @@ UInt32 SceneObjectContainerBase::getBinSize(const BitVector &whichField)
         returnValue += _mfSceneObjects.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void SceneObjectContainerBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void SceneObjectContainerBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -205,12 +281,10 @@ void SceneObjectContainerBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _mfSceneObjects.copyToBin(pMem);
     }
-
-
 }
 
-void SceneObjectContainerBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void SceneObjectContainerBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -218,65 +292,248 @@ void SceneObjectContainerBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _mfSceneObjects.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void SceneObjectContainerBase::executeSyncImpl(      SceneObjectContainerBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+SceneObjectContainerTransitPtr SceneObjectContainerBase::createLocal(BitVector bFlags)
 {
+    SceneObjectContainerTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (SceneObjectsFieldMask & whichField))
-        _mfSceneObjects.syncWith(pOther->_mfSceneObjects);
+        fc = dynamic_pointer_cast<SceneObjectContainer>(tmpPtr);
+    }
 
-
-}
-#else
-void SceneObjectContainerBase::executeSyncImpl(      SceneObjectContainerBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-    if(FieldBits::NoField != (SceneObjectsFieldMask & whichField))
-        _mfSceneObjects.syncWith(pOther->_mfSceneObjects, sInfo);
-
-
+    return fc;
 }
 
-void SceneObjectContainerBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+SceneObjectContainerTransitPtr SceneObjectContainerBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    SceneObjectContainerTransitPtr fc;
 
-    if(FieldBits::NoField != (SceneObjectsFieldMask & whichField))
-        _mfSceneObjects.beginEdit(uiAspect, uiContainerSize);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
 
+        fc = dynamic_pointer_cast<SceneObjectContainer>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+SceneObjectContainerTransitPtr SceneObjectContainerBase::create(void)
+{
+    SceneObjectContainerTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<SceneObjectContainer>(tmpPtr);
+    }
+
+    return fc;
+}
+
+SceneObjectContainer *SceneObjectContainerBase::createEmptyLocal(BitVector bFlags)
+{
+    SceneObjectContainer *returnValue;
+
+    newPtr<SceneObjectContainer>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+SceneObjectContainer *SceneObjectContainerBase::createEmpty(void)
+{
+    SceneObjectContainer *returnValue;
+
+    newPtr<SceneObjectContainer>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr SceneObjectContainerBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    SceneObjectContainer *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const SceneObjectContainer *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr SceneObjectContainerBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    SceneObjectContainer *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const SceneObjectContainer *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr SceneObjectContainerBase::shallowCopy(void) const
+{
+    SceneObjectContainer *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const SceneObjectContainer *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+SceneObjectContainerBase::SceneObjectContainerBase(void) :
+    Inherited(),
+    _mfSceneObjects           ()
+{
+}
+
+SceneObjectContainerBase::SceneObjectContainerBase(const SceneObjectContainerBase &source) :
+    Inherited(source),
+    _mfSceneObjects           ()
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+SceneObjectContainerBase::~SceneObjectContainerBase(void)
+{
+}
+
+void SceneObjectContainerBase::onCreate(const SceneObjectContainer *source)
+{
+    Inherited::onCreate(source);
+
+    if(source != NULL)
+    {
+        SceneObjectContainer *pThis = static_cast<SceneObjectContainer *>(this);
+
+        MFUnrecSceneObjectPtr::const_iterator SceneObjectsIt  =
+            source->_mfSceneObjects.begin();
+        MFUnrecSceneObjectPtr::const_iterator SceneObjectsEnd =
+            source->_mfSceneObjects.end  ();
+
+        while(SceneObjectsIt != SceneObjectsEnd)
+        {
+            pThis->pushToSceneObjects(*SceneObjectsIt);
+
+            ++SceneObjectsIt;
+        }
+    }
+}
+
+GetFieldHandlePtr SceneObjectContainerBase::getHandleSceneObjects    (void) const
+{
+    MFUnrecSceneObjectPtr::GetHandlePtr returnValue(
+        new  MFUnrecSceneObjectPtr::GetHandle(
+             &_mfSceneObjects,
+             this->getType().getFieldDesc(SceneObjectsFieldId),
+             const_cast<SceneObjectContainerBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneObjectContainerBase::editHandleSceneObjects   (void)
+{
+    MFUnrecSceneObjectPtr::EditHandlePtr returnValue(
+        new  MFUnrecSceneObjectPtr::EditHandle(
+             &_mfSceneObjects,
+             this->getType().getFieldDesc(SceneObjectsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&SceneObjectContainer::pushToSceneObjects,
+                    static_cast<SceneObjectContainer *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&SceneObjectContainer::removeFromSceneObjects,
+                    static_cast<SceneObjectContainer *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&SceneObjectContainer::removeObjFromSceneObjects,
+                    static_cast<SceneObjectContainer *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&SceneObjectContainer::clearSceneObjects,
+                    static_cast<SceneObjectContainer *>(this)));
+
+    editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void SceneObjectContainerBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    SceneObjectContainer *pThis = static_cast<SceneObjectContainer *>(this);
+
+    pThis->execSync(static_cast<SceneObjectContainer *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *SceneObjectContainerBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    SceneObjectContainer *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const SceneObjectContainer *>(pRefAspect),
+                  dynamic_cast<const SceneObjectContainer *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<SceneObjectContainerPtr>::_type("SceneObjectContainerPtr", "SceneObjectPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(SceneObjectContainerPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(SceneObjectContainerPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void SceneObjectContainerBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    static_cast<SceneObjectContainer *>(this)->clearSceneObjects();
+
+
+}
 
 
 OSG_END_NAMESPACE
-

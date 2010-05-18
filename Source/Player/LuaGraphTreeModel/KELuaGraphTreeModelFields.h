@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGAbstractTreeModelFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class LuaGraphTreeModel;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! LuaGraphTreeModelPtr
+OSG_GEN_CONTAINERPTR(LuaGraphTreeModel);
 
-typedef FCPtr<AbstractTreeModelPtr, LuaGraphTreeModel> LuaGraphTreeModelPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<LuaGraphTreeModelPtr> : 
-    public FieldTraitsRecurseMapper<LuaGraphTreeModelPtr, true>
+struct FieldTraits<LuaGraphTreeModel *> :
+    public FieldTraitsFCPtrBase<LuaGraphTreeModel *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFLuaGraphTreeModelPtr"; }
-    static const char *getMName(void) { return "MFLuaGraphTreeModelPtr"; }
+    typedef FieldTraits<LuaGraphTreeModel *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFLuaGraphTreeModelPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFLuaGraphTreeModelPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<LuaGraphTreeModelPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<LuaGraphTreeModel *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecLuaGraphTreeModelPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<LuaGraphTreeModel *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecLuaGraphTreeModelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<LuaGraphTreeModel *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakLuaGraphTreeModelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<LuaGraphTreeModel *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdLuaGraphTreeModelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<LuaGraphTreeModel *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecLuaGraphTreeModelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<LuaGraphTreeModel *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecLuaGraphTreeModelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<LuaGraphTreeModel *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakLuaGraphTreeModelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<LuaGraphTreeModel *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdLuaGraphTreeModelPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<LuaGraphTreeModel *,
+                      RecordedRefCountPolicy  > SFRecLuaGraphTreeModelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<LuaGraphTreeModel *,
+                      UnrecordedRefCountPolicy> SFUnrecLuaGraphTreeModelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<LuaGraphTreeModel *,
+                      WeakRefCountPolicy      > SFWeakLuaGraphTreeModelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<LuaGraphTreeModel *,
+                      NoRefCountPolicy        > SFUncountedLuaGraphTreeModelPtr;
 
-typedef SField<LuaGraphTreeModelPtr> SFLuaGraphTreeModelPtr;
-#endif
 
-#ifndef KE_COMPILELUAGRAPHTREEMODELINST
-OSG_DLLEXPORT_DECL1(SField, LuaGraphTreeModelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<LuaGraphTreeModel *,
+                      RecordedRefCountPolicy  > MFRecLuaGraphTreeModelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<LuaGraphTreeModel *,
+                      UnrecordedRefCountPolicy> MFUnrecLuaGraphTreeModelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<LuaGraphTreeModel *,
+                      WeakRefCountPolicy      > MFWeakLuaGraphTreeModelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<LuaGraphTreeModel *,
+                      NoRefCountPolicy        > MFUncountedLuaGraphTreeModelPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<LuaGraphTreeModelPtr> MFLuaGraphTreeModelPtr;
-#endif
 
-#ifndef KE_COMPILELUAGRAPHTREEMODELINST
-OSG_DLLEXPORT_DECL1(MField, LuaGraphTreeModelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecLuaGraphTreeModelPtr : 
+    public PointerSField<LuaGraphTreeModel *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecLuaGraphTreeModelPtr : 
+    public PointerSField<LuaGraphTreeModel *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakLuaGraphTreeModelPtr :
+    public PointerSField<LuaGraphTreeModel *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedLuaGraphTreeModelPtr :
+    public PointerSField<LuaGraphTreeModel *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecLuaGraphTreeModelPtr :
+    public PointerMField<LuaGraphTreeModel *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecLuaGraphTreeModelPtr :
+    public PointerMField<LuaGraphTreeModel *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakLuaGraphTreeModelPtr :
+    public PointerMField<LuaGraphTreeModel *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedLuaGraphTreeModelPtr :
+    public PointerMField<LuaGraphTreeModel *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

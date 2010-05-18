@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,13 +32,22 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 //---------------------------------------------------------------------------
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
@@ -50,13 +60,10 @@
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::ChangeSceneActivity
-
-*/
+// Documentation for this class is emitted in the
+// OSGChangeSceneActivityBase.cpp file.
+// To modify it, please change the .fcd file (OSGChangeSceneActivity.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -66,8 +73,13 @@ OSG_BEGIN_NAMESPACE
  *                           Class methods                                 *
 \***************************************************************************/
 
-void ChangeSceneActivity::initMethod (void)
+void ChangeSceneActivity::initMethod(InitPhase ePhase)
 {
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
 
@@ -75,7 +87,7 @@ void ChangeSceneActivity::initMethod (void)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void ChangeSceneActivity::eventProduced(const EventPtr EventDetails, UInt32 ProducedEventId)
+void ChangeSceneActivity::eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId)
 {
     MainApplication::the()->getProject()->setActiveScene(getGotoScene());
 }
@@ -102,17 +114,17 @@ ChangeSceneActivity::~ChangeSceneActivity(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void ChangeSceneActivity::changed(BitVector whichField, UInt32 origin)
+void ChangeSceneActivity::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 }
 
-void ChangeSceneActivity::dump(      UInt32    , 
+void ChangeSceneActivity::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump ChangeSceneActivity NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

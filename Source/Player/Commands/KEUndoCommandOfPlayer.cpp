@@ -1,19 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                     OpenSG ToolBox UserInterface                          *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *                         www.vrac.iastate.edu                              *
- *                                                                           *
- *   Authors: David Kabala, Alden Peterson, Lee Zaniewski, Jonathan Flory    *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -21,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -52,7 +49,7 @@ OSG_USING_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::UndoCommandOfPlayer
+/*! \class OSG::UndoCommandOfPlayer
 A UndoCommandOfPlayer. 
 */
 
@@ -61,13 +58,14 @@ A UndoCommandOfPlayer.
 \***************************************************************************/
 
 CommandType UndoCommandOfPlayer::_Type("UndoCommandOfPlayer", "Command");
+
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-UndoCommandOfPlayerPtr UndoCommandOfPlayer::create(ApplicationPlayerPtr ApplicationPlayer)
+UndoCommandOfPlayerRefPtr UndoCommandOfPlayer::create(ApplicationPlayerRefPtr ApplicationPlayer)
 {
-	return Ptr(new UndoCommandOfPlayer(ApplicationPlayer));
+	return RefPtr(new UndoCommandOfPlayer(ApplicationPlayer));
 }
 
 /***************************************************************************\
@@ -100,18 +98,4 @@ UndoCommandOfPlayer::~UndoCommandOfPlayer(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
 

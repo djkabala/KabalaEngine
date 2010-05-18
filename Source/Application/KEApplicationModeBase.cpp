@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,112 +47,124 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEAPPLICATIONMODEINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEApplicationModeBase.h"
 #include "KEApplicationMode.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector ApplicationModeBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
+
+/*! \class OSG::ApplicationMode
+    The ApplicationMode.
+ */
+
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
 
-FieldContainerType ApplicationModeBase::_type(
-    "ApplicationMode",
-    "FieldContainer",
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<ApplicationMode *>::_type("ApplicationModePtr", "FieldContainerPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(ApplicationMode *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           ApplicationMode *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           ApplicationMode *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void ApplicationModeBase::classDescInserter(TypeObject &oType)
+{
+}
+
+
+ApplicationModeBase::TypeObject ApplicationModeBase::_type(
+    ApplicationModeBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
     NULL,
-    NULL, 
     ApplicationMode::initMethod,
-    NULL,
-    0);
-
-//OSG_FIELD_CONTAINER_DEF(ApplicationModeBase, ApplicationModePtr)
+    ApplicationMode::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&ApplicationMode::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"ApplicationMode\"\n"
+    "\tparent=\"FieldContainer\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"abstract\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The ApplicationMode.\n"
+    "</FieldContainer>\n",
+    "The ApplicationMode.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &ApplicationModeBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &ApplicationModeBase::getType(void) const 
+FieldContainerType &ApplicationModeBase::getType(void)
 {
     return _type;
-} 
-
-
-UInt32 ApplicationModeBase::getContainerSize(void) const 
-{ 
-    return sizeof(ApplicationMode); 
 }
 
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ApplicationModeBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &ApplicationModeBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<ApplicationModeBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void ApplicationModeBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 ApplicationModeBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((ApplicationModeBase *) &other, whichField, sInfo);
-}
-void ApplicationModeBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return sizeof(ApplicationMode);
 }
 
-void ApplicationModeBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
+/*------------------------- decorator get ------------------------------*/
 
-}
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-ApplicationModeBase::ApplicationModeBase(void) :
-    Inherited() 
-{
-}
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-ApplicationModeBase::ApplicationModeBase(const ApplicationModeBase &source) :
-    Inherited                 (source)
-{
-}
-
-/*-------------------------- destructors ----------------------------------*/
-
-ApplicationModeBase::~ApplicationModeBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 ApplicationModeBase::getBinSize(const BitVector &whichField)
+UInt32 ApplicationModeBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -159,67 +172,69 @@ UInt32 ApplicationModeBase::getBinSize(const BitVector &whichField)
     return returnValue;
 }
 
-void ApplicationModeBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void ApplicationModeBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-
 }
 
-void ApplicationModeBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void ApplicationModeBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ApplicationModeBase::executeSyncImpl(      ApplicationModeBase *pOther,
-                                        const BitVector         &whichField)
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+ApplicationModeBase::ApplicationModeBase(void) :
+    Inherited()
 {
-
-    Inherited::executeSyncImpl(pOther, whichField);
-
-
-}
-#else
-void ApplicationModeBase::executeSyncImpl(      ApplicationModeBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-
 }
 
-void ApplicationModeBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+ApplicationModeBase::ApplicationModeBase(const ApplicationModeBase &source) :
+    Inherited(source)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+}
 
+
+/*-------------------------- destructors ----------------------------------*/
+
+ApplicationModeBase::~ApplicationModeBase(void)
+{
+}
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void ApplicationModeBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    ApplicationMode *pThis = static_cast<ApplicationMode *>(this);
+
+    pThis->execSync(static_cast<ApplicationMode *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
 
-OSG_END_NAMESPACE
+void ApplicationModeBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
 
-OSG_BEGIN_NAMESPACE
+}
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ApplicationModePtr>::_type("ApplicationModePtr", "FieldContainerPtr");
-#endif
-
-OSG_DLLEXPORT_SFIELD_DEF1(ApplicationModePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(ApplicationModePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
 OSG_END_NAMESPACE
-

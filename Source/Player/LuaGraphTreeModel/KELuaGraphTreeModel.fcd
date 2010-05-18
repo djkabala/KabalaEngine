@@ -9,16 +9,18 @@
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 A UI LuaGraphTreeModel.
 	<Field
 		name="InternalRoot"
-		type="Path"
+		type="BoostPath"
+		category="data"
 		cardinality="single"
         visibility="external"
 		defaultValue=""
-        header="OpenSG/Toolbox/OSGPathType.h"
 		access="protected"
 	>
    </Field>

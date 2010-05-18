@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/OSGAttachmentContainerFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class Project;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ProjectPtr
+OSG_GEN_CONTAINERPTR(Project);
 
-typedef FCPtr<AttachmentContainerPtr, Project> ProjectPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ProjectPtr> : 
-    public FieldTraitsRecurseMapper<ProjectPtr, true>
+struct FieldTraits<Project *> :
+    public FieldTraitsFCPtrBase<Project *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFProjectPtr"; }
-    static const char *getMName(void) { return "MFProjectPtr"; }
+    typedef FieldTraits<Project *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFProjectPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFProjectPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ProjectPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<Project *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecProjectPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<Project *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecProjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Project *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakProjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Project *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdProjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Project *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecProjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Project *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecProjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Project *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakProjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Project *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdProjectPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Project *,
+                      RecordedRefCountPolicy  > SFRecProjectPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Project *,
+                      UnrecordedRefCountPolicy> SFUnrecProjectPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Project *,
+                      WeakRefCountPolicy      > SFWeakProjectPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Project *,
+                      NoRefCountPolicy        > SFUncountedProjectPtr;
 
-typedef SField<ProjectPtr> SFProjectPtr;
-#endif
 
-#ifndef KE_COMPILEPROJECTINST
-OSG_DLLEXPORT_DECL1(SField, ProjectPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Project *,
+                      RecordedRefCountPolicy  > MFRecProjectPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Project *,
+                      UnrecordedRefCountPolicy> MFUnrecProjectPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Project *,
+                      WeakRefCountPolicy      > MFWeakProjectPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Project *,
+                      NoRefCountPolicy        > MFUncountedProjectPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ProjectPtr> MFProjectPtr;
-#endif
 
-#ifndef KE_COMPILEPROJECTINST
-OSG_DLLEXPORT_DECL1(MField, ProjectPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecProjectPtr : 
+    public PointerSField<Project *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecProjectPtr : 
+    public PointerSField<Project *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakProjectPtr :
+    public PointerSField<Project *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedProjectPtr :
+    public PointerSField<Project *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecProjectPtr :
+    public PointerMField<Project *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecProjectPtr :
+    public PointerMField<Project *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakProjectPtr :
+    public PointerMField<Project *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedProjectPtr :
+    public PointerMField<Project *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

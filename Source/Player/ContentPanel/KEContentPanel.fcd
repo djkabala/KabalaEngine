@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <FieldContainer
-	name="HelperPanel"
+	name="ContentPanel"
 	parent="Panel"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
@@ -9,8 +9,10 @@
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
-The HelperView.
+The ContentPanel. Shows the content of files 
 
 </FieldContainer>

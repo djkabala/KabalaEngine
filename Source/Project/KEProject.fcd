@@ -9,12 +9,15 @@
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 The Project.
 	<Field
 		name="Version"
 		type="std::string"
+		category="data"
 		cardinality="single"
 		visibility="external"
 		defaultValue=""
@@ -24,6 +27,7 @@ The Project.
 	<Field
 		name="MainWindowTitle"
 		type="std::string"
+		category="data"
 		cardinality="single"
 		visibility="external"
 		defaultValue=""
@@ -32,45 +36,52 @@ The Project.
 	</Field>
 	<Field
 		name="FilePath"
-		type="Path"
+		type="BoostPath"
+		category="data"
 		cardinality="single"
 		visibility="external"
-		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="Scenes"
-		type="ScenePtr"
+		type="Scene"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="Project/Scene/KESceneFields.h"
+		fieldHeader="Project/Scene/KESceneFields.h"
+		typeHeader="Project/Scene/KEScene.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="InitialScene"
-		type="ScenePtr"
+		type="Scene"
+		category="pointer"
 		cardinality="single"
-		defaultValue="NullFC"
 		visibility="external"
-		header="Project/Scene/KESceneFields.h"
+		fieldHeader="Project/Scene/KESceneFields.h"
+		typeHeader="Project/Scene/KEScene.h"
 		access="public"
+		defaultValue="NULL"
 	>
 	</Field>
 	<Field
 		name="InternalActiveScene"
-		type="ScenePtr"
+		type="Scene"
+		category="pointer"
 		cardinality="single"
-		defaultValue="NullFC"
 		visibility="internal"
-		header="Project/Scene/KESceneFields.h"
+		fieldHeader="Project/Scene/KESceneFields.h"
+		typeHeader="Project/Scene/KEScene.h"
 		access="protected"
+		defaultValue="NULL"
 	>
 	</Field>
 	<Field
 		name="Backgrounds"
-		type="BackgroundPtr"
+		type="Background"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -78,16 +89,18 @@ The Project.
 	</Field>
 	<Field
 		name="InternalActiveBackground"
-		type="BackgroundPtr"
+		type="Background"
+		category="pointer"
 		cardinality="single"
-		defaultValue="NullFC"
 		visibility="internal"
 		access="protected"
+		defaultValue="NULL"
 	>
 	</Field>
 	<Field
 		name="Foregrounds"
-		type="ForegroundPtr"
+		type="Foreground"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -95,7 +108,8 @@ The Project.
 	</Field>
 	<Field
 		name="InternalActiveForegrounds"
-		type="ForegroundPtr"
+		type="Foreground"
+		category="pointer"
 		cardinality="multi"
 		visibility="internal"
 		access="protected"
@@ -103,7 +117,8 @@ The Project.
 	</Field>
 	<Field
 		name="GlobalActiveForegrounds"
-		type="ForegroundPtr"
+		type="Foreground"
+		category="pointer"
 		cardinality="multi"
 		visibility="internal"
 		access="public"
@@ -111,7 +126,8 @@ The Project.
 	</Field>
 	<Field
 		name="ModelNodes"
-		type="NodePtr"
+		type="Node"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -119,7 +135,8 @@ The Project.
 	</Field>
 	<Field
 		name="InternalActiveModelNodes"
-		type="NodePtr"
+		type="Node"
+		category="pointer"
 		cardinality="multi"
 		visibility="internal"
 		access="protected"
@@ -127,7 +144,8 @@ The Project.
 	</Field>
 	<Field
 		name="GlobalActiveModelNodes"
-		type="NodePtr"
+		type="Node"
+		category="pointer"
 		cardinality="multi"
 		visibility="internal"
 		access="public"
@@ -135,7 +153,8 @@ The Project.
 	</Field>
 	<Field
 		name="Cameras"
-		type="CameraPtr"
+		type="Camera"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -143,178 +162,179 @@ The Project.
 	</Field>
 	<Field
 		name="InternalActiveCamera"
-		type="CameraPtr"
+		type="Camera"
+		category="pointer"
 		cardinality="single"
-		defaultValue="NullFC"
 		visibility="internal"
 		access="protected"
+		defaultValue="NULL"
 	>
 	</Field>
 	<Field
 		name="ActiveAnimations"
-		type="AnimationPtr"
+		type="Animation"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="OpenSG/Animation/OSGAnimation.h"
 		access="protected"
 	>
 	</Field>
 	<Field
 		name="ActiveParticleSystems"
-		type="ParticleSystemPtr"
+		type="ParticleSystem"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="OpenSG/ParticleSystem/OSGParticleSystem.h"
 		access="protected"
 	>
 	</Field>
 	<Field
 		name="LuaModule"
-		type="Path"
+		type="BoostPath"
+		category="data"
 		cardinality="single"
 		visibility="external"
-		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="LuaModulesDirectory"
-		type="Path"
+		type="BoostPath"
+		category="data"
 		cardinality="single"
 		visibility="external"
-		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
         defaultValue="./lua"
 	>
 	</Field>
 	<ProducedMethod
 		name="ProjectStarted"
-		producedEventType="ProjectEventPtr"
+		type="ProjectEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="ProjectStopping"
-		producedEventType="ProjectEventPtr"
+		type="ProjectEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="ProjectStopped"
-		producedEventType="ProjectEventPtr"
+		type="ProjectEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="ProjectReset"
-		producedEventType="ProjectEventPtr"
+		type="ProjectEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="SceneChanged"
-		producedEventType="ProjectEventPtr"
+		type="ProjectEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowOpened"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowClosing"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowClosed"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowIconified"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowDeiconified"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowActivated"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowDeactivated"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowEntered"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowExited"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseClicked"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseEntered"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseExited"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MousePressed"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseReleased"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseMoved"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseDragged"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseWheelMoved"
-		producedEventType="MouseWheelEventPtr"
+		type="MouseWheelEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="KeyPressed"
-		producedEventType="KeyEventPtr"
+		type="KeyEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="KeyReleased"
-		producedEventType="KeyEventPtr"
+		type="KeyEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="KeyTyped"
-		producedEventType="KeyEventPtr"
+		type="KeyEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="Update"
-		producedEventType="UpdateEventPtr"
+		type="UpdateEvent"
 	>
 	</ProducedMethod>
 </FieldContainer>

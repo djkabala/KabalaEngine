@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,536 +47,1782 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEPROJECTINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
+#include "Project/Scene/KEScene.h"      // Scenes Class
+#include <OpenSG/OSGBackground.h>       // Backgrounds Class
+#include <OpenSG/OSGForeground.h>       // Foregrounds Class
+#include <OpenSG/OSGNode.h>             // ModelNodes Class
+#include <OpenSG/OSGCamera.h>           // Cameras Class
+#include <OpenSG/OSGAnimation.h>        // ActiveAnimations Class
+#include <OpenSG/OSGParticleSystem.h>   // ActiveParticleSystems Class
 
 #include "KEProjectBase.h"
 #include "KEProject.h"
 
+#include <boost/bind.hpp>
+
+#include <OpenSG/OSGEvent.h>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  ProjectBase::VersionFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::VersionFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector  ProjectBase::MainWindowTitleFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::MainWindowTitleFieldId);
+/*! \class OSG::Project
+    The Project.
+ */
 
-const OSG::BitVector  ProjectBase::FilePathFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::FilePathFieldId);
-
-const OSG::BitVector  ProjectBase::ScenesFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::ScenesFieldId);
-
-const OSG::BitVector  ProjectBase::InitialSceneFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::InitialSceneFieldId);
-
-const OSG::BitVector  ProjectBase::InternalActiveSceneFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::InternalActiveSceneFieldId);
-
-const OSG::BitVector  ProjectBase::BackgroundsFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::BackgroundsFieldId);
-
-const OSG::BitVector  ProjectBase::InternalActiveBackgroundFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::InternalActiveBackgroundFieldId);
-
-const OSG::BitVector  ProjectBase::ForegroundsFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::ForegroundsFieldId);
-
-const OSG::BitVector  ProjectBase::InternalActiveForegroundsFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::InternalActiveForegroundsFieldId);
-
-const OSG::BitVector  ProjectBase::GlobalActiveForegroundsFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::GlobalActiveForegroundsFieldId);
-
-const OSG::BitVector  ProjectBase::ModelNodesFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::ModelNodesFieldId);
-
-const OSG::BitVector  ProjectBase::InternalActiveModelNodesFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::InternalActiveModelNodesFieldId);
-
-const OSG::BitVector  ProjectBase::GlobalActiveModelNodesFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::GlobalActiveModelNodesFieldId);
-
-const OSG::BitVector  ProjectBase::CamerasFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::CamerasFieldId);
-
-const OSG::BitVector  ProjectBase::InternalActiveCameraFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::InternalActiveCameraFieldId);
-
-const OSG::BitVector  ProjectBase::ActiveAnimationsFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::ActiveAnimationsFieldId);
-
-const OSG::BitVector  ProjectBase::ActiveParticleSystemsFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::ActiveParticleSystemsFieldId);
-
-const OSG::BitVector  ProjectBase::LuaModuleFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::LuaModuleFieldId);
-
-const OSG::BitVector  ProjectBase::LuaModulesDirectoryFieldMask = 
-    (TypeTraits<BitVector>::One << ProjectBase::LuaModulesDirectoryFieldId);
-
-const OSG::BitVector  ProjectBase::EventProducerFieldMask =
-    (TypeTraits<BitVector>::One << ProjectBase::EventProducerFieldId);
-
-const OSG::BitVector ProjectBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
-
-
-// Field descriptions
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 /*! \var std::string     ProjectBase::_sfVersion
     
 */
+
 /*! \var std::string     ProjectBase::_sfMainWindowTitle
     
 */
-/*! \var Path            ProjectBase::_sfFilePath
-    
-*/
-/*! \var ScenePtr        ProjectBase::_mfScenes
-    
-*/
-/*! \var ScenePtr        ProjectBase::_sfInitialScene
-    
-*/
-/*! \var ScenePtr        ProjectBase::_sfInternalActiveScene
-    
-*/
-/*! \var BackgroundPtr   ProjectBase::_mfBackgrounds
-    
-*/
-/*! \var BackgroundPtr   ProjectBase::_sfInternalActiveBackground
-    
-*/
-/*! \var ForegroundPtr   ProjectBase::_mfForegrounds
-    
-*/
-/*! \var ForegroundPtr   ProjectBase::_mfInternalActiveForegrounds
-    
-*/
-/*! \var ForegroundPtr   ProjectBase::_mfGlobalActiveForegrounds
-    
-*/
-/*! \var NodePtr         ProjectBase::_mfModelNodes
-    
-*/
-/*! \var NodePtr         ProjectBase::_mfInternalActiveModelNodes
-    
-*/
-/*! \var NodePtr         ProjectBase::_mfGlobalActiveModelNodes
-    
-*/
-/*! \var CameraPtr       ProjectBase::_mfCameras
-    
-*/
-/*! \var CameraPtr       ProjectBase::_sfInternalActiveCamera
-    
-*/
-/*! \var AnimationPtr    ProjectBase::_mfActiveAnimations
-    
-*/
-/*! \var ParticleSystemPtr ProjectBase::_mfActiveParticleSystems
-    
-*/
-/*! \var Path            ProjectBase::_sfLuaModule
-    
-*/
-/*! \var Path            ProjectBase::_sfLuaModulesDirectory
+
+/*! \var BoostPath       ProjectBase::_sfFilePath
     
 */
 
-//! Project description
+/*! \var Scene *         ProjectBase::_mfScenes
+    
+*/
 
-FieldDescription *ProjectBase::_desc[] = 
+/*! \var Scene *         ProjectBase::_sfInitialScene
+    
+*/
+
+/*! \var Scene *         ProjectBase::_sfInternalActiveScene
+    
+*/
+
+/*! \var Background *    ProjectBase::_mfBackgrounds
+    
+*/
+
+/*! \var Background *    ProjectBase::_sfInternalActiveBackground
+    
+*/
+
+/*! \var Foreground *    ProjectBase::_mfForegrounds
+    
+*/
+
+/*! \var Foreground *    ProjectBase::_mfInternalActiveForegrounds
+    
+*/
+
+/*! \var Foreground *    ProjectBase::_mfGlobalActiveForegrounds
+    
+*/
+
+/*! \var Node *          ProjectBase::_mfModelNodes
+    
+*/
+
+/*! \var Node *          ProjectBase::_mfInternalActiveModelNodes
+    
+*/
+
+/*! \var Node *          ProjectBase::_mfGlobalActiveModelNodes
+    
+*/
+
+/*! \var Camera *        ProjectBase::_mfCameras
+    
+*/
+
+/*! \var Camera *        ProjectBase::_sfInternalActiveCamera
+    
+*/
+
+/*! \var Animation *     ProjectBase::_mfActiveAnimations
+    
+*/
+
+/*! \var ParticleSystem * ProjectBase::_mfActiveParticleSystems
+    
+*/
+
+/*! \var BoostPath       ProjectBase::_sfLuaModule
+    
+*/
+
+/*! \var BoostPath       ProjectBase::_sfLuaModulesDirectory
+    
+*/
+
+
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<Project *>::_type("ProjectPtr", "AttachmentContainerPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(Project *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           Project *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           Project *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void ProjectBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(SFString::getClassType(), 
-                     "Version", 
-                     VersionFieldId, VersionFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFVersion)),
-    new FieldDescription(SFString::getClassType(), 
-                     "MainWindowTitle", 
-                     MainWindowTitleFieldId, MainWindowTitleFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFMainWindowTitle)),
-    new FieldDescription(SFPath::getClassType(), 
-                     "FilePath", 
-                     FilePathFieldId, FilePathFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFFilePath)),
-    new FieldDescription(MFScenePtr::getClassType(), 
-                     "Scenes", 
-                     ScenesFieldId, ScenesFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFScenes)),
-    new FieldDescription(SFScenePtr::getClassType(), 
-                     "InitialScene", 
-                     InitialSceneFieldId, InitialSceneFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFInitialScene)),
-    new FieldDescription(SFScenePtr::getClassType(), 
-                     "InternalActiveScene", 
-                     InternalActiveSceneFieldId, InternalActiveSceneFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFInternalActiveScene)),
-    new FieldDescription(MFBackgroundPtr::getClassType(), 
-                     "Backgrounds", 
-                     BackgroundsFieldId, BackgroundsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFBackgrounds)),
-    new FieldDescription(SFBackgroundPtr::getClassType(), 
-                     "InternalActiveBackground", 
-                     InternalActiveBackgroundFieldId, InternalActiveBackgroundFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFInternalActiveBackground)),
-    new FieldDescription(MFForegroundPtr::getClassType(), 
-                     "Foregrounds", 
-                     ForegroundsFieldId, ForegroundsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFForegrounds)),
-    new FieldDescription(MFForegroundPtr::getClassType(), 
-                     "InternalActiveForegrounds", 
-                     InternalActiveForegroundsFieldId, InternalActiveForegroundsFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFInternalActiveForegrounds)),
-    new FieldDescription(MFForegroundPtr::getClassType(), 
-                     "GlobalActiveForegrounds", 
-                     GlobalActiveForegroundsFieldId, GlobalActiveForegroundsFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFGlobalActiveForegrounds)),
-    new FieldDescription(MFNodePtr::getClassType(), 
-                     "ModelNodes", 
-                     ModelNodesFieldId, ModelNodesFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFModelNodes)),
-    new FieldDescription(MFNodePtr::getClassType(), 
-                     "InternalActiveModelNodes", 
-                     InternalActiveModelNodesFieldId, InternalActiveModelNodesFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFInternalActiveModelNodes)),
-    new FieldDescription(MFNodePtr::getClassType(), 
-                     "GlobalActiveModelNodes", 
-                     GlobalActiveModelNodesFieldId, GlobalActiveModelNodesFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFGlobalActiveModelNodes)),
-    new FieldDescription(MFCameraPtr::getClassType(), 
-                     "Cameras", 
-                     CamerasFieldId, CamerasFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFCameras)),
-    new FieldDescription(SFCameraPtr::getClassType(), 
-                     "InternalActiveCamera", 
-                     InternalActiveCameraFieldId, InternalActiveCameraFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFInternalActiveCamera)),
-    new FieldDescription(MFAnimationPtr::getClassType(), 
-                     "ActiveAnimations", 
-                     ActiveAnimationsFieldId, ActiveAnimationsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFActiveAnimations)),
-    new FieldDescription(MFParticleSystemPtr::getClassType(), 
-                     "ActiveParticleSystems", 
-                     ActiveParticleSystemsFieldId, ActiveParticleSystemsFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editMFActiveParticleSystems)),
-    new FieldDescription(SFPath::getClassType(), 
-                     "LuaModule", 
-                     LuaModuleFieldId, LuaModuleFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFLuaModule)),
-    new FieldDescription(SFPath::getClassType(), 
-                     "LuaModulesDirectory", 
-                     LuaModulesDirectoryFieldId, LuaModulesDirectoryFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFLuaModulesDirectory))
-    , 
-    new FieldDescription(SFEventProducerPtr::getClassType(), 
-                     "EventProducer", 
-                     EventProducerFieldId,EventProducerFieldMask,
-                     true,
-                     reinterpret_cast<FieldAccessMethod>(&ProjectBase::editSFEventProducer))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType ProjectBase::_type(
-    "Project",
-    "AttachmentContainer",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&ProjectBase::createEmpty),
+    pDesc = new SFString::Description(
+        SFString::getClassType(),
+        "Version",
+        "",
+        VersionFieldId, VersionFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleVersion),
+        static_cast<FieldGetMethodSig >(&Project::getHandleVersion));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFString::Description(
+        SFString::getClassType(),
+        "MainWindowTitle",
+        "",
+        MainWindowTitleFieldId, MainWindowTitleFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleMainWindowTitle),
+        static_cast<FieldGetMethodSig >(&Project::getHandleMainWindowTitle));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFBoostPath::Description(
+        SFBoostPath::getClassType(),
+        "FilePath",
+        "",
+        FilePathFieldId, FilePathFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleFilePath),
+        static_cast<FieldGetMethodSig >(&Project::getHandleFilePath));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecScenePtr::Description(
+        MFUnrecScenePtr::getClassType(),
+        "Scenes",
+        "",
+        ScenesFieldId, ScenesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleScenes),
+        static_cast<FieldGetMethodSig >(&Project::getHandleScenes));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecScenePtr::Description(
+        SFUnrecScenePtr::getClassType(),
+        "InitialScene",
+        "",
+        InitialSceneFieldId, InitialSceneFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleInitialScene),
+        static_cast<FieldGetMethodSig >(&Project::getHandleInitialScene));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecScenePtr::Description(
+        SFUnrecScenePtr::getClassType(),
+        "InternalActiveScene",
+        "",
+        InternalActiveSceneFieldId, InternalActiveSceneFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleInternalActiveScene),
+        static_cast<FieldGetMethodSig >(&Project::getHandleInternalActiveScene));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecBackgroundPtr::Description(
+        MFUnrecBackgroundPtr::getClassType(),
+        "Backgrounds",
+        "",
+        BackgroundsFieldId, BackgroundsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleBackgrounds),
+        static_cast<FieldGetMethodSig >(&Project::getHandleBackgrounds));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecBackgroundPtr::Description(
+        SFUnrecBackgroundPtr::getClassType(),
+        "InternalActiveBackground",
+        "",
+        InternalActiveBackgroundFieldId, InternalActiveBackgroundFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleInternalActiveBackground),
+        static_cast<FieldGetMethodSig >(&Project::getHandleInternalActiveBackground));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecForegroundPtr::Description(
+        MFUnrecForegroundPtr::getClassType(),
+        "Foregrounds",
+        "",
+        ForegroundsFieldId, ForegroundsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleForegrounds),
+        static_cast<FieldGetMethodSig >(&Project::getHandleForegrounds));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecForegroundPtr::Description(
+        MFUnrecForegroundPtr::getClassType(),
+        "InternalActiveForegrounds",
+        "",
+        InternalActiveForegroundsFieldId, InternalActiveForegroundsFieldMask,
+        true,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleInternalActiveForegrounds),
+        static_cast<FieldGetMethodSig >(&Project::getHandleInternalActiveForegrounds));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecForegroundPtr::Description(
+        MFUnrecForegroundPtr::getClassType(),
+        "GlobalActiveForegrounds",
+        "",
+        GlobalActiveForegroundsFieldId, GlobalActiveForegroundsFieldMask,
+        true,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleGlobalActiveForegrounds),
+        static_cast<FieldGetMethodSig >(&Project::getHandleGlobalActiveForegrounds));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecNodePtr::Description(
+        MFUnrecNodePtr::getClassType(),
+        "ModelNodes",
+        "",
+        ModelNodesFieldId, ModelNodesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleModelNodes),
+        static_cast<FieldGetMethodSig >(&Project::getHandleModelNodes));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecNodePtr::Description(
+        MFUnrecNodePtr::getClassType(),
+        "InternalActiveModelNodes",
+        "",
+        InternalActiveModelNodesFieldId, InternalActiveModelNodesFieldMask,
+        true,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleInternalActiveModelNodes),
+        static_cast<FieldGetMethodSig >(&Project::getHandleInternalActiveModelNodes));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecNodePtr::Description(
+        MFUnrecNodePtr::getClassType(),
+        "GlobalActiveModelNodes",
+        "",
+        GlobalActiveModelNodesFieldId, GlobalActiveModelNodesFieldMask,
+        true,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleGlobalActiveModelNodes),
+        static_cast<FieldGetMethodSig >(&Project::getHandleGlobalActiveModelNodes));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecCameraPtr::Description(
+        MFUnrecCameraPtr::getClassType(),
+        "Cameras",
+        "",
+        CamerasFieldId, CamerasFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleCameras),
+        static_cast<FieldGetMethodSig >(&Project::getHandleCameras));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecCameraPtr::Description(
+        SFUnrecCameraPtr::getClassType(),
+        "InternalActiveCamera",
+        "",
+        InternalActiveCameraFieldId, InternalActiveCameraFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleInternalActiveCamera),
+        static_cast<FieldGetMethodSig >(&Project::getHandleInternalActiveCamera));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecAnimationPtr::Description(
+        MFUnrecAnimationPtr::getClassType(),
+        "ActiveAnimations",
+        "",
+        ActiveAnimationsFieldId, ActiveAnimationsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleActiveAnimations),
+        static_cast<FieldGetMethodSig >(&Project::getHandleActiveAnimations));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecParticleSystemPtr::Description(
+        MFUnrecParticleSystemPtr::getClassType(),
+        "ActiveParticleSystems",
+        "",
+        ActiveParticleSystemsFieldId, ActiveParticleSystemsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleActiveParticleSystems),
+        static_cast<FieldGetMethodSig >(&Project::getHandleActiveParticleSystems));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFBoostPath::Description(
+        SFBoostPath::getClassType(),
+        "LuaModule",
+        "",
+        LuaModuleFieldId, LuaModuleFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleLuaModule),
+        static_cast<FieldGetMethodSig >(&Project::getHandleLuaModule));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFBoostPath::Description(
+        SFBoostPath::getClassType(),
+        "LuaModulesDirectory",
+        "",
+        LuaModulesDirectoryFieldId, LuaModulesDirectoryFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleLuaModulesDirectory),
+        static_cast<FieldGetMethodSig >(&Project::getHandleLuaModulesDirectory));
+
+    oType.addInitialDesc(pDesc);
+    pDesc = new SFEventProducerPtr::Description(
+        SFEventProducerPtr::getClassType(),
+        "EventProducer",
+        "Event Producer",
+        EventProducerFieldId,EventProducerFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast     <FieldEditMethodSig>(&Project::invalidEditField),
+        static_cast     <FieldGetMethodSig >(&Project::invalidGetField));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+ProjectBase::TypeObject ProjectBase::_type(
+    ProjectBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&ProjectBase::createEmptyLocal),
     Project::initMethod,
-    _desc,
-    sizeof(_desc));
+    Project::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&Project::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"Project\"\n"
+    "\tparent=\"AttachmentContainer\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The Project.\n"
+    "\t<Field\n"
+    "\t\tname=\"Version\"\n"
+    "\t\ttype=\"std::string\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"MainWindowTitle\"\n"
+    "\t\ttype=\"std::string\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"FilePath\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Scenes\"\n"
+    "\t\ttype=\"Scene\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/Scene/KESceneFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Scene/KEScene.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InitialScene\"\n"
+    "\t\ttype=\"Scene\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/Scene/KESceneFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Scene/KEScene.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InternalActiveScene\"\n"
+    "\t\ttype=\"Scene\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\tfieldHeader=\"Project/Scene/KESceneFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Scene/KEScene.h\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Backgrounds\"\n"
+    "\t\ttype=\"Background\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InternalActiveBackground\"\n"
+    "\t\ttype=\"Background\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Foregrounds\"\n"
+    "\t\ttype=\"Foreground\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InternalActiveForegrounds\"\n"
+    "\t\ttype=\"Foreground\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"GlobalActiveForegrounds\"\n"
+    "\t\ttype=\"Foreground\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"ModelNodes\"\n"
+    "\t\ttype=\"Node\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InternalActiveModelNodes\"\n"
+    "\t\ttype=\"Node\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"GlobalActiveModelNodes\"\n"
+    "\t\ttype=\"Node\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Cameras\"\n"
+    "\t\ttype=\"Camera\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"InternalActiveCamera\"\n"
+    "\t\ttype=\"Camera\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"ActiveAnimations\"\n"
+    "\t\ttype=\"Animation\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"ActiveParticleSystems\"\n"
+    "\t\ttype=\"ParticleSystem\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"LuaModule\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"LuaModulesDirectory\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        defaultValue=\"./lua\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"ProjectStarted\"\n"
+    "\t\ttype=\"ProjectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"ProjectStopping\"\n"
+    "\t\ttype=\"ProjectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"ProjectStopped\"\n"
+    "\t\ttype=\"ProjectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"ProjectReset\"\n"
+    "\t\ttype=\"ProjectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"SceneChanged\"\n"
+    "\t\ttype=\"ProjectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowOpened\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowClosing\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowClosed\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowIconified\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowDeiconified\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowActivated\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowDeactivated\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowEntered\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"WindowExited\"\n"
+    "\t\ttype=\"WindowEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseClicked\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseEntered\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseExited\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MousePressed\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseReleased\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseMoved\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseDragged\"\n"
+    "\t\ttype=\"MouseEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"MouseWheelMoved\"\n"
+    "\t\ttype=\"MouseWheelEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"KeyPressed\"\n"
+    "\t\ttype=\"KeyEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"KeyReleased\"\n"
+    "\t\ttype=\"KeyEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"KeyTyped\"\n"
+    "\t\ttype=\"KeyEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"Update\"\n"
+    "\t\ttype=\"UpdateEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "</FieldContainer>\n",
+    "The Project.\n"
+    );
 
 //! Project Produced Methods
 
 MethodDescription *ProjectBase::_methodDesc[] =
 {
     new MethodDescription("ProjectStarted", 
+                    "",
                      ProjectStartedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("ProjectStopping", 
+                    "",
                      ProjectStoppingMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("ProjectStopped", 
+                    "",
                      ProjectStoppedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("ProjectReset", 
+                    "",
                      ProjectResetMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("SceneChanged", 
+                    "",
                      SceneChangedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowOpened", 
+                    "",
                      WindowOpenedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowClosing", 
+                    "",
                      WindowClosingMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowClosed", 
+                    "",
                      WindowClosedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowIconified", 
+                    "",
                      WindowIconifiedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowDeiconified", 
+                    "",
                      WindowDeiconifiedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowActivated", 
+                    "",
                      WindowActivatedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowDeactivated", 
+                    "",
                      WindowDeactivatedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowEntered", 
+                    "",
                      WindowEnteredMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("WindowExited", 
+                    "",
                      WindowExitedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseClicked", 
+                    "",
                      MouseClickedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseEntered", 
+                    "",
                      MouseEnteredMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseExited", 
+                    "",
                      MouseExitedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MousePressed", 
+                    "",
                      MousePressedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseReleased", 
+                    "",
                      MouseReleasedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseMoved", 
+                    "",
                      MouseMovedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseDragged", 
+                    "",
                      MouseDraggedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("MouseWheelMoved", 
+                    "",
                      MouseWheelMovedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("KeyPressed", 
+                    "",
                      KeyPressedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("KeyReleased", 
+                    "",
                      KeyReleasedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("KeyTyped", 
+                    "",
                      KeyTypedMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("Update", 
+                    "",
                      UpdateMethodId, 
-                     SFEventPtr::getClassType(),
+                     SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod())
 };
 
 EventProducerType ProjectBase::_producerType(
     "ProjectProducerType",
     "EventProducerType",
-    NULL,
+    "",
     InitEventProducerFunctor(),
     _methodDesc,
     sizeof(_methodDesc));
-//OSG_FIELD_CONTAINER_DEF(ProjectBase, ProjectPtr)
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &ProjectBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &ProjectBase::getType(void) const 
+FieldContainerType &ProjectBase::getType(void)
 {
     return _type;
-} 
+}
+
+const FieldContainerType &ProjectBase::getType(void) const
+{
+    return _type;
+}
 
 const EventProducerType &ProjectBase::getProducerType(void) const
 {
     return _producerType;
 }
 
-
-FieldContainerPtr ProjectBase::shallowCopy(void) const 
-{ 
-    ProjectPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const Project *>(this)); 
-
-    return returnValue; 
-}
-
-UInt32 ProjectBase::getContainerSize(void) const 
-{ 
-    return sizeof(Project); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ProjectBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+UInt32 ProjectBase::getContainerSize(void) const
 {
-    this->executeSyncImpl(static_cast<ProjectBase *>(&other),
-                          whichField);
+    return sizeof(Project);
 }
-#else
-void ProjectBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+/*------------------------- decorator get ------------------------------*/
+
+
+SFString *ProjectBase::editSFVersion(void)
 {
-    this->executeSyncImpl((ProjectBase *) &other, whichField, sInfo);
+    editSField(VersionFieldMask);
+
+    return &_sfVersion;
 }
-void ProjectBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+const SFString *ProjectBase::getSFVersion(void) const
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return &_sfVersion;
 }
 
-void ProjectBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+
+SFString *ProjectBase::editSFMainWindowTitle(void)
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
+    editSField(MainWindowTitleFieldMask);
 
-    _mfScenes.terminateShare(uiAspect, this->getContainerSize());
-    _mfBackgrounds.terminateShare(uiAspect, this->getContainerSize());
-    _mfForegrounds.terminateShare(uiAspect, this->getContainerSize());
-    _mfInternalActiveForegrounds.terminateShare(uiAspect, this->getContainerSize());
-    _mfGlobalActiveForegrounds.terminateShare(uiAspect, this->getContainerSize());
-    _mfModelNodes.terminateShare(uiAspect, this->getContainerSize());
-    _mfInternalActiveModelNodes.terminateShare(uiAspect, this->getContainerSize());
-    _mfGlobalActiveModelNodes.terminateShare(uiAspect, this->getContainerSize());
-    _mfCameras.terminateShare(uiAspect, this->getContainerSize());
-    _mfActiveAnimations.terminateShare(uiAspect, this->getContainerSize());
-    _mfActiveParticleSystems.terminateShare(uiAspect, this->getContainerSize());
+    return &_sfMainWindowTitle;
 }
-#endif
 
-/*------------------------- constructors ----------------------------------*/
-
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
-
-ProjectBase::ProjectBase(void) :
-    _Producer(&getProducerType()),
-    _sfVersion                (), 
-    _sfMainWindowTitle        (), 
-    _sfFilePath               (), 
-    _mfScenes                 (), 
-    _sfInitialScene           (ScenePtr(NullFC)), 
-    _sfInternalActiveScene    (ScenePtr(NullFC)), 
-    _mfBackgrounds            (), 
-    _sfInternalActiveBackground(BackgroundPtr(NullFC)), 
-    _mfForegrounds            (), 
-    _mfInternalActiveForegrounds(), 
-    _mfGlobalActiveForegrounds(), 
-    _mfModelNodes             (), 
-    _mfInternalActiveModelNodes(), 
-    _mfGlobalActiveModelNodes (), 
-    _mfCameras                (), 
-    _sfInternalActiveCamera   (CameraPtr(NullFC)), 
-    _mfActiveAnimations       (), 
-    _mfActiveParticleSystems  (), 
-    _sfLuaModule              (), 
-    _sfLuaModulesDirectory    (Path(".")), 
-    _sfEventProducer(&_Producer),
-    Inherited() 
+const SFString *ProjectBase::getSFMainWindowTitle(void) const
 {
+    return &_sfMainWindowTitle;
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
 
-ProjectBase::ProjectBase(const ProjectBase &source) :
-    _Producer(&source.getProducerType()),
-    _sfVersion                (source._sfVersion                ), 
-    _sfMainWindowTitle        (source._sfMainWindowTitle        ), 
-    _sfFilePath               (source._sfFilePath               ), 
-    _mfScenes                 (source._mfScenes                 ), 
-    _sfInitialScene           (source._sfInitialScene           ), 
-    _sfInternalActiveScene    (source._sfInternalActiveScene    ), 
-    _mfBackgrounds            (source._mfBackgrounds            ), 
-    _sfInternalActiveBackground(source._sfInternalActiveBackground), 
-    _mfForegrounds            (source._mfForegrounds            ), 
-    _mfInternalActiveForegrounds(source._mfInternalActiveForegrounds), 
-    _mfGlobalActiveForegrounds(source._mfGlobalActiveForegrounds), 
-    _mfModelNodes             (source._mfModelNodes             ), 
-    _mfInternalActiveModelNodes(source._mfInternalActiveModelNodes), 
-    _mfGlobalActiveModelNodes (source._mfGlobalActiveModelNodes ), 
-    _mfCameras                (source._mfCameras                ), 
-    _sfInternalActiveCamera   (source._sfInternalActiveCamera   ), 
-    _mfActiveAnimations       (source._mfActiveAnimations       ), 
-    _mfActiveParticleSystems  (source._mfActiveParticleSystems  ), 
-    _sfLuaModule              (source._sfLuaModule              ), 
-    _sfLuaModulesDirectory    (source._sfLuaModulesDirectory    ), 
-    _sfEventProducer(&_Producer),
-    Inherited                 (source)
+SFBoostPath *ProjectBase::editSFFilePath(void)
 {
+    editSField(FilePathFieldMask);
+
+    return &_sfFilePath;
 }
 
-/*-------------------------- destructors ----------------------------------*/
-
-ProjectBase::~ProjectBase(void)
+const SFBoostPath *ProjectBase::getSFFilePath(void) const
 {
+    return &_sfFilePath;
 }
+
+
+//! Get the Project::_mfScenes field.
+const MFUnrecScenePtr *ProjectBase::getMFScenes(void) const
+{
+    return &_mfScenes;
+}
+
+MFUnrecScenePtr     *ProjectBase::editMFScenes         (void)
+{
+    editMField(ScenesFieldMask, _mfScenes);
+
+    return &_mfScenes;
+}
+
+//! Get the Project::_sfInitialScene field.
+const SFUnrecScenePtr *ProjectBase::getSFInitialScene(void) const
+{
+    return &_sfInitialScene;
+}
+
+SFUnrecScenePtr     *ProjectBase::editSFInitialScene   (void)
+{
+    editSField(InitialSceneFieldMask);
+
+    return &_sfInitialScene;
+}
+
+//! Get the Project::_sfInternalActiveScene field.
+const SFUnrecScenePtr *ProjectBase::getSFInternalActiveScene(void) const
+{
+    return &_sfInternalActiveScene;
+}
+
+SFUnrecScenePtr     *ProjectBase::editSFInternalActiveScene(void)
+{
+    editSField(InternalActiveSceneFieldMask);
+
+    return &_sfInternalActiveScene;
+}
+
+//! Get the Project::_mfBackgrounds field.
+const MFUnrecBackgroundPtr *ProjectBase::getMFBackgrounds(void) const
+{
+    return &_mfBackgrounds;
+}
+
+MFUnrecBackgroundPtr *ProjectBase::editMFBackgrounds    (void)
+{
+    editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+    return &_mfBackgrounds;
+}
+
+//! Get the Project::_sfInternalActiveBackground field.
+const SFUnrecBackgroundPtr *ProjectBase::getSFInternalActiveBackground(void) const
+{
+    return &_sfInternalActiveBackground;
+}
+
+SFUnrecBackgroundPtr *ProjectBase::editSFInternalActiveBackground(void)
+{
+    editSField(InternalActiveBackgroundFieldMask);
+
+    return &_sfInternalActiveBackground;
+}
+
+//! Get the Project::_mfForegrounds field.
+const MFUnrecForegroundPtr *ProjectBase::getMFForegrounds(void) const
+{
+    return &_mfForegrounds;
+}
+
+MFUnrecForegroundPtr *ProjectBase::editMFForegrounds    (void)
+{
+    editMField(ForegroundsFieldMask, _mfForegrounds);
+
+    return &_mfForegrounds;
+}
+
+//! Get the Project::_mfInternalActiveForegrounds field.
+const MFUnrecForegroundPtr *ProjectBase::getMFInternalActiveForegrounds(void) const
+{
+    return &_mfInternalActiveForegrounds;
+}
+
+MFUnrecForegroundPtr *ProjectBase::editMFInternalActiveForegrounds(void)
+{
+    editMField(InternalActiveForegroundsFieldMask, _mfInternalActiveForegrounds);
+
+    return &_mfInternalActiveForegrounds;
+}
+
+//! Get the Project::_mfGlobalActiveForegrounds field.
+const MFUnrecForegroundPtr *ProjectBase::getMFGlobalActiveForegrounds(void) const
+{
+    return &_mfGlobalActiveForegrounds;
+}
+
+MFUnrecForegroundPtr *ProjectBase::editMFGlobalActiveForegrounds(void)
+{
+    editMField(GlobalActiveForegroundsFieldMask, _mfGlobalActiveForegrounds);
+
+    return &_mfGlobalActiveForegrounds;
+}
+
+//! Get the Project::_mfModelNodes field.
+const MFUnrecNodePtr *ProjectBase::getMFModelNodes(void) const
+{
+    return &_mfModelNodes;
+}
+
+MFUnrecNodePtr      *ProjectBase::editMFModelNodes     (void)
+{
+    editMField(ModelNodesFieldMask, _mfModelNodes);
+
+    return &_mfModelNodes;
+}
+
+//! Get the Project::_mfInternalActiveModelNodes field.
+const MFUnrecNodePtr *ProjectBase::getMFInternalActiveModelNodes(void) const
+{
+    return &_mfInternalActiveModelNodes;
+}
+
+MFUnrecNodePtr      *ProjectBase::editMFInternalActiveModelNodes(void)
+{
+    editMField(InternalActiveModelNodesFieldMask, _mfInternalActiveModelNodes);
+
+    return &_mfInternalActiveModelNodes;
+}
+
+//! Get the Project::_mfGlobalActiveModelNodes field.
+const MFUnrecNodePtr *ProjectBase::getMFGlobalActiveModelNodes(void) const
+{
+    return &_mfGlobalActiveModelNodes;
+}
+
+MFUnrecNodePtr      *ProjectBase::editMFGlobalActiveModelNodes(void)
+{
+    editMField(GlobalActiveModelNodesFieldMask, _mfGlobalActiveModelNodes);
+
+    return &_mfGlobalActiveModelNodes;
+}
+
+//! Get the Project::_mfCameras field.
+const MFUnrecCameraPtr *ProjectBase::getMFCameras(void) const
+{
+    return &_mfCameras;
+}
+
+MFUnrecCameraPtr    *ProjectBase::editMFCameras        (void)
+{
+    editMField(CamerasFieldMask, _mfCameras);
+
+    return &_mfCameras;
+}
+
+//! Get the Project::_sfInternalActiveCamera field.
+const SFUnrecCameraPtr *ProjectBase::getSFInternalActiveCamera(void) const
+{
+    return &_sfInternalActiveCamera;
+}
+
+SFUnrecCameraPtr    *ProjectBase::editSFInternalActiveCamera(void)
+{
+    editSField(InternalActiveCameraFieldMask);
+
+    return &_sfInternalActiveCamera;
+}
+
+//! Get the Project::_mfActiveAnimations field.
+const MFUnrecAnimationPtr *ProjectBase::getMFActiveAnimations(void) const
+{
+    return &_mfActiveAnimations;
+}
+
+MFUnrecAnimationPtr *ProjectBase::editMFActiveAnimations(void)
+{
+    editMField(ActiveAnimationsFieldMask, _mfActiveAnimations);
+
+    return &_mfActiveAnimations;
+}
+
+//! Get the Project::_mfActiveParticleSystems field.
+const MFUnrecParticleSystemPtr *ProjectBase::getMFActiveParticleSystems(void) const
+{
+    return &_mfActiveParticleSystems;
+}
+
+MFUnrecParticleSystemPtr *ProjectBase::editMFActiveParticleSystems(void)
+{
+    editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
+
+    return &_mfActiveParticleSystems;
+}
+
+SFBoostPath *ProjectBase::editSFLuaModule(void)
+{
+    editSField(LuaModuleFieldMask);
+
+    return &_sfLuaModule;
+}
+
+const SFBoostPath *ProjectBase::getSFLuaModule(void) const
+{
+    return &_sfLuaModule;
+}
+
+
+SFBoostPath *ProjectBase::editSFLuaModulesDirectory(void)
+{
+    editSField(LuaModulesDirectoryFieldMask);
+
+    return &_sfLuaModulesDirectory;
+}
+
+const SFBoostPath *ProjectBase::getSFLuaModulesDirectory(void) const
+{
+    return &_sfLuaModulesDirectory;
+}
+
+
+
+
+void ProjectBase::pushToScenes(Scene * const value)
+{
+    editMField(ScenesFieldMask, _mfScenes);
+
+    _mfScenes.push_back(value);
+}
+
+void ProjectBase::assignScenes   (const MFUnrecScenePtr   &value)
+{
+    MFUnrecScenePtr  ::const_iterator elemIt  =
+        value.begin();
+    MFUnrecScenePtr  ::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearScenes();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToScenes(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromScenes(UInt32 uiIndex)
+{
+    if(uiIndex < _mfScenes.size())
+    {
+        editMField(ScenesFieldMask, _mfScenes);
+
+        _mfScenes.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromScenes(Scene * const value)
+{
+    Int32 iElemIdx = _mfScenes.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ScenesFieldMask, _mfScenes);
+
+        _mfScenes.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearScenes(void)
+{
+    editMField(ScenesFieldMask, _mfScenes);
+
+
+    _mfScenes.clear();
+}
+
+void ProjectBase::pushToBackgrounds(Background * const value)
+{
+    editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+    _mfBackgrounds.push_back(value);
+}
+
+void ProjectBase::assignBackgrounds(const MFUnrecBackgroundPtr &value)
+{
+    MFUnrecBackgroundPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecBackgroundPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearBackgrounds();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToBackgrounds(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromBackgrounds(UInt32 uiIndex)
+{
+    if(uiIndex < _mfBackgrounds.size())
+    {
+        editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+        _mfBackgrounds.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromBackgrounds(Background * const value)
+{
+    Int32 iElemIdx = _mfBackgrounds.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+        _mfBackgrounds.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearBackgrounds(void)
+{
+    editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+
+    _mfBackgrounds.clear();
+}
+
+void ProjectBase::pushToForegrounds(Foreground * const value)
+{
+    editMField(ForegroundsFieldMask, _mfForegrounds);
+
+    _mfForegrounds.push_back(value);
+}
+
+void ProjectBase::assignForegrounds(const MFUnrecForegroundPtr &value)
+{
+    MFUnrecForegroundPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecForegroundPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearForegrounds();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToForegrounds(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromForegrounds(UInt32 uiIndex)
+{
+    if(uiIndex < _mfForegrounds.size())
+    {
+        editMField(ForegroundsFieldMask, _mfForegrounds);
+
+        _mfForegrounds.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromForegrounds(Foreground * const value)
+{
+    Int32 iElemIdx = _mfForegrounds.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ForegroundsFieldMask, _mfForegrounds);
+
+        _mfForegrounds.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearForegrounds(void)
+{
+    editMField(ForegroundsFieldMask, _mfForegrounds);
+
+
+    _mfForegrounds.clear();
+}
+
+void ProjectBase::pushToInternalActiveForegrounds(Foreground * const value)
+{
+    editMField(InternalActiveForegroundsFieldMask, _mfInternalActiveForegrounds);
+
+    _mfInternalActiveForegrounds.push_back(value);
+}
+
+void ProjectBase::assignInternalActiveForegrounds(const MFUnrecForegroundPtr &value)
+{
+    MFUnrecForegroundPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecForegroundPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearInternalActiveForegrounds();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToInternalActiveForegrounds(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromInternalActiveForegrounds(UInt32 uiIndex)
+{
+    if(uiIndex < _mfInternalActiveForegrounds.size())
+    {
+        editMField(InternalActiveForegroundsFieldMask, _mfInternalActiveForegrounds);
+
+        _mfInternalActiveForegrounds.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromInternalActiveForegrounds(Foreground * const value)
+{
+    Int32 iElemIdx = _mfInternalActiveForegrounds.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(InternalActiveForegroundsFieldMask, _mfInternalActiveForegrounds);
+
+        _mfInternalActiveForegrounds.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearInternalActiveForegrounds(void)
+{
+    editMField(InternalActiveForegroundsFieldMask, _mfInternalActiveForegrounds);
+
+
+    _mfInternalActiveForegrounds.clear();
+}
+
+void ProjectBase::pushToGlobalActiveForegrounds(Foreground * const value)
+{
+    editMField(GlobalActiveForegroundsFieldMask, _mfGlobalActiveForegrounds);
+
+    _mfGlobalActiveForegrounds.push_back(value);
+}
+
+void ProjectBase::assignGlobalActiveForegrounds(const MFUnrecForegroundPtr &value)
+{
+    MFUnrecForegroundPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecForegroundPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearGlobalActiveForegrounds();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToGlobalActiveForegrounds(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromGlobalActiveForegrounds(UInt32 uiIndex)
+{
+    if(uiIndex < _mfGlobalActiveForegrounds.size())
+    {
+        editMField(GlobalActiveForegroundsFieldMask, _mfGlobalActiveForegrounds);
+
+        _mfGlobalActiveForegrounds.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromGlobalActiveForegrounds(Foreground * const value)
+{
+    Int32 iElemIdx = _mfGlobalActiveForegrounds.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(GlobalActiveForegroundsFieldMask, _mfGlobalActiveForegrounds);
+
+        _mfGlobalActiveForegrounds.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearGlobalActiveForegrounds(void)
+{
+    editMField(GlobalActiveForegroundsFieldMask, _mfGlobalActiveForegrounds);
+
+
+    _mfGlobalActiveForegrounds.clear();
+}
+
+void ProjectBase::pushToModelNodes(Node * const value)
+{
+    editMField(ModelNodesFieldMask, _mfModelNodes);
+
+    _mfModelNodes.push_back(value);
+}
+
+void ProjectBase::assignModelNodes(const MFUnrecNodePtr    &value)
+{
+    MFUnrecNodePtr   ::const_iterator elemIt  =
+        value.begin();
+    MFUnrecNodePtr   ::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearModelNodes();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToModelNodes(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromModelNodes(UInt32 uiIndex)
+{
+    if(uiIndex < _mfModelNodes.size())
+    {
+        editMField(ModelNodesFieldMask, _mfModelNodes);
+
+        _mfModelNodes.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromModelNodes(Node * const value)
+{
+    Int32 iElemIdx = _mfModelNodes.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ModelNodesFieldMask, _mfModelNodes);
+
+        _mfModelNodes.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearModelNodes(void)
+{
+    editMField(ModelNodesFieldMask, _mfModelNodes);
+
+
+    _mfModelNodes.clear();
+}
+
+void ProjectBase::pushToInternalActiveModelNodes(Node * const value)
+{
+    editMField(InternalActiveModelNodesFieldMask, _mfInternalActiveModelNodes);
+
+    _mfInternalActiveModelNodes.push_back(value);
+}
+
+void ProjectBase::assignInternalActiveModelNodes(const MFUnrecNodePtr    &value)
+{
+    MFUnrecNodePtr   ::const_iterator elemIt  =
+        value.begin();
+    MFUnrecNodePtr   ::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearInternalActiveModelNodes();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToInternalActiveModelNodes(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromInternalActiveModelNodes(UInt32 uiIndex)
+{
+    if(uiIndex < _mfInternalActiveModelNodes.size())
+    {
+        editMField(InternalActiveModelNodesFieldMask, _mfInternalActiveModelNodes);
+
+        _mfInternalActiveModelNodes.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromInternalActiveModelNodes(Node * const value)
+{
+    Int32 iElemIdx = _mfInternalActiveModelNodes.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(InternalActiveModelNodesFieldMask, _mfInternalActiveModelNodes);
+
+        _mfInternalActiveModelNodes.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearInternalActiveModelNodes(void)
+{
+    editMField(InternalActiveModelNodesFieldMask, _mfInternalActiveModelNodes);
+
+
+    _mfInternalActiveModelNodes.clear();
+}
+
+void ProjectBase::pushToGlobalActiveModelNodes(Node * const value)
+{
+    editMField(GlobalActiveModelNodesFieldMask, _mfGlobalActiveModelNodes);
+
+    _mfGlobalActiveModelNodes.push_back(value);
+}
+
+void ProjectBase::assignGlobalActiveModelNodes(const MFUnrecNodePtr    &value)
+{
+    MFUnrecNodePtr   ::const_iterator elemIt  =
+        value.begin();
+    MFUnrecNodePtr   ::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearGlobalActiveModelNodes();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToGlobalActiveModelNodes(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromGlobalActiveModelNodes(UInt32 uiIndex)
+{
+    if(uiIndex < _mfGlobalActiveModelNodes.size())
+    {
+        editMField(GlobalActiveModelNodesFieldMask, _mfGlobalActiveModelNodes);
+
+        _mfGlobalActiveModelNodes.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromGlobalActiveModelNodes(Node * const value)
+{
+    Int32 iElemIdx = _mfGlobalActiveModelNodes.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(GlobalActiveModelNodesFieldMask, _mfGlobalActiveModelNodes);
+
+        _mfGlobalActiveModelNodes.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearGlobalActiveModelNodes(void)
+{
+    editMField(GlobalActiveModelNodesFieldMask, _mfGlobalActiveModelNodes);
+
+
+    _mfGlobalActiveModelNodes.clear();
+}
+
+void ProjectBase::pushToCameras(Camera * const value)
+{
+    editMField(CamerasFieldMask, _mfCameras);
+
+    _mfCameras.push_back(value);
+}
+
+void ProjectBase::assignCameras  (const MFUnrecCameraPtr  &value)
+{
+    MFUnrecCameraPtr ::const_iterator elemIt  =
+        value.begin();
+    MFUnrecCameraPtr ::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearCameras();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToCameras(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromCameras(UInt32 uiIndex)
+{
+    if(uiIndex < _mfCameras.size())
+    {
+        editMField(CamerasFieldMask, _mfCameras);
+
+        _mfCameras.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromCameras(Camera * const value)
+{
+    Int32 iElemIdx = _mfCameras.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(CamerasFieldMask, _mfCameras);
+
+        _mfCameras.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearCameras(void)
+{
+    editMField(CamerasFieldMask, _mfCameras);
+
+
+    _mfCameras.clear();
+}
+
+void ProjectBase::pushToActiveAnimations(Animation * const value)
+{
+    editMField(ActiveAnimationsFieldMask, _mfActiveAnimations);
+
+    _mfActiveAnimations.push_back(value);
+}
+
+void ProjectBase::assignActiveAnimations(const MFUnrecAnimationPtr &value)
+{
+    MFUnrecAnimationPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecAnimationPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearActiveAnimations();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToActiveAnimations(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromActiveAnimations(UInt32 uiIndex)
+{
+    if(uiIndex < _mfActiveAnimations.size())
+    {
+        editMField(ActiveAnimationsFieldMask, _mfActiveAnimations);
+
+        _mfActiveAnimations.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromActiveAnimations(Animation * const value)
+{
+    Int32 iElemIdx = _mfActiveAnimations.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ActiveAnimationsFieldMask, _mfActiveAnimations);
+
+        _mfActiveAnimations.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearActiveAnimations(void)
+{
+    editMField(ActiveAnimationsFieldMask, _mfActiveAnimations);
+
+
+    _mfActiveAnimations.clear();
+}
+
+void ProjectBase::pushToActiveParticleSystems(ParticleSystem * const value)
+{
+    editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
+
+    _mfActiveParticleSystems.push_back(value);
+}
+
+void ProjectBase::assignActiveParticleSystems(const MFUnrecParticleSystemPtr &value)
+{
+    MFUnrecParticleSystemPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecParticleSystemPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Project *>(this)->clearActiveParticleSystems();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToActiveParticleSystems(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ProjectBase::removeFromActiveParticleSystems(UInt32 uiIndex)
+{
+    if(uiIndex < _mfActiveParticleSystems.size())
+    {
+        editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
+
+        _mfActiveParticleSystems.erase(uiIndex);
+    }
+}
+
+void ProjectBase::removeObjFromActiveParticleSystems(ParticleSystem * const value)
+{
+    Int32 iElemIdx = _mfActiveParticleSystems.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
+
+        _mfActiveParticleSystems.erase(iElemIdx);
+    }
+}
+void ProjectBase::clearActiveParticleSystems(void)
+{
+    editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
+
+
+    _mfActiveParticleSystems.clear();
+}
+
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 ProjectBase::getBinSize(const BitVector &whichField)
+UInt32 ProjectBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -583,113 +1830,92 @@ UInt32 ProjectBase::getBinSize(const BitVector &whichField)
     {
         returnValue += _sfVersion.getBinSize();
     }
-
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
     {
         returnValue += _sfMainWindowTitle.getBinSize();
     }
-
     if(FieldBits::NoField != (FilePathFieldMask & whichField))
     {
         returnValue += _sfFilePath.getBinSize();
     }
-
     if(FieldBits::NoField != (ScenesFieldMask & whichField))
     {
         returnValue += _mfScenes.getBinSize();
     }
-
     if(FieldBits::NoField != (InitialSceneFieldMask & whichField))
     {
         returnValue += _sfInitialScene.getBinSize();
     }
-
     if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
     {
         returnValue += _sfInternalActiveScene.getBinSize();
     }
-
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
     {
         returnValue += _mfBackgrounds.getBinSize();
     }
-
     if(FieldBits::NoField != (InternalActiveBackgroundFieldMask & whichField))
     {
         returnValue += _sfInternalActiveBackground.getBinSize();
     }
-
     if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
     {
         returnValue += _mfForegrounds.getBinSize();
     }
-
     if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
     {
         returnValue += _mfInternalActiveForegrounds.getBinSize();
     }
-
     if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
     {
         returnValue += _mfGlobalActiveForegrounds.getBinSize();
     }
-
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         returnValue += _mfModelNodes.getBinSize();
     }
-
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
     {
         returnValue += _mfInternalActiveModelNodes.getBinSize();
     }
-
     if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
     {
         returnValue += _mfGlobalActiveModelNodes.getBinSize();
     }
-
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
     {
         returnValue += _mfCameras.getBinSize();
     }
-
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
     {
         returnValue += _sfInternalActiveCamera.getBinSize();
     }
-
     if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
     {
         returnValue += _mfActiveAnimations.getBinSize();
     }
-
     if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
     {
         returnValue += _mfActiveParticleSystems.getBinSize();
     }
-
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
         returnValue += _sfLuaModule.getBinSize();
     }
-
     if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
     {
         returnValue += _sfLuaModulesDirectory.getBinSize();
     }
-
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         returnValue += _sfEventProducer.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void ProjectBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -697,112 +1923,90 @@ void ProjectBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _sfVersion.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
     {
         _sfMainWindowTitle.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (FilePathFieldMask & whichField))
     {
         _sfFilePath.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ScenesFieldMask & whichField))
     {
         _mfScenes.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialSceneFieldMask & whichField))
     {
         _sfInitialScene.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
     {
         _sfInternalActiveScene.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
     {
         _mfBackgrounds.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveBackgroundFieldMask & whichField))
     {
         _sfInternalActiveBackground.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
     {
         _mfForegrounds.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
     {
         _mfInternalActiveForegrounds.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
     {
         _mfGlobalActiveForegrounds.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         _mfModelNodes.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
     {
         _mfInternalActiveModelNodes.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
     {
         _mfGlobalActiveModelNodes.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
     {
         _mfCameras.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
     {
         _sfInternalActiveCamera.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
     {
         _mfActiveAnimations.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
     {
         _mfActiveParticleSystems.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
         _sfLuaModule.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
     {
         _sfLuaModulesDirectory.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyToBin(pMem);
     }
-
-
 }
 
-void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void ProjectBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -810,312 +2014,1133 @@ void ProjectBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _sfVersion.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
     {
         _sfMainWindowTitle.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (FilePathFieldMask & whichField))
     {
         _sfFilePath.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ScenesFieldMask & whichField))
     {
         _mfScenes.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InitialSceneFieldMask & whichField))
     {
         _sfInitialScene.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
     {
         _sfInternalActiveScene.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
     {
         _mfBackgrounds.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveBackgroundFieldMask & whichField))
     {
         _sfInternalActiveBackground.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
     {
         _mfForegrounds.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
     {
         _mfInternalActiveForegrounds.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
     {
         _mfGlobalActiveForegrounds.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
     {
         _mfModelNodes.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
     {
         _mfInternalActiveModelNodes.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
     {
         _mfGlobalActiveModelNodes.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (CamerasFieldMask & whichField))
     {
         _mfCameras.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
     {
         _sfInternalActiveCamera.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
     {
         _mfActiveAnimations.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
     {
         _mfActiveParticleSystems.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
         _sfLuaModule.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
     {
         _sfLuaModulesDirectory.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (EventProducerFieldMask & whichField))
     {
         _sfEventProducer.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+ProjectTransitPtr ProjectBase::createLocal(BitVector bFlags)
 {
+    ProjectTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (VersionFieldMask & whichField))
-        _sfVersion.syncWith(pOther->_sfVersion);
+        fc = dynamic_pointer_cast<Project>(tmpPtr);
+    }
 
-    if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
-        _sfMainWindowTitle.syncWith(pOther->_sfMainWindowTitle);
-
-    if(FieldBits::NoField != (FilePathFieldMask & whichField))
-        _sfFilePath.syncWith(pOther->_sfFilePath);
-
-    if(FieldBits::NoField != (ScenesFieldMask & whichField))
-        _mfScenes.syncWith(pOther->_mfScenes);
-
-    if(FieldBits::NoField != (InitialSceneFieldMask & whichField))
-        _sfInitialScene.syncWith(pOther->_sfInitialScene);
-
-    if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
-        _sfInternalActiveScene.syncWith(pOther->_sfInternalActiveScene);
-
-    if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
-        _mfBackgrounds.syncWith(pOther->_mfBackgrounds);
-
-    if(FieldBits::NoField != (InternalActiveBackgroundFieldMask & whichField))
-        _sfInternalActiveBackground.syncWith(pOther->_sfInternalActiveBackground);
-
-    if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
-        _mfForegrounds.syncWith(pOther->_mfForegrounds);
-
-    if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
-        _mfInternalActiveForegrounds.syncWith(pOther->_mfInternalActiveForegrounds);
-
-    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
-        _mfGlobalActiveForegrounds.syncWith(pOther->_mfGlobalActiveForegrounds);
-
-    if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
-        _mfModelNodes.syncWith(pOther->_mfModelNodes);
-
-    if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
-        _mfInternalActiveModelNodes.syncWith(pOther->_mfInternalActiveModelNodes);
-
-    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
-        _mfGlobalActiveModelNodes.syncWith(pOther->_mfGlobalActiveModelNodes);
-
-    if(FieldBits::NoField != (CamerasFieldMask & whichField))
-        _mfCameras.syncWith(pOther->_mfCameras);
-
-    if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
-        _sfInternalActiveCamera.syncWith(pOther->_sfInternalActiveCamera);
-
-    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
-        _mfActiveAnimations.syncWith(pOther->_mfActiveAnimations);
-
-    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
-        _mfActiveParticleSystems.syncWith(pOther->_mfActiveParticleSystems);
-
-    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
-        _sfLuaModule.syncWith(pOther->_sfLuaModule);
-
-    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
-        _sfLuaModulesDirectory.syncWith(pOther->_sfLuaModulesDirectory);
-
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-        _sfEventProducer.syncWith(pOther->_sfEventProducer);
-
-
-}
-#else
-void ProjectBase::executeSyncImpl(      ProjectBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (VersionFieldMask & whichField))
-        _sfVersion.syncWith(pOther->_sfVersion);
-
-    if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
-        _sfMainWindowTitle.syncWith(pOther->_sfMainWindowTitle);
-
-    if(FieldBits::NoField != (FilePathFieldMask & whichField))
-        _sfFilePath.syncWith(pOther->_sfFilePath);
-
-    if(FieldBits::NoField != (InitialSceneFieldMask & whichField))
-        _sfInitialScene.syncWith(pOther->_sfInitialScene);
-
-    if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
-        _sfInternalActiveScene.syncWith(pOther->_sfInternalActiveScene);
-
-    if(FieldBits::NoField != (InternalActiveBackgroundFieldMask & whichField))
-        _sfInternalActiveBackground.syncWith(pOther->_sfInternalActiveBackground);
-
-    if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
-        _sfInternalActiveCamera.syncWith(pOther->_sfInternalActiveCamera);
-
-    if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
-        _sfLuaModule.syncWith(pOther->_sfLuaModule);
-
-    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
-        _sfLuaModulesDirectory.syncWith(pOther->_sfLuaModulesDirectory);
-
-
-    if(FieldBits::NoField != (ScenesFieldMask & whichField))
-        _mfScenes.syncWith(pOther->_mfScenes, sInfo);
-
-    if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
-        _mfBackgrounds.syncWith(pOther->_mfBackgrounds, sInfo);
-
-    if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
-        _mfForegrounds.syncWith(pOther->_mfForegrounds, sInfo);
-
-    if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
-        _mfInternalActiveForegrounds.syncWith(pOther->_mfInternalActiveForegrounds, sInfo);
-
-    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
-        _mfGlobalActiveForegrounds.syncWith(pOther->_mfGlobalActiveForegrounds, sInfo);
-
-    if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
-        _mfModelNodes.syncWith(pOther->_mfModelNodes, sInfo);
-
-    if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
-        _mfInternalActiveModelNodes.syncWith(pOther->_mfInternalActiveModelNodes, sInfo);
-
-    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
-        _mfGlobalActiveModelNodes.syncWith(pOther->_mfGlobalActiveModelNodes, sInfo);
-
-    if(FieldBits::NoField != (CamerasFieldMask & whichField))
-        _mfCameras.syncWith(pOther->_mfCameras, sInfo);
-
-    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
-        _mfActiveAnimations.syncWith(pOther->_mfActiveAnimations, sInfo);
-
-    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
-        _mfActiveParticleSystems.syncWith(pOther->_mfActiveParticleSystems, sInfo);
-
-
+    return fc;
 }
 
-void ProjectBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+ProjectTransitPtr ProjectBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    ProjectTransitPtr fc;
 
-    if(FieldBits::NoField != (ScenesFieldMask & whichField))
-        _mfScenes.beginEdit(uiAspect, uiContainerSize);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
 
-    if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
-        _mfBackgrounds.beginEdit(uiAspect, uiContainerSize);
+        fc = dynamic_pointer_cast<Project>(tmpPtr);
+    }
 
-    if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
-        _mfForegrounds.beginEdit(uiAspect, uiContainerSize);
+    return fc;
+}
 
-    if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
-        _mfInternalActiveForegrounds.beginEdit(uiAspect, uiContainerSize);
+//! create a new instance of the class
+ProjectTransitPtr ProjectBase::create(void)
+{
+    ProjectTransitPtr fc;
 
-    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
-        _mfGlobalActiveForegrounds.beginEdit(uiAspect, uiContainerSize);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
 
-    if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
-        _mfModelNodes.beginEdit(uiAspect, uiContainerSize);
+        fc = dynamic_pointer_cast<Project>(tmpPtr);
+    }
 
-    if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
-        _mfInternalActiveModelNodes.beginEdit(uiAspect, uiContainerSize);
+    return fc;
+}
 
-    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
-        _mfGlobalActiveModelNodes.beginEdit(uiAspect, uiContainerSize);
+Project *ProjectBase::createEmptyLocal(BitVector bFlags)
+{
+    Project *returnValue;
 
-    if(FieldBits::NoField != (CamerasFieldMask & whichField))
-        _mfCameras.beginEdit(uiAspect, uiContainerSize);
+    newPtr<Project>(returnValue, bFlags);
 
-    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
-        _mfActiveAnimations.beginEdit(uiAspect, uiContainerSize);
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
 
-    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
-        _mfActiveParticleSystems.beginEdit(uiAspect, uiContainerSize);
+    return returnValue;
+}
 
+//! create an empty new instance of the class, do not copy the prototype
+Project *ProjectBase::createEmpty(void)
+{
+    Project *returnValue;
+
+    newPtr<Project>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr ProjectBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    Project *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const Project *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ProjectBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    Project *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const Project *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ProjectBase::shallowCopy(void) const
+{
+    Project *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const Project *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+ProjectBase::ProjectBase(void) :
+    _Producer(&getProducerType()),
+    Inherited(),
+    _sfVersion                (),
+    _sfMainWindowTitle        (),
+    _sfFilePath               (),
+    _mfScenes                 (),
+    _sfInitialScene           (NULL),
+    _sfInternalActiveScene    (NULL),
+    _mfBackgrounds            (),
+    _sfInternalActiveBackground(NULL),
+    _mfForegrounds            (),
+    _mfInternalActiveForegrounds(),
+    _mfGlobalActiveForegrounds(),
+    _mfModelNodes             (),
+    _mfInternalActiveModelNodes(),
+    _mfGlobalActiveModelNodes (),
+    _mfCameras                (),
+    _sfInternalActiveCamera   (NULL),
+    _mfActiveAnimations       (),
+    _mfActiveParticleSystems  (),
+    _sfLuaModule              (),
+    _sfLuaModulesDirectory    (BoostPath("./lua"))
+    ,_sfEventProducer(&_Producer)
+{
+}
+
+ProjectBase::ProjectBase(const ProjectBase &source) :
+    _Producer(&source.getProducerType()),
+    Inherited(source),
+    _sfVersion                (source._sfVersion                ),
+    _sfMainWindowTitle        (source._sfMainWindowTitle        ),
+    _sfFilePath               (source._sfFilePath               ),
+    _mfScenes                 (),
+    _sfInitialScene           (NULL),
+    _sfInternalActiveScene    (NULL),
+    _mfBackgrounds            (),
+    _sfInternalActiveBackground(NULL),
+    _mfForegrounds            (),
+    _mfInternalActiveForegrounds(),
+    _mfGlobalActiveForegrounds(),
+    _mfModelNodes             (),
+    _mfInternalActiveModelNodes(),
+    _mfGlobalActiveModelNodes (),
+    _mfCameras                (),
+    _sfInternalActiveCamera   (NULL),
+    _mfActiveAnimations       (),
+    _mfActiveParticleSystems  (),
+    _sfLuaModule              (source._sfLuaModule              ),
+    _sfLuaModulesDirectory    (source._sfLuaModulesDirectory    )
+    ,_sfEventProducer(&_Producer)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+ProjectBase::~ProjectBase(void)
+{
+}
+
+void ProjectBase::onCreate(const Project *source)
+{
+    Inherited::onCreate(source);
+
+    if(source != NULL)
+    {
+        Project *pThis = static_cast<Project *>(this);
+
+        MFUnrecScenePtr::const_iterator ScenesIt  =
+            source->_mfScenes.begin();
+        MFUnrecScenePtr::const_iterator ScenesEnd =
+            source->_mfScenes.end  ();
+
+        while(ScenesIt != ScenesEnd)
+        {
+            pThis->pushToScenes(*ScenesIt);
+
+            ++ScenesIt;
+        }
+
+        pThis->setInitialScene(source->getInitialScene());
+
+        pThis->setInternalActiveScene(source->getInternalActiveScene());
+
+        MFUnrecBackgroundPtr::const_iterator BackgroundsIt  =
+            source->_mfBackgrounds.begin();
+        MFUnrecBackgroundPtr::const_iterator BackgroundsEnd =
+            source->_mfBackgrounds.end  ();
+
+        while(BackgroundsIt != BackgroundsEnd)
+        {
+            pThis->pushToBackgrounds(*BackgroundsIt);
+
+            ++BackgroundsIt;
+        }
+
+        pThis->setInternalActiveBackground(source->getInternalActiveBackground());
+
+        MFUnrecForegroundPtr::const_iterator ForegroundsIt  =
+            source->_mfForegrounds.begin();
+        MFUnrecForegroundPtr::const_iterator ForegroundsEnd =
+            source->_mfForegrounds.end  ();
+
+        while(ForegroundsIt != ForegroundsEnd)
+        {
+            pThis->pushToForegrounds(*ForegroundsIt);
+
+            ++ForegroundsIt;
+        }
+
+        MFUnrecForegroundPtr::const_iterator InternalActiveForegroundsIt  =
+            source->_mfInternalActiveForegrounds.begin();
+        MFUnrecForegroundPtr::const_iterator InternalActiveForegroundsEnd =
+            source->_mfInternalActiveForegrounds.end  ();
+
+        while(InternalActiveForegroundsIt != InternalActiveForegroundsEnd)
+        {
+            pThis->pushToInternalActiveForegrounds(*InternalActiveForegroundsIt);
+
+            ++InternalActiveForegroundsIt;
+        }
+
+        MFUnrecForegroundPtr::const_iterator GlobalActiveForegroundsIt  =
+            source->_mfGlobalActiveForegrounds.begin();
+        MFUnrecForegroundPtr::const_iterator GlobalActiveForegroundsEnd =
+            source->_mfGlobalActiveForegrounds.end  ();
+
+        while(GlobalActiveForegroundsIt != GlobalActiveForegroundsEnd)
+        {
+            pThis->pushToGlobalActiveForegrounds(*GlobalActiveForegroundsIt);
+
+            ++GlobalActiveForegroundsIt;
+        }
+
+        MFUnrecNodePtr::const_iterator ModelNodesIt  =
+            source->_mfModelNodes.begin();
+        MFUnrecNodePtr::const_iterator ModelNodesEnd =
+            source->_mfModelNodes.end  ();
+
+        while(ModelNodesIt != ModelNodesEnd)
+        {
+            pThis->pushToModelNodes(*ModelNodesIt);
+
+            ++ModelNodesIt;
+        }
+
+        MFUnrecNodePtr::const_iterator InternalActiveModelNodesIt  =
+            source->_mfInternalActiveModelNodes.begin();
+        MFUnrecNodePtr::const_iterator InternalActiveModelNodesEnd =
+            source->_mfInternalActiveModelNodes.end  ();
+
+        while(InternalActiveModelNodesIt != InternalActiveModelNodesEnd)
+        {
+            pThis->pushToInternalActiveModelNodes(*InternalActiveModelNodesIt);
+
+            ++InternalActiveModelNodesIt;
+        }
+
+        MFUnrecNodePtr::const_iterator GlobalActiveModelNodesIt  =
+            source->_mfGlobalActiveModelNodes.begin();
+        MFUnrecNodePtr::const_iterator GlobalActiveModelNodesEnd =
+            source->_mfGlobalActiveModelNodes.end  ();
+
+        while(GlobalActiveModelNodesIt != GlobalActiveModelNodesEnd)
+        {
+            pThis->pushToGlobalActiveModelNodes(*GlobalActiveModelNodesIt);
+
+            ++GlobalActiveModelNodesIt;
+        }
+
+        MFUnrecCameraPtr::const_iterator CamerasIt  =
+            source->_mfCameras.begin();
+        MFUnrecCameraPtr::const_iterator CamerasEnd =
+            source->_mfCameras.end  ();
+
+        while(CamerasIt != CamerasEnd)
+        {
+            pThis->pushToCameras(*CamerasIt);
+
+            ++CamerasIt;
+        }
+
+        pThis->setInternalActiveCamera(source->getInternalActiveCamera());
+
+        MFUnrecAnimationPtr::const_iterator ActiveAnimationsIt  =
+            source->_mfActiveAnimations.begin();
+        MFUnrecAnimationPtr::const_iterator ActiveAnimationsEnd =
+            source->_mfActiveAnimations.end  ();
+
+        while(ActiveAnimationsIt != ActiveAnimationsEnd)
+        {
+            pThis->pushToActiveAnimations(*ActiveAnimationsIt);
+
+            ++ActiveAnimationsIt;
+        }
+
+        MFUnrecParticleSystemPtr::const_iterator ActiveParticleSystemsIt  =
+            source->_mfActiveParticleSystems.begin();
+        MFUnrecParticleSystemPtr::const_iterator ActiveParticleSystemsEnd =
+            source->_mfActiveParticleSystems.end  ();
+
+        while(ActiveParticleSystemsIt != ActiveParticleSystemsEnd)
+        {
+            pThis->pushToActiveParticleSystems(*ActiveParticleSystemsIt);
+
+            ++ActiveParticleSystemsIt;
+        }
+    }
+}
+
+GetFieldHandlePtr ProjectBase::getHandleVersion         (void) const
+{
+    SFString::GetHandlePtr returnValue(
+        new  SFString::GetHandle(
+             &_sfVersion,
+             this->getType().getFieldDesc(VersionFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleVersion        (void)
+{
+    SFString::EditHandlePtr returnValue(
+        new  SFString::EditHandle(
+             &_sfVersion,
+             this->getType().getFieldDesc(VersionFieldId),
+             this));
+
+
+    editSField(VersionFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleMainWindowTitle (void) const
+{
+    SFString::GetHandlePtr returnValue(
+        new  SFString::GetHandle(
+             &_sfMainWindowTitle,
+             this->getType().getFieldDesc(MainWindowTitleFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleMainWindowTitle(void)
+{
+    SFString::EditHandlePtr returnValue(
+        new  SFString::EditHandle(
+             &_sfMainWindowTitle,
+             this->getType().getFieldDesc(MainWindowTitleFieldId),
+             this));
+
+
+    editSField(MainWindowTitleFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleFilePath        (void) const
+{
+    SFBoostPath::GetHandlePtr returnValue(
+        new  SFBoostPath::GetHandle(
+             &_sfFilePath,
+             this->getType().getFieldDesc(FilePathFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleFilePath       (void)
+{
+    SFBoostPath::EditHandlePtr returnValue(
+        new  SFBoostPath::EditHandle(
+             &_sfFilePath,
+             this->getType().getFieldDesc(FilePathFieldId),
+             this));
+
+
+    editSField(FilePathFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleScenes          (void) const
+{
+    MFUnrecScenePtr::GetHandlePtr returnValue(
+        new  MFUnrecScenePtr::GetHandle(
+             &_mfScenes,
+             this->getType().getFieldDesc(ScenesFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleScenes         (void)
+{
+    MFUnrecScenePtr::EditHandlePtr returnValue(
+        new  MFUnrecScenePtr::EditHandle(
+             &_mfScenes,
+             this->getType().getFieldDesc(ScenesFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToScenes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromScenes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromScenes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearScenes,
+                    static_cast<Project *>(this)));
+
+    editMField(ScenesFieldMask, _mfScenes);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleInitialScene    (void) const
+{
+    SFUnrecScenePtr::GetHandlePtr returnValue(
+        new  SFUnrecScenePtr::GetHandle(
+             &_sfInitialScene,
+             this->getType().getFieldDesc(InitialSceneFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleInitialScene   (void)
+{
+    SFUnrecScenePtr::EditHandlePtr returnValue(
+        new  SFUnrecScenePtr::EditHandle(
+             &_sfInitialScene,
+             this->getType().getFieldDesc(InitialSceneFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Project::setInitialScene,
+                    static_cast<Project *>(this), _1));
+
+    editSField(InitialSceneFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleInternalActiveScene (void) const
+{
+    SFUnrecScenePtr::GetHandlePtr returnValue(
+        new  SFUnrecScenePtr::GetHandle(
+             &_sfInternalActiveScene,
+             this->getType().getFieldDesc(InternalActiveSceneFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleInternalActiveScene(void)
+{
+    SFUnrecScenePtr::EditHandlePtr returnValue(
+        new  SFUnrecScenePtr::EditHandle(
+             &_sfInternalActiveScene,
+             this->getType().getFieldDesc(InternalActiveSceneFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Project::setInternalActiveScene,
+                    static_cast<Project *>(this), _1));
+
+    editSField(InternalActiveSceneFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleBackgrounds     (void) const
+{
+    MFUnrecBackgroundPtr::GetHandlePtr returnValue(
+        new  MFUnrecBackgroundPtr::GetHandle(
+             &_mfBackgrounds,
+             this->getType().getFieldDesc(BackgroundsFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleBackgrounds    (void)
+{
+    MFUnrecBackgroundPtr::EditHandlePtr returnValue(
+        new  MFUnrecBackgroundPtr::EditHandle(
+             &_mfBackgrounds,
+             this->getType().getFieldDesc(BackgroundsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToBackgrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromBackgrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromBackgrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearBackgrounds,
+                    static_cast<Project *>(this)));
+
+    editMField(BackgroundsFieldMask, _mfBackgrounds);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleInternalActiveBackground (void) const
+{
+    SFUnrecBackgroundPtr::GetHandlePtr returnValue(
+        new  SFUnrecBackgroundPtr::GetHandle(
+             &_sfInternalActiveBackground,
+             this->getType().getFieldDesc(InternalActiveBackgroundFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleInternalActiveBackground(void)
+{
+    SFUnrecBackgroundPtr::EditHandlePtr returnValue(
+        new  SFUnrecBackgroundPtr::EditHandle(
+             &_sfInternalActiveBackground,
+             this->getType().getFieldDesc(InternalActiveBackgroundFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Project::setInternalActiveBackground,
+                    static_cast<Project *>(this), _1));
+
+    editSField(InternalActiveBackgroundFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleForegrounds     (void) const
+{
+    MFUnrecForegroundPtr::GetHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::GetHandle(
+             &_mfForegrounds,
+             this->getType().getFieldDesc(ForegroundsFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleForegrounds    (void)
+{
+    MFUnrecForegroundPtr::EditHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::EditHandle(
+             &_mfForegrounds,
+             this->getType().getFieldDesc(ForegroundsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearForegrounds,
+                    static_cast<Project *>(this)));
+
+    editMField(ForegroundsFieldMask, _mfForegrounds);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleInternalActiveForegrounds (void) const
+{
+    MFUnrecForegroundPtr::GetHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::GetHandle(
+             &_mfInternalActiveForegrounds,
+             this->getType().getFieldDesc(InternalActiveForegroundsFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleInternalActiveForegrounds(void)
+{
+    MFUnrecForegroundPtr::EditHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::EditHandle(
+             &_mfInternalActiveForegrounds,
+             this->getType().getFieldDesc(InternalActiveForegroundsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToInternalActiveForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromInternalActiveForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromInternalActiveForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearInternalActiveForegrounds,
+                    static_cast<Project *>(this)));
+
+    editMField(InternalActiveForegroundsFieldMask, _mfInternalActiveForegrounds);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleGlobalActiveForegrounds (void) const
+{
+    MFUnrecForegroundPtr::GetHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::GetHandle(
+             &_mfGlobalActiveForegrounds,
+             this->getType().getFieldDesc(GlobalActiveForegroundsFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleGlobalActiveForegrounds(void)
+{
+    MFUnrecForegroundPtr::EditHandlePtr returnValue(
+        new  MFUnrecForegroundPtr::EditHandle(
+             &_mfGlobalActiveForegrounds,
+             this->getType().getFieldDesc(GlobalActiveForegroundsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToGlobalActiveForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromGlobalActiveForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromGlobalActiveForegrounds,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearGlobalActiveForegrounds,
+                    static_cast<Project *>(this)));
+
+    editMField(GlobalActiveForegroundsFieldMask, _mfGlobalActiveForegrounds);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleModelNodes      (void) const
+{
+    MFUnrecNodePtr::GetHandlePtr returnValue(
+        new  MFUnrecNodePtr::GetHandle(
+             &_mfModelNodes,
+             this->getType().getFieldDesc(ModelNodesFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleModelNodes     (void)
+{
+    MFUnrecNodePtr::EditHandlePtr returnValue(
+        new  MFUnrecNodePtr::EditHandle(
+             &_mfModelNodes,
+             this->getType().getFieldDesc(ModelNodesFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearModelNodes,
+                    static_cast<Project *>(this)));
+
+    editMField(ModelNodesFieldMask, _mfModelNodes);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleInternalActiveModelNodes (void) const
+{
+    MFUnrecNodePtr::GetHandlePtr returnValue(
+        new  MFUnrecNodePtr::GetHandle(
+             &_mfInternalActiveModelNodes,
+             this->getType().getFieldDesc(InternalActiveModelNodesFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleInternalActiveModelNodes(void)
+{
+    MFUnrecNodePtr::EditHandlePtr returnValue(
+        new  MFUnrecNodePtr::EditHandle(
+             &_mfInternalActiveModelNodes,
+             this->getType().getFieldDesc(InternalActiveModelNodesFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToInternalActiveModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromInternalActiveModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromInternalActiveModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearInternalActiveModelNodes,
+                    static_cast<Project *>(this)));
+
+    editMField(InternalActiveModelNodesFieldMask, _mfInternalActiveModelNodes);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleGlobalActiveModelNodes (void) const
+{
+    MFUnrecNodePtr::GetHandlePtr returnValue(
+        new  MFUnrecNodePtr::GetHandle(
+             &_mfGlobalActiveModelNodes,
+             this->getType().getFieldDesc(GlobalActiveModelNodesFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleGlobalActiveModelNodes(void)
+{
+    MFUnrecNodePtr::EditHandlePtr returnValue(
+        new  MFUnrecNodePtr::EditHandle(
+             &_mfGlobalActiveModelNodes,
+             this->getType().getFieldDesc(GlobalActiveModelNodesFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToGlobalActiveModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromGlobalActiveModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromGlobalActiveModelNodes,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearGlobalActiveModelNodes,
+                    static_cast<Project *>(this)));
+
+    editMField(GlobalActiveModelNodesFieldMask, _mfGlobalActiveModelNodes);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleCameras         (void) const
+{
+    MFUnrecCameraPtr::GetHandlePtr returnValue(
+        new  MFUnrecCameraPtr::GetHandle(
+             &_mfCameras,
+             this->getType().getFieldDesc(CamerasFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleCameras        (void)
+{
+    MFUnrecCameraPtr::EditHandlePtr returnValue(
+        new  MFUnrecCameraPtr::EditHandle(
+             &_mfCameras,
+             this->getType().getFieldDesc(CamerasFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToCameras,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromCameras,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromCameras,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearCameras,
+                    static_cast<Project *>(this)));
+
+    editMField(CamerasFieldMask, _mfCameras);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleInternalActiveCamera (void) const
+{
+    SFUnrecCameraPtr::GetHandlePtr returnValue(
+        new  SFUnrecCameraPtr::GetHandle(
+             &_sfInternalActiveCamera,
+             this->getType().getFieldDesc(InternalActiveCameraFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleInternalActiveCamera(void)
+{
+    SFUnrecCameraPtr::EditHandlePtr returnValue(
+        new  SFUnrecCameraPtr::EditHandle(
+             &_sfInternalActiveCamera,
+             this->getType().getFieldDesc(InternalActiveCameraFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Project::setInternalActiveCamera,
+                    static_cast<Project *>(this), _1));
+
+    editSField(InternalActiveCameraFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleActiveAnimations (void) const
+{
+    MFUnrecAnimationPtr::GetHandlePtr returnValue(
+        new  MFUnrecAnimationPtr::GetHandle(
+             &_mfActiveAnimations,
+             this->getType().getFieldDesc(ActiveAnimationsFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleActiveAnimations(void)
+{
+    MFUnrecAnimationPtr::EditHandlePtr returnValue(
+        new  MFUnrecAnimationPtr::EditHandle(
+             &_mfActiveAnimations,
+             this->getType().getFieldDesc(ActiveAnimationsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToActiveAnimations,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromActiveAnimations,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromActiveAnimations,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearActiveAnimations,
+                    static_cast<Project *>(this)));
+
+    editMField(ActiveAnimationsFieldMask, _mfActiveAnimations);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleActiveParticleSystems (void) const
+{
+    MFUnrecParticleSystemPtr::GetHandlePtr returnValue(
+        new  MFUnrecParticleSystemPtr::GetHandle(
+             &_mfActiveParticleSystems,
+             this->getType().getFieldDesc(ActiveParticleSystemsFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleActiveParticleSystems(void)
+{
+    MFUnrecParticleSystemPtr::EditHandlePtr returnValue(
+        new  MFUnrecParticleSystemPtr::EditHandle(
+             &_mfActiveParticleSystems,
+             this->getType().getFieldDesc(ActiveParticleSystemsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Project::pushToActiveParticleSystems,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Project::removeFromActiveParticleSystems,
+                    static_cast<Project *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Project::removeObjFromActiveParticleSystems,
+                    static_cast<Project *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Project::clearActiveParticleSystems,
+                    static_cast<Project *>(this)));
+
+    editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleLuaModule       (void) const
+{
+    SFBoostPath::GetHandlePtr returnValue(
+        new  SFBoostPath::GetHandle(
+             &_sfLuaModule,
+             this->getType().getFieldDesc(LuaModuleFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleLuaModule      (void)
+{
+    SFBoostPath::EditHandlePtr returnValue(
+        new  SFBoostPath::EditHandle(
+             &_sfLuaModule,
+             this->getType().getFieldDesc(LuaModuleFieldId),
+             this));
+
+
+    editSField(LuaModuleFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleLuaModulesDirectory (void) const
+{
+    SFBoostPath::GetHandlePtr returnValue(
+        new  SFBoostPath::GetHandle(
+             &_sfLuaModulesDirectory,
+             this->getType().getFieldDesc(LuaModulesDirectoryFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleLuaModulesDirectory(void)
+{
+    SFBoostPath::EditHandlePtr returnValue(
+        new  SFBoostPath::EditHandle(
+             &_sfLuaModulesDirectory,
+             this->getType().getFieldDesc(LuaModulesDirectoryFieldId),
+             this));
+
+
+    editSField(LuaModulesDirectoryFieldMask);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void ProjectBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Project *pThis = static_cast<Project *>(this);
+
+    pThis->execSync(static_cast<Project *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *ProjectBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    Project *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const Project *>(pRefAspect),
+                  dynamic_cast<const Project *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ProjectPtr>::_type("ProjectPtr", "AttachmentContainerPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(ProjectPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(ProjectPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void ProjectBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    static_cast<Project *>(this)->clearScenes();
+
+    static_cast<Project *>(this)->setInitialScene(NULL);
+
+    static_cast<Project *>(this)->setInternalActiveScene(NULL);
+
+    static_cast<Project *>(this)->clearBackgrounds();
+
+    static_cast<Project *>(this)->setInternalActiveBackground(NULL);
+
+    static_cast<Project *>(this)->clearForegrounds();
+
+    static_cast<Project *>(this)->clearInternalActiveForegrounds();
+
+    static_cast<Project *>(this)->clearGlobalActiveForegrounds();
+
+    static_cast<Project *>(this)->clearModelNodes();
+
+    static_cast<Project *>(this)->clearInternalActiveModelNodes();
+
+    static_cast<Project *>(this)->clearGlobalActiveModelNodes();
+
+    static_cast<Project *>(this)->clearCameras();
+
+    static_cast<Project *>(this)->setInternalActiveCamera(NULL);
+
+    static_cast<Project *>(this)->clearActiveAnimations();
+
+    static_cast<Project *>(this)->clearActiveParticleSystems();
+
+
+}
 
 
 OSG_END_NAMESPACE
-

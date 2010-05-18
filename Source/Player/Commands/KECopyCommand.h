@@ -1,17 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                            OpenSGToolbox                                  *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *   contact: dkabala@vrac.iastate.edu                                       *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -19,9 +18,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
@@ -34,23 +42,23 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
+#include <OpenSG/OSGCommand.h>
 #include "Player/KEApplicationPlayer.h"
 
 OSG_BEGIN_NAMESPACE
 
 class CopyCommand;
-typedef boost::intrusive_ptr<CopyCommand> CopyCommandPtr;
+typedef boost::shared_ptr<CopyCommand> CopyCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING CopyCommand: public Command
+class KE_KABALAENGINE_DLLMAPPING CopyCommand: public Command
 {
 protected:
 	typedef Command Inherited;
-	typedef CopyCommandPtr Ptr;
+	typedef CopyCommandPtr RefPtr;
 
 	enum cActions{NONE,CUT,COPY};
 
-	CopyCommand(ApplicationPlayerPtr ApplicationPlayer, NodePtr CopyNode);
+	CopyCommand(ApplicationPlayerRefPtr ApplicationPlayer, NodeRefPtr CopyNode);
 
 	CopyCommand(const CopyCommand& source);
 
@@ -62,8 +70,8 @@ protected:
 
 	virtual std::string getPresentationName(void) const;
 
-	ApplicationPlayerPtr _ApplicationPlayer;
-    NodePtr _CopyNode;
+	ApplicationPlayerRefPtr _ApplicationPlayer;
+    NodeRefPtr _CopyNode;
 
 public:
 
@@ -75,7 +83,7 @@ public:
 
 	virtual ~CopyCommand(void);
 	
-	static CopyCommandPtr create(ApplicationPlayerPtr ApplicationPlayer, NodePtr CopyNode);
+	static CopyCommandPtr create(ApplicationPlayerRefPtr ApplicationPlayer, NodeRefPtr CopyNode);
 };
 
 OSG_END_NAMESPACE
@@ -83,3 +91,4 @@ OSG_END_NAMESPACE
 #include "KECopyCommand.inl"
 
 #endif /* _KEDELETE_SCENE_BACKGROUNDCOMMAND_H_ */
+

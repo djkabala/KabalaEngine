@@ -3,23 +3,26 @@
 <FieldContainer
 	name="ChangeSceneActivity"
 	parent="Activity"
-	parentHeader="OpenSG/Toolbox/OSGActivity"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
 	structure="concrete"
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 	<Field
 		name="GotoScene"
-		type="ScenePtr"
-        header="Project/Scene/KESceneFields.h"
+		type="Scene"
+		category="pointer"
 		cardinality="single"
 		visibility="external"
+		fieldHeader="Project/Scene/KESceneFields.h"
+		typeHeader="Project/Scene/KEScene.h"
 		access="public"
-        defaultValue="NullFC"
+		defaultValue="NULL"
 	>
 	</Field>
 </FieldContainer>

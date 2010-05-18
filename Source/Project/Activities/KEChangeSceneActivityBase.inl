@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,80 +54,64 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &ChangeSceneActivityBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 ChangeSceneActivityBase::getClassTypeId(void) 
+OSG::UInt32 ChangeSceneActivityBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-ChangeSceneActivityPtr ChangeSceneActivityBase::create(void) 
-{
-    ChangeSceneActivityPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = ChangeSceneActivityPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-ChangeSceneActivityPtr ChangeSceneActivityBase::createEmpty(void) 
-{ 
-    ChangeSceneActivityPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 ChangeSceneActivityBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the ChangeSceneActivity::_sfGotoScene field.
-inline
-const SFScenePtr *ChangeSceneActivityBase::getSFGotoScene(void) const
-{
-    return &_sfGotoScene;
-}
-
-//! Get the ChangeSceneActivity::_sfGotoScene field.
-inline
-SFScenePtr *ChangeSceneActivityBase::editSFGotoScene(void)
-{
-    return &_sfGotoScene;
-}
-
 
 //! Get the value of the ChangeSceneActivity::_sfGotoScene field.
 inline
-ScenePtr &ChangeSceneActivityBase::editGotoScene(void)
-{
-    return _sfGotoScene.getValue();
-}
-
-//! Get the value of the ChangeSceneActivity::_sfGotoScene field.
-inline
-const ScenePtr &ChangeSceneActivityBase::getGotoScene(void) const
+Scene * ChangeSceneActivityBase::getGotoScene(void) const
 {
     return _sfGotoScene.getValue();
 }
 
 //! Set the value of the ChangeSceneActivity::_sfGotoScene field.
 inline
-void ChangeSceneActivityBase::setGotoScene(const ScenePtr &value)
+void ChangeSceneActivityBase::setGotoScene(Scene * const value)
 {
+    editSField(GotoSceneFieldMask);
+
     _sfGotoScene.setValue(value);
 }
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+inline
+void ChangeSceneActivityBase::execSync (      ChangeSceneActivityBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
+
+    if(FieldBits::NoField != (GotoSceneFieldMask & whichField))
+        _sfGotoScene.syncWith(pFrom->_sfGotoScene);
+}
+#endif
+
+
+inline
+const Char8 *ChangeSceneActivityBase::getClassname(void)
+{
+    return "ChangeSceneActivity";
+}
+OSG_GEN_CONTAINERPTR(ChangeSceneActivity);
+
 OSG_END_NAMESPACE
+

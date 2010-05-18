@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -35,47 +36,44 @@
 //---------------------------------------------------------------------------
 //  Includes
 //---------------------------------------------------------------------------
-
-#include <OpenSG/OSGConfig.h>
 #include "Application/KEMainApplication.h"
 
 OSG_BEGIN_NAMESPACE
 
-
 inline
-void Project::addViewport(const ViewportPtr& port)
+void Project::addViewport(const ViewportRefPtr& port)
 {
-    MainApplication::the()->getMainWindowEventProducer()->getWindow()->addPort(port);
+    MainApplication::the()->getMainWindow()->addPort(port);
 }
 
 inline
-void Project::insertViewport(const ViewportPtr& port, UInt32 index)
+void Project::insertViewport(const ViewportRefPtr& port, UInt32 index)
 {
-    MainApplication::the()->getMainWindowEventProducer()->getWindow()->insertPort(index, port);
+    MainApplication::the()->getMainWindow()->insertPort(index, port);
 }
 
 inline
-void Project::removeViewport(const ViewportPtr& port)
+void Project::removeViewport(const ViewportRefPtr& port)
 {
-    MainApplication::the()->getMainWindowEventProducer()->getWindow()->subPort(port);
+    MainApplication::the()->getMainWindow()->subPortByObj(port);
 }
 
 inline
 void Project::clearViewports(void)
 {
-    MainApplication::the()->getMainWindowEventProducer()->getWindow()->clearPorts();
+    MainApplication::the()->getMainWindow()->clearPorts();
 }
 
 inline
 UInt32 Project::numViewports(void) const
 {
-    return MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort().size();
+    return MainApplication::the()->getMainWindow()->getMFPort()->size();
 }
 
 inline
-ViewportPtr Project::getViewport(UInt32 index) const
+ViewportRefPtr Project::getViewport(UInt32 index) const
 {
-    return MainApplication::the()->getMainWindowEventProducer()->getWindow()->getPort(index);
+    return MainApplication::the()->getMainWindow()->getPort(index);
 }
 
 
@@ -92,19 +90,19 @@ bool Project::isInputBlocked(void) const
 }
 
 inline
-ScenePtr Project::getActiveScene(void) const
+SceneRefPtr Project::getActiveScene(void) const
 {
 	return getInternalActiveScene();
 }
 
 inline
-ScenePtr Project::getLastActiveScene(void) const
+SceneRefPtr Project::getLastActiveScene(void) const
 {
 	return _LastActiveScene;
 }
 
 inline
-Project::ProjectUpdateListener::ProjectUpdateListener(ProjectPtr TheProject) : _Project(TheProject)
+Project::ProjectUpdateListener::ProjectUpdateListener(ProjectRefPtr TheProject) : _Project(TheProject)
 {
 }
 
@@ -133,11 +131,10 @@ void Project::togglePauseActiveUpdates(void)
 }
 
 inline
-void Project::ProjectUpdateListener::update(const UpdateEventPtr e)
+void Project::ProjectUpdateListener::update(const UpdateEventUnrecPtr e)
 {
     if(e->getElapsedTime() < 1.0)
     {
-        _Project->update(e);
         if(!_Project->_BlockInput)
         {
             _Project->_Producer.produceEvent(UpdateMethodId,e);
@@ -146,7 +143,7 @@ void Project::ProjectUpdateListener::update(const UpdateEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::mouseClicked(const MouseEventPtr e)
+void Project::ProjectUpdateListener::mouseClicked(const MouseEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -155,7 +152,7 @@ void Project::ProjectUpdateListener::mouseClicked(const MouseEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::mouseEntered(const MouseEventPtr e)
+void Project::ProjectUpdateListener::mouseEntered(const MouseEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -164,7 +161,7 @@ void Project::ProjectUpdateListener::mouseEntered(const MouseEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::mouseExited(const MouseEventPtr e)
+void Project::ProjectUpdateListener::mouseExited(const MouseEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -173,18 +170,16 @@ void Project::ProjectUpdateListener::mouseExited(const MouseEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::mousePressed(const MouseEventPtr e)
+void Project::ProjectUpdateListener::mousePressed(const MouseEventUnrecPtr e)
 {
-    _Project->mousePressed(e);
     if(!_Project->_BlockInput)
     {
         _Project->_Producer.produceEvent(MousePressedMethodId,e);
     }
 }
 inline
-void Project::ProjectUpdateListener::mouseReleased(const MouseEventPtr e)
+void Project::ProjectUpdateListener::mouseReleased(const MouseEventUnrecPtr e)
 {
-    _Project->mouseReleased(e);
     if(!_Project->_BlockInput)
     {
         _Project->_Producer.produceEvent(MouseReleasedMethodId,e);
@@ -192,9 +187,8 @@ void Project::ProjectUpdateListener::mouseReleased(const MouseEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::mouseMoved(const MouseEventPtr e)
+void Project::ProjectUpdateListener::mouseMoved(const MouseEventUnrecPtr e)
 {
-    _Project->mouseMoved(e);
     if(!_Project->_BlockInput)
     {
         _Project->_Producer.produceEvent(MouseMovedMethodId,e);
@@ -202,9 +196,8 @@ void Project::ProjectUpdateListener::mouseMoved(const MouseEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::mouseDragged(const MouseEventPtr e)
+void Project::ProjectUpdateListener::mouseDragged(const MouseEventUnrecPtr e)
 {
-    _Project->mouseDragged(e);
     if(!_Project->_BlockInput)
     {
         _Project->_Producer.produceEvent(MouseDraggedMethodId,e);
@@ -212,7 +205,7 @@ void Project::ProjectUpdateListener::mouseDragged(const MouseEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::mouseWheelMoved(const MouseWheelEventPtr e)
+void Project::ProjectUpdateListener::mouseWheelMoved(const MouseWheelEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -222,9 +215,8 @@ void Project::ProjectUpdateListener::mouseWheelMoved(const MouseWheelEventPtr e)
 
 
 inline
-void Project::ProjectUpdateListener::keyPressed(const KeyEventPtr e)
+void Project::ProjectUpdateListener::keyPressed(const KeyEventUnrecPtr e)
 {
-    _Project->keyPressed(e);
     if(!_Project->_BlockInput)
     {
         _Project->_Producer.produceEvent(KeyPressedMethodId,e);
@@ -232,9 +224,8 @@ void Project::ProjectUpdateListener::keyPressed(const KeyEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::keyReleased(const KeyEventPtr e)
+void Project::ProjectUpdateListener::keyReleased(const KeyEventUnrecPtr e)
 {
-    _Project->keyReleased(e);
     if(!_Project->_BlockInput)
     {
         _Project->_Producer.produceEvent(KeyReleasedMethodId,e);
@@ -242,7 +233,7 @@ void Project::ProjectUpdateListener::keyReleased(const KeyEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::keyTyped(const KeyEventPtr e)
+void Project::ProjectUpdateListener::keyTyped(const KeyEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -251,7 +242,7 @@ void Project::ProjectUpdateListener::keyTyped(const KeyEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowOpened(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowOpened(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -260,7 +251,7 @@ void Project::ProjectUpdateListener::windowOpened(const WindowEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowClosing(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowClosing(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -269,7 +260,7 @@ void Project::ProjectUpdateListener::windowClosing(const WindowEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowClosed(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowClosed(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -278,7 +269,7 @@ void Project::ProjectUpdateListener::windowClosed(const WindowEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowIconified(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowIconified(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -287,7 +278,7 @@ void Project::ProjectUpdateListener::windowIconified(const WindowEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowDeiconified(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowDeiconified(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -296,7 +287,7 @@ void Project::ProjectUpdateListener::windowDeiconified(const WindowEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowActivated(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowActivated(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -305,7 +296,7 @@ void Project::ProjectUpdateListener::windowActivated(const WindowEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowDeactivated(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowDeactivated(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -314,7 +305,7 @@ void Project::ProjectUpdateListener::windowDeactivated(const WindowEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowEntered(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowEntered(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -323,7 +314,7 @@ void Project::ProjectUpdateListener::windowEntered(const WindowEventPtr e)
 }
 
 inline
-void Project::ProjectUpdateListener::windowExited(const WindowEventPtr e)
+void Project::ProjectUpdateListener::windowExited(const WindowEventUnrecPtr e)
 {
     if(!_Project->_BlockInput)
     {
@@ -332,4 +323,3 @@ void Project::ProjectUpdateListener::windowExited(const WindowEventPtr e)
 }
 
 OSG_END_NAMESPACE
-

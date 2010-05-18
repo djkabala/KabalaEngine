@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGPanelFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class ContentPanel;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ContentPanelPtr
+OSG_GEN_CONTAINERPTR(ContentPanel);
 
-typedef FCPtr<PanelPtr, ContentPanel> ContentPanelPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ContentPanelPtr> : 
-    public FieldTraitsRecurseMapper<ContentPanelPtr, true>
+struct FieldTraits<ContentPanel *> :
+    public FieldTraitsFCPtrBase<ContentPanel *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFContentPanelPtr"; }
-    static const char *getMName(void) { return "MFContentPanelPtr"; }
+    typedef FieldTraits<ContentPanel *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFContentPanelPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFContentPanelPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ContentPanelPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<ContentPanel *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecContentPanelPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<ContentPanel *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecContentPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ContentPanel *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakContentPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ContentPanel *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdContentPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ContentPanel *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecContentPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ContentPanel *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecContentPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ContentPanel *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakContentPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ContentPanel *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdContentPanelPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ContentPanel *,
+                      RecordedRefCountPolicy  > SFRecContentPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ContentPanel *,
+                      UnrecordedRefCountPolicy> SFUnrecContentPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ContentPanel *,
+                      WeakRefCountPolicy      > SFWeakContentPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ContentPanel *,
+                      NoRefCountPolicy        > SFUncountedContentPanelPtr;
 
-typedef SField<ContentPanelPtr> SFContentPanelPtr;
-#endif
 
-#ifndef KE_COMPILECONTENTPANELINST
-OSG_DLLEXPORT_DECL1(SField, ContentPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ContentPanel *,
+                      RecordedRefCountPolicy  > MFRecContentPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ContentPanel *,
+                      UnrecordedRefCountPolicy> MFUnrecContentPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ContentPanel *,
+                      WeakRefCountPolicy      > MFWeakContentPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ContentPanel *,
+                      NoRefCountPolicy        > MFUncountedContentPanelPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ContentPanelPtr> MFContentPanelPtr;
-#endif
 
-#ifndef KE_COMPILECONTENTPANELINST
-OSG_DLLEXPORT_DECL1(MField, ContentPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecContentPanelPtr : 
+    public PointerSField<ContentPanel *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecContentPanelPtr : 
+    public PointerSField<ContentPanel *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakContentPanelPtr :
+    public PointerSField<ContentPanel *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedContentPanelPtr :
+    public PointerSField<ContentPanel *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecContentPanelPtr :
+    public PointerMField<ContentPanel *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecContentPanelPtr :
+    public PointerMField<ContentPanel *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakContentPanelPtr :
+    public PointerMField<ContentPanel *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedContentPanelPtr :
+    public PointerMField<ContentPanel *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

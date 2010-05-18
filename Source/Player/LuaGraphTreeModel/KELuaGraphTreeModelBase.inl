@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,80 +54,73 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &LuaGraphTreeModelBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 LuaGraphTreeModelBase::getClassTypeId(void) 
+OSG::UInt32 LuaGraphTreeModelBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-LuaGraphTreeModelPtr LuaGraphTreeModelBase::create(void) 
-{
-    LuaGraphTreeModelPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = LuaGraphTreeModelPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-LuaGraphTreeModelPtr LuaGraphTreeModelBase::createEmpty(void) 
-{ 
-    LuaGraphTreeModelPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 LuaGraphTreeModelBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the LuaGraphTreeModel::_sfInternalRoot field.
-inline
-const SFPath *LuaGraphTreeModelBase::getSFInternalRoot(void) const
-{
-    return &_sfInternalRoot;
-}
-
-//! Get the LuaGraphTreeModel::_sfInternalRoot field.
-inline
-SFPath *LuaGraphTreeModelBase::editSFInternalRoot(void)
-{
-    return &_sfInternalRoot;
-}
-
-
 //! Get the value of the LuaGraphTreeModel::_sfInternalRoot field.
+
 inline
-Path &LuaGraphTreeModelBase::editInternalRoot(void)
+BoostPath &LuaGraphTreeModelBase::editInternalRoot(void)
 {
+    editSField(InternalRootFieldMask);
+
     return _sfInternalRoot.getValue();
 }
 
 //! Get the value of the LuaGraphTreeModel::_sfInternalRoot field.
 inline
-const Path &LuaGraphTreeModelBase::getInternalRoot(void) const
+const BoostPath &LuaGraphTreeModelBase::getInternalRoot(void) const
 {
     return _sfInternalRoot.getValue();
 }
 
 //! Set the value of the LuaGraphTreeModel::_sfInternalRoot field.
 inline
-void LuaGraphTreeModelBase::setInternalRoot(const Path &value)
+void LuaGraphTreeModelBase::setInternalRoot(const BoostPath &value)
 {
+    editSField(InternalRootFieldMask);
+
     _sfInternalRoot.setValue(value);
 }
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+inline
+void LuaGraphTreeModelBase::execSync (      LuaGraphTreeModelBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
+
+    if(FieldBits::NoField != (InternalRootFieldMask & whichField))
+        _sfInternalRoot.syncWith(pFrom->_sfInternalRoot);
+}
+#endif
+
+
+inline
+const Char8 *LuaGraphTreeModelBase::getClassname(void)
+{
+    return "LuaGraphTreeModel";
+}
+OSG_GEN_CONTAINERPTR(LuaGraphTreeModel);
+
 OSG_END_NAMESPACE
+

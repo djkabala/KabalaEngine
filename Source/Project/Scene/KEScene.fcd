@@ -9,22 +9,27 @@
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 The Scene.
 	<Field
 		name="InternalParentProject"
-		type="ProjectPtr"
+		type="Project"
+		category="pointer"
 		cardinality="single"
 		visibility="external"
-		defaultValue="NullFC"
-		header="Project/KEProjectFields.h"
+		defaultValue="NULL"
+		fieldHeader="Project/KEProjectFields.h"
+		typeHeader="Project/KEProjectFields.h"
 		access="protected"
 	>
 	</Field>
 	<Field
 		name="Viewports"
-		type="ViewportPtr"
+		type="Viewport"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -32,7 +37,8 @@ The Scene.
 	</Field>
 	<Field
 		name="Backgrounds"
-		type="BackgroundPtr"
+		type="Background"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -40,25 +46,27 @@ The Scene.
 	</Field>
 	<Field
 		name="UIDrawingSurfaces"
-		type="UIDrawingSurfacePtr"
+		type="UIDrawingSurface"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="OpenSG/UserInterface/OSGUIDrawingSurfaceFields.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="InitialBackground"
-		type="BackgroundPtr"
+		type="Background"
+		category="pointer"
 		cardinality="single"
 		visibility="external"
-		defaultValue="NullFC"
+		defaultValue="NULL"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="Foregrounds"
-		type="ForegroundPtr"
+		type="Foreground"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -66,7 +74,8 @@ The Scene.
 	</Field>
 	<Field
 		name="InitialForegrounds"
-		type="ForegroundPtr"
+		type="Foreground"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -74,7 +83,8 @@ The Scene.
 	</Field>
 	<Field
 		name="ModelNodes"
-		type="NodePtr"
+		type="Node"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -82,7 +92,8 @@ The Scene.
 	</Field>
 	<Field
 		name="InitialModelNodes"
-		type="NodePtr"
+		type="Node"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -90,43 +101,48 @@ The Scene.
 	</Field>
 	<Field
 		name="Root"
-		type="NodePtr"
+		type="Node"
+		category="pointer"
 		cardinality="single"
 		visibility="internal"
-		defaultValue="NullFC"
+		defaultValue="NULL"
 		access="protected"
 	>
 	</Field>
 	<Field
 		name="RootCore"
-		type="TransformPtr"
+		type="Transform"
+		category="pointer"
 		cardinality="single"
 		visibility="internal"
-		defaultValue="NullFC"
+		defaultValue="NULL"
 		access="protected"
 	>
 	</Field>
 	<Field
 		name="DefaultCameraBeacon"
-		type="NodePtr"
+		type="Node"
+		category="pointer"
 		cardinality="single"
 		visibility="internal"
-		defaultValue="NullFC"
+		defaultValue="NULL"
 		access="protected"
 	>
 	</Field>
 	<Field
 		name="DefaultCameraBeaconCore"
-		type="TransformPtr"
+		type="Transform"
+		category="pointer"
 		cardinality="single"
 		visibility="internal"
-		defaultValue="NullFC"
+		defaultValue="NULL"
 		access="protected"
 	>
 	</Field>
 	<Field
 		name="Cameras"
-		type="CameraPtr"
+		type="Camera"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
 		access="public"
@@ -134,76 +150,76 @@ The Scene.
 	</Field>
 	<Field
 		name="InitialCamera"
-		type="CameraPtr"
+		type="Camera"
+		category="pointer"
 		cardinality="single"
 		visibility="external"
-		defaultValue="NullFC"
+		defaultValue="NULL"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="Animations"
-		type="AnimationPtr"
+		type="Animation"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="OpenSG/Animation/OSGAnimation.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="InitialAnimations"
-		type="AnimationPtr"
+		type="Animation"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="OpenSG/Animation/OSGAnimation.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="ParticleSystems"
-		type="ParticleSystemPtr"
+		type="ParticleSystem"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="OpenSG/ParticleSystem/OSGParticleSystem.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="InitialParticleSystems"
-		type="ParticleSystemPtr"
+		type="ParticleSystem"
+		category="pointer"
 		cardinality="multi"
 		visibility="external"
-		header="OpenSG/ParticleSystem/OSGParticleSystem.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="LuaModule"
-		type="Path"
+		type="BoostPath"
 		cardinality="single"
 		visibility="external"
-		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="PhysicsHandler"
-		type="PhysicsHandlerPtr"
+		type="PhysicsHandler"
+		category="pointer"
 		cardinality="single"
 		visibility="external"
-		header="OpenSG/Physics/OSGPhysicsHandler.h"
 		access="public"
-        defaultValue="NullFC"
+        defaultValue="NULL"
 	>
 	</Field>
 	<Field
 		name="PhysicsWorld"
-		type="PhysicsWorldPtr"
+		type="PhysicsWorld"
+		category="pointer"
 		cardinality="single"
 		visibility="external"
-		header="OpenSG/Physics/OSGPhysicsWorld.h"
 		access="public"
-        defaultValue="NullFC"
+        defaultValue="NULL"
 	>
 	</Field>
 	<Field
@@ -217,132 +233,132 @@ The Scene.
 	
 	<ProducedMethod
 		name="SceneEntered"
-		producedEventType="SceneEventPtr"
+		type="SceneEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="SceneExited"
-		producedEventType="SceneEventPtr"
+		type="SceneEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="SceneStarted"
-		producedEventType="SceneEventPtr"
+		type="SceneEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="SceneEnded"
-		producedEventType="SceneEventPtr"
+		type="SceneEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="SceneReset"
-		producedEventType="SceneEventPtr"
+		type="SceneEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowOpened"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowClosing"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowClosed"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowIconified"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowDeiconified"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowActivated"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowDeactivated"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowEntered"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="WindowExited"
-		producedEventType="WindowEventPtr"
+		type="WindowEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseClicked"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseEntered"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseExited"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MousePressed"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseReleased"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseMoved"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseDragged"
-		producedEventType="MouseEventPtr"
+		type="MouseEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="MouseWheelMoved"
-		producedEventType="MouseWheelEventPtr"
+		type="MouseWheelEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="KeyPressed"
-		producedEventType="KeyEventPtr"
+		type="KeyEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="KeyReleased"
-		producedEventType="KeyEventPtr"
+		type="KeyEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="KeyTyped"
-		producedEventType="KeyEventPtr"
+		type="KeyEvent"
 	>
 	</ProducedMethod>
 	<ProducedMethod
 		name="Update"
-		producedEventType="UpdateEventPtr"
+		type="UpdateEvent"
 	>
 	</ProducedMethod>
 </FieldContainer>

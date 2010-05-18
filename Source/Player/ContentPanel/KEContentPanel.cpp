@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,34 +37,24 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <fstream>
-#include <iostream>
-#include <string>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
 
 #include "KEContentPanel.h"
-#include <OpenSG/UserInterface/OSGInternalWindow.h>
-#include <OpenSG/UserInterface/OSGTitlebar.h>
+#include <OpenSG/OSGInternalWindow.h>
+#include <OpenSG/OSGTitlebar.h>
 #include "Player/KEApplicationPlayer.h"
-
-#include <boost/program_options.hpp>
-
-//#include "Application/KEMainApplication.h"
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::ContentPanel
-The ContentPanel. Shows the content of files   
-*/
+// Documentation for this class is emitted in the
+// OSGContentPanelBase.cpp file.
+// To modify it, please change the .fcd file (OSGContentPanel.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -73,8 +64,13 @@ The ContentPanel. Shows the content of files
  *                           Class methods                                 *
 \***************************************************************************/
 
-void ContentPanel::initMethod (void)
+void ContentPanel::initMethod(InitPhase ePhase)
 {
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
 
@@ -82,293 +78,245 @@ void ContentPanel::initMethod (void)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void ContentPanel::addTabWithText(Path file)
+void ContentPanel::addTabWithText(BoostPath file)
 {
 
-	PanelPtr _NewLeftTabLabelPanel = Panel::createEmpty();
+    PanelRefPtr _NewLeftTabLabelPanel = Panel::createEmpty();
 
-	ButtonPtr _NewLeftTabLabelCloseButtonPtr = ButtonPtr::dcast(InternalWindowPtr::dcast(InternalWindow::getClassType().getPrototype())->getTitlebar()->getCloseButton()->shallowCopy());
+    ButtonRefPtr _NewLeftTabLabelCloseButtonRefPtr =
+        dynamic_pointer_cast<Button>(dynamic_cast<InternalWindow*>(InternalWindow::getClassType().getPrototype())->getTitlebar()->getCloseButton()->shallowCopy());
 
-	/*ButtonPtr _NewLeftTabLabelCloseButtonPtr = Button::create();
-	
-	beginEditCP(_NewLeftTabLabelCloseButtonPtr,Button::TextFieldMask | Button::PreferredSizeFieldMask);
-		_NewLeftTabLabelCloseButtonPtr->setPreferredSize(Vec2f(100,20));
-		_NewLeftTabLabelCloseButtonPtr->setText("X");
-	endEditCP(_NewLeftTabLabelCloseButtonPtr,Button::TextFieldMask | Button::PreferredSizeFieldMask);*/
+    //ButtonRefPtr _NewLeftTabLabelCloseButtonRefPtr = Button::create();
 
-	_NewLeftTabLabelCloseButtonPtr->addActionListener(&_CloseButtonListener);
+    _NewLeftTabLabelCloseButtonRefPtr->setPreferredSize(Vec2f(100,20));
+    _NewLeftTabLabelCloseButtonRefPtr->setText("X");
 
-	LabelPtr _NewLeftTabLabelLabel=Label::create();
-	beginEditCP(_NewLeftTabLabelLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-        _NewLeftTabLabelLabel->setText(file.leaf());
-        _NewLeftTabLabelLabel->setBorders(NullFC);
-        _NewLeftTabLabelLabel->setBackgrounds(NullFC);
-	endEditCP(_NewLeftTabLabelLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-	
-	SpringLayoutPtr _NewLeftTabLabelPanelSpringLayout = osg::SpringLayout::create();
-	
-	_NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelCloseButtonPtr, 2, SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelPanel);  
-    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelCloseButtonPtr, -2, SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelPanel);
-	_NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _NewLeftTabLabelCloseButtonPtr, -20, SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelPanel);
-	_NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _NewLeftTabLabelCloseButtonPtr, -2, SpringLayoutConstraints::SOUTH_EDGE, _NewLeftTabLabelPanel);
-    
-	_NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelLabel, 2, SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelPanel);  
-    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelLabel, -5, SpringLayoutConstraints::WEST_EDGE, _NewLeftTabLabelCloseButtonPtr);
-	_NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _NewLeftTabLabelLabel, 2, SpringLayoutConstraints::WEST_EDGE, _NewLeftTabLabelPanel);
-	_NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _NewLeftTabLabelLabel, -2, SpringLayoutConstraints::SOUTH_EDGE, _NewLeftTabLabelPanel);
+    _NewLeftTabLabelCloseButtonRefPtr->addActionListener(&_CloseButtonListener);
+
+    LabelRefPtr _NewLeftTabLabelLabel=Label::create();
+    _NewLeftTabLabelLabel->setText(file.leaf());
+    _NewLeftTabLabelLabel->setBorders(NULL);
+    _NewLeftTabLabelLabel->setBackgrounds(NULL);
+
+    SpringLayoutRefPtr _NewLeftTabLabelPanelSpringLayout = OSG::SpringLayout::create();
+
+    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelCloseButtonRefPtr, 2, SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelPanel);  
+    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelCloseButtonRefPtr, -2, SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelPanel);
+    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _NewLeftTabLabelCloseButtonRefPtr, -20, SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelPanel);
+    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _NewLeftTabLabelCloseButtonRefPtr, -2, SpringLayoutConstraints::SOUTH_EDGE, _NewLeftTabLabelPanel);
+
+    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelLabel, 2, SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelPanel);  
+    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelLabel, -5, SpringLayoutConstraints::WEST_EDGE, _NewLeftTabLabelCloseButtonRefPtr);
+    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _NewLeftTabLabelLabel, 2, SpringLayoutConstraints::WEST_EDGE, _NewLeftTabLabelPanel);
+    _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _NewLeftTabLabelLabel, -2, SpringLayoutConstraints::SOUTH_EDGE, _NewLeftTabLabelPanel);
 
 
-	beginEditCP(_NewLeftTabLabelPanel,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
-		_NewLeftTabLabelPanel->setPreferredSize(Vec2f(120,20));
-		_NewLeftTabLabelPanel->getChildren().push_back(_NewLeftTabLabelLabel);
-		_NewLeftTabLabelPanel->getChildren().push_back(_NewLeftTabLabelCloseButtonPtr);
-		_NewLeftTabLabelPanel->setLayout(_NewLeftTabLabelPanelSpringLayout);
-	endEditCP(_NewLeftTabLabelPanel,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
-	
-		
+    _NewLeftTabLabelPanel->setPreferredSize(Vec2f(120,20));
+    _NewLeftTabLabelPanel->pushToChildren(_NewLeftTabLabelLabel);
+    _NewLeftTabLabelPanel->pushToChildren(_NewLeftTabLabelCloseButtonRefPtr);
+    _NewLeftTabLabelPanel->setLayout(_NewLeftTabLabelPanelSpringLayout);
 
-	std::string sent;
-	std::string para="";
-	std::ifstream inputFile((file.string()).c_str());
-	while(std::getline(inputFile,sent))para+=sent+"\n";
-	inputFile.close();
-	//std::cout<<para<<std::endl;
 
-	TextAreaPtr _NewLeftTabTextArea = osg::TextArea::create();
+
+    std::string sent;
+    std::string para="";
+    std::ifstream inputFile((file.string()).c_str());
+    while(std::getline(inputFile,sent))para+=sent+"\n";
+    inputFile.close();
+
+    TextAreaRefPtr _NewLeftTabTextArea = OSG::TextArea::create();
     _NewLeftTabTextArea->setText(para);
-	_NewLeftTabTextArea->setEditable(true);
-        
-    ScrollPanelPtr _NewLeftTabContent = ScrollPanel::create();
-    beginEditCP(_NewLeftTabContent, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-        _NewLeftTabContent->setPreferredSize(Vec2f(200,1200));
-        _NewLeftTabContent->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    endEditCP(_NewLeftTabContent, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-	_NewLeftTabContent->setViewComponent(_NewLeftTabTextArea);
+    _NewLeftTabTextArea->setEditable(true);
 
-	
-	PanelPtr _NewRightTabLabelPanel = Panel::createEmpty();
+    ScrollPanelRefPtr _NewLeftTabContent = ScrollPanel::create();
+    _NewLeftTabContent->setPreferredSize(Vec2f(200,1200));
+    _NewLeftTabContent->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    _NewLeftTabContent->setViewComponent(_NewLeftTabTextArea);
 
-	ButtonPtr _RightTabLabelCloseButtonPtr = ButtonPtr::dcast(InternalWindowPtr::dcast(InternalWindow::getClassType().getPrototype())->getTitlebar()->getCloseButton()->shallowCopy());
-	
-	/*beginEditCP(_RightTabLabelCloseButtonPtr,Button::TextFieldMask | Button::PreferredSizeFieldMask);
-	_RightTabLabelCloseButtonPtr->setPreferredSize(Vec2f(20,10));
-	_RightTabLabelCloseButtonPtr->setText("X");
-	endEditCP(_RightTabLabelCloseButtonPtr,Button::TextFieldMask | Button::PreferredSizeFieldMask);*/
-	
-	_RightTabLabelCloseButtonPtr->addActionListener(&_CloseButtonListener);
 
-	LabelPtr _NewRightTabLabel=Label::create();
-	beginEditCP(_NewRightTabLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-        _NewRightTabLabel->setText(file.leaf());
-        _NewRightTabLabel->setBorders(NullFC);
-        _NewRightTabLabel->setBackgrounds(NullFC);
-	endEditCP(_NewRightTabLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-	
-	SpringLayoutPtr _NewRightTabLabelPanelSpringLayout = osg::SpringLayout::create();
-	
-	_NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _RightTabLabelCloseButtonPtr, 2, SpringLayoutConstraints::NORTH_EDGE, _NewRightTabLabelPanel);  
-    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _RightTabLabelCloseButtonPtr, -2, SpringLayoutConstraints::EAST_EDGE, _NewRightTabLabelPanel);
-	_NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _RightTabLabelCloseButtonPtr, -20, SpringLayoutConstraints::EAST_EDGE, _NewRightTabLabelPanel);
-	_NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _RightTabLabelCloseButtonPtr, -2, SpringLayoutConstraints::SOUTH_EDGE, _NewRightTabLabelPanel);
-    
-	_NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _NewRightTabLabel, 2, SpringLayoutConstraints::NORTH_EDGE, _NewRightTabLabelPanel);  
-    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _NewRightTabLabel, -5, SpringLayoutConstraints::WEST_EDGE, _RightTabLabelCloseButtonPtr);
-	_NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _NewRightTabLabel, 2, SpringLayoutConstraints::WEST_EDGE, _NewRightTabLabelPanel);
-	_NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _NewRightTabLabel, -2, SpringLayoutConstraints::SOUTH_EDGE, _NewRightTabLabelPanel);
-	
+    PanelRefPtr _NewRightTabLabelPanel = Panel::createEmpty();
 
-	beginEditCP(_NewRightTabLabelPanel,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
-		_NewRightTabLabelPanel->setPreferredSize(Vec2f(120,20));
-		_NewRightTabLabelPanel->getChildren().push_back(_RightTabLabelCloseButtonPtr);
-		_NewRightTabLabelPanel->getChildren().push_back(_NewRightTabLabel);
-		_NewRightTabLabelPanel->setLayout(_NewRightTabLabelPanelSpringLayout);
-	endEditCP(_NewRightTabLabelPanel,Panel::ChildrenFieldMask | Panel::LayoutFieldMask | Panel::PreferredSizeFieldMask);
-	
+    ButtonRefPtr _RightTabLabelCloseButtonRefPtr = dynamic_pointer_cast<Button>(dynamic_cast<InternalWindow*>(InternalWindow::getClassType().getPrototype())->getTitlebar()->getCloseButton()->shallowCopy());
 
-	
-	TextAreaPtr _NewRightTabTextArea = osg::TextArea::create();
+    _RightTabLabelCloseButtonRefPtr->setPreferredSize(Vec2f(20,10));
+    _RightTabLabelCloseButtonRefPtr->setText("X");
+
+    _RightTabLabelCloseButtonRefPtr->addActionListener(&_CloseButtonListener);
+
+    LabelRefPtr _NewRightTabLabel=Label::create();
+    _NewRightTabLabel->setText(file.leaf());
+    _NewRightTabLabel->setBorders(NULL);
+    _NewRightTabLabel->setBackgrounds(NULL);
+
+    SpringLayoutRefPtr _NewRightTabLabelPanelSpringLayout = OSG::SpringLayout::create();
+
+    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _RightTabLabelCloseButtonRefPtr, 2, SpringLayoutConstraints::NORTH_EDGE, _NewRightTabLabelPanel);  
+    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _RightTabLabelCloseButtonRefPtr, -2, SpringLayoutConstraints::EAST_EDGE, _NewRightTabLabelPanel);
+    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _RightTabLabelCloseButtonRefPtr, -20, SpringLayoutConstraints::EAST_EDGE, _NewRightTabLabelPanel);
+    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _RightTabLabelCloseButtonRefPtr, -2, SpringLayoutConstraints::SOUTH_EDGE, _NewRightTabLabelPanel);
+
+    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _NewRightTabLabel, 2, SpringLayoutConstraints::NORTH_EDGE, _NewRightTabLabelPanel);  
+    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _NewRightTabLabel, -5, SpringLayoutConstraints::WEST_EDGE, _RightTabLabelCloseButtonRefPtr);
+    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _NewRightTabLabel, 2, SpringLayoutConstraints::WEST_EDGE, _NewRightTabLabelPanel);
+    _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _NewRightTabLabel, -2, SpringLayoutConstraints::SOUTH_EDGE, _NewRightTabLabelPanel);
+
+
+    _NewRightTabLabelPanel->setPreferredSize(Vec2f(120,20));
+    _NewRightTabLabelPanel->pushToChildren(_RightTabLabelCloseButtonRefPtr);
+    _NewRightTabLabelPanel->pushToChildren(_NewRightTabLabel);
+    _NewRightTabLabelPanel->setLayout(_NewRightTabLabelPanelSpringLayout);
+
+
+
+    TextAreaRefPtr _NewRightTabTextArea = OSG::TextArea::create();
     _NewRightTabTextArea->setText(para);
-	_NewRightTabTextArea->setEditable(true);
-	        
-    ScrollPanelPtr _NewRightTabContent = ScrollPanel::create();
-    beginEditCP(_NewRightTabContent, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-        _NewRightTabContent->setPreferredSize(Vec2f(200,1200));
-        _NewRightTabContent->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    endEditCP(_NewRightTabContent, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-	_NewRightTabContent->setViewComponent(_NewRightTabTextArea);
+    _NewRightTabTextArea->setEditable(true);
+
+    ScrollPanelRefPtr _NewRightTabContent = ScrollPanel::create();
+    _NewRightTabContent->setPreferredSize(Vec2f(200,1200));
+    _NewRightTabContent->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    _NewRightTabContent->setViewComponent(_NewRightTabTextArea);
 
 
-	beginEditCP(_RightTabPanel,TabPanel::TabsFieldMask);
-		_RightTabPanel->addTab(_NewLeftTabLabelPanel, _NewLeftTabContent);
-    endEditCP(_RightTabPanel, TabPanel::TabsFieldMask);
+    _RightTabPanel->addTab(_NewLeftTabLabelPanel, _NewLeftTabContent);
 
-    _RightTabPanel->setSelectedIndex((_RightTabPanel->getTabs().getSize())-1);
+    _RightTabPanel->setSelectedIndex((_RightTabPanel->getMFTabs()->getSize())-1);
 
-	beginEditCP(_LeftTabPanel,TabPanel::TabsFieldMask);
-		_LeftTabPanel->addTab(_NewRightTabLabelPanel, _NewRightTabContent);
-    endEditCP(_LeftTabPanel, TabPanel::TabsFieldMask);
+    _LeftTabPanel->addTab(_NewRightTabLabelPanel, _NewRightTabContent);
 
-	_LeftTabPanel->setSelectedIndex((_LeftTabPanel->getTabs().getSize())-1);
-		
+    _LeftTabPanel->setSelectedIndex((_LeftTabPanel->getMFTabs()->getSize())-1);
+
 }
 
-void ContentPanel::saveTextFile(Path file)
+void ContentPanel::saveTextFile(BoostPath file)
 {
-	std::ofstream _OutputFile((file.string()).c_str());
+    std::ofstream _OutputFile((file.string()).c_str());
 
-	ScrollPanelPtr _ToBeSavedScrollPanel = ScrollPanelPtr::dcast(_LeftTabPanel->getTabContents(_LeftTabPanel->getSelectedIndex()));
-	TextAreaPtr _ToBeSavedTextArea = TextAreaPtr::dcast(_ToBeSavedScrollPanel->getViewComponent());
-	
-	std::string _TobeSavedText = _ToBeSavedTextArea->getText();
-	_OutputFile<<_TobeSavedText;
-	_OutputFile.close();
+    ScrollPanelRefPtr _ToBeSavedScrollPanel = dynamic_cast<ScrollPanel*>(_LeftTabPanel->getTabContents(_LeftTabPanel->getSelectedIndex()));
+    TextAreaRefPtr _ToBeSavedTextArea = dynamic_cast<TextArea*>(_ToBeSavedScrollPanel->getViewComponent());
 
-	std::cout<<"File Saved"<<std::endl;
+    std::string _TobeSavedText = _ToBeSavedTextArea->getText();
+    _OutputFile<<_TobeSavedText;
+    _OutputFile.close();
 }
 
 void ContentPanel::closeCurrentWindow()
 {
 
-	beginEditCP(_LeftTabPanel,TabPanel::TabsFieldMask);
-		_LeftTabPanel->removeTab(_LeftTabPanel->getSelectedIndex());
-    endEditCP(_LeftTabPanel, TabPanel::TabsFieldMask);
+    _LeftTabPanel->removeTab(_LeftTabPanel->getSelectedIndex());
 
-	beginEditCP(_RightTabPanel,TabPanel::TabsFieldMask| TabPanel::TabContentsFieldMask | TabPanel::ChildrenFieldMask);
-		_RightTabPanel->removeTab(_RightTabPanel->getSelectedIndex());
-    endEditCP(_RightTabPanel, TabPanel::TabsFieldMask|TabPanel::TabContentsFieldMask | TabPanel::ChildrenFieldMask);
+    _RightTabPanel->removeTab(_RightTabPanel->getSelectedIndex());
 
 }
 
 void ContentPanel::createRightTabPanel()
 {
-	_RightTabPanel= osg::TabPanel::create();
-    beginEditCP(_RightTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
-		_RightTabPanel->setPreferredSize(Vec2f(1200,1200));
-	    _RightTabPanel->addTab(_RightTabPanelLabel, _RightTabPanelContent);
-		_RightTabPanel->setTabAlignment(0.5f);
-        _RightTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
-	endEditCP(_RightTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
+    _RightTabPanel= OSG::TabPanel::create();
+    _RightTabPanel->setPreferredSize(Vec2f(1200,1200));
+    _RightTabPanel->addTab(_RightTabPanelLabel, _RightTabPanelContent);
+    _RightTabPanel->setTabAlignment(0.5f);
+    _RightTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
     _RightTabPanel->setSelectedIndex(0);
 }
 
 void ContentPanel::createLeftTabPanel()
 {
-	_LeftTabPanel= osg::TabPanel::create();
-    beginEditCP(_LeftTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
-		_LeftTabPanel->setPreferredSize(Vec2f(1200,1200));
-	    _LeftTabPanel->addTab(_LeftTabPanelLabel, _LeftTabPanelContent);
-		_LeftTabPanel->setTabAlignment(0.5f);
-        _LeftTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
-	endEditCP(_LeftTabPanel, TabPanel::PreferredSizeFieldMask | TabPanel::TabsFieldMask | TabPanel::TabContentsFieldMask | TabPanel::TabAlignmentFieldMask | TabPanel::TabPlacementFieldMask);
+    _LeftTabPanel= OSG::TabPanel::create();
+    _LeftTabPanel->setPreferredSize(Vec2f(1200,1200));
+    _LeftTabPanel->addTab(_LeftTabPanelLabel, _LeftTabPanelContent);
+    _LeftTabPanel->setTabAlignment(0.5f);
+    _LeftTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
     _LeftTabPanel->setSelectedIndex(0);
 }
 
 void ContentPanel::createDefaultTabs()
 {
-	_LeftTabPanelLabel = osg::Label::create();
+    _LeftTabPanelLabel = OSG::Label::create();
 
-	// set the fields of the labels
-	beginEditCP(_LeftTabPanelLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask | Label::PreferredSizeFieldMask);
-		_LeftTabPanelLabel->setPreferredSize(Vec2f(120,20));
-        _LeftTabPanelLabel->setText("Welcome!");
-        _LeftTabPanelLabel->setBorders(NullFC);
-        _LeftTabPanelLabel->setBackgrounds(NullFC);
-	endEditCP(_LeftTabPanelLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask | Label::PreferredSizeFieldMask);
-    
-	// Create a _StackTraceTextArea
-	_LeftTabPanelTextArea = osg::TextArea::create();
+    // set the fields of the labels
+    _LeftTabPanelLabel->setPreferredSize(Vec2f(120,20));
+    _LeftTabPanelLabel->setText("Welcome!");
+    _LeftTabPanelLabel->setBorders(NULL);
+    _LeftTabPanelLabel->setBackgrounds(NULL);
+
+    // Create a _StackTraceTextArea
+    _LeftTabPanelTextArea = OSG::TextArea::create();
     _LeftTabPanelTextArea->setText("Hey Programmer!\n\n\n The following shortcuts also exists \n Ctrl+X\t-\t to execute Lua code \n Ctrl+1\t-\t To Focus on Lua Console TextArea \n Ctrl+T\t-\t for splitting the Content Panel \n\n You can now save/open files using the Debugging Interface\n Please DO NOT open files greater than 5KB.It is not efficiently coded and hence would take years to load.\n\n\n\t\tThank you!\n\n");
-	_LeftTabPanelTextArea->setEditable(false);
-        
+    _LeftTabPanelTextArea->setEditable(false);
+
     _LeftTabPanelContent = ScrollPanel::create();
-    beginEditCP(_LeftTabPanelContent, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-        _LeftTabPanelContent->setPreferredSize(Vec2f(200,1200));
-        _LeftTabPanelContent->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    endEditCP(_LeftTabPanelContent, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    _LeftTabPanelContent->setPreferredSize(Vec2f(200,1200));
+    _LeftTabPanelContent->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
     // Add the _LeftTabPanelTextArea to the ScrollPanel so it is displayed
-	_LeftTabPanelContent->setViewComponent(_LeftTabPanelTextArea);
+    _LeftTabPanelContent->setViewComponent(_LeftTabPanelTextArea);
 
 
-	_RightTabPanelLabel = osg::Label::create();
+    _RightTabPanelLabel = OSG::Label::create();
 
-	// set the fields of the labels
-	beginEditCP(_RightTabPanelLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-        _RightTabPanelLabel->setText("Screen2");
-        _RightTabPanelLabel->setBorders(NullFC);
-        _RightTabPanelLabel->setBackgrounds(NullFC);
-	endEditCP(_RightTabPanelLabel, Label::TextFieldMask | Label::BordersFieldMask | Label::BackgroundsFieldMask);
-    
-	// Create a _StackTraceTextArea
-	_RightTabPanelTextArea = osg::TextArea::create();
+    // set the fields of the labels
+    _RightTabPanelLabel->setText("Screen2");
+    _RightTabPanelLabel->setBorders(NULL);
+    _RightTabPanelLabel->setBackgrounds(NULL);
+
+    // Create a _StackTraceTextArea
+    _RightTabPanelTextArea = OSG::TextArea::create();
     _RightTabPanelTextArea->setText("This is the Second screen.\n\n Opening files now will open them in both screens.\n\n Pressing the \"Save file\" would only save the currently selected file in the left screen.\n\n\t\tThank you!\n\n");
-	_RightTabPanelTextArea->setEditable(false);
-        
+    _RightTabPanelTextArea->setEditable(false);
+
     _RightTabPanelContent = ScrollPanel::create();
-    beginEditCP(_RightTabPanelContent, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
-        _RightTabPanelContent->setPreferredSize(Vec2f(200,1200));
-        _RightTabPanelContent->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    endEditCP(_RightTabPanelContent, ScrollPanel::PreferredSizeFieldMask | ScrollPanel::HorizontalResizePolicyFieldMask);
+    _RightTabPanelContent->setPreferredSize(Vec2f(200,1200));
+    _RightTabPanelContent->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
     // Add the _RightTabPanelTextArea to the ScrollPanel so it is displayed
-	_RightTabPanelContent->setViewComponent(_RightTabPanelTextArea);
+    _RightTabPanelContent->setViewComponent(_RightTabPanelTextArea);
 
 }
 
 
 void ContentPanel::setIsSplit(bool value)
 {
-	_IsSplit = value;
-	updatePanel();
+    _IsSplit = value;
+    updatePanel();
 }
 
 bool ContentPanel::getIsSplit()
 {
-	return _IsSplit;
+    return _IsSplit;
 }
 
 void ContentPanel::createLuaEditorSplitPanel()
 {
-	createDefaultTabs();
-	createRightTabPanel();
-	createLeftTabPanel();
+    createDefaultTabs();
+    createRightTabPanel();
+    createLeftTabPanel();
 
     //Lua Editing Panel
     _LuaEditorSplitPanel = SplitPanel::create();
 
-    beginEditCP(_LuaEditorSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-                SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
+    _LuaEditorSplitPanel->setMaxComponent(_RightTabPanel);
+    _LuaEditorSplitPanel->setDividerSize(5);
+    _LuaEditorSplitPanel->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
 
-        _LuaEditorSplitPanel->setMaxComponent(_RightTabPanel);
-        _LuaEditorSplitPanel->setDividerSize(5);
-        _LuaEditorSplitPanel->setOrientation(SplitPanel::HORIZONTAL_ORIENTATION);
-
-    endEditCP(_LuaEditorSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-              SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
 }
 
 void ContentPanel::updatePanel()
 {
-    beginEditCP(_LuaEditorSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-                SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
-    
-	if(_IsSplit)
-	{
-			_LuaEditorSplitPanel->setDividerPosition(.50); 
-			_LuaEditorSplitPanel->setExpandable(true);
-			_LuaEditorSplitPanel->setMaxDividerPosition(.85);
-			_LuaEditorSplitPanel->setMinDividerPosition(.15);
-			_LuaEditorSplitPanel->setMinComponent(_LeftTabPanel);
-	}
-	else
-	{
-			_LuaEditorSplitPanel->setDividerPosition(0); 
-			_LuaEditorSplitPanel->setExpandable(true);
-			_LuaEditorSplitPanel->setMaxDividerPosition(0);
-			_LuaEditorSplitPanel->setMinDividerPosition(0);
-			_LuaEditorSplitPanel->setMinComponent(_LeftTabPanel);
-	}
+    if(_IsSplit)
+    {
+        _LuaEditorSplitPanel->setDividerPosition(.50); 
+        _LuaEditorSplitPanel->setExpandable(true);
+        _LuaEditorSplitPanel->setMaxDividerPosition(.85);
+        _LuaEditorSplitPanel->setMinDividerPosition(.15);
+        _LuaEditorSplitPanel->setMinComponent(_LeftTabPanel);
+    }
+    else
+    {
+        _LuaEditorSplitPanel->setDividerPosition(0); 
+        _LuaEditorSplitPanel->setExpandable(true);
+        _LuaEditorSplitPanel->setMaxDividerPosition(0);
+        _LuaEditorSplitPanel->setMinDividerPosition(0);
+        _LuaEditorSplitPanel->setMinComponent(_LeftTabPanel);
+    }
 
-    endEditCP(_LuaEditorSplitPanel, SplitPanel::ConstraintsFieldMask | SplitPanel::MinComponentFieldMask | SplitPanel::MaxComponentFieldMask | SplitPanel::OrientationFieldMask | SplitPanel::DividerPositionFieldMask | 
-              SplitPanel::DividerSizeFieldMask | SplitPanel::ExpandableFieldMask | SplitPanel::MaxDividerPositionFieldMask | SplitPanel::MinDividerPositionFieldMask);
 
 }
 
@@ -385,28 +333,24 @@ void ContentPanel::init()
 {
     //Create the Lua Code Editing Panel
     createLuaEditorSplitPanel();
-	setIsSplit(false);
+    setIsSplit(false);
 
     //Create the Scene Graph Editing Panel
     createSceneEditorPanel();
 
     //Add the Editing Panels in a card layout to this panel
-	_MainCardLayout = CardLayout::create();
-    
-    beginEditCP(ContentPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
-        getChildren().push_back(_SceneEditorPanel);
-        getChildren().push_back(_LuaEditorSplitPanel);
-        setLayout(_MainCardLayout);
-        setBackgrounds(NullFC);
-        setBorders(NullFC);
-    endEditCP(ContentPanelPtr(this), Panel::ChildrenFieldMask | Panel::LayoutFieldMask);
+    _MainCardLayout = CardLayout::create();
+
+    pushToChildren(_SceneEditorPanel);
+    pushToChildren(_LuaEditorSplitPanel);
+    setLayout(_MainCardLayout);
+    setBackgrounds(NULL);
+    setBorders(NULL);
 }
 
 void ContentPanel::setView(UInt32 Index)
 {
-    beginEditCP(_MainCardLayout, CardLayout::CardFieldMask);
-        _MainCardLayout->setCard(Index);
-    endEditCP(_MainCardLayout, CardLayout::CardFieldMask);
+    _MainCardLayout->setCard(Index);
 }
 
 void ContentPanel::addTab()
@@ -418,41 +362,36 @@ void ContentPanel::removeTab(UInt32 tabno)
 {
 
 }
-void ContentPanel::actionPerformed(const osg::ActionEventPtr e)
+void ContentPanel::actionPerformed(const OSG::ActionEventUnrecPtr e)
 {
 
-	ButtonPtr _TempCloseButton = ButtonPtr::dcast(e->getSource());
-	PanelPtr _TempPanel = PanelPtr::dcast(_TempCloseButton->getParentContainer());
-	TabPanelPtr _TempTabPanel = TabPanelPtr::dcast(_TempPanel->getParentContainer());
-	UInt32 _ChildIndex = (_TempTabPanel->getChildIndex(_TempPanel))/2;
-	std::cout<<"chldindex:"<<_ChildIndex<<std::endl;
-	
-	beginEditCP(_LeftTabPanel,TabPanel::ChildrenFieldMask);
-		_LeftTabPanel->removeTab(_ChildIndex);
-	endEditCP(_LeftTabPanel,TabPanel::ChildrenFieldMask);
+    ButtonRefPtr _TempCloseButton = dynamic_cast<Button*>(e->getSource());
+    PanelRefPtr _TempPanel = dynamic_cast<Panel*>(_TempCloseButton->getParentContainer());
+    TabPanelRefPtr _TempTabPanel = dynamic_cast<TabPanel*>(_TempPanel->getParentContainer());
+    UInt32 _ChildIndex = (_TempTabPanel->getChildIndex(_TempPanel))/2;
 
-	beginEditCP(_RightTabPanel,TabPanel::ChildrenFieldMask);
-		_RightTabPanel->removeTab(_ChildIndex);
-	endEditCP(_RightTabPanel,TabPanel::ChildrenFieldMask);
+    _LeftTabPanel->removeTab(_ChildIndex);
+
+    _RightTabPanel->removeTab(_ChildIndex);
 
 }
 
-void ContentPanel::CloseButtonListener::actionPerformed(const osg::ActionEventPtr e)
+void ContentPanel::CloseButtonListener::actionPerformed(const OSG::ActionEventUnrecPtr e)
 {
-	_ContentPanel->actionPerformed(e);
+    _ContentPanel->actionPerformed(e);
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseMoved(const MouseEventPtr e)
+void ContentPanel::SceneEditorPanelListener::mouseMoved(const MouseEventUnrecPtr e)
 {
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseDragged(const MouseEventPtr e)
+void ContentPanel::SceneEditorPanelListener::mouseDragged(const MouseEventUnrecPtr e)
 {
     _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().moveTo(e->getX(),e->getY());
 }
 
 
-void ContentPanel::SceneEditorPanelListener::mouseClicked(const MouseEventPtr e)
+void ContentPanel::SceneEditorPanelListener::mouseClicked(const MouseEventUnrecPtr e)
 {
     switch (e->getButton())
     {
@@ -463,34 +402,34 @@ void ContentPanel::SceneEditorPanelListener::mouseClicked(const MouseEventPtr e)
     }
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseEntered(const MouseEventPtr e)
+void ContentPanel::SceneEditorPanelListener::mouseEntered(const MouseEventUnrecPtr e)
 {
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseExited(const MouseEventPtr e)
+void ContentPanel::SceneEditorPanelListener::mouseExited(const MouseEventUnrecPtr e)
 {
 }
 
-void ContentPanel::SceneEditorPanelListener::mousePressed(const MouseEventPtr e)
+void ContentPanel::SceneEditorPanelListener::mousePressed(const MouseEventUnrecPtr e)
 {
     //if()
     //{
-        switch (e->getButton())
-        {
-            case MouseEvent::BUTTON1: 
-                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::LEFT_MOUSE,e->getX(),e->getY());
-                break;
-            case MouseEvent::BUTTON2:
-                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::RIGHT_MOUSE,e->getX(),e->getY());
-                break;
-            case MouseEvent::BUTTON3:
-                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
-                break;
-        }
+    switch (e->getButton())
+    {
+        case MouseEvent::BUTTON1: 
+            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::LEFT_MOUSE,e->getX(),e->getY());
+            break;
+        case MouseEvent::BUTTON2:
+            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::RIGHT_MOUSE,e->getX(),e->getY());
+            break;
+        case MouseEvent::BUTTON3:
+            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
+            break;
+    }
     //}
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseReleased(const MouseEventPtr e)
+void ContentPanel::SceneEditorPanelListener::mouseReleased(const MouseEventUnrecPtr e)
 {
     switch (e->getButton())
     {
@@ -506,7 +445,7 @@ void ContentPanel::SceneEditorPanelListener::mouseReleased(const MouseEventPtr e
     }
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseWheelMoved(const MouseWheelEventPtr e)
+void ContentPanel::SceneEditorPanelListener::mouseWheelMoved(const MouseWheelEventUnrecPtr e)
 {
     Navigator& TheNav(_ContentPanel->_ApplicationPlayer->getDebugSceneNavigator());
     TheNav.setDistance(TheNav.getDistance() + e->getUnitsToScroll() * TheNav.getMotionFactor());
@@ -520,15 +459,17 @@ void ContentPanel::SceneEditorPanelListener::mouseWheelMoved(const MouseWheelEve
 
 ContentPanel::ContentPanel(void) :
     Inherited(),
-	_CloseButtonListener(ContentPanelPtr(this)),
-	_SceneEditorPanelListener(ContentPanelPtr(this))
+	_CloseButtonListener(ContentPanelRefPtr(this)),
+	_SceneEditorPanelListener(ContentPanelRefPtr(this))
+
 {
 }
 
 ContentPanel::ContentPanel(const ContentPanel &source) :
     Inherited(source),
-	_CloseButtonListener(ContentPanelPtr(this)),
-	_SceneEditorPanelListener(ContentPanelPtr(this))
+	_CloseButtonListener(ContentPanelRefPtr(this)),
+	_SceneEditorPanelListener(ContentPanelRefPtr(this))
+
 {
 }
 
@@ -538,17 +479,17 @@ ContentPanel::~ContentPanel(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void ContentPanel::changed(BitVector whichField, UInt32 origin)
+void ContentPanel::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 }
 
-void ContentPanel::dump(      UInt32    , 
+void ContentPanel::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump ContentPanel NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

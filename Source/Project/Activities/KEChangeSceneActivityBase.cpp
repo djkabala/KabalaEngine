@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,143 +47,167 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILECHANGESCENEACTIVITYINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
+#include "Project/Scene/KEScene.h"      // GotoScene Class
 
 #include "KEChangeSceneActivityBase.h"
 #include "KEChangeSceneActivity.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  ChangeSceneActivityBase::GotoSceneFieldMask = 
-    (TypeTraits<BitVector>::One << ChangeSceneActivityBase::GotoSceneFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector ChangeSceneActivityBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/*! \class OSG::ChangeSceneActivity
+    
+ */
 
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
-// Field descriptions
-
-/*! \var ScenePtr        ChangeSceneActivityBase::_sfGotoScene
+/*! \var Scene *         ChangeSceneActivityBase::_sfGotoScene
     
 */
 
-//! ChangeSceneActivity description
 
-FieldDescription *ChangeSceneActivityBase::_desc[] = 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<ChangeSceneActivity *>::_type("ChangeSceneActivityPtr", "ActivityPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(ChangeSceneActivity *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           ChangeSceneActivity *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           ChangeSceneActivity *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void ChangeSceneActivityBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(SFScenePtr::getClassType(), 
-                     "GotoScene", 
-                     GotoSceneFieldId, GotoSceneFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ChangeSceneActivityBase::editSFGotoScene))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType ChangeSceneActivityBase::_type(
-    "ChangeSceneActivity",
-    "Activity",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&ChangeSceneActivityBase::createEmpty),
+    pDesc = new SFUnrecScenePtr::Description(
+        SFUnrecScenePtr::getClassType(),
+        "GotoScene",
+        "",
+        GotoSceneFieldId, GotoSceneFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ChangeSceneActivity::editHandleGotoScene),
+        static_cast<FieldGetMethodSig >(&ChangeSceneActivity::getHandleGotoScene));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+ChangeSceneActivityBase::TypeObject ChangeSceneActivityBase::_type(
+    ChangeSceneActivityBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&ChangeSceneActivityBase::createEmptyLocal),
     ChangeSceneActivity::initMethod,
-    _desc,
-    sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(ChangeSceneActivityBase, ChangeSceneActivityPtr)
+    ChangeSceneActivity::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&ChangeSceneActivity::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"ChangeSceneActivity\"\n"
+    "\tparent=\"Activity\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "\t<Field\n"
+    "\t\tname=\"GotoScene\"\n"
+    "\t\ttype=\"Scene\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/Scene/KESceneFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Scene/KEScene.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "</FieldContainer>\n",
+    ""
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &ChangeSceneActivityBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &ChangeSceneActivityBase::getType(void) const 
+FieldContainerType &ChangeSceneActivityBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr ChangeSceneActivityBase::shallowCopy(void) const 
-{ 
-    ChangeSceneActivityPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const ChangeSceneActivity *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 ChangeSceneActivityBase::getContainerSize(void) const 
-{ 
-    return sizeof(ChangeSceneActivity); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ChangeSceneActivityBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &ChangeSceneActivityBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<ChangeSceneActivityBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void ChangeSceneActivityBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 ChangeSceneActivityBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((ChangeSceneActivityBase *) &other, whichField, sInfo);
+    return sizeof(ChangeSceneActivity);
 }
-void ChangeSceneActivityBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+/*------------------------- decorator get ------------------------------*/
+
+
+//! Get the ChangeSceneActivity::_sfGotoScene field.
+const SFUnrecScenePtr *ChangeSceneActivityBase::getSFGotoScene(void) const
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return &_sfGotoScene;
 }
 
-void ChangeSceneActivityBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+SFUnrecScenePtr     *ChangeSceneActivityBase::editSFGotoScene      (void)
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
+    editSField(GotoSceneFieldMask);
 
-}
-#endif
-
-/*------------------------- constructors ----------------------------------*/
-
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
-
-ChangeSceneActivityBase::ChangeSceneActivityBase(void) :
-    _sfGotoScene              (ScenePtr(NullFC)), 
-    Inherited() 
-{
+    return &_sfGotoScene;
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
 
-ChangeSceneActivityBase::ChangeSceneActivityBase(const ChangeSceneActivityBase &source) :
-    _sfGotoScene              (source._sfGotoScene              ), 
-    Inherited                 (source)
-{
-}
 
-/*-------------------------- destructors ----------------------------------*/
 
-ChangeSceneActivityBase::~ChangeSceneActivityBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 ChangeSceneActivityBase::getBinSize(const BitVector &whichField)
+UInt32 ChangeSceneActivityBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -191,12 +216,11 @@ UInt32 ChangeSceneActivityBase::getBinSize(const BitVector &whichField)
         returnValue += _sfGotoScene.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void ChangeSceneActivityBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void ChangeSceneActivityBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -204,12 +228,10 @@ void ChangeSceneActivityBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _sfGotoScene.copyToBin(pMem);
     }
-
-
 }
 
-void ChangeSceneActivityBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void ChangeSceneActivityBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -217,62 +239,229 @@ void ChangeSceneActivityBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _sfGotoScene.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ChangeSceneActivityBase::executeSyncImpl(      ChangeSceneActivityBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+ChangeSceneActivityTransitPtr ChangeSceneActivityBase::createLocal(BitVector bFlags)
 {
+    ChangeSceneActivityTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (GotoSceneFieldMask & whichField))
-        _sfGotoScene.syncWith(pOther->_sfGotoScene);
+        fc = dynamic_pointer_cast<ChangeSceneActivity>(tmpPtr);
+    }
 
-
-}
-#else
-void ChangeSceneActivityBase::executeSyncImpl(      ChangeSceneActivityBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (GotoSceneFieldMask & whichField))
-        _sfGotoScene.syncWith(pOther->_sfGotoScene);
-
-
-
+    return fc;
 }
 
-void ChangeSceneActivityBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+ChangeSceneActivityTransitPtr ChangeSceneActivityBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    ChangeSceneActivityTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<ChangeSceneActivity>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+ChangeSceneActivityTransitPtr ChangeSceneActivityBase::create(void)
+{
+    ChangeSceneActivityTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<ChangeSceneActivity>(tmpPtr);
+    }
+
+    return fc;
+}
+
+ChangeSceneActivity *ChangeSceneActivityBase::createEmptyLocal(BitVector bFlags)
+{
+    ChangeSceneActivity *returnValue;
+
+    newPtr<ChangeSceneActivity>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+ChangeSceneActivity *ChangeSceneActivityBase::createEmpty(void)
+{
+    ChangeSceneActivity *returnValue;
+
+    newPtr<ChangeSceneActivity>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr ChangeSceneActivityBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    ChangeSceneActivity *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ChangeSceneActivity *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ChangeSceneActivityBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    ChangeSceneActivity *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ChangeSceneActivity *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ChangeSceneActivityBase::shallowCopy(void) const
+{
+    ChangeSceneActivity *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const ChangeSceneActivity *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+ChangeSceneActivityBase::ChangeSceneActivityBase(void) :
+    Inherited(),
+    _sfGotoScene              (NULL)
+{
+}
+
+ChangeSceneActivityBase::ChangeSceneActivityBase(const ChangeSceneActivityBase &source) :
+    Inherited(source),
+    _sfGotoScene              (NULL)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+ChangeSceneActivityBase::~ChangeSceneActivityBase(void)
+{
+}
+
+void ChangeSceneActivityBase::onCreate(const ChangeSceneActivity *source)
+{
+    Inherited::onCreate(source);
+
+    if(source != NULL)
+    {
+        ChangeSceneActivity *pThis = static_cast<ChangeSceneActivity *>(this);
+
+        pThis->setGotoScene(source->getGotoScene());
+    }
+}
+
+GetFieldHandlePtr ChangeSceneActivityBase::getHandleGotoScene       (void) const
+{
+    SFUnrecScenePtr::GetHandlePtr returnValue(
+        new  SFUnrecScenePtr::GetHandle(
+             &_sfGotoScene,
+             this->getType().getFieldDesc(GotoSceneFieldId),
+             const_cast<ChangeSceneActivityBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ChangeSceneActivityBase::editHandleGotoScene      (void)
+{
+    SFUnrecScenePtr::EditHandlePtr returnValue(
+        new  SFUnrecScenePtr::EditHandle(
+             &_sfGotoScene,
+             this->getType().getFieldDesc(GotoSceneFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&ChangeSceneActivity::setGotoScene,
+                    static_cast<ChangeSceneActivity *>(this), _1));
+
+    editSField(GotoSceneFieldMask);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void ChangeSceneActivityBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    ChangeSceneActivity *pThis = static_cast<ChangeSceneActivity *>(this);
+
+    pThis->execSync(static_cast<ChangeSceneActivity *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *ChangeSceneActivityBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    ChangeSceneActivity *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const ChangeSceneActivity *>(pRefAspect),
+                  dynamic_cast<const ChangeSceneActivity *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ChangeSceneActivityPtr>::_type("ChangeSceneActivityPtr", "ActivityPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(ChangeSceneActivityPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(ChangeSceneActivityPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void ChangeSceneActivityBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    static_cast<ChangeSceneActivity *>(this)->setGotoScene(NULL);
+
+
+}
 
 
 OSG_END_NAMESPACE
-

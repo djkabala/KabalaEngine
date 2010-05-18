@@ -6,8 +6,8 @@
 #include "KEKabalaEngineDef.h"
 
 #include <lua.hpp>
-#include <OpenSG/Lua/OSGLuaManager.h>
+#include <OpenSG/OSGLuaManager.h>
 
-osg::LuaManager::OpenBoundLuaLibFunctor  KE_KABALAENGINELIB_DLLMAPPING getKabalaEngineLuaBindingsLibFunctor(void);
+OSG::LuaManager::OpenBoundLuaLibFunctor  KE_KABALAENGINE_DLLMAPPING getKabalaEngineLuaBindingsLibFunctor(void);
 
 #endif

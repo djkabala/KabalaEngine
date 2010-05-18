@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,89 +54,58 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &SceneObjectContainerBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 SceneObjectContainerBase::getClassTypeId(void) 
+OSG::UInt32 SceneObjectContainerBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-SceneObjectContainerPtr SceneObjectContainerBase::create(void) 
-{
-    SceneObjectContainerPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = SceneObjectContainerPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-SceneObjectContainerPtr SceneObjectContainerBase::createEmpty(void) 
-{ 
-    SceneObjectContainerPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 SceneObjectContainerBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the SceneObjectContainer::_mfSceneObjects field.
-inline
-const MFSceneObjectPtr *SceneObjectContainerBase::getMFSceneObjects(void) const
-{
-    return &_mfSceneObjects;
-}
-
-//! Get the SceneObjectContainer::_mfSceneObjects field.
-inline
-MFSceneObjectPtr *SceneObjectContainerBase::editMFSceneObjects(void)
-{
-    return &_mfSceneObjects;
-}
-
-
 
 //! Get the value of the \a index element the SceneObjectContainer::_mfSceneObjects field.
 inline
-SceneObjectPtr &SceneObjectContainerBase::editSceneObjects(const UInt32 index)
+SceneObject * SceneObjectContainerBase::getSceneObjects(const UInt32 index) const
 {
     return _mfSceneObjects[index];
 }
 
-//! Get the value of the \a index element the SceneObjectContainer::_mfSceneObjects field.
-inline
-const SceneObjectPtr &SceneObjectContainerBase::getSceneObjects(const UInt32 index) const
-{
-    return _mfSceneObjects[index];
-}
 
-#ifndef OSG_2_PREP
-//! Get the SceneObjectContainer::_mfSceneObjects field.
+#ifdef OSG_MT_CPTR_ASPECT
 inline
-MFSceneObjectPtr &SceneObjectContainerBase::getSceneObjects(void)
+void SceneObjectContainerBase::execSync (      SceneObjectContainerBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
 {
-    return _mfSceneObjects;
-}
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
-//! Get the SceneObjectContainer::_mfSceneObjects field.
-inline
-const MFSceneObjectPtr &SceneObjectContainerBase::getSceneObjects(void) const
-{
-    return _mfSceneObjects;
+    if(FieldBits::NoField != (SceneObjectsFieldMask & whichField))
+        _mfSceneObjects.syncWith(pFrom->_mfSceneObjects,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
 }
-
 #endif
+
+
+inline
+const Char8 *SceneObjectContainerBase::getClassname(void)
+{
+    return "SceneObjectContainer";
+}
+OSG_GEN_CONTAINERPTR(SceneObjectContainer);
+
 OSG_END_NAMESPACE
+

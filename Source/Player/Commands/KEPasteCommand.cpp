@@ -1,19 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                     OpenSG ToolBox UserInterface                          *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *                         www.vrac.iastate.edu                              *
- *                                                                           *
- *   Authors: David Kabala, Alden Peterson, Lee Zaniewski, Jonathan Flory    *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -21,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -46,7 +43,7 @@
 
 #include "KEPasteCommand.h"
 
-#include <OpenSG/OSGSimpleAttachments.h>
+#include <OpenSG/OSGNameAttachment.h>
 
 OSG_USING_NAMESPACE
 
@@ -54,7 +51,7 @@ OSG_USING_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class osg::PasteCommand
+/*! \class OSG::PasteCommand
 A PasteCommand. 
 */
 
@@ -63,16 +60,17 @@ A PasteCommand.
 \***************************************************************************/
 
 CommandType PasteCommand::_Type("PasteCommand", "UndoableCommand");
+
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-PasteCommandPtr PasteCommand::create(ApplicationPlayerPtr ApplicationPlayer,
-                                     HierarchyPanelPtr HierarchyPanel,
-                                     NodePtr ParentNode,
+PasteCommandPtr PasteCommand::create(ApplicationPlayerRefPtr ApplicationPlayer,
+                                     HierarchyPanelRefPtr HierarchyPanel,
+                                     NodeRefPtr ParentNode,
                                      bool DeepClone)
 {
-	return Ptr(new PasteCommand(ApplicationPlayer,HierarchyPanel,ParentNode,DeepClone));
+	return RefPtr(new PasteCommand(ApplicationPlayer,HierarchyPanel,ParentNode,DeepClone));
 }
 
 /***************************************************************************\
@@ -81,7 +79,7 @@ PasteCommandPtr PasteCommand::create(ApplicationPlayerPtr ApplicationPlayer,
 
 void PasteCommand::execute(void)
 {
-	NodePtr ClonedNodeInCopyClipboard = _ApplicationPlayer->getClonedNodeInCopyClipboard();
+	NodeRefPtr ClonedNodeInCopyClipboard = _ApplicationPlayer->getClonedNodeInCopyClipboard();
 
     if(_DeepClone)
     {
@@ -96,7 +94,7 @@ void PasteCommand::execute(void)
 	_Name+=" copy";
 	setName(_PastedNode,_Name);
 
-    if(_PastedNode!=NullFC)
+    if(_PastedNode!=NULL)
 	{
 		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ParentNode),boost::any(_PastedNode));
 	}
@@ -118,13 +116,11 @@ void PasteCommand::redo(void)
 {
     Inherited::redo();
     _HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ParentNode),boost::any(_PastedNode));
-    subRefCP(_PastedNode);
 }
 
 void PasteCommand::undo(void)
 {
     Inherited::undo();
-    addRefCP(_PastedNode);
     _HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_PastedNode));
 }
 
@@ -153,18 +149,4 @@ void PasteCommand::operator =(const PasteCommand& source)
 	    _TheIndex = source._TheIndex;*/
     }
 }
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
 

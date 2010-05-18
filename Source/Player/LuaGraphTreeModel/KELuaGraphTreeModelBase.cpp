@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,143 +47,165 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILELUAGRAPHTREEMODELINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KELuaGraphTreeModelBase.h"
 #include "KELuaGraphTreeModel.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  LuaGraphTreeModelBase::InternalRootFieldMask = 
-    (TypeTraits<BitVector>::One << LuaGraphTreeModelBase::InternalRootFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector LuaGraphTreeModelBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/*! \class OSG::LuaGraphTreeModel
+    A UI LuaGraphTreeModel.
+ */
 
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
-// Field descriptions
-
-/*! \var Path            LuaGraphTreeModelBase::_sfInternalRoot
+/*! \var BoostPath       LuaGraphTreeModelBase::_sfInternalRoot
     
 */
 
-//! LuaGraphTreeModel description
 
-FieldDescription *LuaGraphTreeModelBase::_desc[] = 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<LuaGraphTreeModel *>::_type("LuaGraphTreeModelPtr", "AbstractTreeModelPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(LuaGraphTreeModel *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           LuaGraphTreeModel *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           LuaGraphTreeModel *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void LuaGraphTreeModelBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(SFPath::getClassType(), 
-                     "InternalRoot", 
-                     InternalRootFieldId, InternalRootFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&LuaGraphTreeModelBase::editSFInternalRoot))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType LuaGraphTreeModelBase::_type(
-    "LuaGraphTreeModel",
-    "AbstractTreeModel",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&LuaGraphTreeModelBase::createEmpty),
+    pDesc = new SFBoostPath::Description(
+        SFBoostPath::getClassType(),
+        "InternalRoot",
+        "",
+        InternalRootFieldId, InternalRootFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&LuaGraphTreeModel::editHandleInternalRoot),
+        static_cast<FieldGetMethodSig >(&LuaGraphTreeModel::getHandleInternalRoot));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+LuaGraphTreeModelBase::TypeObject LuaGraphTreeModelBase::_type(
+    LuaGraphTreeModelBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&LuaGraphTreeModelBase::createEmptyLocal),
     LuaGraphTreeModel::initMethod,
-    _desc,
-    sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(LuaGraphTreeModelBase, LuaGraphTreeModelPtr)
+    LuaGraphTreeModel::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&LuaGraphTreeModel::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"LuaGraphTreeModel\"\n"
+    "\tparent=\"AbstractTreeModel\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "A UI LuaGraphTreeModel.\n"
+    "\t<Field\n"
+    "\t\tname=\"InternalRoot\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "        visibility=\"external\"\n"
+    "\t\tdefaultValue=\"\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t>\n"
+    "   </Field>\n"
+    "</FieldContainer>\n",
+    "A UI LuaGraphTreeModel.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &LuaGraphTreeModelBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &LuaGraphTreeModelBase::getType(void) const 
+FieldContainerType &LuaGraphTreeModelBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr LuaGraphTreeModelBase::shallowCopy(void) const 
-{ 
-    LuaGraphTreeModelPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const LuaGraphTreeModel *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 LuaGraphTreeModelBase::getContainerSize(void) const 
-{ 
-    return sizeof(LuaGraphTreeModel); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void LuaGraphTreeModelBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &LuaGraphTreeModelBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<LuaGraphTreeModelBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void LuaGraphTreeModelBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 LuaGraphTreeModelBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((LuaGraphTreeModelBase *) &other, whichField, sInfo);
+    return sizeof(LuaGraphTreeModel);
 }
-void LuaGraphTreeModelBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+/*------------------------- decorator get ------------------------------*/
+
+
+SFBoostPath *LuaGraphTreeModelBase::editSFInternalRoot(void)
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    editSField(InternalRootFieldMask);
+
+    return &_sfInternalRoot;
 }
 
-void LuaGraphTreeModelBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+const SFBoostPath *LuaGraphTreeModelBase::getSFInternalRoot(void) const
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
-
-}
-#endif
-
-/*------------------------- constructors ----------------------------------*/
-
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
-
-LuaGraphTreeModelBase::LuaGraphTreeModelBase(void) :
-    _sfInternalRoot           (), 
-    Inherited() 
-{
+    return &_sfInternalRoot;
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
 
-LuaGraphTreeModelBase::LuaGraphTreeModelBase(const LuaGraphTreeModelBase &source) :
-    _sfInternalRoot           (source._sfInternalRoot           ), 
-    Inherited                 (source)
-{
-}
 
-/*-------------------------- destructors ----------------------------------*/
 
-LuaGraphTreeModelBase::~LuaGraphTreeModelBase(void)
-{
-}
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 LuaGraphTreeModelBase::getBinSize(const BitVector &whichField)
+UInt32 LuaGraphTreeModelBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -191,12 +214,11 @@ UInt32 LuaGraphTreeModelBase::getBinSize(const BitVector &whichField)
         returnValue += _sfInternalRoot.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void LuaGraphTreeModelBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void LuaGraphTreeModelBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -204,12 +226,10 @@ void LuaGraphTreeModelBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _sfInternalRoot.copyToBin(pMem);
     }
-
-
 }
 
-void LuaGraphTreeModelBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void LuaGraphTreeModelBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -217,62 +237,213 @@ void LuaGraphTreeModelBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _sfInternalRoot.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void LuaGraphTreeModelBase::executeSyncImpl(      LuaGraphTreeModelBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+LuaGraphTreeModelTransitPtr LuaGraphTreeModelBase::createLocal(BitVector bFlags)
 {
+    LuaGraphTreeModelTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (InternalRootFieldMask & whichField))
-        _sfInternalRoot.syncWith(pOther->_sfInternalRoot);
+        fc = dynamic_pointer_cast<LuaGraphTreeModel>(tmpPtr);
+    }
 
-
-}
-#else
-void LuaGraphTreeModelBase::executeSyncImpl(      LuaGraphTreeModelBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (InternalRootFieldMask & whichField))
-        _sfInternalRoot.syncWith(pOther->_sfInternalRoot);
-
-
-
+    return fc;
 }
 
-void LuaGraphTreeModelBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+LuaGraphTreeModelTransitPtr LuaGraphTreeModelBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    LuaGraphTreeModelTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<LuaGraphTreeModel>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+LuaGraphTreeModelTransitPtr LuaGraphTreeModelBase::create(void)
+{
+    LuaGraphTreeModelTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<LuaGraphTreeModel>(tmpPtr);
+    }
+
+    return fc;
+}
+
+LuaGraphTreeModel *LuaGraphTreeModelBase::createEmptyLocal(BitVector bFlags)
+{
+    LuaGraphTreeModel *returnValue;
+
+    newPtr<LuaGraphTreeModel>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+LuaGraphTreeModel *LuaGraphTreeModelBase::createEmpty(void)
+{
+    LuaGraphTreeModel *returnValue;
+
+    newPtr<LuaGraphTreeModel>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr LuaGraphTreeModelBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    LuaGraphTreeModel *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const LuaGraphTreeModel *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr LuaGraphTreeModelBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    LuaGraphTreeModel *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const LuaGraphTreeModel *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr LuaGraphTreeModelBase::shallowCopy(void) const
+{
+    LuaGraphTreeModel *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const LuaGraphTreeModel *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+LuaGraphTreeModelBase::LuaGraphTreeModelBase(void) :
+    Inherited(),
+    _sfInternalRoot           ()
+{
+}
+
+LuaGraphTreeModelBase::LuaGraphTreeModelBase(const LuaGraphTreeModelBase &source) :
+    Inherited(source),
+    _sfInternalRoot           (source._sfInternalRoot           )
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+LuaGraphTreeModelBase::~LuaGraphTreeModelBase(void)
+{
+}
+
+
+GetFieldHandlePtr LuaGraphTreeModelBase::getHandleInternalRoot    (void) const
+{
+    SFBoostPath::GetHandlePtr returnValue(
+        new  SFBoostPath::GetHandle(
+             &_sfInternalRoot,
+             this->getType().getFieldDesc(InternalRootFieldId),
+             const_cast<LuaGraphTreeModelBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr LuaGraphTreeModelBase::editHandleInternalRoot   (void)
+{
+    SFBoostPath::EditHandlePtr returnValue(
+        new  SFBoostPath::EditHandle(
+             &_sfInternalRoot,
+             this->getType().getFieldDesc(InternalRootFieldId),
+             this));
+
+
+    editSField(InternalRootFieldMask);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void LuaGraphTreeModelBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    LuaGraphTreeModel *pThis = static_cast<LuaGraphTreeModel *>(this);
+
+    pThis->execSync(static_cast<LuaGraphTreeModel *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *LuaGraphTreeModelBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    LuaGraphTreeModel *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const LuaGraphTreeModel *>(pRefAspect),
+                  dynamic_cast<const LuaGraphTreeModel *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<LuaGraphTreeModelPtr>::_type("LuaGraphTreeModelPtr", "AbstractTreeModelPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(LuaGraphTreeModelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(LuaGraphTreeModelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void LuaGraphTreeModelBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+
+}
 
 
 OSG_END_NAMESPACE
-

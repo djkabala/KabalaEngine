@@ -1,17 +1,16 @@
 /*---------------------------------------------------------------------------*\
- *                            OpenSGToolbox                                  *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *                                                                           *
- *                                                                           *
- *   contact: dkabala@vrac.iastate.edu                                       *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
+ * under the terms of the GNU General Public License as published            *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -19,9 +18,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
@@ -34,22 +42,22 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGUndoableCommand.h>
+#include <OpenSG/OSGUndoableCommand.h>
 #include <OpenSG/OSGNode.h>
 #include <vector>
 
 OSG_BEGIN_NAMESPACE
 
 class ShowHideCommand;
-typedef boost::intrusive_ptr<ShowHideCommand> ShowHideCommandPtr;
+typedef boost::shared_ptr<ShowHideCommand> ShowHideCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING ShowHideCommand: public UndoableCommand
+class KE_KABALAENGINE_DLLMAPPING ShowHideCommand: public UndoableCommand
 {
 protected:
 	typedef UndoableCommand Inherited;
-	typedef ShowHideCommandPtr Ptr;
+	typedef ShowHideCommandPtr RefPtr;
 
-	ShowHideCommand(NodePtr SelectedNode, bool Show, bool Recursive);
+	ShowHideCommand(NodeRefPtr SelectedNode, bool Show, bool Recursive);
 
 	ShowHideCommand(const ShowHideCommand& source);
 
@@ -62,10 +70,10 @@ protected:
 	virtual void redo(void);
 	virtual void undo(void);
 
-	NodePtr _SelectedNode;
+	NodeRefPtr _SelectedNode;
 	bool _Show;
 	bool _Recursive;
-	std::vector<std::pair<NodePtr, UInt32> > _ChangedNodes;
+	std::vector<std::pair<NodeRefPtr, UInt32> > _ChangedNodes;
 
 public:
 
@@ -77,7 +85,7 @@ public:
 
 	virtual ~ShowHideCommand(void);
 	
-	static ShowHideCommandPtr create(NodePtr SelectedNode, bool Show,bool Recursive);
+	static ShowHideCommandPtr create(NodeRefPtr SelectedNode, bool Show,bool Recursive);
 };
 
 OSG_END_NAMESPACE

@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,92 +54,31 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &BehaviorTypeBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 BehaviorTypeBase::getClassTypeId(void) 
+OSG::UInt32 BehaviorTypeBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-BehaviorTypePtr BehaviorTypeBase::create(void) 
-{
-    BehaviorTypePtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = BehaviorTypePtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-BehaviorTypePtr BehaviorTypeBase::createEmpty(void) 
-{ 
-    BehaviorTypePtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 BehaviorTypeBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the BehaviorType::_sfName field.
-inline
-const SFString *BehaviorTypeBase::getSFName(void) const
-{
-    return &_sfName;
-}
-
-//! Get the BehaviorType::_sfName field.
-inline
-SFString *BehaviorTypeBase::editSFName(void)
-{
-    return &_sfName;
-}
-
-//! Get the BehaviorType::_mfDescription field.
-inline
-const MFString *BehaviorTypeBase::getMFDescription(void) const
-{
-    return &_mfDescription;
-}
-
-//! Get the BehaviorType::_mfDescription field.
-inline
-MFString *BehaviorTypeBase::editMFDescription(void)
-{
-    return &_mfDescription;
-}
-
-//! Get the BehaviorType::_sfID field.
-inline
-const SFUInt32 *BehaviorTypeBase::getSFID(void) const
-{
-    return &_sfID;
-}
-
-//! Get the BehaviorType::_sfID field.
-inline
-SFUInt32 *BehaviorTypeBase::editSFID(void)
-{
-    return &_sfID;
-}
-
-
 //! Get the value of the BehaviorType::_sfName field.
+
 inline
 std::string &BehaviorTypeBase::editName(void)
 {
+    editSField(NameFieldMask);
+
     return _sfName.getValue();
 }
 
@@ -155,36 +93,34 @@ const std::string &BehaviorTypeBase::getName(void) const
 inline
 void BehaviorTypeBase::setName(const std::string &value)
 {
+    editSField(NameFieldMask);
+
     _sfName.setValue(value);
 }
-
 //! Get the value of the BehaviorType::_sfID field.
+
 inline
 UInt32 &BehaviorTypeBase::editID(void)
 {
+    editSField(IDFieldMask);
+
     return _sfID.getValue();
 }
 
 //! Get the value of the BehaviorType::_sfID field.
 inline
-const UInt32 &BehaviorTypeBase::getID(void) const
+      UInt32  BehaviorTypeBase::getID(void) const
 {
     return _sfID.getValue();
 }
 
 //! Set the value of the BehaviorType::_sfID field.
 inline
-void BehaviorTypeBase::setID(const UInt32 &value)
+void BehaviorTypeBase::setID(const UInt32 value)
 {
+    editSField(IDFieldMask);
+
     _sfID.setValue(value);
-}
-
-
-//! Get the value of the \a index element the BehaviorType::_mfDescription field.
-inline
-std::string &BehaviorTypeBase::editDescription(const UInt32 index)
-{
-    return _mfDescription[index];
 }
 
 //! Get the value of the \a index element the BehaviorType::_mfDescription field.
@@ -194,20 +130,47 @@ const std::string &BehaviorTypeBase::getDescription(const UInt32 index) const
     return _mfDescription[index];
 }
 
-#ifndef OSG_2_PREP
-//! Get the BehaviorType::_mfDescription field.
 inline
-MFString &BehaviorTypeBase::getDescription(void)
+std::string &BehaviorTypeBase::editDescription(const UInt32 index)
 {
-    return _mfDescription;
+    editMField(DescriptionFieldMask, _mfDescription);
+
+    return _mfDescription[index];
 }
 
-//! Get the BehaviorType::_mfDescription field.
-inline
-const MFString &BehaviorTypeBase::getDescription(void) const
-{
-    return _mfDescription;
-}
 
+
+#ifdef OSG_MT_CPTR_ASPECT
+inline
+void BehaviorTypeBase::execSync (      BehaviorTypeBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
+
+    if(FieldBits::NoField != (NameFieldMask & whichField))
+        _sfName.syncWith(pFrom->_sfName);
+
+    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
+        _mfDescription.syncWith(pFrom->_mfDescription,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
+
+    if(FieldBits::NoField != (IDFieldMask & whichField))
+        _sfID.syncWith(pFrom->_sfID);
+}
 #endif
+
+
+inline
+const Char8 *BehaviorTypeBase::getClassname(void)
+{
+    return "BehaviorType";
+}
+OSG_GEN_CONTAINERPTR(BehaviorType);
+
 OSG_END_NAMESPACE
+

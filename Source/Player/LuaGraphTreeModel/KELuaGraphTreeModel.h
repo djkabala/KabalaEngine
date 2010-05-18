@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -38,76 +39,79 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KELuaGraphTreeModelBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief LuaGraphTreeModel class. See \ref 
+/*! \brief LuaGraphTreeModel class. See \ref
            PageKabalaEngineLuaGraphTreeModel for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING LuaGraphTreeModel : public LuaGraphTreeModelBase
+class KE_KABALAENGINE_DLLMAPPING LuaGraphTreeModel : public LuaGraphTreeModelBase
 {
-  private:
-
-    typedef LuaGraphTreeModelBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef LuaGraphTreeModelBase Inherited;
+    typedef LuaGraphTreeModel     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
-
-	// checks whether the given path references a valid file(directories and .lua regular files are valid)
-	virtual bool isValidFile(const Path& path) const;
-
-	//Returns the child of parent at index index in the parent's child array.
-	virtual boost::any getChild(const boost::any& parent, const UInt32& index) const;
-
-	//Returns the number of children of parent.
-	virtual UInt32 getChildCount(const boost::any& parent) const;
-
-	//Returns the index of child in parent.
-	virtual UInt32 getIndexOfChild(const boost::any& parent, const boost::any& child) const;
-
-	//Returns the root of the tree.
-	virtual boost::any getRoot(void) const;
-
-	//Returns true if node is a leaf.
-	virtual bool isLeaf(const boost::any& node) const;
-    
-    //Returns the Parent of this node
-    virtual boost::any getParent(const boost::any& node) const;
-
-	//Messaged when the user has altered the value for the item identified by path to newValue.
-	virtual void valueForPathChanged(TreePath path, const boost::any& newValue);
-
-    //Sets the root to root.
-    void setRoot(const Path& root);
-
-    //Get the NodePtr to the Root Node
-    const Path& getRootPath(void) const;
-
-    //Returns true if these objects represent the same node in the tree
-    virtual bool isEqual(const boost::any& left, const boost::any& right) const;
-
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
+
+    // checks whether the given path references a valid file(directories and .lua regular files are valid)
+    virtual bool isValidFile(const BoostPath& path) const;
+
+    //Returns the child of parent at index index in the parent's child array.
+    virtual boost::any getChild(const boost::any& parent, const UInt32& index) const;
+
+    //Returns the number of children of parent.
+    virtual UInt32 getChildCount(const boost::any& parent) const;
+
+    //Returns the index of child in parent.
+    virtual UInt32 getIndexOfChild(const boost::any& parent, const boost::any& child) const;
+
+    //Returns the root of the tree.
+    virtual boost::any getRoot(void) const;
+
+    //Returns true if node is a leaf.
+    virtual bool isLeaf(const boost::any& node) const;
+
+    //Returns the Parent of this node
+    virtual boost::any getParent(const boost::any& node) const;
+
+    //Messaged when the user has altered the value for the item identified by path to newValue.
+    virtual void valueForPathChanged(TreePath path, const boost::any& newValue);
+
+    //Sets the root to root.
+    void setRoot(const BoostPath& root);
+
+    //Get the NodeRefPtr to the Root Node
+    const BoostPath& getRootPath(void) const;
+
+    //Returns true if these objects represent the same node in the tree
+    virtual bool isEqual(const boost::any& left, const boost::any& right) const;
+
+
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in LuaGraphTreeModelBase.
@@ -124,20 +128,24 @@ class KE_KABALAENGINELIB_DLLMAPPING LuaGraphTreeModel : public LuaGraphTreeModel
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~LuaGraphTreeModel(void); 
+    virtual ~LuaGraphTreeModel(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class LuaGraphTreeModelBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const LuaGraphTreeModel &source);
 };
 

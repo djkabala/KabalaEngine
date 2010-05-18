@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -38,38 +39,39 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KEApplicationModeBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief ApplicationMode class. See \ref 
+/*! \brief ApplicationMode class. See \ref
            PageKabalaEngineApplicationMode for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING ApplicationMode : public ApplicationModeBase
+class KE_KABALAENGINE_DLLMAPPING ApplicationMode : public ApplicationModeBase
 {
-  private:
-
-    typedef ApplicationModeBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef ApplicationModeBase Inherited;
+    typedef ApplicationMode     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
@@ -79,7 +81,9 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationMode : public ApplicationModeBase
 	virtual void start(void) = 0;
 	virtual void stop(void) = 0;
     virtual void reset(void) = 0;
+
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in ApplicationModeBase.
@@ -96,20 +100,24 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationMode : public ApplicationModeBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ApplicationMode(void); 
+    virtual ~ApplicationMode(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class ApplicationModeBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const ApplicationMode &source);
 };
 

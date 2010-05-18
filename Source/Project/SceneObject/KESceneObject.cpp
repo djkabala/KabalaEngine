@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,13 +32,22 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 //---------------------------------------------------------------------------
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
@@ -47,13 +57,10 @@
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::SceneObject
-The Scene. 	
-*/
+// Documentation for this class is emitted in the
+// OSGSceneObjectBase.cpp file.
+// To modify it, please change the .fcd file (OSGSceneObject.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -63,22 +70,19 @@ The Scene.
  *                           Class methods                                 *
 \***************************************************************************/
 
-void SceneObject::update()
+void SceneObject::initMethod(InitPhase ePhase)
 {
-}
+    Inherited::initMethod(ePhase);
 
-void SceneObject::initMethod (void)
-{
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
-
-void SceneObject::getToWorld()
-{
-}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -102,17 +106,17 @@ SceneObject::~SceneObject(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void SceneObject::changed(BitVector whichField, UInt32 origin)
+void SceneObject::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 }
 
-void SceneObject::dump(      UInt32    , 
+void SceneObject::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump SceneObject NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

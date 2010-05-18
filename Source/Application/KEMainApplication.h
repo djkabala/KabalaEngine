@@ -42,14 +42,14 @@
 #include <OpenSG/OSGConfig.h>
 
 #include <OpenSG/OSGWindowFields.h>
-#include <OpenSG/Input/OSGWindowAdapter.h>
+#include <OpenSG/OSGWindowAdapter.h>
 #include <boost/program_options.hpp>
-#include <Application/KEApplicationSettingsFields.h> // Settings type
-#include <OpenSG/Toolbox/OSGPathType.h> // SettingsLoadFile type
-#include <OpenSG/Input/OSGWindowEventProducerFields.h> // MainWindowEventProducer type
-#include <Project/KEProjectFields.h> // Project type
-#include <Project/Scene/KESceneFields.h> // Scene type
-#include <Application/KEApplicationModeFields.h> 
+#include "Application/KEApplicationSettingsFields.h" // Settings type
+#include <OpenSG/OSGBoostPathFields.h> // SettingsLoadFile type
+#include <OpenSG/OSGWindowEventProducerFields.h> // MainWindowEventProducer type
+#include "Project/KEProjectFields.h" // Project type
+#include "Project/Scene/KESceneFields.h" // Scene type
+#include "Application/KEApplicationModeFields.h" 
 
 
 OSG_BEGIN_NAMESPACE
@@ -58,7 +58,7 @@ OSG_BEGIN_NAMESPACE
            PageKabalaEngineMainApplication for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING MainApplication
+class KE_KABALAENGINE_DLLMAPPING MainApplication
 {
   private:
     /*==========================  PUBLIC  =================================*/
@@ -74,11 +74,11 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication
 
 	void printCommandLineHelp(void) const;
 
-	void saveSettings(const Path& SettingsFile);
-	void loadSettings(const Path& SettingsFile);
+	void saveSettings(const BoostPath& SettingsFile);
+	void loadSettings(const BoostPath& SettingsFile);
 
-	void saveProject(const Path& ProjectFile);
-	void loadProject(const Path& ProjectFile);
+	void saveProject(const BoostPath& ProjectFile);
+	void loadProject(const BoostPath& ProjectFile);
 
 	void attachBuilder(void);
 
@@ -86,53 +86,55 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication
 
 	void attachStartScreen(void);
 
-           ApplicationSettingsPtr &getSettings       (void);
-     const ApplicationSettingsPtr &getSettings       (void) const;
-           Path                &getSettingsLoadFile(void);
-     const Path                &getSettingsLoadFile(void) const;
-           WindowEventProducerPtr &getMainWindowEventProducer(void);
-     const WindowEventProducerPtr &getMainWindowEventProducer(void) const;
-           ProjectPtr          &getProject        (void);
-     const ProjectPtr          &getProject        (void) const;
-           ApplicationModePtr  &getBuilderMode    (void);
-     const ApplicationModePtr  &getBuilderMode    (void) const;
-           ApplicationModePtr  &getPlayerMode     (void);
-     const ApplicationModePtr  &getPlayerMode     (void) const;
-           ApplicationModePtr  &getStartScreenMode(void);
-     const ApplicationModePtr  &getStartScreenMode(void) const;
-           ApplicationModePtr  &getCurrentMode    (void);
-     const ApplicationModePtr  &getCurrentMode    (void) const;
+           ApplicationSettingsRefPtr &getSettings       (void);
+     const ApplicationSettingsRefPtr &getSettings       (void) const;
+           BoostPath                &getSettingsLoadFile(void);
+     const BoostPath                &getSettingsLoadFile(void) const;
+           WindowEventProducerRefPtr &getMainWindow(void);
+     const WindowEventProducerRefPtr &getMainWindow(void) const;
+           ProjectRefPtr          &getProject        (void);
+     const ProjectRefPtr          &getProject        (void) const;
+           ApplicationModeRefPtr  &getBuilderMode    (void);
+     const ApplicationModeRefPtr  &getBuilderMode    (void) const;
+           ApplicationModeRefPtr  &getPlayerMode     (void);
+     const ApplicationModeRefPtr  &getPlayerMode     (void) const;
+           ApplicationModeRefPtr  &getStartScreenMode(void);
+     const ApplicationModeRefPtr  &getStartScreenMode(void) const;
+           ApplicationModeRefPtr  &getCurrentMode    (void);
+     const ApplicationModeRefPtr  &getCurrentMode    (void) const;
      
-     void setSettings       ( const ApplicationSettingsPtr &value );
-     void setSettingsLoadFile( const Path &value );
-     void setMainWindowEventProducer( const WindowEventProducerPtr &value );
-     void setProject        ( const ProjectPtr &value );
-     void setBuilderMode    ( const ApplicationModePtr &value );
-     void setPlayerMode     ( const ApplicationModePtr &value );
-     void setStartScreenMode( const ApplicationModePtr &value );
-     void setCurrentMode    ( const ApplicationModePtr &value );
+     void setSettings       ( const ApplicationSettingsRefPtr &value );
+     void setSettingsLoadFile( const BoostPath &value );
+     void setMainWindow( const WindowEventProducerRefPtr &value );
+     void setProject        ( const ProjectRefPtr &value );
+     void setBuilderMode    ( const ApplicationModeRefPtr &value );
+     void setPlayerMode     ( const ApplicationModeRefPtr &value );
+     void setStartScreenMode( const ApplicationModeRefPtr &value );
+     void setCurrentMode    ( const ApplicationModeRefPtr &value );
+
+     static const BoostPath EngineAppDataDirectory;
     /*=========================  PROTECTED  ===============================*/
   protected:
 
-    ApplicationSettingsPtr _Settings;
-    Path                   _SettingsPath;
-    WindowEventProducerPtr _MainWindowEventProducer;
-    ProjectPtr             _Project;
-    ApplicationModePtr     _BuilderMode;
-    ApplicationModePtr     _StartScreenMode;
-    ApplicationModePtr     _PlayerMode;
-    ApplicationModePtr     _CurrentMode;
+     ApplicationSettingsRefPtr _Settings;
+     BoostPath                 _SettingsPath;
+     WindowEventProducerRefPtr              _MainWindow;
+     ProjectRefPtr             _Project;
+     ApplicationModeRefPtr     _BuilderMode;
+     ApplicationModeRefPtr     _StartScreenMode;
+     ApplicationModeRefPtr     _PlayerMode;
+     ApplicationModeRefPtr     _CurrentMode;
 
-    static ApplicationSettingsPtr createDefaultSettings(void);
+     static ApplicationSettingsRefPtr createDefaultSettings(void);
 
-	void createDefaultBuilderMode(void);
+     void createDefaultBuilderMode(void);
 
-	void createDefaultPlayerMode(void);
+     void createDefaultPlayerMode(void);
 
-	void createDefaultStartScreenMode(void);
+     void createDefaultStartScreenMode(void);
 
-	ProjectPtr createDefaultProject(void);
-	ScenePtr createDefaultScene(void);
+     ProjectRefPtr createDefaultProject(void);
+     SceneRefPtr createDefaultScene(void);
     // Variables should all be in MainApplicationBase.
 
     /*---------------------------------------------------------------------*/
@@ -147,23 +149,22 @@ class KE_KABALAENGINELIB_DLLMAPPING MainApplication
 
     virtual ~MainApplication(void); 
 
-	class MainWindowListener : public WindowAdapter
-	{
-	public :
-		MainWindowListener(MainApplication* TheMainApplication);
-		virtual void windowClosing(const WindowEventPtr e);
+    class MainWindowListener : public WindowAdapter
+    {
+      public :
+        MainWindowListener(MainApplication* TheMainApplication);
+        virtual void windowClosing(const WindowEventUnrecPtr e);
 
-		virtual void windowClosed(const WindowEventPtr e);
-	protected :
-		MainApplication* _MainApplication;
-	};
+        virtual void windowClosed(const WindowEventUnrecPtr e);
+      protected :
+        MainApplication* _MainApplication;
+    };
 
-	MainWindowListener _MainWindowListener;
+    MainWindowListener _MainWindowListener;
 
-	static boost::program_options::options_description _OptionsDescription;
-	static boost::program_options::positional_options_description _PositionalOptions;
+    static boost::program_options::options_description _OptionsDescription;
+    static boost::program_options::positional_options_description _PositionalOptions;
     /*! \}                                                                 */
-;
     /*==========================  PRIVATE  ================================*/
   private:
 

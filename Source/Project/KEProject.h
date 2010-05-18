@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -38,108 +39,112 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KEProjectBase.h"
-#include "KEProjectEvent.h"
+#include <OpenSG/OSGBackground.h>       // Backgrounds Class
+#include <OpenSG/OSGForeground.h>       // Foregrounds Class
+#include <OpenSG/OSGNode.h>             // ModelNodes Class
+#include <OpenSG/OSGCamera.h>           // Cameras Class
+#include <OpenSG/OSGAnimation.h>        // ActiveAnimations Class
+#include <OpenSG/OSGParticleSystem.h>   // ActiveParticleSystems Class
 
-#include <OpenSG/Toolbox/OSGPathType.h>
-#include <OpenSG/Input/OSGWindowEventProducerFields.h>
-#include <OpenSG/Input/OSGUpdateListener.h>
-#include <OpenSG/Input/OSGMouseListener.h>
-#include <OpenSG/Input/OSGMouseMotionListener.h>
-#include <OpenSG/Input/OSGMouseWheelListener.h>
-#include <OpenSG/Input/OSGKeyListener.h>
-#include <OpenSG/Input/OSGWindowListener.h>
-#include <OpenSG/Animation/OSGElapsedTimeAnimationAdvancer.h>
+#include <OpenSG/OSGPathType.h>
+#include <OpenSG/OSGWindowEventProducerFields.h>
+#include <OpenSG/OSGUpdateListener.h>
+#include <OpenSG/OSGMouseListener.h>
+#include <OpenSG/OSGMouseMotionListener.h>
+#include <OpenSG/OSGMouseWheelListener.h>
+#include <OpenSG/OSGKeyListener.h>
+#include <OpenSG/OSGWindowListener.h>
 #include <OpenSG/OSGNavigator.h>
+
+#include "KEProjectEvent.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief Project class. See \ref 
+/*! \brief Project class. See \ref
            PageKabalaEngineProject for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
+class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
 {
-  private:
-
-    typedef ProjectBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef ProjectBase Inherited;
+    typedef Project     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent, 
-                      const BitVector  bvFlags ) const;
+    virtual void dump(      UInt32     uiIndent = 0,
+                      const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
 
-	void start(void);
+    void start(void);
 
-	void reset(void);
+    void reset(void);
 
-	void stop(void);
+    void stop(void);
 
-	void setActiveScene(ScenePtr TheScene);
-	ScenePtr getActiveScene(void) const;
+    void setActiveScene(SceneRefPtr TheScene);
+    SceneRefPtr getActiveScene(void) const;
 
-	void setActiveNode(NodePtr TheNode);
-    NodePtr getActiveNode(void);
-    
-	void addActiveAnimation(AnimationPtr TheAnimation);
-	void removeActiveAnimation(AnimationPtr TheAnimation);
-	void addActiveParticleSystem(ParticleSystemPtr TheParticleSystem);
-	void removeActiveParticleSystem(ParticleSystemPtr TheParticleSystem);
+    void setActiveNode(NodeRefPtr TheNode);
+    NodeRefPtr getActiveNode(void);
 
-	void save(const Path& ProjectFile);
+    void addActiveAnimation(AnimationRefPtr TheAnimation);
+    void removeActiveAnimation(AnimationRefPtr TheAnimation);
+    void addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
+    void removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
 
-	static ProjectPtr load(const Path& ProjectFile);
+    void save(const BoostPath& ProjectFile);
 
-	static ProjectPtr create(const Path& ProjectFile);
+    static ProjectRefPtr load(const BoostPath& ProjectFile);
 
-	void save(void);
+    static ProjectRefPtr create(const BoostPath& ProjectFile);
 
-	void attachNames(void);
+    void save(void);
 
-	WindowEventProducerPtr getEventProducer(void) const;
+    void attachNames(void);
+
+    WindowEventProducerRefPtr getEventProducer(void) const;
 
     void pauseActiveUpdates(void);
     void unpauseActiveUpdates(void);
     void togglePauseActiveUpdates(void);
     bool getPauseActiveUpdates(void) const;
 
-    void attachFlyNavigation(void);
-    void dettachFlyNavigation(void);
-    void toggleFlyNavigation(void);
+    SceneRefPtr getLastActiveScene(void) const;
+    SceneRefPtr getSceneByName(const std::string& FindSceneName) const;
 
-    ScenePtr getLastActiveScene(void) const;
-    ScenePtr getSceneByName(const std::string& FindSceneName) const;
-    
     void blockInput(bool block);
     bool isInputBlocked(void) const;
 
-    void addViewport(const ViewportPtr& port);
-    void insertViewport(const ViewportPtr& port, UInt32 index);
-    void removeViewport(const ViewportPtr& port);
+    void addViewport(const ViewportRefPtr& port);
+    void insertViewport(const ViewportRefPtr& port, UInt32 index);
+    void removeViewport(const ViewportRefPtr& port);
     void clearViewports(void);
     UInt32 numViewports(void) const;
-    ViewportPtr getViewport(UInt32 index) const;
+    ViewportRefPtr getViewport(UInt32 index) const;
 
-    Path getProjectFilePath(void) const;
-    Path getLuaModulePath(void) const;
+    BoostPath getProjectFilePath(void) const;
+    BoostPath getLuaModulePath(void) const;
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in ProjectBase.
@@ -156,10 +161,16 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~Project(void); 
+    virtual ~Project(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     
 	class ProjectUpdateListener : public UpdateListener,
                                   public MouseListener,
@@ -167,94 +178,65 @@ class KE_KABALAENGINELIB_DLLMAPPING Project : public ProjectBase
                                   public MouseWheelListener,
                                   public KeyListener,
                                   public WindowListener
-	{
-	public:
-		ProjectUpdateListener(ProjectPtr TheProject);
+    {
+      public:
+        ProjectUpdateListener(ProjectRefPtr TheProject);
 
-        virtual void update(const UpdateEventPtr e);
-        
-        virtual void mouseClicked(const MouseEventPtr e);
-        virtual void mouseEntered(const MouseEventPtr e);
-        virtual void mouseExited(const MouseEventPtr e);
-        virtual void mousePressed(const MouseEventPtr e);
-        virtual void mouseReleased(const MouseEventPtr e);
+        virtual void update(const UpdateEventUnrecPtr e);
 
-        virtual void mouseMoved(const MouseEventPtr e);
-        virtual void mouseDragged(const MouseEventPtr e);
-        
-        virtual void mouseWheelMoved(const MouseWheelEventPtr e);
-        
-        virtual void keyPressed(const KeyEventPtr e);
-        virtual void keyReleased(const KeyEventPtr e);
-        virtual void keyTyped(const KeyEventPtr e);
-        
-        virtual void windowOpened(const WindowEventPtr e);
-        virtual void windowClosing(const WindowEventPtr e);
-        virtual void windowClosed(const WindowEventPtr e);
-        virtual void windowIconified(const WindowEventPtr e);
-        virtual void windowDeiconified(const WindowEventPtr e);
-        virtual void windowActivated(const WindowEventPtr e);
-        virtual void windowDeactivated(const WindowEventPtr e);
-        virtual void windowEntered(const WindowEventPtr e);
-        virtual void windowExited(const WindowEventPtr e);
-	protected :
-		ProjectPtr _Project;
-	};
+        virtual void mouseClicked(const MouseEventUnrecPtr e);
+        virtual void mouseEntered(const MouseEventUnrecPtr e);
+        virtual void mouseExited(const MouseEventUnrecPtr e);
+        virtual void mousePressed(const MouseEventUnrecPtr e);
+        virtual void mouseReleased(const MouseEventUnrecPtr e);
+
+        virtual void mouseMoved(const MouseEventUnrecPtr e);
+        virtual void mouseDragged(const MouseEventUnrecPtr e);
+
+        virtual void mouseWheelMoved(const MouseWheelEventUnrecPtr e);
+
+        virtual void keyPressed(const KeyEventUnrecPtr e);
+        virtual void keyReleased(const KeyEventUnrecPtr e);
+        virtual void keyTyped(const KeyEventUnrecPtr e);
+
+        virtual void windowOpened(const WindowEventUnrecPtr e);
+        virtual void windowClosing(const WindowEventUnrecPtr e);
+        virtual void windowClosed(const WindowEventUnrecPtr e);
+        virtual void windowIconified(const WindowEventUnrecPtr e);
+        virtual void windowDeiconified(const WindowEventUnrecPtr e);
+        virtual void windowActivated(const WindowEventUnrecPtr e);
+        virtual void windowDeactivated(const WindowEventUnrecPtr e);
+        virtual void windowEntered(const WindowEventUnrecPtr e);
+        virtual void windowExited(const WindowEventUnrecPtr e);
+      protected :
+        ProjectRefPtr _Project;
+    };
 
     friend class ProjectUpdateListener;
 
-	ProjectUpdateListener _ProjectUpdateListener;
+    ProjectUpdateListener _ProjectUpdateListener;
 
-    void update(const UpdateEventPtr e);
-    void mousePressed(const MouseEventPtr e);
-    void mouseReleased(const MouseEventPtr e);
-    void mouseMoved(const MouseEventPtr e);
-    void mouseDragged(const MouseEventPtr e);
-    void keyPressed(const KeyEventPtr e);
-    void keyReleased(const KeyEventPtr e);
-
-    ElapsedTimeAnimationAdvancerPtr _AnimationAdvancer;
     bool _PauseActiveUpdates;
-    bool _NavigatorAttached;
-    Navigator _navigator;
-    Real32 _ScaledMotionFactor;
-    Real32 _MotionFactor;
-    Real32 _FastMotionFactor;
-    Real32 _FastRotMotionFactor;
-    Real32 _YRotMotionFactor;
-    Real32 _XRotMotionFactor;
-    
-    bool _IsAKeyDown;
-    bool _IsSKeyDown;
-    bool _IsDKeyDown;
-    bool _IsWKeyDown;
-    bool _IsShiftKeyDown;
 
-    ScenePtr _LastActiveScene;
+    SceneRefPtr _LastActiveScene;
 
-    void updateNavigatorSceneAttachment(void);
-    void setCameraBeaconMatrix(const Matrix& m);
+    void produceSceneChanged(const ProjectEventUnrecPtr e);
+    void produceProjectStarted(const ProjectEventUnrecPtr e);
+    void produceProjectStopping(const ProjectEventUnrecPtr e);
+    void produceProjectStopped(const ProjectEventUnrecPtr e);
+    void produceProjectReset(const ProjectEventUnrecPtr e);
 
-    void produceSceneChanged(const ProjectEventPtr e);
-    void produceProjectStarted(const ProjectEventPtr e);
-    void produceProjectStopping(const ProjectEventPtr e);
-    void produceProjectStopped(const ProjectEventPtr e);
-    void produceProjectReset(const ProjectEventPtr e);
-    
     void loadScripts(void);
     bool _BlockInput;
 
     /*==========================  PRIVATE  ================================*/
+
   private:
-    void setDefaults(void);
 
     friend class FieldContainer;
     friend class ProjectBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const Project &source);
 };
 
@@ -262,6 +244,7 @@ typedef Project *ProjectP;
 
 OSG_END_NAMESPACE
 
+#include "Project/Scene/KEScene.h"      // Scenes Class
 #include "KEProjectBase.inl"
 #include "KEProject.inl"
 

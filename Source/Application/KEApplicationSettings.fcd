@@ -9,59 +9,64 @@
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
-	useLocalIncludes="true"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 The Main Application Settings.
 	<Field
 		name="DataDirectory"
-		type="Path"
+		type="BoostPath"
+		category="data"
 		cardinality="single"
 		visibility="external"
 		defaultValue=""
-		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="LastOpenedProjectFile"
-		type="Path"
+		type="BoostPath"
+		category="data"
 		cardinality="single"
 		visibility="external"
 		defaultValue=""
-		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="RecentProjectFiles"
-		type="Path"
+		type="BoostPath"
+		category="data"
 		cardinality="multi"
 		visibility="external"
-		header="OpenSG/Toolbox/OSGPathType.h"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="DefaultWindowPosition"
 		type="Pnt2f"
+		category="data"
 		cardinality="single"
 		visibility="external"
-		defaultValue="0.0f,0.0f"
+		defaultValue="0.5f,0.5f"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="DefaultWindowSize"
 		type="Vec2f"
+		category="data"
 		cardinality="single"
 		visibility="external"
-		defaultValue="900.0f,800.0f"
+		defaultValue="0.85f,0.85f"
 		access="public"
 	>
 	</Field>
 	<Field
 		name="Fullscreen"
 		type="bool"
+		category="data"
 		cardinality="single"
 		visibility="external"
 		defaultValue="false"
@@ -71,6 +76,7 @@ The Main Application Settings.
 	<Field
 		name="HideAdvancedFields"
 		type="bool"
+		category="data"
 		cardinality="single"
 		visibility="external"
 		defaultValue="true"

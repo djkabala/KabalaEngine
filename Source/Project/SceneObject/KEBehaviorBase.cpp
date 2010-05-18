@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,157 +47,206 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEBEHAVIORINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
+#include "Project/SceneObject/KESceneObject.h" // SceneObject Class
 
 #include "KEBehaviorBase.h"
 #include "KEBehavior.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  BehaviorBase::SceneObjectFieldMask = 
-    (TypeTraits<BitVector>::One << BehaviorBase::SceneObjectFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector  BehaviorBase::DependenciesFieldMask = 
-    (TypeTraits<BitVector>::One << BehaviorBase::DependenciesFieldId);
+/*! \class OSG::Behavior
+    The SceneObject.
+ */
 
-const OSG::BitVector BehaviorBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
-
-// Field descriptions
-
-/*! \var SceneObjectPtr  BehaviorBase::_sfSceneObject
+/*! \var SceneObject *   BehaviorBase::_sfSceneObject
     
 */
+
 /*! \var std::string     BehaviorBase::_mfDependencies
     
 */
 
-//! Behavior description
 
-FieldDescription *BehaviorBase::_desc[] = 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<Behavior *>::_type("BehaviorPtr", "AttachmentContainerPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(Behavior *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           Behavior *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           Behavior *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void BehaviorBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(SFSceneObjectPtr::getClassType(), 
-                     "SceneObject", 
-                     SceneObjectFieldId, SceneObjectFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&BehaviorBase::editSFSceneObject)),
-    new FieldDescription(MFString::getClassType(), 
-                     "Dependencies", 
-                     DependenciesFieldId, DependenciesFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&BehaviorBase::editMFDependencies))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType BehaviorBase::_type(
-    "Behavior",
-    "AttachmentContainer",
+    pDesc = new SFUnrecSceneObjectPtr::Description(
+        SFUnrecSceneObjectPtr::getClassType(),
+        "SceneObject",
+        "",
+        SceneObjectFieldId, SceneObjectFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Behavior::editHandleSceneObject),
+        static_cast<FieldGetMethodSig >(&Behavior::getHandleSceneObject));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFString::Description(
+        MFString::getClassType(),
+        "Dependencies",
+        "",
+        DependenciesFieldId, DependenciesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Behavior::editHandleDependencies),
+        static_cast<FieldGetMethodSig >(&Behavior::getHandleDependencies));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+BehaviorBase::TypeObject BehaviorBase::_type(
+    BehaviorBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
     NULL,
-    reinterpret_cast<PrototypeCreateF>(&BehaviorBase::createEmpty),
     Behavior::initMethod,
-    _desc,
-    sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(BehaviorBase, BehaviorPtr)
+    Behavior::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&Behavior::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"Behavior\"\n"
+    "\tparent=\"AttachmentContainer\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"abstract\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The SceneObject.\n"
+    "\t<Field\n"
+    "\t\tname=\"SceneObject\"\n"
+    "\t\ttype=\"SceneObject\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/SceneObject/KESceneObjectFields.h\"\n"
+    "\t\ttypeHeader=\"Project/SceneObject/KESceneObject.h\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Dependencies\"\n"
+    "\t\ttype=\"std::string\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "</FieldContainer>\n",
+    "The SceneObject.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &BehaviorBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &BehaviorBase::getType(void) const 
+FieldContainerType &BehaviorBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr BehaviorBase::shallowCopy(void) const 
-{ 
-    BehaviorPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const Behavior *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 BehaviorBase::getContainerSize(void) const 
-{ 
-    return sizeof(Behavior); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void BehaviorBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &BehaviorBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<BehaviorBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void BehaviorBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 BehaviorBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((BehaviorBase *) &other, whichField, sInfo);
+    return sizeof(Behavior);
 }
-void BehaviorBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+/*------------------------- decorator get ------------------------------*/
+
+
+//! Get the Behavior::_sfSceneObject field.
+const SFUnrecSceneObjectPtr *BehaviorBase::getSFSceneObject(void) const
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return &_sfSceneObject;
 }
 
-void BehaviorBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+SFUnrecSceneObjectPtr *BehaviorBase::editSFSceneObject    (void)
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
+    editSField(SceneObjectFieldMask);
 
-    _mfDependencies.terminateShare(uiAspect, this->getContainerSize());
+    return &_sfSceneObject;
 }
-#endif
 
-/*------------------------- constructors ----------------------------------*/
-
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
-
-BehaviorBase::BehaviorBase(void) :
-    _sfSceneObject            (), 
-    _mfDependencies           (), 
-    Inherited() 
+MFString *BehaviorBase::editMFDependencies(void)
 {
+    editMField(DependenciesFieldMask, _mfDependencies);
+
+    return &_mfDependencies;
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-BehaviorBase::BehaviorBase(const BehaviorBase &source) :
-    _sfSceneObject            (source._sfSceneObject            ), 
-    _mfDependencies           (source._mfDependencies           ), 
-    Inherited                 (source)
+const MFString *BehaviorBase::getMFDependencies(void) const
 {
+    return &_mfDependencies;
 }
 
-/*-------------------------- destructors ----------------------------------*/
 
-BehaviorBase::~BehaviorBase(void)
-{
-}
+
+
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 BehaviorBase::getBinSize(const BitVector &whichField)
+UInt32 BehaviorBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -204,18 +254,16 @@ UInt32 BehaviorBase::getBinSize(const BitVector &whichField)
     {
         returnValue += _sfSceneObject.getBinSize();
     }
-
     if(FieldBits::NoField != (DependenciesFieldMask & whichField))
     {
         returnValue += _mfDependencies.getBinSize();
     }
 
-
     return returnValue;
 }
 
-void BehaviorBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void BehaviorBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -223,17 +271,14 @@ void BehaviorBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyToBin(pMem);
     }
-
     if(FieldBits::NoField != (DependenciesFieldMask & whichField))
     {
         _mfDependencies.copyToBin(pMem);
     }
-
-
 }
 
-void BehaviorBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -241,76 +286,140 @@ void BehaviorBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyFromBin(pMem);
     }
-
     if(FieldBits::NoField != (DependenciesFieldMask & whichField))
     {
         _mfDependencies.copyFromBin(pMem);
     }
-
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void BehaviorBase::executeSyncImpl(      BehaviorBase *pOther,
-                                        const BitVector         &whichField)
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+BehaviorBase::BehaviorBase(void) :
+    Inherited(),
+    _sfSceneObject            (NULL),
+    _mfDependencies           ()
 {
-
-    Inherited::executeSyncImpl(pOther, whichField);
-
-    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
-        _sfSceneObject.syncWith(pOther->_sfSceneObject);
-
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-        _mfDependencies.syncWith(pOther->_mfDependencies);
-
-
-}
-#else
-void BehaviorBase::executeSyncImpl(      BehaviorBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
-        _sfSceneObject.syncWith(pOther->_sfSceneObject);
-
-
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-        _mfDependencies.syncWith(pOther->_mfDependencies, sInfo);
-
-
 }
 
-void BehaviorBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+BehaviorBase::BehaviorBase(const BehaviorBase &source) :
+    Inherited(source),
+    _sfSceneObject            (NULL),
+    _mfDependencies           (source._mfDependencies           )
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+}
 
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-        _mfDependencies.beginEdit(uiAspect, uiContainerSize);
 
+/*-------------------------- destructors ----------------------------------*/
+
+BehaviorBase::~BehaviorBase(void)
+{
+}
+
+void BehaviorBase::onCreate(const Behavior *source)
+{
+    Inherited::onCreate(source);
+
+    if(source != NULL)
+    {
+        Behavior *pThis = static_cast<Behavior *>(this);
+
+        pThis->setSceneObject(source->getSceneObject());
+    }
+}
+
+GetFieldHandlePtr BehaviorBase::getHandleSceneObject     (void) const
+{
+    SFUnrecSceneObjectPtr::GetHandlePtr returnValue(
+        new  SFUnrecSceneObjectPtr::GetHandle(
+             &_sfSceneObject,
+             this->getType().getFieldDesc(SceneObjectFieldId),
+             const_cast<BehaviorBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr BehaviorBase::editHandleSceneObject    (void)
+{
+    SFUnrecSceneObjectPtr::EditHandlePtr returnValue(
+        new  SFUnrecSceneObjectPtr::EditHandle(
+             &_sfSceneObject,
+             this->getType().getFieldDesc(SceneObjectFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Behavior::setSceneObject,
+                    static_cast<Behavior *>(this), _1));
+
+    editSField(SceneObjectFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr BehaviorBase::getHandleDependencies    (void) const
+{
+    MFString::GetHandlePtr returnValue(
+        new  MFString::GetHandle(
+             &_mfDependencies,
+             this->getType().getFieldDesc(DependenciesFieldId),
+             const_cast<BehaviorBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr BehaviorBase::editHandleDependencies   (void)
+{
+    MFString::EditHandlePtr returnValue(
+        new  MFString::EditHandle(
+             &_mfDependencies,
+             this->getType().getFieldDesc(DependenciesFieldId),
+             this));
+
+
+    editMField(DependenciesFieldMask, _mfDependencies);
+
+    return returnValue;
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void BehaviorBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Behavior *pThis = static_cast<Behavior *>(this);
+
+    pThis->execSync(static_cast<Behavior *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
 
-OSG_END_NAMESPACE
+void BehaviorBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
+    static_cast<Behavior *>(this)->setSceneObject(NULL);
 
-OSG_BEGIN_NAMESPACE
+#ifdef OSG_MT_CPTR_ASPECT
+    AspectOffsetStore oOffsets;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<BehaviorPtr>::_type("BehaviorPtr", "AttachmentContainerPtr");
+    _pAspectStore->fillOffsetArray(oOffsets, this);
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(BehaviorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(BehaviorPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+#ifdef OSG_MT_CPTR_ASPECT
+    _mfDependencies.terminateShare(Thread::getCurrentAspect(),
+                                      oOffsets);
+#endif
+}
 
 
 OSG_END_NAMESPACE
-

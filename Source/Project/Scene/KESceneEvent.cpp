@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,8 +37,8 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
@@ -47,13 +48,10 @@
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::SceneEvent
-
-*/
+// Documentation for this class is emitted in the
+// OSGSceneEventBase.cpp file.
+// To modify it, please change the .fcd file (OSGSceneEvent.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -63,24 +61,30 @@ OSG_BEGIN_NAMESPACE
  *                           Class methods                                 *
 \***************************************************************************/
 
-void SceneEvent::initMethod (void)
+void SceneEvent::initMethod(InitPhase ePhase)
 {
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
-SceneEventPtr SceneEvent::create(FieldContainerPtr Source,
-                                 Time TimeStamp)
-{
-    SceneEventPtr TheEvent(SceneEvent::createEmpty());
-
-    TheEvent->setSource(Source);
-    TheEvent->setTimeStamp(TimeStamp);
-
-    return TheEvent;
-}
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
+
+SceneEventTransitPtr SceneEvent::create(FieldContainerRefPtr Source,
+                                        Time TimeStamp)
+{
+    SceneEvent* TheEvent(SceneEvent::createEmpty());
+
+    TheEvent->setSource(Source);
+    TheEvent->setTimeStamp(TimeStamp);
+
+    return SceneEventTransitPtr(TheEvent);
+}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -104,17 +108,17 @@ SceneEvent::~SceneEvent(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void SceneEvent::changed(BitVector whichField, UInt32 origin)
+void SceneEvent::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 }
 
-void SceneEvent::dump(      UInt32    , 
+void SceneEvent::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump SceneEvent NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

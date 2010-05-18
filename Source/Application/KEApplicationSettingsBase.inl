@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,271 +54,81 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &ApplicationSettingsBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 ApplicationSettingsBase::getClassTypeId(void) 
+OSG::UInt32 ApplicationSettingsBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-ApplicationSettingsPtr ApplicationSettingsBase::create(void) 
-{
-    ApplicationSettingsPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = ApplicationSettingsPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-ApplicationSettingsPtr ApplicationSettingsBase::createEmpty(void) 
-{ 
-    ApplicationSettingsPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 ApplicationSettingsBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the ApplicationSettings::_sfDataDirectory field.
-inline
-const SFPath *ApplicationSettingsBase::getSFDataDirectory(void) const
-{
-    return &_sfDataDirectory;
-}
-
-//! Get the ApplicationSettings::_sfDataDirectory field.
-inline
-SFPath *ApplicationSettingsBase::editSFDataDirectory(void)
-{
-    return &_sfDataDirectory;
-}
-
-#ifndef OSG_2_PREP
-//! Get the ApplicationSettings::_sfDataDirectory field.
-inline
-SFPath *ApplicationSettingsBase::getSFDataDirectory(void)
-{
-    return &_sfDataDirectory;
-}
-#endif
-
-//! Get the ApplicationSettings::_sfLastOpenedProjectFile field.
-inline
-const SFPath *ApplicationSettingsBase::getSFLastOpenedProjectFile(void) const
-{
-    return &_sfLastOpenedProjectFile;
-}
-
-//! Get the ApplicationSettings::_sfLastOpenedProjectFile field.
-inline
-SFPath *ApplicationSettingsBase::editSFLastOpenedProjectFile(void)
-{
-    return &_sfLastOpenedProjectFile;
-}
-
-#ifndef OSG_2_PREP
-//! Get the ApplicationSettings::_sfLastOpenedProjectFile field.
-inline
-SFPath *ApplicationSettingsBase::getSFLastOpenedProjectFile(void)
-{
-    return &_sfLastOpenedProjectFile;
-}
-#endif
-
-//! Get the ApplicationSettings::_mfRecentProjectFiles field.
-inline
-const MFPath *ApplicationSettingsBase::getMFRecentProjectFiles(void) const
-{
-    return &_mfRecentProjectFiles;
-}
-
-//! Get the ApplicationSettings::_mfRecentProjectFiles field.
-inline
-MFPath *ApplicationSettingsBase::editMFRecentProjectFiles(void)
-{
-    return &_mfRecentProjectFiles;
-}
-
-#ifndef OSG_2_PREP
-//! Get the ApplicationSettings::_mfRecentProjectFiles field.
-inline
-MFPath *ApplicationSettingsBase::getMFRecentProjectFiles(void)
-{
-    return &_mfRecentProjectFiles;
-}
-#endif
-
-//! Get the ApplicationSettings::_sfDefaultWindowPosition field.
-inline
-const SFPnt2f *ApplicationSettingsBase::getSFDefaultWindowPosition(void) const
-{
-    return &_sfDefaultWindowPosition;
-}
-
-//! Get the ApplicationSettings::_sfDefaultWindowPosition field.
-inline
-SFPnt2f *ApplicationSettingsBase::editSFDefaultWindowPosition(void)
-{
-    return &_sfDefaultWindowPosition;
-}
-
-#ifndef OSG_2_PREP
-//! Get the ApplicationSettings::_sfDefaultWindowPosition field.
-inline
-SFPnt2f *ApplicationSettingsBase::getSFDefaultWindowPosition(void)
-{
-    return &_sfDefaultWindowPosition;
-}
-#endif
-
-//! Get the ApplicationSettings::_sfDefaultWindowSize field.
-inline
-const SFVec2f *ApplicationSettingsBase::getSFDefaultWindowSize(void) const
-{
-    return &_sfDefaultWindowSize;
-}
-
-//! Get the ApplicationSettings::_sfDefaultWindowSize field.
-inline
-SFVec2f *ApplicationSettingsBase::editSFDefaultWindowSize(void)
-{
-    return &_sfDefaultWindowSize;
-}
-
-#ifndef OSG_2_PREP
-//! Get the ApplicationSettings::_sfDefaultWindowSize field.
-inline
-SFVec2f *ApplicationSettingsBase::getSFDefaultWindowSize(void)
-{
-    return &_sfDefaultWindowSize;
-}
-#endif
-
-//! Get the ApplicationSettings::_sfFullscreen field.
-inline
-const SFBool *ApplicationSettingsBase::getSFFullscreen(void) const
-{
-    return &_sfFullscreen;
-}
-
-//! Get the ApplicationSettings::_sfFullscreen field.
-inline
-SFBool *ApplicationSettingsBase::editSFFullscreen(void)
-{
-    return &_sfFullscreen;
-}
-
-#ifndef OSG_2_PREP
-//! Get the ApplicationSettings::_sfFullscreen field.
-inline
-SFBool *ApplicationSettingsBase::getSFFullscreen(void)
-{
-    return &_sfFullscreen;
-}
-#endif
-
-//! Get the ApplicationSettings::_sfHideAdvancedFields field.
-inline
-const SFBool *ApplicationSettingsBase::getSFHideAdvancedFields(void) const
-{
-    return &_sfHideAdvancedFields;
-}
-
-//! Get the ApplicationSettings::_sfHideAdvancedFields field.
-inline
-SFBool *ApplicationSettingsBase::editSFHideAdvancedFields(void)
-{
-    return &_sfHideAdvancedFields;
-}
-
-#ifndef OSG_2_PREP
-//! Get the ApplicationSettings::_sfHideAdvancedFields field.
-inline
-SFBool *ApplicationSettingsBase::getSFHideAdvancedFields(void)
-{
-    return &_sfHideAdvancedFields;
-}
-#endif
-
-
 //! Get the value of the ApplicationSettings::_sfDataDirectory field.
+
 inline
-Path &ApplicationSettingsBase::editDataDirectory(void)
+BoostPath &ApplicationSettingsBase::editDataDirectory(void)
 {
+    editSField(DataDirectoryFieldMask);
+
     return _sfDataDirectory.getValue();
 }
 
 //! Get the value of the ApplicationSettings::_sfDataDirectory field.
 inline
-const Path &ApplicationSettingsBase::getDataDirectory(void) const
+const BoostPath &ApplicationSettingsBase::getDataDirectory(void) const
 {
     return _sfDataDirectory.getValue();
 }
-
-#ifndef OSG_2_PREP
-//! Get the value of the ApplicationSettings::_sfDataDirectory field.
-inline
-Path &ApplicationSettingsBase::getDataDirectory(void)
-{
-    return _sfDataDirectory.getValue();
-}
-#endif
 
 //! Set the value of the ApplicationSettings::_sfDataDirectory field.
 inline
-void ApplicationSettingsBase::setDataDirectory(const Path &value)
+void ApplicationSettingsBase::setDataDirectory(const BoostPath &value)
 {
+    editSField(DataDirectoryFieldMask);
+
     _sfDataDirectory.setValue(value);
 }
-
 //! Get the value of the ApplicationSettings::_sfLastOpenedProjectFile field.
+
 inline
-Path &ApplicationSettingsBase::editLastOpenedProjectFile(void)
+BoostPath &ApplicationSettingsBase::editLastOpenedProjectFile(void)
 {
+    editSField(LastOpenedProjectFileFieldMask);
+
     return _sfLastOpenedProjectFile.getValue();
 }
 
 //! Get the value of the ApplicationSettings::_sfLastOpenedProjectFile field.
 inline
-const Path &ApplicationSettingsBase::getLastOpenedProjectFile(void) const
+const BoostPath &ApplicationSettingsBase::getLastOpenedProjectFile(void) const
 {
     return _sfLastOpenedProjectFile.getValue();
 }
-
-#ifndef OSG_2_PREP
-//! Get the value of the ApplicationSettings::_sfLastOpenedProjectFile field.
-inline
-Path &ApplicationSettingsBase::getLastOpenedProjectFile(void)
-{
-    return _sfLastOpenedProjectFile.getValue();
-}
-#endif
 
 //! Set the value of the ApplicationSettings::_sfLastOpenedProjectFile field.
 inline
-void ApplicationSettingsBase::setLastOpenedProjectFile(const Path &value)
+void ApplicationSettingsBase::setLastOpenedProjectFile(const BoostPath &value)
 {
+    editSField(LastOpenedProjectFileFieldMask);
+
     _sfLastOpenedProjectFile.setValue(value);
 }
-
 //! Get the value of the ApplicationSettings::_sfDefaultWindowPosition field.
+
 inline
 Pnt2f &ApplicationSettingsBase::editDefaultWindowPosition(void)
 {
+    editSField(DefaultWindowPositionFieldMask);
+
     return _sfDefaultWindowPosition.getValue();
 }
 
@@ -330,26 +139,21 @@ const Pnt2f &ApplicationSettingsBase::getDefaultWindowPosition(void) const
     return _sfDefaultWindowPosition.getValue();
 }
 
-#ifndef OSG_2_PREP
-//! Get the value of the ApplicationSettings::_sfDefaultWindowPosition field.
-inline
-Pnt2f &ApplicationSettingsBase::getDefaultWindowPosition(void)
-{
-    return _sfDefaultWindowPosition.getValue();
-}
-#endif
-
 //! Set the value of the ApplicationSettings::_sfDefaultWindowPosition field.
 inline
 void ApplicationSettingsBase::setDefaultWindowPosition(const Pnt2f &value)
 {
+    editSField(DefaultWindowPositionFieldMask);
+
     _sfDefaultWindowPosition.setValue(value);
 }
-
 //! Get the value of the ApplicationSettings::_sfDefaultWindowSize field.
+
 inline
 Vec2f &ApplicationSettingsBase::editDefaultWindowSize(void)
 {
+    editSField(DefaultWindowSizeFieldMask);
+
     return _sfDefaultWindowSize.getValue();
 }
 
@@ -360,120 +164,125 @@ const Vec2f &ApplicationSettingsBase::getDefaultWindowSize(void) const
     return _sfDefaultWindowSize.getValue();
 }
 
-#ifndef OSG_2_PREP
-//! Get the value of the ApplicationSettings::_sfDefaultWindowSize field.
-inline
-Vec2f &ApplicationSettingsBase::getDefaultWindowSize(void)
-{
-    return _sfDefaultWindowSize.getValue();
-}
-#endif
-
 //! Set the value of the ApplicationSettings::_sfDefaultWindowSize field.
 inline
 void ApplicationSettingsBase::setDefaultWindowSize(const Vec2f &value)
 {
+    editSField(DefaultWindowSizeFieldMask);
+
     _sfDefaultWindowSize.setValue(value);
 }
-
 //! Get the value of the ApplicationSettings::_sfFullscreen field.
+
 inline
 bool &ApplicationSettingsBase::editFullscreen(void)
 {
+    editSField(FullscreenFieldMask);
+
     return _sfFullscreen.getValue();
 }
 
 //! Get the value of the ApplicationSettings::_sfFullscreen field.
 inline
-const bool &ApplicationSettingsBase::getFullscreen(void) const
+      bool  ApplicationSettingsBase::getFullscreen(void) const
 {
     return _sfFullscreen.getValue();
 }
-
-#ifndef OSG_2_PREP
-//! Get the value of the ApplicationSettings::_sfFullscreen field.
-inline
-bool &ApplicationSettingsBase::getFullscreen(void)
-{
-    return _sfFullscreen.getValue();
-}
-#endif
 
 //! Set the value of the ApplicationSettings::_sfFullscreen field.
 inline
-void ApplicationSettingsBase::setFullscreen(const bool &value)
+void ApplicationSettingsBase::setFullscreen(const bool value)
 {
+    editSField(FullscreenFieldMask);
+
     _sfFullscreen.setValue(value);
 }
-
 //! Get the value of the ApplicationSettings::_sfHideAdvancedFields field.
+
 inline
 bool &ApplicationSettingsBase::editHideAdvancedFields(void)
 {
+    editSField(HideAdvancedFieldsFieldMask);
+
     return _sfHideAdvancedFields.getValue();
 }
 
 //! Get the value of the ApplicationSettings::_sfHideAdvancedFields field.
 inline
-const bool &ApplicationSettingsBase::getHideAdvancedFields(void) const
+      bool  ApplicationSettingsBase::getHideAdvancedFields(void) const
 {
     return _sfHideAdvancedFields.getValue();
 }
-
-#ifndef OSG_2_PREP
-//! Get the value of the ApplicationSettings::_sfHideAdvancedFields field.
-inline
-bool &ApplicationSettingsBase::getHideAdvancedFields(void)
-{
-    return _sfHideAdvancedFields.getValue();
-}
-#endif
 
 //! Set the value of the ApplicationSettings::_sfHideAdvancedFields field.
 inline
-void ApplicationSettingsBase::setHideAdvancedFields(const bool &value)
+void ApplicationSettingsBase::setHideAdvancedFields(const bool value)
 {
+    editSField(HideAdvancedFieldsFieldMask);
+
     _sfHideAdvancedFields.setValue(value);
 }
 
-
 //! Get the value of the \a index element the ApplicationSettings::_mfRecentProjectFiles field.
 inline
-Path &ApplicationSettingsBase::editRecentProjectFiles(const UInt32 index)
+const BoostPath &ApplicationSettingsBase::getRecentProjectFiles(const UInt32 index) const
 {
     return _mfRecentProjectFiles[index];
 }
 
-//! Get the value of the \a index element the ApplicationSettings::_mfRecentProjectFiles field.
 inline
-const Path &ApplicationSettingsBase::getRecentProjectFiles(const UInt32 index) const
+BoostPath &ApplicationSettingsBase::editRecentProjectFiles(const UInt32 index)
 {
+    editMField(RecentProjectFilesFieldMask, _mfRecentProjectFiles);
+
     return _mfRecentProjectFiles[index];
 }
 
-#ifndef OSG_2_PREP
-//! Get the value of the \a index element the ApplicationSettings::_mfRecentProjectFiles field.
-inline
-Path &ApplicationSettingsBase::getRecentProjectFiles(const UInt32 index)
-{
-    return _mfRecentProjectFiles[index];
-}
 
-//! Get the ApplicationSettings::_mfRecentProjectFiles field.
-inline
-MFPath &ApplicationSettingsBase::getRecentProjectFiles(void)
-{
-    return _mfRecentProjectFiles;
-}
 
-//! Get the ApplicationSettings::_mfRecentProjectFiles field.
+#ifdef OSG_MT_CPTR_ASPECT
 inline
-const MFPath &ApplicationSettingsBase::getRecentProjectFiles(void) const
+void ApplicationSettingsBase::execSync (      ApplicationSettingsBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
 {
-    return _mfRecentProjectFiles;
-}
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
+    if(FieldBits::NoField != (DataDirectoryFieldMask & whichField))
+        _sfDataDirectory.syncWith(pFrom->_sfDataDirectory);
+
+    if(FieldBits::NoField != (LastOpenedProjectFileFieldMask & whichField))
+        _sfLastOpenedProjectFile.syncWith(pFrom->_sfLastOpenedProjectFile);
+
+    if(FieldBits::NoField != (RecentProjectFilesFieldMask & whichField))
+        _mfRecentProjectFiles.syncWith(pFrom->_mfRecentProjectFiles,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
+
+    if(FieldBits::NoField != (DefaultWindowPositionFieldMask & whichField))
+        _sfDefaultWindowPosition.syncWith(pFrom->_sfDefaultWindowPosition);
+
+    if(FieldBits::NoField != (DefaultWindowSizeFieldMask & whichField))
+        _sfDefaultWindowSize.syncWith(pFrom->_sfDefaultWindowSize);
+
+    if(FieldBits::NoField != (FullscreenFieldMask & whichField))
+        _sfFullscreen.syncWith(pFrom->_sfFullscreen);
+
+    if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
+        _sfHideAdvancedFields.syncWith(pFrom->_sfHideAdvancedFields);
+}
 #endif
+
+
+inline
+const Char8 *ApplicationSettingsBase::getClassname(void)
+{
+    return "ApplicationSettings";
+}
+OSG_GEN_CONTAINERPTR(ApplicationSettings);
 
 OSG_END_NAMESPACE
 

@@ -2,21 +2,24 @@
 %module OSG
 %native(version) int OSGVersion(lua_State*L);  // registers native_function() with SWIG
 %{
-#include <OpenSG/OSGConfig.h>
-#include <OpenSG/OSGBaseFunctions.h>
-#include <OpenSG/OSGColor.h>
-#include <OpenSG/OSGVector.h>
-#include <OpenSG/OSGMatrix.h>
-#include <OpenSG/OSGQuaternion.h>
-#include <OpenSG/OSGLine.h>
-#include <OpenSG/OSGPlane.h>
-#include <OpenSG/OSGTypeBase.h>
-#include <OpenSG/OSGDataType.h>
-#include <OpenSG/OSGTypeFactory.h>
-#include <OpenSG/OSGFieldType.h>
-#include <OpenSG/OSGField.h>
-#include <OpenSG/OSGFieldFactory.h>
-#include <OpenSG/OSGTime.h>
+#include "OSGConfig.h"
+#include "OSGBaseFunctions.h"
+#include "OSGColor.h"
+#include "OSGVector.h"
+#include "OSGMatrix.h"
+#include "OSGQuaternion.h"
+#include "OSGLine.h"
+#include "OSGPlane.h"
+#include "OSGTypeBase.h"
+#include "OSGDataType.h"
+#include "OSGTypeFactory.h"
+#include "OSGFieldType.h"
+#include "OSGField.h"
+/*#include "OSGFieldFactory.h"*/
+#include "OSGTime.h"
+#include "OSGVolume.h"
+#include "OSGBoxVolume.h"
+#include "OSGReal16.h"
 
     int OSGVersion(lua_State*L) // my native code
     {
@@ -35,7 +38,7 @@
     }
 %}
 
-namespace osg {
+namespace OSG {
     typedef char           Char8;
     typedef unsigned char UChar8;
     typedef signed char   SChar8;
@@ -49,12 +52,20 @@ namespace osg {
     typedef long     TimeStamp;
     typedef unsigned long  UInt64;
     typedef unsigned long  BitVector;
+    typedef float      Real16;
     typedef float      Real32;
     typedef double     Real64;
     typedef double     Time;
     typedef long double Real128;
+    
+    class Volume;
+    class Line;
+    class Plane;
 
 
+    /******************************************************/
+    /*              Real16                                */
+    /******************************************************/
 
     /******************************************************/
     /*              Colors                                */
@@ -95,11 +106,9 @@ namespace osg {
           Color3f     operator / (const Real32  val      ) const;
           Color3f     operator + (const Real32  val      ) const;
           Color3f     operator - (const Real32  val      ) const;
-          Color3f     operator * (const Color3f    &other    ) const;
-          Color3f     operator / (const Color3f    &other    ) const;
           Color3f     operator + (const Color3f    &other    ) const;
           Color3f     operator - (const Color3f    &other    ) const;
-           bool      equals     (const Color3f    &other, 
+           bool      equals     (const Color3f    &other,
                                  const Real32  tolerance) const;
            bool      operator < (const Color3f    &other    ) const;
            bool      operator ==(const Color3f    &other    ) const;
@@ -128,7 +137,7 @@ namespace osg {
                            const Real32 v       );
 
         void setRandom    (      void           );
-        void setRGBA      (      UInt32 rgbPack );    
+        void setRGBA      (      UInt32 rgbPack );   
 
         void setValue     (      Char8 *szString);
               UInt32    getRGBA       (void            ) const;
@@ -146,11 +155,9 @@ namespace osg {
               Color4f     operator / (const Real32  val      ) const;
               Color4f     operator + (const Real32  val      ) const;
               Color4f     operator - (const Real32  val      ) const;
-              Color4f     operator * (const Color4f    &other    ) const;
-              Color4f     operator / (const Color4f    &other    ) const;
               Color4f     operator + (const Color4f    &other    ) const;
               Color4f     operator - (const Color4f    &other    ) const;
-              bool       equals     (const Color4f    &other, 
+              bool       equals     (const Color4f    &other,
                                      const Real32  tolerance) const;
 
               bool       operator < (const Color4f    &other    ) const;
@@ -202,6 +209,8 @@ namespace osg {
 
         PointType      operator * (const ValueType  rVal) const;
 
+        PointType      operator / (const ValueType  rVal) const;
+
         PointType      operator - (      void            );
     };
 
@@ -248,6 +257,8 @@ namespace osg {
         PointType      operator - (const VectorType &vec ) const;
 
         PointType      operator * (const ValueType  rVal) const;
+
+        PointType      operator / (const ValueType  rVal) const;
 
         PointType      operator - (      void            );
     };
@@ -298,6 +309,8 @@ namespace osg {
 
         PointType      operator * (const ValueType  rVal) const;
 
+        PointType      operator / (const ValueType  rVal) const;
+
         PointType      operator - (      void            );
     };
     /******************************************************/
@@ -347,6 +360,8 @@ namespace osg {
         VectorType operator + (const VectorType     &vec ) const;
 
         VectorType operator * (const ValueType  rVal) const;
+
+        VectorType      operator / (const ValueType  rVal) const;
 
         VectorType operator - (      void            ) const;
         bool operator <  (const VectorType &other) const;
@@ -399,6 +414,8 @@ namespace osg {
 
         VectorType operator * (const ValueType  rVal) const;
 
+        VectorType      operator / (const ValueType  rVal) const;
+
         VectorType operator - (      void            ) const;
         bool operator <  (const VectorType &other) const;
 
@@ -449,6 +466,7 @@ namespace osg {
         VectorType operator + (const VectorType     &vec ) const;
 
         VectorType operator * (const ValueType  rVal) const;
+        VectorType      operator / (const ValueType  rVal) const;
 
         VectorType operator - (      void            ) const;
         bool operator <  (const VectorType &other) const;
@@ -480,12 +498,12 @@ namespace osg {
 
         Matrix(const VectorType3f         &vector1,
                              const VectorType3f         &vector2,
-                             const VectorType3f         &vector3);    
+                             const VectorType3f         &vector3);   
 
         Matrix(const VectorType3f         &vector1,
                              const VectorType3f         &vector2,
                              const VectorType3f         &vector3,
-                             const VectorType3f         &vector4);    
+                             const VectorType3f         &vector4);   
 
         Matrix(const ValueType            rVal00,
                              const ValueType            rVal10,
@@ -508,7 +526,7 @@ namespace osg {
                              const ValueType            rVal33);
      
         /*---------------------------------------------------------------------*/
-        ~Matrix(void); 
+        ~Matrix(void);
 
         /*---------------------------------------------------------------------*/
         void setIdentity       (void                                           );
@@ -555,7 +573,7 @@ namespace osg {
         void setScale    (const ValueType      s               );
 
         void setScale    (const ValueType      sx,
-                          const ValueType      sy, 
+                          const ValueType      sy,
                           const ValueType      sz              );
 
         void setScale    (const VectorType3f   &s               );
@@ -577,16 +595,16 @@ namespace osg {
 
         void setTransform(const QuaternionType &r               );
 
-        void setTransform(const VectorType3f   &t, 
+        void setTransform(const VectorType3f   &t,
                           const QuaternionType &r               );
 
-        void setTransform(const VectorType3f   &t, 
+        void setTransform(const VectorType3f   &t,
                           const QuaternionType &r,
                           const VectorType3f   &s               );
 
-        void setTransform(const VectorType3f   &t, 
+        void setTransform(const VectorType3f   &t,
                           const QuaternionType &r,
-                          const VectorType3f   &s, 
+                          const VectorType3f   &s,
                           const QuaternionType &so              );
 
         void setTransform(const VectorType3f   &translation,
@@ -595,21 +613,21 @@ namespace osg {
                           const QuaternionType &scaleOrientation,
                           const VectorType3f   &center          );
 
-        void getTransform(      VectorType3f         &translation, 
+        void getTransform(      VectorType3f         &translation,
                                 QuaternionType       &rotation,
-                                VectorType3f         &scaleFactor, 
+                                VectorType3f         &scaleFactor,
                                 QuaternionType       &scaleOrientation,
                           const VectorType3f         &center) const;
 
-        void getTransform(      VectorType3f         &translation, 
+        void getTransform(      VectorType3f         &translation,
                                 QuaternionType       &rotation,
-                                VectorType3f         &scaleFactor, 
+                                VectorType3f         &scaleFactor,
                                 QuaternionType       &scaleOrientation) const;
 
-        bool factor      (      Matrix &r, 
-                                VectorType3f         &s, 
+        bool factor      (      Matrix &r,
+                                VectorType3f         &s,
                                 Matrix &u,
-                                VectorType3f         &t, 
+                                VectorType3f         &t,
                                 Matrix &proj) const;
         
         void mult    (const PointType    &pntIn, PointType    &pntOut) const;
@@ -630,7 +648,7 @@ namespace osg {
         VectorType3f operator *(const VectorType3f &vecIn) const;
 
         
-        bool       equals       (const Matrix &matrix, 
+        bool       equals       (const Matrix &matrix,
                                  const ValueType             tol   ) const;
 
         ValueType det3         (      void                        ) const;
@@ -653,7 +671,7 @@ namespace osg {
         
         void       add          (const Matrix &matrix);
         void       scale        (      ValueType            s     );
-        void       addScaled    (const Matrix &matrix, 
+        void       addScaled    (const Matrix &matrix,
                                        ValueType            s     );
         void       negate       (      void                        );
         
@@ -710,7 +728,7 @@ namespace osg {
 
         void setValue         (const  MatrixType &matrix    );
 
-        void setValueAsAxisRad(const  VectorType &axis,    
+        void setValueAsAxisRad(const  VectorType &axis,   
                                       Real32  angle     );
         void setValueAsAxisDeg(const  VectorType &axis,
                                       Real32  angle     );
@@ -739,9 +757,9 @@ namespace osg {
                                             Real32 &z,
                                             Real32 &w      ) const;
 
-              void       getValueAsAxisRad (VectorType &axis, 
+              void       getValueAsAxisRad (VectorType &axis,
                                             Real32 &radians) const;
-              void       getValueAsAxisDeg (VectorType &axis, 
+              void       getValueAsAxisDeg (VectorType &axis,
                                             Real32 &degrees) const;
               void       getValue          (MatrixType &matrix ) const;
               void       getValuesOnly     (MatrixType &matrix ) const;
@@ -751,10 +769,14 @@ namespace osg {
               Real32 z                 (void               ) const;
               Real32 w                 (void               ) const;
               Real32      length    (void                        ) const;
+          Real32      lengthSquared (void                        ) const;
               void            normalize (void                        );
 
               void            invert    (void                        );
         const Quaternion  inverse   (void                        ) const;
+          Quaternion  conj   (void                        ) const;
+          Quaternion  exp    (void                        ) const;
+          Quaternion  log    (void                        ) const;
 
               void            multVec   (const VectorType &src,
                                                VectorType &dst       ) const;
@@ -764,6 +786,10 @@ namespace osg {
               void            slerpThis (const Quaternion &rot0,
                                          const Quaternion &rot1,
                                          const Real32      t     );
+
+              void            nlerpThis (const Quaternion &rot0,
+                                     const Quaternion &rot1,
+                                     const Real32      t     );
 
               void            mult      (const Quaternion &other );
               void            multLeft  (const Quaternion &other );
@@ -781,16 +807,16 @@ namespace osg {
     class TypeBase
     {
       public :
-        TypeBase(const Char8  *szName, 
+        TypeBase(const Char8  *szName,
                  const Char8  *szParentName,
                  const UInt32  uiNameSpace = 0);
         virtual ~TypeBase(void);
 
               UInt32    getId         (void) const;
 
-        const Char8    *getCName      (void) const;
+        const std::string &getName       (void) const;
 
-        const Char8    *getCParentName(void) const;
+        const std::string &getParentName (void) const;
 
               UInt32    getNameSpace  (void) const;
 
@@ -804,13 +830,14 @@ namespace osg {
     class DataType : public TypeBase
     {
       public :
-        DataType(const Char8  *szName, 
+        DataType(const Char8  *szName,
                  const Char8  *szParentName,
                  const UInt32  uiNameSpace = 0);
         virtual ~DataType(void);
 
         bool operator ==(const DataType &other) const;
     };
+
     /******************************************************/
     /*              TypeFactory                           */
     /******************************************************/
@@ -819,62 +846,289 @@ namespace osg {
       public :
         static TypeFactory *the(void);
 
-        UInt32    registerType  (      TypeBase *pType          );
-
-        UInt32    findTypeId    (const Char8    *szName,
-                                 const UInt32    uiNameSpace = 0);
-
-        TypeBase *findType      (      UInt32    uiTypeId       );
-        TypeBase *findType      (const Char8    *szName  ,
-                                 const UInt32    uiNameSpace = 0);
-
-
-        UInt32    getNumTypes   (      void                     );
-
-        void      writeTypeGraph(const Char8    *szFilename     );
     protected:
         TypeFactory(void);
 
         virtual ~TypeFactory(void);
 
     };
+    %extend TypeFactory
+    {
+        UInt32    registerType  (      TypeBase *pType          )
+        {
+            return OSG::TypeFactory::the()->registerType(pType);
+        }
+
+        UInt32    findTypeId    (const Char8    *szName,
+                                 const UInt32    uiNameSpace = 0)
+        {
+            return OSG::TypeFactory::the()->findTypeId(szName,uiNameSpace);
+        }
+
+        TypeBase *findType      (      UInt32    uiTypeId       )
+        {
+            return OSG::TypeFactory::the()->findType(uiTypeId);
+        }
+        TypeBase *findType      (const Char8    *szName  ,
+                                 const UInt32    uiNameSpace = 0)
+        {
+            return OSG::TypeFactory::the()->findType(szName,uiNameSpace);
+        }
+
+
+        UInt32    getNumTypes   (      void                     )
+        {
+            return OSG::TypeFactory::the()->getNumTypes();
+        }
+
+        void      writeTypeGraph(const Char8    *szFilename     )
+        {
+            OSG::TypeFactory::the()->writeTypeGraph(szFilename);
+        }
+    }
+
     /******************************************************/
     /*              Volumes                               */
     /******************************************************/
+    class Volume
+    {
+      public:
+        void   setValid     (const bool   value = true);
+        bool   isValid      (      void               ) const;
+    
+        void   setEmpty     (const bool   value = true);
+        bool   isEmpty      (      void               ) const;
+    
+        void   setStatic    (const bool   value = true);
+        bool   isStatic     (      void               ) const;
+    
+        void   setInfinite  (const bool   value = true);
+        bool   isInfinite   (      void               ) const;
+    
+        bool   isUntouchable(      void               ) const;
+    
+        UInt16 getState     (      void               ) const;
+        void   setState     (      UInt16 state       );
+    
+        
+        virtual void  getCenter      (Pnt3f &center         ) const = 0;
+    
+        virtual float getScalarVolume(void                  ) const = 0;
+    
+        virtual void  getBounds      (Pnt3f &min, Pnt3f &max) const = 0;
+    
+                Pnt3f getMin         (void                  ) const;
+                Pnt3f getMax         (void                  ) const;
+    
+        virtual void extendBy(const Pnt3f  &pt    ) = 0;
+        virtual void extendBy(const Volume &volume) = 0;
+    
+        virtual bool intersect  (const Pnt3f  &point ) const = 0;
+        virtual bool intersect  (const Line   &line  ) const = 0;
+        virtual bool intersect  (const Line   &line,
+                                       Real32 &enter,
+                                       Real32 &exit  ) const = 0;
+        virtual bool intersect  (const Volume &volume) const = 0;
+    
+        virtual bool isOnSurface(const Pnt3f  &point ) const = 0;
+    
+        
+        virtual void transform(const Matrix &matrix) = 0;
+    
+        bool operator ==(const Volume &other) const;
+    
+      protected:
+        Volume(void);
+        Volume(const Volume &obj);
+    };
+
+    /******************************************************/
+    /*              BoxVolume                             */
+    /******************************************************/
+    class BoxVolume : public Volume
+    {
+      public:
+
+        BoxVolume(      void          );
+
+        BoxVolume(const Pnt3f     &min,
+                  const Pnt3f     &max);
+        BoxVolume(const BoxVolume &obj);
+
+        
+        ~BoxVolume();
+        
+                const Pnt3f &getMin         (void                      ) const;   
+                const Pnt3f &getMax         (void                      ) const;
+
+        virtual       void   getCenter      (Pnt3f &center             ) const;
+
+        virtual       Real32   getScalarVolume(void                      ) const;
+
+
+                      void   getCorners     (Pnt3f &nlt,    Pnt3f &nlb,
+                                             Pnt3f &nrt,    Pnt3f &nrb,
+                                             Pnt3f &flt,    Pnt3f &flb,
+                                             Pnt3f &frt,    Pnt3f &frb ) const;
+        
+
+                      void   getOrigin      (Real32  &originX,
+                                             Real32  &originY,
+                                             Real32  &originZ            ) const;
+                      void   getSize        (Vec3f &vec                ) const;   
+
+        void setBounds(      Real32   w,        
+                             Real32   h,   
+                             Real32   d   );
+        void setBounds(const Pnt3f &min,
+                       const Pnt3f &max );
+
+        void setBoundsByCenterAndSize(const Pnt3f &center,
+                                      const Vec3f &size  );
+
+        virtual void extendBy(const Pnt3f     &pt    );
+        virtual void extendBy(const Volume    &volume);
+                void extendBy(const BoxVolume &bb    );
+
+        virtual bool intersect  (const Pnt3f     &point ) const;
+        virtual bool intersect  (const Line      &line  ) const;
+        virtual bool intersect  (const Line      &line,
+                                       Real32      &min,
+                                       Real32      &max   ) const;
+        virtual bool intersect  (const Volume    &volume) const;
+
+                bool intersect  (const BoxVolume &bb    ) const;
+
+        virtual bool isOnSurface(const Pnt3f     &point ) const;
+
+        virtual void transform(const Matrix &m);
+
+        /*BoxVolume &operator = (const BoxVolume &rhs);*/
+
+        bool       operator ==(const BoxVolume &rhs) const;
+    };
+
+    /******************************************************/
+    /*              FrustumVolume                         */
+    /******************************************************/
+    class FrustumVolume : public Volume
+    {
+      public:
+        
+        enum { P_NONE   = 0,
+               P_NEAR   = 1, 
+               P_FAR    = 2,
+               P_LEFT   = 4,
+               P_RIGHT  = 8,
+               P_TOP    = 16,
+               P_BOTTOM = 32,
+               P_ALL    = P_NEAR | P_FAR | P_LEFT | P_RIGHT | P_TOP | P_BOTTOM
+             };
+             
+        typedef UInt8 PlaneSet;
+          
+        FrustumVolume(      void                                     ); 
+        FrustumVolume(const Plane         &pnear, const Plane &pfar,
+                      const Plane         &left,  const Plane &right,
+                      const Plane         &top,   const Plane &bottom);
+        FrustumVolume(const FrustumVolume &obj                       );
+        
+        ~FrustumVolume(void); 
+        
+                const Plane  &getNear        (void                      ) const;
+                const Plane  &getFar         (void                      ) const;
+                const Plane  &getLeft        (void                      ) const;
+                const Plane  &getRight       (void                      ) const;
+                const Plane  &getTop         (void                      ) const;
+                const Plane  &getBottom      (void                      ) const;
+
+        virtual       void    getCenter      (Pnt3f &center             ) const;
+        virtual       Real32    getScalarVolume(void                      ) const;
+        virtual       void    getBounds      (Pnt3f &minPnt,
+                                              Pnt3f &maxPnt             ) const;
+
+                      void    getCorners     (Pnt3f &nlt,    Pnt3f &nlb,
+                                              Pnt3f &nrt,    Pnt3f &nrb,
+                                              Pnt3f &flt,    Pnt3f &flb,
+                                              Pnt3f &frt,    Pnt3f &frb ) const;
+
+        void setPlanes(const Plane   &pnear, const Plane &pfar,
+                       const Plane   &left,  const Plane &right,
+                       const Plane   &top,   const Plane &bottom);
+        void setPlanes(const Matrix &matrix                    );
+
+        virtual void extendBy(const Pnt3f         &pt    );
+        virtual void extendBy(const Volume        &volume);   
+        inline  void extendBy(const FrustumVolume &bb    );
+      
+        virtual bool intersect  (const Pnt3f         &point  ) const;
+        virtual bool intersect  (const Line          &line   ) const;
+        virtual bool intersect  (const Line          &line,
+                                       Real32          &minDist,
+                                       Real32          &maxDist) const;
+        virtual bool intersect  (const Volume        &volume ) const;
+                bool intersect  (const FrustumVolume &bb     ) const;
+        virtual bool isOnSurface(const Pnt3f         &point  ) const;
+      
+        virtual void transform(const Matrix &m);
+        
+
+        bool           operator ==(const FrustumVolume &rhs) const;
+    };
+
     /******************************************************/
     /*              FieldType                             */
     /******************************************************/
     class FieldType : public DataType
     {
       public:
-        enum Cardinality 
-        { 
-            SINGLE_FIELD, 
-            MULTI_FIELD 
-        };
+          enum Cardinality 
+          { 
+              SingleField,
+              MultiField
+          };
 
 
-        virtual ~FieldType(void);
+          enum Class
+          {
+              ValueField,
+              PtrField,
+              ParentPtrField,
+              ChildPtrField
+          };
 
-        const DataType    &getContentType(void) const;
-              Cardinality  getCardinality(void) const;
 
-              UInt32       getScanTypeId (void) const;
+          virtual ~FieldType(void);
+
+          const DataType    &getContentType(void) const;
+          Cardinality  getCardinality(void) const;
+
+          Class        getClass      (void) const;
+          UInt32       getScanTypeId (void) const;
+          bool         isPtrField    (void) const;
     };
+    %extend FieldType
+    {
+        static FieldType* dcast( TypeBase  *val ) throw(const char *)
+        {
+            return dynamic_cast<OSG::FieldType  *>(val);
+        }
+    };
+
     /******************************************************/
     /*              Field                                 */
     /******************************************************/
     class Field
     {
       public:
-        virtual ~Field(void); 
+        virtual ~Field(void);
 
         virtual const FieldType              &getType       (void) const = 0;
-                const DataType               &getContentType(void) const;
+                /*const DataType               &getContentType(void) const;*/
 
-                      FieldType::Cardinality  getCardinality(void) const;
+                      UInt32  getCardinality(void) const = 0;
+                      UInt32 getClass(void) const = 0;
 
-        virtual       bool                    isEmpty       (void) const = 0;
 
         virtual       UInt32                  getSize       (void) const = 0;
 
@@ -884,31 +1138,47 @@ namespace osg {
         Field(void);
         Field(const Field &source);
     };
-    /******************************************************/
-    /*              FieldFactory                          */
-    /******************************************************/
-    class FieldFactory 
-    {
-      public:
-        virtual ~FieldFactory (void);
 
-        Field *createField(      UInt32  typeId);
-        Field *createField(const Char8  *szName);
+    /*[>****************************************************<]*/
+    /*[>              FieldFactory                          <]*/
+    /*[>****************************************************<]*/
+    /*class FieldFactory */
+    /*{*/
+      /*public:*/
+        /*virtual ~FieldFactory (void);*/
 
-        static UInt32     getNFieldTypes  (void                );
+        /*Field *createField(      UInt32  typeId);*/
+        /*Field *createField(const Char8  *szName);*/
+
+        /*static UInt32     getNFieldTypes  (void                );*/
         
-        static FieldType *getFieldType    (      UInt32  typeId);
-        static FieldType *getFieldType    (const Char8  *szName);
+        /*static FieldType *getFieldType    (      UInt32  typeId);*/
+        /*static FieldType *getFieldType    (const Char8  *szName);*/
 
-        const  Char8     *getFieldTypeName(UInt32 typeId       );
+        /*const  Char8     *getFieldTypeName(UInt32 typeId       );*/
 
-        static FieldFactory &the(void);
+        /*static FieldFactory &the(void);*/
 
-      protected:
+      /*protected:*/
 
-        FieldFactory (void);
+        /*FieldFactory (void);*/
+      /*private:*/
+        /*FieldFactory(const FieldFactory &source);*/
+    /*};*/
+
+    /******************************************************/
+    /*                   FactoryBase                      */
+    /******************************************************/
+    class FactoryBase
+    {
+      public :
+
+        const std::string &getName (void) const;
+
       private:
-        FieldFactory(const FieldFactory &source);
+        FactoryBase(const FactoryBase &source);
+        ~FactoryBase();
+        void operator =(const FactoryBase &source);
     };
 
     /******************************************************/
@@ -929,8 +1199,8 @@ namespace osg {
         Pnt3f   getClosestPoint (const Pnt3f &point                        ) const;
         Real32  distance        (const Pnt3f &point                        ) const;
 
-        const Pnt3f &getPosition (void) const; 
-        const Vec3f &getDirection(void) const; 
+        const Pnt3f &getPosition (void) const;
+        const Vec3f &getDirection(void) const;
 
 
         /*bool intersect(const SphereVolume   &sphere                     ) const;*/
@@ -942,10 +1212,10 @@ namespace osg {
         /*bool intersect(const FrustumVolume  &frustum                    ) const;*/
         /*bool intersect(const FrustumVolume  &frustum, Real32 &enter,*/
                                                       /*Real32 &exit      ) const;*/
-        /*bool intersect(const BoxVolume      &box,     Real32 &enter,*/
-                                                      /*Real32 &exit      ) const;*/
-        /*bool intersect(      Real32          angle,*/
-                       /*const BoxVolume      &box                        ) const;*/
+        bool intersect(const BoxVolume      &box,     Real32 &enter,
+                                                      Real32 &exit      ) const;
+        bool intersect(      Real32          angle,
+                       const BoxVolume      &box                        ) const;
         bool intersect(      Real32          angle,
                        const Vec3f          &point                      ) const;
 
@@ -965,7 +1235,7 @@ namespace osg {
     /******************************************************/
     /*                      Plane                          */
     /******************************************************/
-    class Plane 
+    class Plane
     {
       public:
         Plane(      void                                        );
@@ -994,7 +1264,6 @@ namespace osg {
         Real32 distance           (const Pnt3f  &point          ) const;
 
         bool   isInHalfSpace  (const Pnt3f  &min, const Pnt3f  &max) const;
-        bool   isOutHalfSpace (const Pnt3f  &min, const Pnt3f  &max) const;
 
         inline const Vec3f  &getNormal            (void) const;
         inline       Real32  getDistanceFromOrigin(void) const;

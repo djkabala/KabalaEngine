@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class ApplicationSettings;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ApplicationSettingsPtr
+OSG_GEN_CONTAINERPTR(ApplicationSettings);
 
-typedef FCPtr<FieldContainerPtr, ApplicationSettings> ApplicationSettingsPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ApplicationSettingsPtr> : 
-    public FieldTraitsRecurseMapper<ApplicationSettingsPtr, true>
+struct FieldTraits<ApplicationSettings *> :
+    public FieldTraitsFCPtrBase<ApplicationSettings *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFApplicationSettingsPtr"; }
-    static const char *getMName(void) { return "MFApplicationSettingsPtr"; }
+    typedef FieldTraits<ApplicationSettings *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFApplicationSettingsPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFApplicationSettingsPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ApplicationSettingsPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<ApplicationSettings *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecApplicationSettingsPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<ApplicationSettings *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecApplicationSettingsPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationSettings *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakApplicationSettingsPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationSettings *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdApplicationSettingsPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationSettings *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecApplicationSettingsPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationSettings *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecApplicationSettingsPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationSettings *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakApplicationSettingsPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationSettings *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdApplicationSettingsPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationSettings *,
+                      RecordedRefCountPolicy  > SFRecApplicationSettingsPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationSettings *,
+                      UnrecordedRefCountPolicy> SFUnrecApplicationSettingsPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationSettings *,
+                      WeakRefCountPolicy      > SFWeakApplicationSettingsPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationSettings *,
+                      NoRefCountPolicy        > SFUncountedApplicationSettingsPtr;
 
-typedef SField<ApplicationSettingsPtr> SFApplicationSettingsPtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONSETTINGSINST
-OSG_DLLEXPORT_DECL1(SField, ApplicationSettingsPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationSettings *,
+                      RecordedRefCountPolicy  > MFRecApplicationSettingsPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationSettings *,
+                      UnrecordedRefCountPolicy> MFUnrecApplicationSettingsPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationSettings *,
+                      WeakRefCountPolicy      > MFWeakApplicationSettingsPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationSettings *,
+                      NoRefCountPolicy        > MFUncountedApplicationSettingsPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ApplicationSettingsPtr> MFApplicationSettingsPtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONSETTINGSINST
-OSG_DLLEXPORT_DECL1(MField, ApplicationSettingsPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecApplicationSettingsPtr : 
+    public PointerSField<ApplicationSettings *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecApplicationSettingsPtr : 
+    public PointerSField<ApplicationSettings *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakApplicationSettingsPtr :
+    public PointerSField<ApplicationSettings *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedApplicationSettingsPtr :
+    public PointerSField<ApplicationSettings *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecApplicationSettingsPtr :
+    public PointerMField<ApplicationSettings *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecApplicationSettingsPtr :
+    public PointerMField<ApplicationSettings *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakApplicationSettingsPtr :
+    public PointerMField<ApplicationSettings *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedApplicationSettingsPtr :
+    public PointerMField<ApplicationSettings *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

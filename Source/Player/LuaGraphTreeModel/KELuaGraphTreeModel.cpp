@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -36,29 +37,24 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
 
 #include "KELuaGraphTreeModel.h"
-
+#include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <OpenSG/UserInterface/OSGTreePath.h>
-#include "boost/filesystem.hpp"
-
+#include <OpenSG/OSGTreePath.h>
 
 OSG_BEGIN_NAMESPACE
 
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class osg::LuaGraphTreeModel
-A UI LuaGraphTreeModel. 	
-*/
+// Documentation for this class is emitted in the
+// OSGLuaGraphTreeModelBase.cpp file.
+// To modify it, please change the .fcd file (OSGLuaGraphTreeModel.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -68,8 +64,13 @@ A UI LuaGraphTreeModel.
  *                           Class methods                                 *
 \***************************************************************************/
 
-void LuaGraphTreeModel::initMethod (void)
+void LuaGraphTreeModel::initMethod(InitPhase ePhase)
 {
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
 
@@ -77,15 +78,15 @@ void LuaGraphTreeModel::initMethod (void)
  *                           Instance methods                              *
 \***************************************************************************/
 
-bool  LuaGraphTreeModel::isValidFile(const Path& path) const
+bool LuaGraphTreeModel::isValidFile(const BoostPath& path) const
 {
-	//Path path = boost::any_cast<Path>(boostanypath);
-	
-	if( boost::filesystem::exists(path) && ( boost::filesystem::is_directory(path) || (boost::filesystem::is_regular_file(path) && boost::filesystem::extension(path)==".lua")) )
-	{
-		return true;
-	}
-	return false;
+    //BoostPath path = boost::any_cast<BoostPath>(boostanypath);
+
+    if( boost::filesystem::exists(path) && ( boost::filesystem::is_directory(path) || (boost::filesystem::is_regular_file(path) && boost::filesystem::extension(path)==".lua")) )
+    {
+        return true;
+    }
+    return false;
 }
 
 
@@ -95,24 +96,24 @@ boost::any LuaGraphTreeModel::getChild(const boost::any& parent, const UInt32& i
 {
     try
     {
-		Path ThePath = boost::any_cast<Path>(parent);
+        BoostPath ThePath = boost::any_cast<BoostPath>(parent);
 
         if(!ThePath.empty() &&
-			boost::filesystem::exists(ThePath))
+           boost::filesystem::exists(ThePath))
         {
-			boost::filesystem::directory_iterator end_iter;
-			UInt32 Count(0);
-			for ( boost::filesystem::directory_iterator dir_itr(ThePath); dir_itr != end_iter; ++dir_itr )
-			{
-				if( isValidFile(dir_itr->path()) )
-				{
-						if(Count == index)
-						{
-							return boost::any(dir_itr->path());
-						}
-						++Count;
-				}
-			}
+            boost::filesystem::directory_iterator end_iter;
+            UInt32 Count(0);
+            for ( boost::filesystem::directory_iterator dir_itr(ThePath); dir_itr != end_iter; ++dir_itr )
+            {
+                if( isValidFile(dir_itr->path()) )
+                {
+                    if(Count == index)
+                    {
+                        return boost::any(dir_itr->path());
+                    }
+                    ++Count;
+                }
+            }
         }
         return boost::any();
     }
@@ -126,9 +127,9 @@ boost::any LuaGraphTreeModel::getParent(const boost::any& node) const
 {
     try
     {
-		Path ThePath = boost::any_cast<Path>(node);
+        BoostPath ThePath = boost::any_cast<BoostPath>(node);
 
-        if((!ThePath.empty() || 
+        if((!ThePath.empty() ||
             ThePath == getInternalRoot() ||
             boost::filesystem::equivalent(ThePath, getInternalRoot())) &&
            (boost::filesystem::exists(ThePath) && boost::filesystem::exists(getInternalRoot())))
@@ -147,20 +148,20 @@ UInt32 LuaGraphTreeModel::getChildCount(const boost::any& parent) const
 {
     try
     {
-		Path ThePath = boost::any_cast<Path>(parent);
+        BoostPath ThePath = boost::any_cast<BoostPath>(parent);
 
-		UInt32 Count(0);
+        UInt32 Count(0);
         if(!ThePath.empty() &&
-			boost::filesystem::exists(ThePath))
+           boost::filesystem::exists(ThePath))
         {
-			boost::filesystem::directory_iterator end_iter;
-			for ( boost::filesystem::directory_iterator dir_itr( ThePath ); dir_itr != end_iter; ++dir_itr )
-			{
-				if(isValidFile(dir_itr->path()))
-				{
-					++Count;
-				}
-			}
+            boost::filesystem::directory_iterator end_iter;
+            for ( boost::filesystem::directory_iterator dir_itr( ThePath ); dir_itr != end_iter; ++dir_itr )
+            {
+                if(isValidFile(dir_itr->path()))
+                {
+                    ++Count;
+                }
+            }
         }
         return Count;
     }
@@ -172,34 +173,34 @@ UInt32 LuaGraphTreeModel::getChildCount(const boost::any& parent) const
 
 UInt32 LuaGraphTreeModel::getIndexOfChild(const boost::any& parent, const boost::any& child) const
 {
-	try
+    try
     {
-		Path ParentPath = boost::any_cast<Path>(parent);
-		Path ChildPath = boost::any_cast<Path>(child);
+        BoostPath ParentPath = boost::any_cast<BoostPath>(parent);
+        BoostPath ChildPath = boost::any_cast<BoostPath>(child);
 
         if(!ParentPath.empty() &&
-			boost::filesystem::exists(ParentPath))
+           boost::filesystem::exists(ParentPath))
         {
-			boost::filesystem::directory_iterator end_iter;
-			UInt32 Count(0);
-			for ( boost::filesystem::directory_iterator dir_itr( ParentPath ); dir_itr != end_iter; ++dir_itr )
-			{
+            boost::filesystem::directory_iterator end_iter;
+            UInt32 Count(0);
+            for ( boost::filesystem::directory_iterator dir_itr( ParentPath ); dir_itr != end_iter; ++dir_itr )
+            {
                 try
                 {
-				    if(ChildPath == dir_itr->path() || boost::filesystem::equivalent(dir_itr->path(), ChildPath))
-				    {
-					    return Count;
-				    }
+                    if(ChildPath == dir_itr->path() || boost::filesystem::equivalent(dir_itr->path(), ChildPath))
+                    {
+                        return Count;
+                    }
                 }
                 catch(boost::filesystem::filesystem_error &)
                 {
-					    return Count;
+                    return Count;
                 }
-				if(isValidFile(dir_itr->path()))
-				{
-					++Count;
-				}
-			}
+                if(isValidFile(dir_itr->path()))
+                {
+                    ++Count;
+                }
+            }
         }
         return 0;
     }
@@ -211,23 +212,24 @@ UInt32 LuaGraphTreeModel::getIndexOfChild(const boost::any& parent, const boost:
 
 boost::any LuaGraphTreeModel::getRoot(void) const
 {
-    if(boost::filesystem::exists(getInternalRoot()))
-    {
+    //if(boost::filesystem::exists(getInternalRoot()))
+    //{
         return boost::any(getInternalRoot());
-    }
-    else
-    {
-        return boost::any();
-    }
+    //}
+    //else
+    //{
+        //SWARNING << "Root doesn't exist." << std::endl;
+        //return boost::any();
+    //}
 }
 
 bool LuaGraphTreeModel::isLeaf(const boost::any& node) const
 {
     try
     {
-		Path ThePath = boost::any_cast<Path>(node);
+        BoostPath ThePath = boost::any_cast<BoostPath>(node);
 
-		return !boost::filesystem::is_directory(ThePath);
+        return !boost::filesystem::is_directory(ThePath);
     }
     catch(boost::bad_any_cast &)
     {
@@ -239,8 +241,8 @@ bool LuaGraphTreeModel::isEqual(const boost::any& left, const boost::any& right)
 {
     try
     {
-		Path LeftPath = boost::any_cast<Path>(left);
-		Path RightPath = boost::any_cast<Path>(right);
+        BoostPath LeftPath = boost::any_cast<BoostPath>(left);
+        BoostPath RightPath = boost::any_cast<BoostPath>(right);
 
         return LeftPath == RightPath || boost::filesystem::equivalent(LeftPath, RightPath);
     }
@@ -252,20 +254,19 @@ bool LuaGraphTreeModel::isEqual(const boost::any& left, const boost::any& right)
 
 void LuaGraphTreeModel::valueForPathChanged(TreePath path, const boost::any& newValue)
 {
-	//Do Nothing
+    //Do Nothing
 }
 
-void LuaGraphTreeModel::setRoot(const Path& root)
+void LuaGraphTreeModel::setRoot(const BoostPath& root)
 {
-    beginEditCP(LuaGraphTreeModelPtr(this), InternalRootFieldMask);
-        setInternalRoot(root);
-    endEditCP(LuaGraphTreeModelPtr(this), InternalRootFieldMask);
+    setInternalRoot(root);
 }
 
-const Path& LuaGraphTreeModel::getRootPath(void) const
+const BoostPath& LuaGraphTreeModel::getRootPath(void) const
 {
     return getInternalRoot();
 }
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -288,17 +289,17 @@ LuaGraphTreeModel::~LuaGraphTreeModel(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void LuaGraphTreeModel::changed(BitVector whichField, UInt32 origin)
+void LuaGraphTreeModel::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    Inherited::changed(whichField, origin);
+    Inherited::changed(whichField, origin, details);
 }
 
-void LuaGraphTreeModel::dump(      UInt32    , 
+void LuaGraphTreeModel::dump(      UInt32    ,
                          const BitVector ) const
 {
     SLOG << "Dump LuaGraphTreeModel NI" << std::endl;
 }
 
-
 OSG_END_NAMESPACE
-

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="Behavior"
+	parent="AttachmentContainer"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="abstract"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
+>
+The SceneObject.
+	<Field
+		name="SceneObject"
+		type="SceneObject"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		fieldHeader="Project/SceneObject/KESceneObjectFields.h"
+		typeHeader="Project/SceneObject/KESceneObject.h"
+		access="protected"
+		defaultValue="NULL"
+	>
+	</Field>
+	<Field
+		name="Dependencies"
+		type="std::string"
+		category="data"
+		cardinality="multi"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+</FieldContainer>

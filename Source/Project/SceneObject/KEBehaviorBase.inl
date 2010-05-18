@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,8 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
-
 OSG_BEGIN_NAMESPACE
 
 
@@ -55,101 +54,39 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &BehaviorBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 BehaviorBase::getClassTypeId(void) 
+OSG::UInt32 BehaviorBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-BehaviorPtr BehaviorBase::create(void) 
-{
-    BehaviorPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = BehaviorPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-BehaviorPtr BehaviorBase::createEmpty(void) 
-{ 
-    BehaviorPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 BehaviorBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the Behavior::_sfSceneObject field.
-inline
-const SFSceneObjectPtr *BehaviorBase::getSFSceneObject(void) const
-{
-    return &_sfSceneObject;
-}
-
-//! Get the Behavior::_sfSceneObject field.
-inline
-SFSceneObjectPtr *BehaviorBase::editSFSceneObject(void)
-{
-    return &_sfSceneObject;
-}
-
-//! Get the Behavior::_mfDependencies field.
-inline
-const MFString *BehaviorBase::getMFDependencies(void) const
-{
-    return &_mfDependencies;
-}
-
-//! Get the Behavior::_mfDependencies field.
-inline
-MFString *BehaviorBase::editMFDependencies(void)
-{
-    return &_mfDependencies;
-}
-
 
 //! Get the value of the Behavior::_sfSceneObject field.
 inline
-SceneObjectPtr &BehaviorBase::editSceneObject(void)
-{
-    return _sfSceneObject.getValue();
-}
-
-//! Get the value of the Behavior::_sfSceneObject field.
-inline
-const SceneObjectPtr &BehaviorBase::getSceneObject(void) const
+SceneObject * BehaviorBase::getSceneObject(void) const
 {
     return _sfSceneObject.getValue();
 }
 
 //! Set the value of the Behavior::_sfSceneObject field.
 inline
-void BehaviorBase::setSceneObject(const SceneObjectPtr &value)
+void BehaviorBase::setSceneObject(SceneObject * const value)
 {
+    editSField(SceneObjectFieldMask);
+
     _sfSceneObject.setValue(value);
-}
-
-
-//! Get the value of the \a index element the Behavior::_mfDependencies field.
-inline
-std::string &BehaviorBase::editDependencies(const UInt32 index)
-{
-    return _mfDependencies[index];
 }
 
 //! Get the value of the \a index element the Behavior::_mfDependencies field.
@@ -159,20 +96,44 @@ const std::string &BehaviorBase::getDependencies(const UInt32 index) const
     return _mfDependencies[index];
 }
 
-#ifndef OSG_2_PREP
-//! Get the Behavior::_mfDependencies field.
 inline
-MFString &BehaviorBase::getDependencies(void)
+std::string &BehaviorBase::editDependencies(const UInt32 index)
 {
-    return _mfDependencies;
+    editMField(DependenciesFieldMask, _mfDependencies);
+
+    return _mfDependencies[index];
 }
 
-//! Get the Behavior::_mfDependencies field.
-inline
-const MFString &BehaviorBase::getDependencies(void) const
-{
-    return _mfDependencies;
-}
 
+
+#ifdef OSG_MT_CPTR_ASPECT
+inline
+void BehaviorBase::execSync (      BehaviorBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
+
+    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
+        _sfSceneObject.syncWith(pFrom->_sfSceneObject);
+
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
+        _mfDependencies.syncWith(pFrom->_mfDependencies,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
+}
 #endif
+
+
+inline
+const Char8 *BehaviorBase::getClassname(void)
+{
+    return "Behavior";
+}
+OSG_GEN_CONTAINERPTR(Behavior);
+
 OSG_END_NAMESPACE
+

@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,122 +47,120 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILESCENEEVENTINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KESceneEventBase.h"
 #include "KESceneEvent.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector SceneEventBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
+
+/*! \class OSG::SceneEvent
+    
+ */
+
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<SceneEvent *>::_type("SceneEventPtr", "EventPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(SceneEvent *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           SceneEvent *,
+                           0);
 
 
-FieldContainerType SceneEventBase::_type(
-    "SceneEvent",
-    "Event",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&SceneEventBase::createEmpty),
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void SceneEventBase::classDescInserter(TypeObject &oType)
+{
+}
+
+
+SceneEventBase::TypeObject SceneEventBase::_type(
+    SceneEventBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&SceneEventBase::createEmptyLocal),
     SceneEvent::initMethod,
-    NULL,
-    0);
-
-//OSG_FIELD_CONTAINER_DEF(SceneEventBase, SceneEventPtr)
+    SceneEvent::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&SceneEvent::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"SceneEvent\"\n"
+    "\tparent=\"Event\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"single\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "</FieldContainer>\n",
+    ""
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &SceneEventBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &SceneEventBase::getType(void) const 
+FieldContainerType &SceneEventBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr SceneEventBase::shallowCopy(void) const 
-{ 
-    SceneEventPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const SceneEvent *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 SceneEventBase::getContainerSize(void) const 
-{ 
-    return sizeof(SceneEvent); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void SceneEventBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &SceneEventBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<SceneEventBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void SceneEventBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 SceneEventBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((SceneEventBase *) &other, whichField, sInfo);
-}
-void SceneEventBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return sizeof(SceneEvent);
 }
 
-void SceneEventBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
+/*------------------------- decorator get ------------------------------*/
 
-}
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-SceneEventBase::SceneEventBase(void) :
-    Inherited() 
-{
-}
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-SceneEventBase::SceneEventBase(const SceneEventBase &source) :
-    Inherited                 (source)
-{
-}
-
-/*-------------------------- destructors ----------------------------------*/
-
-SceneEventBase::~SceneEventBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 SceneEventBase::getBinSize(const BitVector &whichField)
+UInt32 SceneEventBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -169,66 +168,198 @@ UInt32 SceneEventBase::getBinSize(const BitVector &whichField)
     return returnValue;
 }
 
-void SceneEventBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void SceneEventBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-
 }
 
-void SceneEventBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void SceneEventBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void SceneEventBase::executeSyncImpl(      SceneEventBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+SceneEventTransitPtr SceneEventBase::createLocal(BitVector bFlags)
 {
+    SceneEventTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
+        fc = dynamic_pointer_cast<SceneEvent>(tmpPtr);
+    }
 
-}
-#else
-void SceneEventBase::executeSyncImpl(      SceneEventBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-
+    return fc;
 }
 
-void SceneEventBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+SceneEventTransitPtr SceneEventBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    SceneEventTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<SceneEvent>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+SceneEventTransitPtr SceneEventBase::create(void)
+{
+    SceneEventTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<SceneEvent>(tmpPtr);
+    }
+
+    return fc;
+}
+
+SceneEvent *SceneEventBase::createEmptyLocal(BitVector bFlags)
+{
+    SceneEvent *returnValue;
+
+    newPtr<SceneEvent>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+SceneEvent *SceneEventBase::createEmpty(void)
+{
+    SceneEvent *returnValue;
+
+    newPtr<SceneEvent>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr SceneEventBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    SceneEvent *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const SceneEvent *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr SceneEventBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    SceneEvent *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const SceneEvent *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr SceneEventBase::shallowCopy(void) const
+{
+    SceneEvent *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const SceneEvent *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+SceneEventBase::SceneEventBase(void) :
+    Inherited()
+{
+}
+
+SceneEventBase::SceneEventBase(const SceneEventBase &source) :
+    Inherited(source)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+SceneEventBase::~SceneEventBase(void)
+{
+}
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void SceneEventBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    SceneEvent *pThis = static_cast<SceneEvent *>(this);
+
+    pThis->execSync(static_cast<SceneEvent *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *SceneEventBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    SceneEvent *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const SceneEvent *>(pRefAspect),
+                  dynamic_cast<const SceneEvent *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<SceneEventPtr>::_type("SceneEventPtr", "EventPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(SceneEventPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void SceneEventBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+
+}
 
 
 OSG_END_NAMESPACE
-

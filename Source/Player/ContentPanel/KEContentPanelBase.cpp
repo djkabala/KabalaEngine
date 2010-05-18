@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,122 +47,125 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILECONTENTPANELINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEContentPanelBase.h"
 #include "KEContentPanel.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector ContentPanelBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
+
+/*! \class OSG::ContentPanel
+    The ContentPanel. Shows the content of files 
+ */
+
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<ContentPanel *>::_type("ContentPanelPtr", "PanelPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(ContentPanel *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           ContentPanel *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           ContentPanel *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void ContentPanelBase::classDescInserter(TypeObject &oType)
+{
+}
 
 
-FieldContainerType ContentPanelBase::_type(
-    "ContentPanel",
-    "Panel",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&ContentPanelBase::createEmpty),
+ContentPanelBase::TypeObject ContentPanelBase::_type(
+    ContentPanelBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&ContentPanelBase::createEmptyLocal),
     ContentPanel::initMethod,
-    NULL,
-    0);
-
-//OSG_FIELD_CONTAINER_DEF(ContentPanelBase, ContentPanelPtr)
+    ContentPanel::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&ContentPanel::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"ContentPanel\"\n"
+    "\tparent=\"Panel\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The ContentPanel. Shows the content of files \n"
+    "\n"
+    "</FieldContainer>\n",
+    "The ContentPanel. Shows the content of files \n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &ContentPanelBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &ContentPanelBase::getType(void) const 
+FieldContainerType &ContentPanelBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr ContentPanelBase::shallowCopy(void) const 
-{ 
-    ContentPanelPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const ContentPanel *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 ContentPanelBase::getContainerSize(void) const 
-{ 
-    return sizeof(ContentPanel); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ContentPanelBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &ContentPanelBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<ContentPanelBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void ContentPanelBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 ContentPanelBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((ContentPanelBase *) &other, whichField, sInfo);
-}
-void ContentPanelBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return sizeof(ContentPanel);
 }
 
-void ContentPanelBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
+/*------------------------- decorator get ------------------------------*/
 
-}
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-ContentPanelBase::ContentPanelBase(void) :
-    Inherited() 
-{
-}
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-ContentPanelBase::ContentPanelBase(const ContentPanelBase &source) :
-    Inherited                 (source)
-{
-}
-
-/*-------------------------- destructors ----------------------------------*/
-
-ContentPanelBase::~ContentPanelBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 ContentPanelBase::getBinSize(const BitVector &whichField)
+UInt32 ContentPanelBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -169,68 +173,198 @@ UInt32 ContentPanelBase::getBinSize(const BitVector &whichField)
     return returnValue;
 }
 
-void ContentPanelBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void ContentPanelBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-
 }
 
-void ContentPanelBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void ContentPanelBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ContentPanelBase::executeSyncImpl(      ContentPanelBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+ContentPanelTransitPtr ContentPanelBase::createLocal(BitVector bFlags)
 {
+    ContentPanelTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
+        fc = dynamic_pointer_cast<ContentPanel>(tmpPtr);
+    }
 
-}
-#else
-void ContentPanelBase::executeSyncImpl(      ContentPanelBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-
+    return fc;
 }
 
-void ContentPanelBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+ContentPanelTransitPtr ContentPanelBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    ContentPanelTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<ContentPanel>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+ContentPanelTransitPtr ContentPanelBase::create(void)
+{
+    ContentPanelTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<ContentPanel>(tmpPtr);
+    }
+
+    return fc;
+}
+
+ContentPanel *ContentPanelBase::createEmptyLocal(BitVector bFlags)
+{
+    ContentPanel *returnValue;
+
+    newPtr<ContentPanel>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+ContentPanel *ContentPanelBase::createEmpty(void)
+{
+    ContentPanel *returnValue;
+
+    newPtr<ContentPanel>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr ContentPanelBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    ContentPanel *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ContentPanel *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ContentPanelBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    ContentPanel *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ContentPanel *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ContentPanelBase::shallowCopy(void) const
+{
+    ContentPanel *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const ContentPanel *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+ContentPanelBase::ContentPanelBase(void) :
+    Inherited()
+{
+}
+
+ContentPanelBase::ContentPanelBase(const ContentPanelBase &source) :
+    Inherited(source)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+ContentPanelBase::~ContentPanelBase(void)
+{
+}
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void ContentPanelBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    ContentPanel *pThis = static_cast<ContentPanel *>(this);
+
+    pThis->execSync(static_cast<ContentPanel *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *ContentPanelBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    ContentPanel *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const ContentPanel *>(pRefAspect),
+                  dynamic_cast<const ContentPanel *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ContentPanelPtr>::_type("ContentPanelPtr", "PanelPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(ContentPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(ContentPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void ContentPanelBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+
+}
 
 
 OSG_END_NAMESPACE
-

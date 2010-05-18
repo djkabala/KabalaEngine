@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -31,6 +32,15 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+ *                                Changes                                    *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+ *                                                                           *
+\*---------------------------------------------------------------------------*/
 
 #ifndef _KEPROJECTEVENT_H_
 #define _KEPROJECTEVENT_H_
@@ -38,44 +48,48 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
-
 #include "KEProjectEventBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief ProjectEvent class. See \ref 
+/*! \brief ProjectEvent class. See \ref
            PageKabalaEngineProjectEvent for a description.
 */
 
-class KE_KABALAENGINELIB_DLLMAPPING ProjectEvent : public ProjectEventBase
+class KE_KABALAENGINE_DLLMAPPING ProjectEvent : public ProjectEventBase
 {
-  private:
-
-    typedef ProjectEventBase Inherited;
+  protected:
 
     /*==========================  PUBLIC  =================================*/
+
   public:
+
+    typedef ProjectEventBase Inherited;
+    typedef ProjectEvent     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
 
-    virtual void changed(BitVector  whichField, 
-                         UInt32     origin    );
+    virtual void changed(ConstFieldMaskArg whichField,
+                         UInt32            origin,
+                         BitVector         details    );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     Output                                   */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0, 
+    virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
-    static ProjectEventPtr create(FieldContainerPtr Source,
-                                  Time TimeStamp);
+
+    static ProjectEventTransitPtr create(FieldContainerRefPtr Source,
+                                         Time TimeStamp);
+    
     /*=========================  PROTECTED  ===============================*/
+
   protected:
 
     // Variables should all be in ProjectEventBase.
@@ -92,20 +106,24 @@ class KE_KABALAENGINELIB_DLLMAPPING ProjectEvent : public ProjectEventBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ProjectEvent(void); 
+    virtual ~ProjectEvent(void);
 
     /*! \}                                                                 */
-    
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Init                                    */
+    /*! \{                                                                 */
+
+    static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
 
     friend class FieldContainer;
     friend class ProjectEventBase;
 
-    static void initMethod(void);
-
     // prohibit default functions (move to 'public' if you need one)
-
     void operator =(const ProjectEvent &source);
 };
 

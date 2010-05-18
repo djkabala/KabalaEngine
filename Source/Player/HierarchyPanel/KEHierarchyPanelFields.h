@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGPanelFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class HierarchyPanel;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! HierarchyPanelPtr
+OSG_GEN_CONTAINERPTR(HierarchyPanel);
 
-typedef FCPtr<PanelPtr, HierarchyPanel> HierarchyPanelPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<HierarchyPanelPtr> : 
-    public FieldTraitsRecurseMapper<HierarchyPanelPtr, true>
+struct FieldTraits<HierarchyPanel *> :
+    public FieldTraitsFCPtrBase<HierarchyPanel *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFHierarchyPanelPtr"; }
-    static const char *getMName(void) { return "MFHierarchyPanelPtr"; }
+    typedef FieldTraits<HierarchyPanel *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFHierarchyPanelPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFHierarchyPanelPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<HierarchyPanelPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<HierarchyPanel *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecHierarchyPanelPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<HierarchyPanel *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecHierarchyPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<HierarchyPanel *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakHierarchyPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<HierarchyPanel *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdHierarchyPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<HierarchyPanel *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecHierarchyPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<HierarchyPanel *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecHierarchyPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<HierarchyPanel *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakHierarchyPanelPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<HierarchyPanel *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdHierarchyPanelPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<HierarchyPanel *,
+                      RecordedRefCountPolicy  > SFRecHierarchyPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<HierarchyPanel *,
+                      UnrecordedRefCountPolicy> SFUnrecHierarchyPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<HierarchyPanel *,
+                      WeakRefCountPolicy      > SFWeakHierarchyPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<HierarchyPanel *,
+                      NoRefCountPolicy        > SFUncountedHierarchyPanelPtr;
 
-typedef SField<HierarchyPanelPtr> SFHierarchyPanelPtr;
-#endif
 
-#ifndef KE_COMPILEHIERARCHYPANELINST
-OSG_DLLEXPORT_DECL1(SField, HierarchyPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<HierarchyPanel *,
+                      RecordedRefCountPolicy  > MFRecHierarchyPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<HierarchyPanel *,
+                      UnrecordedRefCountPolicy> MFUnrecHierarchyPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<HierarchyPanel *,
+                      WeakRefCountPolicy      > MFWeakHierarchyPanelPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<HierarchyPanel *,
+                      NoRefCountPolicy        > MFUncountedHierarchyPanelPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<HierarchyPanelPtr> MFHierarchyPanelPtr;
-#endif
 
-#ifndef KE_COMPILEHIERARCHYPANELINST
-OSG_DLLEXPORT_DECL1(MField, HierarchyPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecHierarchyPanelPtr : 
+    public PointerSField<HierarchyPanel *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecHierarchyPanelPtr : 
+    public PointerSField<HierarchyPanel *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakHierarchyPanelPtr :
+    public PointerSField<HierarchyPanel *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedHierarchyPanelPtr :
+    public PointerSField<HierarchyPanel *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecHierarchyPanelPtr :
+    public PointerMField<HierarchyPanel *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecHierarchyPanelPtr :
+    public PointerMField<HierarchyPanel *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakHierarchyPanelPtr :
+    public PointerMField<HierarchyPanel *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedHierarchyPanelPtr :
+    public PointerMField<HierarchyPanel *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

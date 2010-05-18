@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,122 +47,125 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEHIERARCHYPANELINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEHierarchyPanelBase.h"
 #include "KEHierarchyPanel.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector HierarchyPanelBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
+
+/*! \class OSG::HierarchyPanel
+    The HierarchyPanel. Stores the tree structure for the lua files and the scenegraph.
+ */
+
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<HierarchyPanel *>::_type("HierarchyPanelPtr", "PanelPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(HierarchyPanel *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           HierarchyPanel *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           HierarchyPanel *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void HierarchyPanelBase::classDescInserter(TypeObject &oType)
+{
+}
 
 
-FieldContainerType HierarchyPanelBase::_type(
-    "HierarchyPanel",
-    "Panel",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&HierarchyPanelBase::createEmpty),
+HierarchyPanelBase::TypeObject HierarchyPanelBase::_type(
+    HierarchyPanelBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&HierarchyPanelBase::createEmptyLocal),
     HierarchyPanel::initMethod,
-    NULL,
-    0);
-
-//OSG_FIELD_CONTAINER_DEF(HierarchyPanelBase, HierarchyPanelPtr)
+    HierarchyPanel::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&HierarchyPanel::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"HierarchyPanel\"\n"
+    "\tparent=\"Panel\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The HierarchyPanel. Stores the tree structure for the lua files and the scenegraph.\n"
+    "\n"
+    "</FieldContainer>\n",
+    "The HierarchyPanel. Stores the tree structure for the lua files and the scenegraph.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &HierarchyPanelBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &HierarchyPanelBase::getType(void) const 
+FieldContainerType &HierarchyPanelBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr HierarchyPanelBase::shallowCopy(void) const 
-{ 
-    HierarchyPanelPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const HierarchyPanel *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 HierarchyPanelBase::getContainerSize(void) const 
-{ 
-    return sizeof(HierarchyPanel); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void HierarchyPanelBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &HierarchyPanelBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<HierarchyPanelBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void HierarchyPanelBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 HierarchyPanelBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((HierarchyPanelBase *) &other, whichField, sInfo);
-}
-void HierarchyPanelBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return sizeof(HierarchyPanel);
 }
 
-void HierarchyPanelBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
+/*------------------------- decorator get ------------------------------*/
 
-}
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-HierarchyPanelBase::HierarchyPanelBase(void) :
-    Inherited() 
-{
-}
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-HierarchyPanelBase::HierarchyPanelBase(const HierarchyPanelBase &source) :
-    Inherited                 (source)
-{
-}
-
-/*-------------------------- destructors ----------------------------------*/
-
-HierarchyPanelBase::~HierarchyPanelBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 HierarchyPanelBase::getBinSize(const BitVector &whichField)
+UInt32 HierarchyPanelBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -169,68 +173,198 @@ UInt32 HierarchyPanelBase::getBinSize(const BitVector &whichField)
     return returnValue;
 }
 
-void HierarchyPanelBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void HierarchyPanelBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-
 }
 
-void HierarchyPanelBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void HierarchyPanelBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void HierarchyPanelBase::executeSyncImpl(      HierarchyPanelBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+HierarchyPanelTransitPtr HierarchyPanelBase::createLocal(BitVector bFlags)
 {
+    HierarchyPanelTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
+        fc = dynamic_pointer_cast<HierarchyPanel>(tmpPtr);
+    }
 
-}
-#else
-void HierarchyPanelBase::executeSyncImpl(      HierarchyPanelBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-
+    return fc;
 }
 
-void HierarchyPanelBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+HierarchyPanelTransitPtr HierarchyPanelBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    HierarchyPanelTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<HierarchyPanel>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+HierarchyPanelTransitPtr HierarchyPanelBase::create(void)
+{
+    HierarchyPanelTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<HierarchyPanel>(tmpPtr);
+    }
+
+    return fc;
+}
+
+HierarchyPanel *HierarchyPanelBase::createEmptyLocal(BitVector bFlags)
+{
+    HierarchyPanel *returnValue;
+
+    newPtr<HierarchyPanel>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+HierarchyPanel *HierarchyPanelBase::createEmpty(void)
+{
+    HierarchyPanel *returnValue;
+
+    newPtr<HierarchyPanel>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr HierarchyPanelBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    HierarchyPanel *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const HierarchyPanel *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr HierarchyPanelBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    HierarchyPanel *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const HierarchyPanel *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr HierarchyPanelBase::shallowCopy(void) const
+{
+    HierarchyPanel *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const HierarchyPanel *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+HierarchyPanelBase::HierarchyPanelBase(void) :
+    Inherited()
+{
+}
+
+HierarchyPanelBase::HierarchyPanelBase(const HierarchyPanelBase &source) :
+    Inherited(source)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+HierarchyPanelBase::~HierarchyPanelBase(void)
+{
+}
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void HierarchyPanelBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    HierarchyPanel *pThis = static_cast<HierarchyPanel *>(this);
+
+    pThis->execSync(static_cast<HierarchyPanel *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *HierarchyPanelBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    HierarchyPanel *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const HierarchyPanel *>(pRefAspect),
+                  dynamic_cast<const HierarchyPanel *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<HierarchyPanelPtr>::_type("HierarchyPanelPtr", "PanelPtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(HierarchyPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(HierarchyPanelPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void HierarchyPanelBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+
+}
 
 
 OSG_END_NAMESPACE
-
