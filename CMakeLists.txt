@@ -102,6 +102,7 @@ SET(OSG_COMPONENTS OSGBase
     OSGTBFileIO 
     OSGTBAnimation 
     OSGContribUserInterface 
+    OSGContribGUI 
     OSGContribSound 
     OSGContribLua 
     OSGContribLuaToolbox 

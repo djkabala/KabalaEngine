@@ -331,8 +331,6 @@ void HierarchyPanel::createLuaGraphTree()
 	_TheLuaGraphTree = Tree::create();
 	_TheLuaGraphTreeModel = LuaGraphTreeModel::create();
 	
-    SWARNING <<
-        MainApplication::the()->getProject()->getLuaModulePath().string() << std::endl;
 	_TheLuaGraphTreeModel->setRoot(MainApplication::the()->getProject()->getLuaModulePath());
 
         _TheLuaGraphTree->setPreferredSize(Vec2f(100, 500));
