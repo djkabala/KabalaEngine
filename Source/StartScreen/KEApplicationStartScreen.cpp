@@ -199,13 +199,13 @@ void ApplicationStartScreen::attachApplication(void)
     TorusAnimator->setKeyframeSequence(TransformationKeyframes);
 
     //Animation
-    _TorusAnimation = FieldAnimation::create();
+    /*_TorusAnimation = FieldAnimation::create();
     _TorusAnimation->setAnimator(TorusAnimator);
     _TorusAnimation->setInterpolationType(Animator::LINEAR_INTERPOLATION);
     _TorusAnimation->setCycling(-1);
     _TorusAnimation->setAnimatedField(SceneTransformCore, std::string("matrix"));
     _TorusAnimation->attachUpdateProducer(MainApplication::the()->getMainWindow()->editEventProducer());
-    _TorusAnimation->start();
+    _TorusAnimation->start();*/
 
     //Foreground
     //ImageForegroundRefPtr LogoForeground = ImageForeground::create();
@@ -237,7 +237,7 @@ void ApplicationStartScreen::attachApplication(void)
 
 void ApplicationStartScreen::dettachApplication(void)
 {
-    _TorusAnimation->stop();
+    //_TorusAnimation->stop();
 
     _TheUIDrawingSurface->setEventProducer(NULL);
 

@@ -1344,8 +1344,8 @@ void ApplicationPlayer::moveDebugCamera(const Matrix& Transform)
         //_DebugCameraFovKeyframes->addKeyframe(dynamic_pointer_cast<PerspectiveCamera>(_SceneViewportCamera)->getFov(),1.0f);
 
         //Attach the Debug Camera Animation
-        _DebugCameraTransAnimation->setAnimatedField(_DebugBeaconTransform,
-                                                     Transform::MatrixFieldId);
+        /*_DebugCameraTransAnimation->setAnimatedField(_DebugBeaconTransform,
+                                                     Transform::MatrixFieldId);*/
 
         //_DebugCameraFovAnimation->setAnimatedField(_DebugCamera,
         //PerspectiveCamera::FovFieldId);
@@ -1375,10 +1375,10 @@ void ApplicationPlayer::createDebugCameraAnim(void)
     KeyframeAnimatorRefPtr DebugCameraTransformationAnimator = KeyframeAnimator::create();
     DebugCameraTransformationAnimator->setKeyframeSequence(_DebugCameraTransformationKeyframes);
 
-    _DebugCameraTransAnimation = FieldAnimation::create();
+    /*_DebugCameraTransAnimation = FieldAnimation::create();
     _DebugCameraTransAnimation->setAnimator(DebugCameraTransformationAnimator);
     _DebugCameraTransAnimation->setInterpolationType(Animator::LINEAR_INTERPOLATION);
-    _DebugCameraTransAnimation->setCycling(1);
+    _DebugCameraTransAnimation->setCycling(1);*/
 
     //Fov Animation
     //_DebugCameraFovKeyframes = KeyframeNumbersSequenceReal32::create();
@@ -1393,7 +1393,7 @@ void ApplicationPlayer::createDebugCameraAnim(void)
 
     //Animation Group
     _DebugCameraAnimationGroup = AnimationGroup::create();
-    _DebugCameraAnimationGroup->pushToAnimations(_DebugCameraTransAnimation);
+    //_DebugCameraAnimationGroup->pushToAnimations(_DebugCameraTransAnimation);
     //_DebugCameraAnimationGroup->pushToAnimations(_DebugCameraFovAnimation);
 }
 
