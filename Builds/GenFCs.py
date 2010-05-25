@@ -10,7 +10,7 @@ def convertPathToOutput(Path):
 	    return '"' + Path + '"'
 
 def GenFCsFromFile(GenFCsPyDir, FcdCompilePath, Path):
-   os.system(convertPathToOutput(FcdCompilePath + " -d " + convertPathToOutput(Path) + " -b -f " + " -p " + convertPathToOutput(os.path.split(Path)[0])))
+   os.system(convertPathToOutput("python " + FcdCompilePath + " -fb -d " + convertPathToOutput(Path) + " -p " + convertPathToOutput(os.path.split(Path)[0]) + " -r " + os.path.join(os.path.join(os.path.split(FcdCompilePath)[0],".."),"..")))
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
       else:
           FcdCompilePath = os.path.join(GenFCsPyDir, "../Tools/Linux/fcdCompile")
    else:
-       FcdCompilePath = convertPathToOutput(os.path.join(GenFCsPyDir, "..\\Tools\\Windows\\fcdCompile.exe")) 
+       FcdCompilePath = convertPathToOutput(os.path.join(GenFCsPyDir, "..\\Tools\\fcd2code\\fcd2code")) 
 
    print("Using fcdCompile to Generate Code...")
 
