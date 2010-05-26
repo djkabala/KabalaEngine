@@ -96,7 +96,7 @@ void PasteCommand::execute(void)
 
     if(_PastedNode!=NULL)
 	{
-		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ParentNode),boost::any(_PastedNode));
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(_ParentNode,_PastedNode);
 	}
 
 	_HasBeenDone = true;
@@ -115,13 +115,13 @@ std::string PasteCommand::getPresentationName(void) const
 void PasteCommand::redo(void)
 {
     Inherited::redo();
-    _HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_ParentNode),boost::any(_PastedNode));
+    _HierarchyPanel->getSceneGraphTreeModel()->addNode(_ParentNode,_PastedNode);
 }
 
 void PasteCommand::undo(void)
 {
     Inherited::undo();
-    _HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_PastedNode));
+    _HierarchyPanel->getSceneGraphTreeModel()->removeNode(_PastedNode);
 }
 
 const CommandType &PasteCommand::getType(void) const

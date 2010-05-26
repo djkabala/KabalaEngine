@@ -753,9 +753,9 @@ void HierarchyPanel::MenuButtonActionListener::createNewNode(const ActionEventUn
 			CommandPtr NewCommandPtr = NewCommand::create(_HierarchyPanel,FCType);
 			_HierarchyPanel->_ApplicationPlayer->getCommandManager()->executeCommand(NewCommandPtr);
 		}	
-		catch(boost::bad_any_cast &)
+		catch(boost::bad_any_cast &ex)
 		{
-			SWARNING << "badcast: " << std::endl;
+			SWARNING << ex.what() << std::endl;
 		}
 	}
 	else
@@ -781,10 +781,11 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::selectionAdded(const TreeS
 	//Get the selected Node
 	try
 	{
-		_SelectedNode = boost::any_cast<NodeRefPtr>(_TheTree->getLastSelectedPathComponent());
+		_SelectedNode = boost::any_cast<NodeUnrecPtr>(_TheTree->getLastSelectedPathComponent());
 	}
-	catch (boost::bad_any_cast &)
+	catch (boost::bad_any_cast &ex)
 	{
+        SWARNING << ex.what() << std::endl;
 		_SelectedNode = NULL;
 	}
 	selectedNodeChanged();

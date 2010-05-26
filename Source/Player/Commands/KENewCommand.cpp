@@ -85,7 +85,15 @@ void NewCommand::execute(void)
 	_Name = "New "+_Name+" Node";
 	setName(_NewNode,_Name);
 
-	_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_HierarchyPanel->getApplicationPlayer()->getSelectedNode()),boost::any(_NewNode));
+    _NodeToAddTo = _HierarchyPanel->getApplicationPlayer()->getSelectedNode();
+    if(_NodeToAddTo == NULL)
+    {
+        _NodeToAddTo =  _HierarchyPanel->getSceneGraphTreeModel()->getRootNode();
+    }
+	if(_NodeToAddTo!=NULL)
+	{
+	    _HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
+    }
 	
 	_HasBeenDone = true;
 
@@ -109,7 +117,7 @@ void NewCommand::redo(void)
 
 	if(_NewNode!=NULL)
 	{
-		_HierarchyPanel->getSceneGraphTreeModel()->addNode(boost::any(_HierarchyPanel->getApplicationPlayer()->getSelectedNode()),boost::any(_NewNode));
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
 	}
 
 }
@@ -120,7 +128,7 @@ void NewCommand::undo(void)
 
 	if(_NewNode!=NULL)
 	{
-		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(boost::any(_NewNode));
+		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(_NewNode);
 	}
 
 }

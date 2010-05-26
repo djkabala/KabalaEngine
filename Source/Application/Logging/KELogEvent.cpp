@@ -37,112 +37,89 @@
 //  Includes
 //---------------------------------------------------------------------------
 
+#include <cstdlib>
+#include <cstdio>
+
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KEDeleteCommand.h"
+#include "KELogEvent.h"
 
-#include <OpenSG/OSGNameAttachment.h>
+OSG_BEGIN_NAMESPACE
 
-OSG_USING_NAMESPACE
-
-/***************************************************************************\
- *                            Description                                  *
-\***************************************************************************/
-
-/*! \class OSG::DeleteCommand
-A DeleteCommand. 
-*/
+// Documentation for this class is emitted in the
+// OSGLogEventBase.cpp file.
+// To modify it, please change the .fcd file (OSGLogEvent.fcd) and
+// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
 \***************************************************************************/
 
-CommandType DeleteCommand::_Type("DeleteCommand", "UndoableCommand");
-
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-DeleteCommandPtr DeleteCommand::create(ApplicationPlayerRefPtr ApplicationPlayer,HierarchyPanelRefPtr HierarchyPanel,
-                                 NodeRefPtr DeleteNode)
+void LogEvent::initMethod(InitPhase ePhase)
 {
-	return RefPtr(new DeleteCommand(ApplicationPlayer,HierarchyPanel,DeleteNode));
+    Inherited::initMethod(ePhase);
+
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
+}
+
+LogEventTransitPtr LogEvent::create(FieldContainerRefPtr Source,
+                                            Time TimeStamp,
+                                         const std::string& value)
+{
+    LogEvent* TheEvent(LogEvent::createEmpty());
+
+    TheEvent->setSource(Source);
+    TheEvent->setTimeStamp(TimeStamp);
+    TheEvent->setValue(value);
+
+    return LogEventTransitPtr(TheEvent);
 }
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
 
-void DeleteCommand::execute(void)
-{
-    //Delete the Node
-	_Parent = _DeletedNode->getParent();
-
-    _IndexOfDeletion = _Parent->findChild(_DeletedNode);
-	
-    _HierarchyPanel->getSceneGraphTreeModel()->removeNode(_DeletedNode);
-	_HasBeenDone = true;
-}
-
-std::string DeleteCommand::getCommandDescription(void) const
-{
-	std::string Description("Delete Node");
-	if(_DeletedNode != NULL)
-	{
-		const Char8 * ContainerName(getName(_DeletedNode));
-		if(ContainerName != NULL)
-		{
-			Description += std::string(": ") + ContainerName;
-		}
-	}
-	return Description;
-}
-
-std::string DeleteCommand::getPresentationName(void) const
-{
-	return getCommandDescription();
-}
-
-void DeleteCommand::redo(void)
-{
-    Inherited::redo();
-    _HierarchyPanel->getSceneGraphTreeModel()->removeNode(_DeletedNode);
-}
-
-void DeleteCommand::undo(void)
-{
-    Inherited::undo();
-
-    _HierarchyPanel->getSceneGraphTreeModel()->insertNode(_Parent,_DeletedNode,_IndexOfDeletion);
-		
-}
-
-const CommandType &DeleteCommand::getType(void) const
-{
-	return _Type;
-}
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
 /*----------------------- constructors & destructors ----------------------*/
 
-DeleteCommand::~DeleteCommand(void)
+LogEvent::LogEvent(void) :
+    Inherited()
+{
+}
+
+LogEvent::LogEvent(const LogEvent &source) :
+    Inherited(source)
+{
+}
+
+LogEvent::~LogEvent(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void DeleteCommand::operator =(const DeleteCommand& source)
+void LogEvent::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-    if(this != &source)
-    {
-	    Inherited::operator=(source);
-		_ApplicationPlayer = source._ApplicationPlayer;
-		_HierarchyPanel = source._HierarchyPanel;
-		_DeletedNode = source._DeletedNode;
-    }
+    Inherited::changed(whichField, origin, details);
 }
 
+void LogEvent::dump(      UInt32    ,
+                         const BitVector ) const
+{
+    SLOG << "Dump LogEvent NI" << std::endl;
+}
+
+OSG_END_NAMESPACE

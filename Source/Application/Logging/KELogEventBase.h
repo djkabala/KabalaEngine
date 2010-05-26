@@ -42,14 +42,14 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class ApplicationSettings
+ **     class LogEvent
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#ifndef _KEAPPLICATIONSETTINGSBASE_H_
-#define _KEAPPLICATIONSETTINGSBASE_H_
+#ifndef _KELOGEVENTBASE_H_
+#define _KELOGEVENTBASE_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -63,31 +63,29 @@
 //#include "OpenSG/OSGBaseTypes.h"
 
 
-#include <OpenSG/OSGFieldContainer.h> // Parent
+#include <OpenSG/OSGEvent.h> // Parent
 
-#include <OpenSG/OSGBoostPathFields.h>  // DataDirectory type
-#include <OpenSG/OSGVecFields.h>        // DefaultWindowPosition type
-#include <OpenSG/OSGSysFields.h>        // Fullscreen type
+#include <OpenSG/OSGBaseFields.h>       // Value type
 
-#include "KEApplicationSettingsFields.h"
+#include "KELogEventFields.h"
 
 OSG_BEGIN_NAMESPACE
 
-class ApplicationSettings;
+class LogEvent;
 
-//! \brief ApplicationSettings Base Class.
+//! \brief LogEvent Base Class.
 
-class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
+class KE_KABALAENGINE_DLLMAPPING LogEventBase : public Event
 {
   public:
 
-    typedef FieldContainer Inherited;
-    typedef FieldContainer ParentContainer;
+    typedef Event Inherited;
+    typedef Event ParentContainer;
 
     typedef Inherited::TypeObject TypeObject;
     typedef TypeObject::InitPhase InitPhase;
 
-    OSG_GEN_INTERNALPTR(ApplicationSettings);
+    OSG_GEN_INTERNALPTR(LogEvent);
 
     /*==========================  PUBLIC  =================================*/
 
@@ -95,56 +93,16 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
 
     enum
     {
-        DataDirectoryFieldId = Inherited::NextFieldId,
-        LastOpenedProjectFileFieldId = DataDirectoryFieldId + 1,
-        RecentProjectFilesFieldId = LastOpenedProjectFileFieldId + 1,
-        DefaultWindowPositionFieldId = RecentProjectFilesFieldId + 1,
-        DefaultWindowSizeFieldId = DefaultWindowPositionFieldId + 1,
-        FullscreenFieldId = DefaultWindowSizeFieldId + 1,
-        HideAdvancedFieldsFieldId = FullscreenFieldId + 1,
-        LogTypeFieldId = HideAdvancedFieldsFieldId + 1,
-        LogLevelFieldId = LogTypeFieldId + 1,
-        LogFileFieldId = LogLevelFieldId + 1,
-        LogHeaderElementsFieldId = LogFileFieldId + 1,
-        NextFieldId = LogHeaderElementsFieldId + 1
+        ValueFieldId = Inherited::NextFieldId,
+        NextFieldId = ValueFieldId + 1
     };
 
-    static const OSG::BitVector DataDirectoryFieldMask =
-        (TypeTraits<BitVector>::One << DataDirectoryFieldId);
-    static const OSG::BitVector LastOpenedProjectFileFieldMask =
-        (TypeTraits<BitVector>::One << LastOpenedProjectFileFieldId);
-    static const OSG::BitVector RecentProjectFilesFieldMask =
-        (TypeTraits<BitVector>::One << RecentProjectFilesFieldId);
-    static const OSG::BitVector DefaultWindowPositionFieldMask =
-        (TypeTraits<BitVector>::One << DefaultWindowPositionFieldId);
-    static const OSG::BitVector DefaultWindowSizeFieldMask =
-        (TypeTraits<BitVector>::One << DefaultWindowSizeFieldId);
-    static const OSG::BitVector FullscreenFieldMask =
-        (TypeTraits<BitVector>::One << FullscreenFieldId);
-    static const OSG::BitVector HideAdvancedFieldsFieldMask =
-        (TypeTraits<BitVector>::One << HideAdvancedFieldsFieldId);
-    static const OSG::BitVector LogTypeFieldMask =
-        (TypeTraits<BitVector>::One << LogTypeFieldId);
-    static const OSG::BitVector LogLevelFieldMask =
-        (TypeTraits<BitVector>::One << LogLevelFieldId);
-    static const OSG::BitVector LogFileFieldMask =
-        (TypeTraits<BitVector>::One << LogFileFieldId);
-    static const OSG::BitVector LogHeaderElementsFieldMask =
-        (TypeTraits<BitVector>::One << LogHeaderElementsFieldId);
+    static const OSG::BitVector ValueFieldMask =
+        (TypeTraits<BitVector>::One << ValueFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFBoostPath       SFDataDirectoryType;
-    typedef SFBoostPath       SFLastOpenedProjectFileType;
-    typedef MFBoostPath       MFRecentProjectFilesType;
-    typedef SFPnt2f           SFDefaultWindowPositionType;
-    typedef SFVec2f           SFDefaultWindowSizeType;
-    typedef SFBool            SFFullscreenType;
-    typedef SFBool            SFHideAdvancedFieldsType;
-    typedef SFUInt8           SFLogTypeType;
-    typedef SFUInt8           SFLogLevelType;
-    typedef SFBoostPath       SFLogFileType;
-    typedef SFUInt32          SFLogHeaderElementsType;
+    typedef SFString          SFValueType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -170,88 +128,16 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
     /*! \{                                                                 */
 
 
-                  SFBoostPath         *editSFDataDirectory  (void);
-            const SFBoostPath         *getSFDataDirectory   (void) const;
-
-                  SFBoostPath         *editSFLastOpenedProjectFile(void);
-            const SFBoostPath         *getSFLastOpenedProjectFile (void) const;
-
-                  MFBoostPath         *editMFRecentProjectFiles(void);
-            const MFBoostPath         *getMFRecentProjectFiles (void) const;
-
-                  SFPnt2f             *editSFDefaultWindowPosition(void);
-            const SFPnt2f             *getSFDefaultWindowPosition (void) const;
-
-                  SFVec2f             *editSFDefaultWindowSize(void);
-            const SFVec2f             *getSFDefaultWindowSize (void) const;
-
-                  SFBool              *editSFFullscreen     (void);
-            const SFBool              *getSFFullscreen      (void) const;
-
-                  SFBool              *editSFHideAdvancedFields(void);
-            const SFBool              *getSFHideAdvancedFields (void) const;
-
-                  SFUInt8             *editSFLogType        (void);
-            const SFUInt8             *getSFLogType         (void) const;
-
-                  SFUInt8             *editSFLogLevel       (void);
-            const SFUInt8             *getSFLogLevel        (void) const;
-
-                  SFBoostPath         *editSFLogFile        (void);
-            const SFBoostPath         *getSFLogFile         (void) const;
-
-                  SFUInt32            *editSFLogHeaderElements(void);
-            const SFUInt32            *getSFLogHeaderElements (void) const;
+            const SFString            *getSFValue           (void) const;
 
 
-                  BoostPath           &editDataDirectory  (void);
-            const BoostPath           &getDataDirectory   (void) const;
-
-                  BoostPath           &editLastOpenedProjectFile(void);
-            const BoostPath           &getLastOpenedProjectFile (void) const;
-
-                  BoostPath           &editRecentProjectFiles(const UInt32 index);
-            const BoostPath           &getRecentProjectFiles (const UInt32 index) const;
-
-                  Pnt2f               &editDefaultWindowPosition(void);
-            const Pnt2f               &getDefaultWindowPosition (void) const;
-
-                  Vec2f               &editDefaultWindowSize(void);
-            const Vec2f               &getDefaultWindowSize (void) const;
-
-                  bool                &editFullscreen     (void);
-                  bool                 getFullscreen      (void) const;
-
-                  bool                &editHideAdvancedFields(void);
-                  bool                 getHideAdvancedFields (void) const;
-
-                  UInt8               &editLogType        (void);
-                  UInt8                getLogType         (void) const;
-
-                  UInt8               &editLogLevel       (void);
-                  UInt8                getLogLevel        (void) const;
-
-                  BoostPath           &editLogFile        (void);
-            const BoostPath           &getLogFile         (void) const;
-
-                  UInt32              &editLogHeaderElements(void);
-                  UInt32               getLogHeaderElements (void) const;
+            const std::string         &getValue           (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-            void setDataDirectory  (const BoostPath &value);
-            void setLastOpenedProjectFile(const BoostPath &value);
-            void setDefaultWindowPosition(const Pnt2f &value);
-            void setDefaultWindowSize(const Vec2f &value);
-            void setFullscreen     (const bool value);
-            void setHideAdvancedFields(const bool value);
-            void setLogType        (const UInt8 value);
-            void setLogLevel       (const UInt8 value);
-            void setLogFile        (const BoostPath &value);
-            void setLogHeaderElements(const UInt32 value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -275,16 +161,16 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  ApplicationSettingsTransitPtr  create          (void);
-    static  ApplicationSettings           *createEmpty     (void);
+    static  LogEventTransitPtr  create          (void);
+    static  LogEvent           *createEmpty     (void);
 
-    static  ApplicationSettingsTransitPtr  createLocal     (
+    static  LogEventTransitPtr  createLocal     (
                                                BitVector bFlags = FCLocal::All);
 
-    static  ApplicationSettings            *createEmptyLocal(
+    static  LogEvent            *createEmptyLocal(
                                               BitVector bFlags = FCLocal::All);
 
-    static  ApplicationSettingsTransitPtr  createDependent  (BitVector bFlags);
+    static  LogEventTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -311,32 +197,22 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFBoostPath       _sfDataDirectory;
-    SFBoostPath       _sfLastOpenedProjectFile;
-    MFBoostPath       _mfRecentProjectFiles;
-    SFPnt2f           _sfDefaultWindowPosition;
-    SFVec2f           _sfDefaultWindowSize;
-    SFBool            _sfFullscreen;
-    SFBool            _sfHideAdvancedFields;
-    SFUInt8           _sfLogType;
-    SFUInt8           _sfLogLevel;
-    SFBoostPath       _sfLogFile;
-    SFUInt32          _sfLogHeaderElements;
+    SFString          _sfValue;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    ApplicationSettingsBase(void);
-    ApplicationSettingsBase(const ApplicationSettingsBase &source);
+    LogEventBase(void);
+    LogEventBase(const LogEventBase &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ApplicationSettingsBase(void);
+    virtual ~LogEventBase(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -349,28 +225,31 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleDataDirectory   (void) const;
-    EditFieldHandlePtr editHandleDataDirectory  (void);
-    GetFieldHandlePtr  getHandleLastOpenedProjectFile (void) const;
-    EditFieldHandlePtr editHandleLastOpenedProjectFile(void);
-    GetFieldHandlePtr  getHandleRecentProjectFiles (void) const;
-    EditFieldHandlePtr editHandleRecentProjectFiles(void);
-    GetFieldHandlePtr  getHandleDefaultWindowPosition (void) const;
-    EditFieldHandlePtr editHandleDefaultWindowPosition(void);
-    GetFieldHandlePtr  getHandleDefaultWindowSize (void) const;
-    EditFieldHandlePtr editHandleDefaultWindowSize(void);
-    GetFieldHandlePtr  getHandleFullscreen      (void) const;
-    EditFieldHandlePtr editHandleFullscreen     (void);
-    GetFieldHandlePtr  getHandleHideAdvancedFields (void) const;
-    EditFieldHandlePtr editHandleHideAdvancedFields(void);
-    GetFieldHandlePtr  getHandleLogType         (void) const;
-    EditFieldHandlePtr editHandleLogType        (void);
-    GetFieldHandlePtr  getHandleLogLevel        (void) const;
-    EditFieldHandlePtr editHandleLogLevel       (void);
-    GetFieldHandlePtr  getHandleLogFile         (void) const;
-    EditFieldHandlePtr editHandleLogFile        (void);
-    GetFieldHandlePtr  getHandleLogHeaderElements (void) const;
-    EditFieldHandlePtr editHandleLogHeaderElements(void);
+    GetFieldHandlePtr  getHandleValue           (void) const;
+    EditFieldHandlePtr editHandleValue          (void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Get                                 */
+    /*! \{                                                                 */
+
+
+                  SFString            *editSFValue          (void);
+
+
+                  std::string         &editValue          (void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Set                                 */
+    /*! \{                                                                 */
+
+            void setValue          (const std::string &value);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
+    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -384,7 +263,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
                                  ConstFieldMaskArg  syncMode  ,
                            const UInt32             uiSyncInfo);
 
-            void execSync (      ApplicationSettingsBase *pFrom,
+            void execSync (      LogEventBase *pFrom,
                                  ConstFieldMaskArg  whichField,
                                  AspectOffsetStore &oOffsets,
                                  ConstFieldMaskArg  syncMode  ,
@@ -424,11 +303,11 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
     /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const ApplicationSettingsBase &source);
+    void operator =(const LogEventBase &source);
 };
 
-typedef ApplicationSettingsBase *ApplicationSettingsBaseP;
+typedef LogEventBase *LogEventBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEAPPLICATIONSETTINGSBASE_H_ */
+#endif /* _KELOGEVENTBASE_H_ */
