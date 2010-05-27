@@ -15,16 +15,6 @@
     authors="Robert Goetz (rdgoetz@iastate.edu)                            "
 >
 The SceneObject.
-	<Field
-		name="Name"
-		type="std::string"
-		category="data"
-		cardinality="single"
-		visibility="external"
-		access="protected"
-		defaultValue="NULL"
-	>
-	</Field>
     <Field
 		name="ParentSceneObject"
 		type="FieldContainer"

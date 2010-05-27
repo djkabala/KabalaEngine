@@ -77,13 +77,13 @@ void SoundEffect::initMethod(InitPhase ePhase)
 
 void SoundEffect::begin()
 {
-    _sfTheSound.getValue()->play();
+    getSound()->play();
     isPausedFlag = false;
 }
 
 bool SoundEffect::isPlaying()
 {
-    return _sfTheSound.getValue()->getNumPlayingChannels() != 0;
+    return getSound()->getNumPlayingChannels() != 0;
 }
 
 bool SoundEffect::isPaused()
@@ -94,18 +94,18 @@ bool SoundEffect::isPaused()
 void SoundEffect::pause()
 {
     isPausedFlag = true;
-    _sfTheSound.getValue()->setAllChannelPaused(isPausedFlag);
+    getSound()->setAllChannelPaused(isPausedFlag);
 }
 
 void SoundEffect::unpause()
 {
     isPausedFlag = false;
-    _sfTheSound.getValue()->setAllChannelPaused(isPausedFlag);
+    getSound()->setAllChannelPaused(isPausedFlag);
 }
 
 void SoundEffect::end()
 {
-    _sfTheSound.getValue()->stopAllChannels();
+    getSound()->stopAllChannels();
 }
 
 /*-------------------------------------------------------------------------*\

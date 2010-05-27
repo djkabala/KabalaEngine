@@ -14,17 +14,6 @@
     authors="David Kabala (djkabala@gmail.com)                             "
 >
 The SceneObject.
-	<Field
-		name="Behaviors"
-		type="Behavior"
-		category="pointer"
-		cardinality="multi"
-		visibility="external"
-		fieldHeader="Project/SceneObject/KEBehaviorFields.h"
-		typeHeader="Project/SceneObject/KEBehavior.h"
-		access="protected"
-	>
-	</Field>
     <Field
 		name="Behaviors"
 		type="Behavior"
@@ -34,19 +23,9 @@ The SceneObject.
 		visibility="external"
 		fieldHeader="Project/SceneObject/KEBehaviorFields.h"
 		typeHeader="Project/SceneObject/KEBehavior.h"
-		access="protected"
-		defaultValue="NULL"
-        linkParentField="SceneObject"
-	>
-	</Field>
-	<Field
-		name="Node"
-		type="Node"
-		category="pointer"
-		cardinality="single"
-		visibility="external"
 		access="public"
 		defaultValue="NULL"
+        linkParentField="SceneObject"
 	>
 	</Field>
     <Field
@@ -58,9 +37,31 @@ The SceneObject.
 		visibility="external"
 		fieldHeader="Project/Effect/KEEffectFields.h"
 		typeHeader="Project/Effect/KEEffect.h"
-		access="protected"
+		access="public"
 		defaultValue="NULL"
         linkParentField="ParentSceneObject"
+	>
+	</Field>
+    <Field
+		name="Node"
+		type="Node"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="public"
+		defaultValue="NULL"
+	>
+	</Field>
+    <Field
+		name="Scene"
+		type="Scene"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+        fieldHeader="Project/Scene/KEScene.h"
+		typeHeader="Project/Scene/KEScene.h"
+		access="public"
+		defaultValue="NULL"
 	>
 	</Field>
 </FieldContainer>

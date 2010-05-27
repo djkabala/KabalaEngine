@@ -45,24 +45,24 @@
 
 int main(int argc, char **argv)
 {
-    OSG::preloadSharedObject("OSGCluster");
-    OSG::preloadSharedObject("OSGContribBackgroundloader");
-    OSG::preloadSharedObject("OSGContribComputeBase");
-    OSG::preloadSharedObject("OSGContribGUI");
-    OSG::preloadSharedObject("OSGContribLuaToolbox");
-    OSG::preloadSharedObject("OSGContribParticleSystem");
-    OSG::preloadSharedObject("OSGContribPhysics");
-    OSG::preloadSharedObject("OSGContribPLY");
-    OSG::preloadSharedObject("OSGContribSound");
-    OSG::preloadSharedObject("OSGContribTrapezoidalShadowMaps");
-    OSG::preloadSharedObject("OSGContribUserInterface");
-    OSG::preloadSharedObject("OSGContribVideo");
-    OSG::preloadSharedObject("OSGDynamics");
-    OSG::preloadSharedObject("OSGEffectGroup");
-    OSG::preloadSharedObject("OSGFileIO");
-    OSG::preloadSharedObject("OSGGroup");
-    OSG::preloadSharedObject("OSGImageFileIO");
-    OSG::preloadSharedObject("OSGTBAnimation");
+    //OSG::preloadSharedObject("OSGCluster");
+    //OSG::preloadSharedObject("OSGContribBackgroundloader");
+    //OSG::preloadSharedObject("OSGContribComputeBase");
+    //OSG::preloadSharedObject("OSGContribGUI");
+    //OSG::preloadSharedObject("OSGContribLuaToolbox");
+    //OSG::preloadSharedObject("OSGContribParticleSystem");
+    //OSG::preloadSharedObject("OSGContribPhysics");
+    //OSG::preloadSharedObject("OSGContribPLY");
+    //OSG::preloadSharedObject("OSGContribSound");
+    //OSG::preloadSharedObject("OSGContribTrapezoidalShadowMaps");
+    //OSG::preloadSharedObject("OSGContribUserInterface");
+    //OSG::preloadSharedObject("OSGContribVideo");
+    //OSG::preloadSharedObject("OSGDynamics");
+    //OSG::preloadSharedObject("OSGEffectGroup");
+    //OSG::preloadSharedObject("OSGFileIO");
+    //OSG::preloadSharedObject("OSGGroup");
+    //OSG::preloadSharedObject("OSGImageFileIO");
+    //OSG::preloadSharedObject("OSGTBAnimation");
     // OSG init
 	OSG::osgInit(argc,argv);
 

@@ -73,20 +73,20 @@ OSG::UInt16 SoundEffectBase::getClassGroupId(void)
 /*------------------------------ get -----------------------------------*/
 
 
-//! Get the value of the SoundEffect::_sfTheSound field.
+//! Get the value of the SoundEffect::_sfSound field.
 inline
-Sound * SoundEffectBase::getTheSound(void) const
+Sound * SoundEffectBase::getSound(void) const
 {
-    return _sfTheSound.getValue();
+    return _sfSound.getValue();
 }
 
-//! Set the value of the SoundEffect::_sfTheSound field.
+//! Set the value of the SoundEffect::_sfSound field.
 inline
-void SoundEffectBase::setTheSound(Sound * const value)
+void SoundEffectBase::setSound(Sound * const value)
 {
-    editSField(TheSoundFieldMask);
+    editSField(SoundFieldMask);
 
-    _sfTheSound.setValue(value);
+    _sfSound.setValue(value);
 }
 
 
@@ -100,8 +100,8 @@ void SoundEffectBase::execSync (      SoundEffectBase *pFrom,
 {
     Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
-    if(FieldBits::NoField != (TheSoundFieldMask & whichField))
-        _sfTheSound.syncWith(pFrom->_sfTheSound);
+    if(FieldBits::NoField != (SoundFieldMask & whichField))
+        _sfSound.syncWith(pFrom->_sfSound);
 }
 #endif
 

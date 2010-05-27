@@ -65,7 +65,7 @@
 
 #include "KEEffect.h" // Parent
 
-#include <OpenSG/OSGSoundFields.h>      // TheSound type
+#include <OpenSG/OSGSoundFields.h>      // Sound type
 
 #include "KESoundEffectFields.h"
 
@@ -93,16 +93,16 @@ class KE_KABALAENGINE_DLLMAPPING SoundEffectBase : public Effect
 
     enum
     {
-        TheSoundFieldId = Inherited::NextFieldId,
-        NextFieldId = TheSoundFieldId + 1
+        SoundFieldId = Inherited::NextFieldId,
+        NextFieldId = SoundFieldId + 1
     };
 
-    static const OSG::BitVector TheSoundFieldMask =
-        (TypeTraits<BitVector>::One << TheSoundFieldId);
+    static const OSG::BitVector SoundFieldMask =
+        (TypeTraits<BitVector>::One << SoundFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFUnrecSoundPtr   SFTheSoundType;
+    typedef SFUnrecSoundPtr   SFSoundType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -175,7 +175,7 @@ class KE_KABALAENGINE_DLLMAPPING SoundEffectBase : public Effect
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFUnrecSoundPtr   _sfTheSound;
+    SFUnrecSoundPtr   _sfSound;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -204,26 +204,26 @@ class KE_KABALAENGINE_DLLMAPPING SoundEffectBase : public Effect
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleTheSound        (void) const;
-    EditFieldHandlePtr editHandleTheSound       (void);
+    GetFieldHandlePtr  getHandleSound           (void) const;
+    EditFieldHandlePtr editHandleSound          (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-            const SFUnrecSoundPtr     *getSFTheSound        (void) const;
-                  SFUnrecSoundPtr     *editSFTheSound       (void);
+            const SFUnrecSoundPtr     *getSFSound           (void) const;
+                  SFUnrecSoundPtr     *editSFSound          (void);
 
 
-                  Sound * getTheSound       (void) const;
+                  Sound * getSound          (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-            void setTheSound       (Sound * const value);
+            void setSound          (Sound * const value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

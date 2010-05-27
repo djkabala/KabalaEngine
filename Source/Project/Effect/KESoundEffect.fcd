@@ -15,12 +15,12 @@
 >
 The SceneObject.
 	<Field
-		name="TheSound"
+		name="Sound"
 		type="Sound"
 		category="pointer"
 		cardinality="single"
 		visibility="external"
-		access="protected"
+		access="public"
 	>
 	</Field>
 </FieldContainer>

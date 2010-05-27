@@ -73,20 +73,20 @@ OSG::UInt16 AnimationEffectBase::getClassGroupId(void)
 /*------------------------------ get -----------------------------------*/
 
 
-//! Get the value of the AnimationEffect::_sfTheAnimation field.
+//! Get the value of the AnimationEffect::_sfAnimation field.
 inline
-Animation * AnimationEffectBase::getTheAnimation(void) const
+Animation * AnimationEffectBase::getAnimation(void) const
 {
-    return _sfTheAnimation.getValue();
+    return _sfAnimation.getValue();
 }
 
-//! Set the value of the AnimationEffect::_sfTheAnimation field.
+//! Set the value of the AnimationEffect::_sfAnimation field.
 inline
-void AnimationEffectBase::setTheAnimation(Animation * const value)
+void AnimationEffectBase::setAnimation(Animation * const value)
 {
-    editSField(TheAnimationFieldMask);
+    editSField(AnimationFieldMask);
 
-    _sfTheAnimation.setValue(value);
+    _sfAnimation.setValue(value);
 }
 
 
@@ -100,8 +100,8 @@ void AnimationEffectBase::execSync (      AnimationEffectBase *pFrom,
 {
     Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
-    if(FieldBits::NoField != (TheAnimationFieldMask & whichField))
-        _sfTheAnimation.syncWith(pFrom->_sfTheAnimation);
+    if(FieldBits::NoField != (AnimationFieldMask & whichField))
+        _sfAnimation.syncWith(pFrom->_sfAnimation);
 }
 #endif
 

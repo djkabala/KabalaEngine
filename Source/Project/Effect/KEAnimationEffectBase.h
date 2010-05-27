@@ -65,7 +65,7 @@
 
 #include "KEEffect.h" // Parent
 
-#include <OpenSG/OSGAnimationFields.h>  // TheAnimation type
+#include <OpenSG/OSGAnimationFields.h>  // Animation type
 
 #include "KEAnimationEffectFields.h"
 
@@ -93,16 +93,16 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffectBase : public Effect
 
     enum
     {
-        TheAnimationFieldId = Inherited::NextFieldId,
-        NextFieldId = TheAnimationFieldId + 1
+        AnimationFieldId = Inherited::NextFieldId,
+        NextFieldId = AnimationFieldId + 1
     };
 
-    static const OSG::BitVector TheAnimationFieldMask =
-        (TypeTraits<BitVector>::One << TheAnimationFieldId);
+    static const OSG::BitVector AnimationFieldMask =
+        (TypeTraits<BitVector>::One << AnimationFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFUnrecAnimationPtr SFTheAnimationType;
+    typedef SFUnrecAnimationPtr SFAnimationType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -175,7 +175,7 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffectBase : public Effect
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFUnrecAnimationPtr _sfTheAnimation;
+    SFUnrecAnimationPtr _sfAnimation;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -204,26 +204,26 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffectBase : public Effect
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleTheAnimation    (void) const;
-    EditFieldHandlePtr editHandleTheAnimation   (void);
+    GetFieldHandlePtr  getHandleAnimation       (void) const;
+    EditFieldHandlePtr editHandleAnimation      (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-            const SFUnrecAnimationPtr *getSFTheAnimation    (void) const;
-                  SFUnrecAnimationPtr *editSFTheAnimation   (void);
+            const SFUnrecAnimationPtr *getSFAnimation       (void) const;
+                  SFUnrecAnimationPtr *editSFAnimation      (void);
 
 
-                  Animation * getTheAnimation   (void) const;
+                  Animation * getAnimation      (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-            void setTheAnimation   (Animation * const value);
+            void setAnimation      (Animation * const value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

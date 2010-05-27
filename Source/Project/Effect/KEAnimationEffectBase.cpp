@@ -55,7 +55,7 @@
 
 
 
-#include <OpenSG/OSGAnimation.h>        // TheAnimation Class
+#include <OpenSG/OSGAnimation.h>        // Animation Class
 
 #include "KEAnimationEffectBase.h"
 #include "KEAnimationEffect.h"
@@ -80,7 +80,7 @@ OSG_BEGIN_NAMESPACE
  *                        Field Documentation                              *
 \***************************************************************************/
 
-/*! \var Animation *     AnimationEffectBase::_sfTheAnimation
+/*! \var Animation *     AnimationEffectBase::_sfAnimation
     
 */
 
@@ -114,13 +114,13 @@ void AnimationEffectBase::classDescInserter(TypeObject &oType)
 
     pDesc = new SFUnrecAnimationPtr::Description(
         SFUnrecAnimationPtr::getClassType(),
-        "TheAnimation",
+        "Animation",
         "",
-        TheAnimationFieldId, TheAnimationFieldMask,
+        AnimationFieldId, AnimationFieldMask,
         false,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&AnimationEffect::editHandleTheAnimation),
-        static_cast<FieldGetMethodSig >(&AnimationEffect::getHandleTheAnimation));
+        static_cast<FieldEditMethodSig>(&AnimationEffect::editHandleAnimation),
+        static_cast<FieldGetMethodSig >(&AnimationEffect::getHandleAnimation));
 
     oType.addInitialDesc(pDesc);
 }
@@ -154,7 +154,7 @@ AnimationEffectBase::TypeObject AnimationEffectBase::_type(
     ">\n"
     "The SceneObject.\n"
     "\t<Field\n"
-    "\t\tname=\"TheAnimation\"\n"
+    "\t\tname=\"Animation\"\n"
     "\t\ttype=\"Animation\"\n"
     "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"single\"\n"
@@ -187,17 +187,17 @@ UInt32 AnimationEffectBase::getContainerSize(void) const
 /*------------------------- decorator get ------------------------------*/
 
 
-//! Get the AnimationEffect::_sfTheAnimation field.
-const SFUnrecAnimationPtr *AnimationEffectBase::getSFTheAnimation(void) const
+//! Get the AnimationEffect::_sfAnimation field.
+const SFUnrecAnimationPtr *AnimationEffectBase::getSFAnimation(void) const
 {
-    return &_sfTheAnimation;
+    return &_sfAnimation;
 }
 
-SFUnrecAnimationPtr *AnimationEffectBase::editSFTheAnimation   (void)
+SFUnrecAnimationPtr *AnimationEffectBase::editSFAnimation      (void)
 {
-    editSField(TheAnimationFieldMask);
+    editSField(AnimationFieldMask);
 
-    return &_sfTheAnimation;
+    return &_sfAnimation;
 }
 
 
@@ -210,9 +210,9 @@ UInt32 AnimationEffectBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
-    if(FieldBits::NoField != (TheAnimationFieldMask & whichField))
+    if(FieldBits::NoField != (AnimationFieldMask & whichField))
     {
-        returnValue += _sfTheAnimation.getBinSize();
+        returnValue += _sfAnimation.getBinSize();
     }
 
     return returnValue;
@@ -223,9 +223,9 @@ void AnimationEffectBase::copyToBin(BinaryDataHandler &pMem,
 {
     Inherited::copyToBin(pMem, whichField);
 
-    if(FieldBits::NoField != (TheAnimationFieldMask & whichField))
+    if(FieldBits::NoField != (AnimationFieldMask & whichField))
     {
-        _sfTheAnimation.copyToBin(pMem);
+        _sfAnimation.copyToBin(pMem);
     }
 }
 
@@ -234,9 +234,9 @@ void AnimationEffectBase::copyFromBin(BinaryDataHandler &pMem,
 {
     Inherited::copyFromBin(pMem, whichField);
 
-    if(FieldBits::NoField != (TheAnimationFieldMask & whichField))
+    if(FieldBits::NoField != (AnimationFieldMask & whichField))
     {
-        _sfTheAnimation.copyFromBin(pMem);
+        _sfAnimation.copyFromBin(pMem);
     }
 }
 
@@ -363,13 +363,13 @@ FieldContainerTransitPtr AnimationEffectBase::shallowCopy(void) const
 
 AnimationEffectBase::AnimationEffectBase(void) :
     Inherited(),
-    _sfTheAnimation           (NULL)
+    _sfAnimation              (NULL)
 {
 }
 
 AnimationEffectBase::AnimationEffectBase(const AnimationEffectBase &source) :
     Inherited(source),
-    _sfTheAnimation           (NULL)
+    _sfAnimation              (NULL)
 {
 }
 
@@ -388,34 +388,34 @@ void AnimationEffectBase::onCreate(const AnimationEffect *source)
     {
         AnimationEffect *pThis = static_cast<AnimationEffect *>(this);
 
-        pThis->setTheAnimation(source->getTheAnimation());
+        pThis->setAnimation(source->getAnimation());
     }
 }
 
-GetFieldHandlePtr AnimationEffectBase::getHandleTheAnimation    (void) const
+GetFieldHandlePtr AnimationEffectBase::getHandleAnimation       (void) const
 {
     SFUnrecAnimationPtr::GetHandlePtr returnValue(
         new  SFUnrecAnimationPtr::GetHandle(
-             &_sfTheAnimation,
-             this->getType().getFieldDesc(TheAnimationFieldId),
+             &_sfAnimation,
+             this->getType().getFieldDesc(AnimationFieldId),
              const_cast<AnimationEffectBase *>(this)));
 
     return returnValue;
 }
 
-EditFieldHandlePtr AnimationEffectBase::editHandleTheAnimation   (void)
+EditFieldHandlePtr AnimationEffectBase::editHandleAnimation      (void)
 {
     SFUnrecAnimationPtr::EditHandlePtr returnValue(
         new  SFUnrecAnimationPtr::EditHandle(
-             &_sfTheAnimation,
-             this->getType().getFieldDesc(TheAnimationFieldId),
+             &_sfAnimation,
+             this->getType().getFieldDesc(AnimationFieldId),
              this));
 
     returnValue->setSetMethod(
-        boost::bind(&AnimationEffect::setTheAnimation,
+        boost::bind(&AnimationEffect::setAnimation,
                     static_cast<AnimationEffect *>(this), _1));
 
-    editSField(TheAnimationFieldMask);
+    editSField(AnimationFieldMask);
 
     return returnValue;
 }
@@ -457,7 +457,7 @@ void AnimationEffectBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
 
-    static_cast<AnimationEffect *>(this)->setTheAnimation(NULL);
+    static_cast<AnimationEffect *>(this)->setAnimation(NULL);
 
 
 }

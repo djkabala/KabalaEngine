@@ -107,6 +107,18 @@ OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
                            Behavior *,
                            0);
 
+DataType &FieldTraits< Behavior *, 1 >::getType(void)
+{
+    return FieldTraits<Behavior *, 0>::getType();
+}
+
+
+OSG_EXPORT_PTR_MFIELD(ChildPointerMField,
+                      Behavior *,
+                      UnrecordedRefCountPolicy,
+                      1);
+
+
 /***************************************************************************\
  *                         Field Description                               *
 \***************************************************************************/
@@ -166,6 +178,7 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     "\tdecoratable=\"false\"\n"
     "\tuseLocalIncludes=\"false\"\n"
     "\tlibnamespace=\"KE\"\n"
+    "    childFields=\"multi\"\n"
     "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
     ">\n"
     "The SceneObject.\n"

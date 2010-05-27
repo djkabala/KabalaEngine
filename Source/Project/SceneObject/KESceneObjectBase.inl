@@ -89,11 +89,20 @@ void SceneObjectBase::setNode(Node * const value)
     _sfNode.setValue(value);
 }
 
-//! Get the value of the \a index element the SceneObject::_mfBehaviors field.
+//! Get the value of the SceneObject::_sfScene field.
 inline
-Behavior * SceneObjectBase::getBehaviors(const UInt32 index) const
+Scene * SceneObjectBase::getScene(void) const
 {
-    return _mfBehaviors[index];
+    return _sfScene.getValue();
+}
+
+//! Set the value of the SceneObject::_sfScene field.
+inline
+void SceneObjectBase::setScene(Scene * const value)
+{
+    editSField(SceneFieldMask);
+
+    _sfScene.setValue(value);
 }
 
 //! Get the value of the \a index element the SceneObject::_mfBehaviors field.
@@ -127,8 +136,8 @@ void SceneObjectBase::execSync (      SceneObjectBase *pFrom,
                                 uiSyncInfo,
                                 oOffsets);
 
-    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
-        _mfBehaviors.syncWith(pFrom->_mfBehaviors,
+    if(FieldBits::NoField != (AttachedEffectsFieldMask & whichField))
+        _mfAttachedEffects.syncWith(pFrom->_mfAttachedEffects,
                                 syncMode,
                                 uiSyncInfo,
                                 oOffsets);
@@ -136,11 +145,8 @@ void SceneObjectBase::execSync (      SceneObjectBase *pFrom,
     if(FieldBits::NoField != (NodeFieldMask & whichField))
         _sfNode.syncWith(pFrom->_sfNode);
 
-    if(FieldBits::NoField != (AttachedEffectsFieldMask & whichField))
-        _mfAttachedEffects.syncWith(pFrom->_mfAttachedEffects,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
+    if(FieldBits::NoField != (SceneFieldMask & whichField))
+        _sfScene.syncWith(pFrom->_sfScene);
 }
 #endif
 

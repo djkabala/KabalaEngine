@@ -45,7 +45,7 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KEAnimationEffect.h"
-#include "Project/Scene/KEScene.h"
+#include "Project/SceneObject/KESceneObject.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -83,35 +83,37 @@ void AnimationEffect::initMethod(InitPhase ePhase)
 void AnimationEffect::begin()
 {
     //note, there;s 
-    if(theUpdateProducer)
-        theUpdateProducer = dynamic_pointer_cast<SceneObjectPtr>(_sfParentSceneObject.getValue())->getEventProducer();
-    _sfTheAnimation.getValue()->attachUpdateProducer(theUpdateProducer);
-    _sfTheAnimation.getValue()->start();
+    if(theUpdateProducer == NULL)
+    {
+        theUpdateProducer = getParentSceneObject()->getScene()->getEventProducer();
+    }
+    getAnimation()->attachUpdateProducer(theUpdateProducer);
+    getAnimation()->start();
 }
 
 bool AnimationEffect::isPlaying()
 {
-    return _sfTheAnimation.getValue()->isPlaying();
+    return getAnimation()->isPlaying();
 }
 
 bool AnimationEffect::isPaused()
 {
-    return _sfTheAnimation.getValue()->isPaused();
+    return getAnimation()->isPaused();
 }
 
 void AnimationEffect::pause()
 {
-    _sfTheAnimation.getValue()->pause(true);
+    getAnimation()->pause(true);
 }
 
 void AnimationEffect::unpause()
 {
-    _sfTheAnimation.getValue()->pause(false);
+    getAnimation()->pause(false);
 }
 
 void AnimationEffect::end()
 {
-    _sfTheAnimation.getValue()->stop();
+    getAnimation()->stop();
 }
 
 /*----------------------- constructors & destructors ----------------------*/

@@ -55,7 +55,7 @@
 
 
 
-#include <OpenSG/OSGSound.h>            // TheSound Class
+#include <OpenSG/OSGSound.h>            // Sound Class
 
 #include "KESoundEffectBase.h"
 #include "KESoundEffect.h"
@@ -80,7 +80,7 @@ OSG_BEGIN_NAMESPACE
  *                        Field Documentation                              *
 \***************************************************************************/
 
-/*! \var Sound *         SoundEffectBase::_sfTheSound
+/*! \var Sound *         SoundEffectBase::_sfSound
     
 */
 
@@ -114,13 +114,13 @@ void SoundEffectBase::classDescInserter(TypeObject &oType)
 
     pDesc = new SFUnrecSoundPtr::Description(
         SFUnrecSoundPtr::getClassType(),
-        "TheSound",
+        "Sound",
         "",
-        TheSoundFieldId, TheSoundFieldMask,
+        SoundFieldId, SoundFieldMask,
         false,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&SoundEffect::editHandleTheSound),
-        static_cast<FieldGetMethodSig >(&SoundEffect::getHandleTheSound));
+        static_cast<FieldEditMethodSig>(&SoundEffect::editHandleSound),
+        static_cast<FieldGetMethodSig >(&SoundEffect::getHandleSound));
 
     oType.addInitialDesc(pDesc);
 }
@@ -154,7 +154,7 @@ SoundEffectBase::TypeObject SoundEffectBase::_type(
     ">\n"
     "The SceneObject.\n"
     "\t<Field\n"
-    "\t\tname=\"TheSound\"\n"
+    "\t\tname=\"Sound\"\n"
     "\t\ttype=\"Sound\"\n"
     "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"single\"\n"
@@ -186,17 +186,17 @@ UInt32 SoundEffectBase::getContainerSize(void) const
 /*------------------------- decorator get ------------------------------*/
 
 
-//! Get the SoundEffect::_sfTheSound field.
-const SFUnrecSoundPtr *SoundEffectBase::getSFTheSound(void) const
+//! Get the SoundEffect::_sfSound field.
+const SFUnrecSoundPtr *SoundEffectBase::getSFSound(void) const
 {
-    return &_sfTheSound;
+    return &_sfSound;
 }
 
-SFUnrecSoundPtr     *SoundEffectBase::editSFTheSound       (void)
+SFUnrecSoundPtr     *SoundEffectBase::editSFSound          (void)
 {
-    editSField(TheSoundFieldMask);
+    editSField(SoundFieldMask);
 
-    return &_sfTheSound;
+    return &_sfSound;
 }
 
 
@@ -209,9 +209,9 @@ UInt32 SoundEffectBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
-    if(FieldBits::NoField != (TheSoundFieldMask & whichField))
+    if(FieldBits::NoField != (SoundFieldMask & whichField))
     {
-        returnValue += _sfTheSound.getBinSize();
+        returnValue += _sfSound.getBinSize();
     }
 
     return returnValue;
@@ -222,9 +222,9 @@ void SoundEffectBase::copyToBin(BinaryDataHandler &pMem,
 {
     Inherited::copyToBin(pMem, whichField);
 
-    if(FieldBits::NoField != (TheSoundFieldMask & whichField))
+    if(FieldBits::NoField != (SoundFieldMask & whichField))
     {
-        _sfTheSound.copyToBin(pMem);
+        _sfSound.copyToBin(pMem);
     }
 }
 
@@ -233,9 +233,9 @@ void SoundEffectBase::copyFromBin(BinaryDataHandler &pMem,
 {
     Inherited::copyFromBin(pMem, whichField);
 
-    if(FieldBits::NoField != (TheSoundFieldMask & whichField))
+    if(FieldBits::NoField != (SoundFieldMask & whichField))
     {
-        _sfTheSound.copyFromBin(pMem);
+        _sfSound.copyFromBin(pMem);
     }
 }
 
@@ -362,13 +362,13 @@ FieldContainerTransitPtr SoundEffectBase::shallowCopy(void) const
 
 SoundEffectBase::SoundEffectBase(void) :
     Inherited(),
-    _sfTheSound               (NULL)
+    _sfSound                  (NULL)
 {
 }
 
 SoundEffectBase::SoundEffectBase(const SoundEffectBase &source) :
     Inherited(source),
-    _sfTheSound               (NULL)
+    _sfSound                  (NULL)
 {
 }
 
@@ -387,34 +387,34 @@ void SoundEffectBase::onCreate(const SoundEffect *source)
     {
         SoundEffect *pThis = static_cast<SoundEffect *>(this);
 
-        pThis->setTheSound(source->getTheSound());
+        pThis->setSound(source->getSound());
     }
 }
 
-GetFieldHandlePtr SoundEffectBase::getHandleTheSound        (void) const
+GetFieldHandlePtr SoundEffectBase::getHandleSound           (void) const
 {
     SFUnrecSoundPtr::GetHandlePtr returnValue(
         new  SFUnrecSoundPtr::GetHandle(
-             &_sfTheSound,
-             this->getType().getFieldDesc(TheSoundFieldId),
+             &_sfSound,
+             this->getType().getFieldDesc(SoundFieldId),
              const_cast<SoundEffectBase *>(this)));
 
     return returnValue;
 }
 
-EditFieldHandlePtr SoundEffectBase::editHandleTheSound       (void)
+EditFieldHandlePtr SoundEffectBase::editHandleSound          (void)
 {
     SFUnrecSoundPtr::EditHandlePtr returnValue(
         new  SFUnrecSoundPtr::EditHandle(
-             &_sfTheSound,
-             this->getType().getFieldDesc(TheSoundFieldId),
+             &_sfSound,
+             this->getType().getFieldDesc(SoundFieldId),
              this));
 
     returnValue->setSetMethod(
-        boost::bind(&SoundEffect::setTheSound,
+        boost::bind(&SoundEffect::setSound,
                     static_cast<SoundEffect *>(this), _1));
 
-    editSField(TheSoundFieldMask);
+    editSField(SoundFieldMask);
 
     return returnValue;
 }
@@ -456,7 +456,7 @@ void SoundEffectBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
 
-    static_cast<SoundEffect *>(this)->setTheSound(NULL);
+    static_cast<SoundEffect *>(this)->setSound(NULL);
 
 
 }

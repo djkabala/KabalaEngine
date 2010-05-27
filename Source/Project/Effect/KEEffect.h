@@ -40,6 +40,7 @@
 #endif
 
 #include "KEEffectBase.h"
+#include "Project/SceneObject/KESceneObject.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -64,6 +65,12 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     virtual void pause() = 0;
     virtual void unpause() = 0;
     virtual void end() = 0;
+
+    /*---------------------------------------------------------------------*/
+    /*! \name                      Get                                     */
+    /*! \{                                                                 */
+    
+    const SceneObject* getParentSceneObject(void) const;
 
 
     /*---------------------------------------------------------------------*/

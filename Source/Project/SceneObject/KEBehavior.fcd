@@ -11,6 +11,7 @@
 	decoratable="false"
 	useLocalIncludes="false"
 	libnamespace="KE"
+    childFields="multi"
     authors="David Kabala (djkabala@gmail.com)                             "
 >
 The SceneObject.
