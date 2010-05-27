@@ -43,6 +43,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGContainerUtils.h>
 
 #include "KEAnimationEffect.h"
 #include "Project/SceneObject/KESceneObject.h"
@@ -82,10 +83,9 @@ void AnimationEffect::initMethod(InitPhase ePhase)
 
 void AnimationEffect::begin()
 {
-    //note, there;s 
     if(theUpdateProducer == NULL)
     {
-        theUpdateProducer = getParentSceneObject()->getScene()->getEventProducer();
+        theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
     }
     getAnimation()->attachUpdateProducer(theUpdateProducer);
     getAnimation()->start();

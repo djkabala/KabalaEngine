@@ -58,6 +58,13 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
     typedef ParticleSystemEffectBase Inherited;
     typedef ParticleSystemEffect     Self;
 
+    void begin();
+    bool isPlaying();
+    bool isPaused();
+    void pause();
+    void unpause();
+    void end();
+
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
@@ -109,6 +116,9 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
 
     friend class FieldContainer;
     friend class ParticleSystemEffectBase;
+
+    bool isPausedFlag;
+    EventProducerPtr theUpdateProducer;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const ParticleSystemEffect &source);
