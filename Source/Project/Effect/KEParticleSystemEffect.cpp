@@ -43,6 +43,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGContainerUtils.h>
 
 #include "KEParticleSystemEffect.h"
 
@@ -76,41 +77,44 @@ void ParticleSystemEffect::initMethod(InitPhase ePhase)
 \***************************************************************************/
 
 
-void AnimationEffect::begin()
+void ParticleSystemEffect::begin()
 {
     if(theUpdateProducer == NULL)
     {
         theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
     }
-    getAnimation()->attachUpdateProducer(theUpdateProducer);
-    getAnimation()->start();
+    getTheSystem()->attachUpdateProducer(theUpdateProducer);
+
+    isPlayingFlag = true;
+    isPausedFlag = false;
 }
 
-bool AnimationEffect::isPlaying()
+bool ParticleSystemEffect::isPlaying()
 {
-    return getAnimation()->isPlaying();
+    return isPlayingFlag;
 }
 
-bool AnimationEffect::isPaused()
+bool ParticleSystemEffect::isPaused()
 {
-    return getAnimation()->isPaused();
+    return isPausedFlag;
 }
 
-void AnimationEffect::pause()
+void ParticleSystemEffect::pause()
 {
-    getAnimation()->pause(true);
+    getTheSystem()->detachUpdateProducer();
+    isPausedFlag = true;
 }
 
-void AnimationEffect::unpause()
+void ParticleSystemEffect::unpause()
 {
-    getAnimation()->pause(false);
+    getTheSystem()->attachUpdateProducer(theUpdateProducer);
+    isPausedFlag = false;
 }
 
-void AnimationEffect::end()
+void ParticleSystemEffect::end()
 {
-    getAnimation()->stop();
+    //getAnimation()->stop();
 }
-
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -119,7 +123,10 @@ void AnimationEffect::end()
 /*----------------------- constructors & destructors ----------------------*/
 
 ParticleSystemEffect::ParticleSystemEffect(void) :
+    isPlayingFlag(false),
     isPausedFlag(false),
+    isBurstSystem(false),
+    endCondition(0),
     Inherited()
 {
 }
