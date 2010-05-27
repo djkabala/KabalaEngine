@@ -160,5 +160,76 @@ namespace OSG {
         virtual ~Project(void); 
     };
     
+    /******************************************************/
+    /*                  EffectRefPtr                        */
+    /******************************************************/
+    class EffectRefPtr : public AttachmentContainerRefPtr
+    {
+      public:
+         EffectRefPtr(void);
+         EffectRefPtr(const EffectRefPtr               &source);
+         /*ProjectRefPtr(const NullFieldContainerRefPtr &source);*/
+
+
+        ~EffectRefPtr(void); 
+        Effect *operator->(void);
+        
+    };
+    %extend EffectRefPtr
+    {
+        static EffectRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::Project>(oIn);
+        }
+    };
+    
+    /******************************************************/
+    /*                    Effect                         */
+    /******************************************************/
+    class Project : public AttachmentContainer
+    {
+      public:
+    
+        void start(void);
+    
+        void reset(void);
+    
+        void stop(void);
+    
+        void setActiveScene(SceneRefPtr TheScene);
+        SceneRefPtr getActiveScene(void) const;
+    
+        void setActiveNode(NodeRefPtr TheNode);
+        
+        void addActiveAnimation(AnimationRefPtr TheAnimation);
+        void removeActiveAnimation(AnimationRefPtr TheAnimation);
+        void addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
+        void removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
+    
+        //void save(const BoostPath& ProjectFile);
+    
+        //static ProjectRefPtr load(const BoostPath& ProjectFile);
+    
+        //static ProjectRefPtr create(const BoostPath& ProjectFile);
+    
+        //void save(void);
+    
+        //void attachNames(void);
+    
+        WindowEventProducerRefPtr getEventProducer(void) const;
+    
+        void pauseActiveUpdates(void);
+        void unpauseActiveUpdates(void);
+        void togglePauseActiveUpdates(void);
+    
+        SceneRefPtr getLastActiveScene(void) const;
+      protected:
+        Project(void);
+        Project(const Animation &source);
+        virtual ~Project(void); 
+    };
+    
+    
+    
 }
 

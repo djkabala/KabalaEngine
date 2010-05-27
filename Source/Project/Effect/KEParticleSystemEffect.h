@@ -40,6 +40,7 @@
 #endif
 
 #include "KEParticleSystemEffectBase.h"
+#include <OpenSG/OSGEventProducer.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -55,6 +56,14 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
 
   public:
 
+    enum:short//End Conditions
+    {
+       END_ON_TIMEOUT,
+       END_ON_PARTICLE_COUNT,
+       END_ON_VOLUME,
+       
+    };
+
     typedef ParticleSystemEffectBase Inherited;
     typedef ParticleSystemEffect     Self;
 
@@ -64,6 +73,7 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
     void pause();
     void unpause();
     void end();
+
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -117,7 +127,10 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
     friend class FieldContainer;
     friend class ParticleSystemEffectBase;
 
+    bool isPlayingFlag;
     bool isPausedFlag;
+    bool isBurstSystem;
+    short endCondition;
     EventProducerPtr theUpdateProducer;
 
     // prohibit default functions (move to 'public' if you need one)
