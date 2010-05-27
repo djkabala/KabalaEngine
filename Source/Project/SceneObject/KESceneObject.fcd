@@ -25,6 +25,20 @@ The SceneObject.
 		access="protected"
 	>
 	</Field>
+    <Field
+		name="Behaviors"
+		type="Behavior"
+        childParentType="FieldContainer"
+		category="childpointer"
+		cardinality="multi"
+		visibility="external"
+		fieldHeader="Project/SceneObject/KEBehaviorFields.h"
+		typeHeader="Project/SceneObject/KEBehavior.h"
+		access="protected"
+		defaultValue="NULL"
+        linkParentField="SceneObject"
+	>
+	</Field>
 	<Field
 		name="Node"
 		type="Node"
@@ -33,6 +47,20 @@ The SceneObject.
 		visibility="external"
 		access="public"
 		defaultValue="NULL"
+	>
+	</Field>
+    <Field
+		name="AttachedEffects"
+		type="Effect"
+        childParentType="FieldContainer"
+		category="childpointer"
+		cardinality="multi"
+		visibility="external"
+		fieldHeader="Project/Effect/KEEffectFields.h"
+		typeHeader="Project/Effect/KEEffect.h"
+		access="protected"
+		defaultValue="NULL"
+        linkParentField="ParentSceneObject"
 	>
 	</Field>
 </FieldContainer>

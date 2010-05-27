@@ -96,6 +96,20 @@ Behavior * SceneObjectBase::getBehaviors(const UInt32 index) const
     return _mfBehaviors[index];
 }
 
+//! Get the value of the \a index element the SceneObject::_mfBehaviors field.
+inline
+Behavior * SceneObjectBase::getBehaviors(const UInt32 index) const
+{
+    return _mfBehaviors[index];
+}
+
+//! Get the value of the \a index element the SceneObject::_mfAttachedEffects field.
+inline
+Effect * SceneObjectBase::getAttachedEffects(const UInt32 index) const
+{
+    return _mfAttachedEffects[index];
+}
+
 
 #ifdef OSG_MT_CPTR_ASPECT
 inline
@@ -113,8 +127,20 @@ void SceneObjectBase::execSync (      SceneObjectBase *pFrom,
                                 uiSyncInfo,
                                 oOffsets);
 
+    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
+        _mfBehaviors.syncWith(pFrom->_mfBehaviors,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
+
     if(FieldBits::NoField != (NodeFieldMask & whichField))
         _sfNode.syncWith(pFrom->_sfNode);
+
+    if(FieldBits::NoField != (AttachedEffectsFieldMask & whichField))
+        _mfAttachedEffects.syncWith(pFrom->_mfAttachedEffects,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
 }
 #endif
 
