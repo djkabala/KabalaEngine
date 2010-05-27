@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="AnimationEffect"
+	parent="Effect"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="Robert Goetz (rdgoetz@iastate.edu)                            "
+>
+The SceneObject.
+	<Field
+		name="TheAnimation"
+		type="Animation"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="protected"
+	>
+	</Field>
+</FieldContainer>
+

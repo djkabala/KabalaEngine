@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="Effect"
+	parent="AttachmentContainer"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="abstract"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    childFields="multi"
+    authors="Robert Goetz (rdgoetz@iastate.edu)                            "
+>
+The SceneObject.
+	<Field
+		name="Name"
+		type="std::string"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		access="protected"
+		defaultValue="NULL"
+	>
+	</Field>
+    <Field
+		name="ParentSceneObject"
+		type="FieldContainer"
+		category="parentpointer"
+		cardinality="single"
+		visibility="external"
+		access="none"
+		defaultValue="NULL"
+        doRefCount="false"
+        passFieldMask="true"
+	>
+	</Field>
+</FieldContainer>

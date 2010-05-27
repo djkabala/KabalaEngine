@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="ParticleSystemEffect"
+	parent="Effect"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    isNodeCore="false"
+    authors="Robert Goetz (rdgoetz@iastate.edu)                            "
+>
+The SceneObject.
+	<Field
+		name="TheSystem"
+		type="ParticleSystem"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="protected"
+        fieldHeader="OSGParticleSystemFields.h"
+		typeHeader="OSGParticleSystem.h"
+	>
+	</Field>
+</FieldContainer>
