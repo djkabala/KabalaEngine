@@ -70,6 +70,7 @@
 #include "Player/Commands/KEPasteCommand.h"
 #include "Player/Commands/KENewCommand.h"
 #include "Player/Commands/KEImportModelCommand.h"
+#include "Player/Commands/KEExportModelCommand.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -188,6 +189,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_ShowRecursiveItem = MenuItem::create();
 	_DeleteItem = MenuItem::create();
 	_ImportItem = MenuItem::create();
+	_ExportItem = MenuItem::create();
 	_CutItem = MenuItem::create();
 	_CopyItem = MenuItem::create();
 	_PasteItem = MenuItem::create();
@@ -204,6 +206,8 @@ void HierarchyPanel::createPopUpMenu(void)
 
     _ImportItem->setText("Import");
 
+    _ExportItem->setText("Export");
+
     _CutItem->setText("Cut");
 
     _CopyItem->setText("Copy");
@@ -218,6 +222,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_ShowRecursiveItem->addActionListener(&_BasicListener);
 	_DeleteItem->addActionListener(&_BasicListener);
 	_ImportItem->addActionListener(&_BasicListener);
+	_ExportItem->addActionListener(&_BasicListener);
 	_CutItem->addActionListener(&_BasicListener);
 	_CopyItem->addActionListener(&_BasicListener);
 	_PasteItem->addActionListener(&_BasicListener);
@@ -236,6 +241,7 @@ void HierarchyPanel::createPopUpMenu(void)
         _HierarchyPanelPopupMenu->addItem(_DeleteItem);	
         _HierarchyPanelPopupMenu->addSeparator();
         _HierarchyPanelPopupMenu->addItem(_ImportItem);	
+        _HierarchyPanelPopupMenu->addItem(_ExportItem);	
         _HierarchyPanelPopupMenu->addSeparator();
         _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
     _HierarchyPanelPopupMenu->addPopupMenuListener(&_TheSceneGraphPopupListener);
@@ -281,6 +287,16 @@ void HierarchyPanel::actionPerformed(const ActionEventUnrecPtr e)
         }
 		CommandPtr TheImportModelCommand = ImportModelCommand::create(HierarchyPanelRefPtr(this),NodeToAddTo);
         _ApplicationPlayer->getCommandManager()->executeCommand(TheImportModelCommand);
+	}
+	else if(e->getSource() == _ExportItem)
+	{
+        NodeUnrecPtr NodeToExport = _ApplicationPlayer->getSelectedNode();
+        if(NodeToExport == NULL)
+        {
+            NodeToExport =  getSceneGraphTreeModel()->getRootNode();
+        }
+		CommandPtr TheExportModelCommand = ExportModelCommand::create(NodeToExport);
+        _ApplicationPlayer->getCommandManager()->executeCommand(TheExportModelCommand);
 	}
 	else if(e->getSource() == _FocusCamera)
 	{
