@@ -602,7 +602,7 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     setName(DefaultSceneCamera, "Untitled Camera" );
     DefaultSceneCamera->setFov(60.f);
     DefaultSceneCamera->setNear(0.1f);
-    DefaultSceneCamera->setFar(100.0f);
+    DefaultSceneCamera->setFar(5000.0f);
     DefaultSceneCamera->setBeacon(CameraBeaconNode);
 
     // Make Torus Node (creates Torus in background of scene)

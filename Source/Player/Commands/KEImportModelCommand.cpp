@@ -41,9 +41,10 @@
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KEPasteCommand.h"
-
-#include <OpenSG/OSGNameAttachment.h>
+#include "KEImportModelCommand.h"
+#include <OpenSG/OSGSceneFileHandler.h>
+#include <OpenSG/OSGFCFileHandler.h>
+#include <OpenSG/OSGWindowEventProducer.h>
 
 OSG_USING_NAMESPACE
 
@@ -51,81 +52,120 @@ OSG_USING_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class OSG::PasteCommand
-A PasteCommand. 
+/*! \class OSG::ImportModelCommand
+A ImportModelCommand. 
 */
 
 /***************************************************************************\
  *                           Class variables                               *
 \***************************************************************************/
 
-CommandType PasteCommand::_Type("PasteCommand", "UndoableCommand");
+CommandType ImportModelCommand::_Type("ImportModelCommand", "UndoableCommand");
 
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-PasteCommandPtr PasteCommand::create(ApplicationPlayerRefPtr ApplicationPlayer,
-                                     HierarchyPanelRefPtr HierarchyPanel,
-                                     NodeRefPtr ParentNode,
-                                     bool DeepClone)
+ImportModelCommandPtr ImportModelCommand::create(HierarchyPanelRefPtr HierarchyPanel,NodeUnrecPtr NodeToAddTo)
 {
-	return RefPtr(new PasteCommand(ApplicationPlayer,HierarchyPanel,ParentNode,DeepClone));
+	return RefPtr(new ImportModelCommand(HierarchyPanel,NodeToAddTo));
 }
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
 
-void PasteCommand::execute(void)
+void ImportModelCommand::execute(void)
 {
-	NodeRefPtr ClonedNodeInCopyClipboard = _ApplicationPlayer->getClonedNodeInCopyClipboard();
+    //Have the user select the file to import
+    std::vector<WindowEventProducer::FileDialogFilter> Filters;
 
-    if(_DeepClone)
+    std::list< const Char8 * > ReadableModelSuff;
+    SceneFileHandler::the()->getSuffixList(ReadableModelSuff, SceneFileType::OSG_READ_SUPPORTED);
+    //Determine all of the readable model filetypes
+    Filters.push_back(WindowEventProducer::FileDialogFilter("All Model filetypes",""));
+    std::string AllModelSuffixes;
+    std::string AllModelSuffixesDesc("All Model filetypes (");
+    for(std::list<const Char8*>::const_iterator SuffixItor(ReadableModelSuff.begin()) ; SuffixItor != ReadableModelSuff.end() ; ++SuffixItor)
     {
-        _PastedNode = deepCloneTree(_ApplicationPlayer->getClonedNodeInCopyClipboard());
+        if(!AllModelSuffixes.empty())
+        {
+            AllModelSuffixes += ",";
+            AllModelSuffixesDesc += ", ";
+        }
+        AllModelSuffixes += *SuffixItor;
+        AllModelSuffixesDesc = AllModelSuffixesDesc + "*." + *SuffixItor;
+        Filters.push_back(WindowEventProducer::FileDialogFilter(std::string(SceneFileHandler::the()->getFileType(*SuffixItor)->getName()) +  " (*." + *SuffixItor + ")",*SuffixItor));
     }
-    else
+    AllModelSuffixesDesc += ")";
+    Filters[0] = WindowEventProducer::FileDialogFilter(AllModelSuffixesDesc,AllModelSuffixes);
+    Filters.push_back(WindowEventProducer::FileDialogFilter("All (*.*)","*"));
+
+	std::vector<BoostPath> FilesToOpen;
+    FilesToOpen = MainApplication::the()->getMainWindow()->openFileDialog("Import a model file.",
+        Filters,
+        BoostPath(".."),
+        false);
+
+	_NewNode = NULL;
+
+    if(FilesToOpen.size() > 0)
     {
-        _PastedNode = cloneTree(_ApplicationPlayer->getClonedNodeInCopyClipboard());
+        //Try loading the file using the SceneFileHandler
+        _NewNode = SceneFileHandler::the()->read(FilesToOpen[0].string().c_str());
+
+        //Try loading the file using the XML file handler
+        if(_NewNode == NULL)
+        {
+            _NewNode = dynamic_pointer_cast<Node>(FCFileHandler::the()->read(FilesToOpen[0], Node::getClassType()));
+        }
     }
 
-    const Char8* NameChar = getName(_ApplicationPlayer->getClonedNodeInCopyClipboard());
-    std::string _Name= (NameChar == NULL ? "UNNAMED NODE" : NameChar);
-	_Name+=" copy";
-	setName(_PastedNode,_Name);
 
-    if(_PastedNode!=NULL)
+    if(_NodeToAddTo!=NULL && _NewNode != NULL)
 	{
-		_HierarchyPanel->getSceneGraphTreeModel()->addNode(_ParentNode,_PastedNode);
-	}
-
+	    _HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
+	    _HasBeenDone = true;
+    }
+	
 	_HasBeenDone = true;
 }
 
-std::string PasteCommand::getCommandDescription(void) const
+std::string ImportModelCommand::getCommandDescription(void) const
 {
-	return std::string("Paste ");// + getName(_TheModel->getBackground(_TheIndex));
+	std::string Description("Imported Model");
+	
+	return Description;
 }
 
-std::string PasteCommand::getPresentationName(void) const
+std::string ImportModelCommand::getPresentationName(void) const
 {
 	return getCommandDescription();
 }
 
-void PasteCommand::redo(void)
+void ImportModelCommand::redo(void)
 {
     Inherited::redo();
-    _HierarchyPanel->getSceneGraphTreeModel()->addNode(_ParentNode,_PastedNode);
+
+	if(_NewNode!=NULL)
+	{
+		_HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
+	}
+
 }
 
-void PasteCommand::undo(void)
+void ImportModelCommand::undo(void)
 {
     Inherited::undo();
-    _HierarchyPanel->getSceneGraphTreeModel()->removeNode(_PastedNode);
+
+	if(_NewNode!=NULL)
+	{
+		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(_NewNode);
+	}
+
 }
 
-const CommandType &PasteCommand::getType(void) const
+const CommandType &ImportModelCommand::getType(void) const
 {
 	return _Type;
 }
@@ -135,19 +175,13 @@ const CommandType &PasteCommand::getType(void) const
 
 /*----------------------- constructors & destructors ----------------------*/
 
-PasteCommand::~PasteCommand(void)
+ImportModelCommand::~ImportModelCommand(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void PasteCommand::operator =(const PasteCommand& source)
+void ImportModelCommand::operator =(const ImportModelCommand& source)
 {
-    if(this != &source)
-    {
-	    Inherited::operator=(source);
-	 /*   _TheModel = source._TheModel;
-	    _TheIndex = source._TheIndex;*/
-    }
 }
 

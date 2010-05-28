@@ -69,6 +69,7 @@
 #include "Player/Commands/KECopyCommand.h"
 #include "Player/Commands/KEPasteCommand.h"
 #include "Player/Commands/KENewCommand.h"
+#include "Player/Commands/KEImportModelCommand.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -186,6 +187,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_ShowHideItem = MenuItem::create();
 	_ShowRecursiveItem = MenuItem::create();
 	_DeleteItem = MenuItem::create();
+	_ImportItem = MenuItem::create();
 	_CutItem = MenuItem::create();
 	_CopyItem = MenuItem::create();
 	_PasteItem = MenuItem::create();
@@ -194,25 +196,28 @@ void HierarchyPanel::createPopUpMenu(void)
 
 	// _HierarchyPanelPopupMenu up menu items
 
-        _ShowHideItem->setText("Hide");
+    _ShowHideItem->setText("Hide");
 
-        _ShowRecursiveItem->setText("Show all below");
+    _ShowRecursiveItem->setText("Show all below");
 
-        _DeleteItem->setText("Delete");
+    _DeleteItem->setText("Delete");
 
-        _CutItem->setText("Cut");
+    _ImportItem->setText("Import");
 
-        _CopyItem->setText("Copy");
+    _CutItem->setText("Cut");
 
-        _PasteItem->setText("Paste");
+    _CopyItem->setText("Copy");
 
-        _PasteInstanceItem->setText("Paste Instance");
+    _PasteItem->setText("Paste");
 
-        _FocusCamera->setText("Focus Camera All");
+    _PasteInstanceItem->setText("Paste Instance");
+
+    _FocusCamera->setText("Focus Camera All");
 
 	_ShowHideItem->addActionListener(&_BasicListener);
 	_ShowRecursiveItem->addActionListener(&_BasicListener);
 	_DeleteItem->addActionListener(&_BasicListener);
+	_ImportItem->addActionListener(&_BasicListener);
 	_CutItem->addActionListener(&_BasicListener);
 	_CopyItem->addActionListener(&_BasicListener);
 	_PasteItem->addActionListener(&_BasicListener);
@@ -229,6 +234,8 @@ void HierarchyPanel::createPopUpMenu(void)
         _HierarchyPanelPopupMenu->addItem(_PasteItem);	
         _HierarchyPanelPopupMenu->addItem(_PasteInstanceItem);	
         _HierarchyPanelPopupMenu->addItem(_DeleteItem);	
+        _HierarchyPanelPopupMenu->addSeparator();
+        _HierarchyPanelPopupMenu->addItem(_ImportItem);	
         _HierarchyPanelPopupMenu->addSeparator();
         _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
     _HierarchyPanelPopupMenu->addPopupMenuListener(&_TheSceneGraphPopupListener);
@@ -264,6 +271,16 @@ void HierarchyPanel::actionPerformed(const ActionEventUnrecPtr e)
 	{
 		CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,HierarchyPanelRefPtr(this),_ApplicationPlayer->getSelectedNode());
         _ApplicationPlayer->getCommandManager()->executeCommand(DeleteCommandPtr);
+	}
+	else if(e->getSource() == _ImportItem)
+	{
+        NodeUnrecPtr NodeToAddTo = _ApplicationPlayer->getSelectedNode();
+        if(NodeToAddTo == NULL)
+        {
+            NodeToAddTo =  getSceneGraphTreeModel()->getRootNode();
+        }
+		CommandPtr TheImportModelCommand = ImportModelCommand::create(HierarchyPanelRefPtr(this),NodeToAddTo);
+        _ApplicationPlayer->getCommandManager()->executeCommand(TheImportModelCommand);
 	}
 	else if(e->getSource() == _FocusCamera)
 	{
