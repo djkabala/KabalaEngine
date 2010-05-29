@@ -62,6 +62,7 @@
 #include <OpenSG/OSGTypedGeoIntegralProperty.h>
 #include <OpenSG/OSGTypedGeoVectorProperty.h>
 #include <OpenSG/OSGPointLight.h>
+#include <OpenSG/OSGVisitSubTree.h>
 #include <OpenSG/OSGDirectionalLight.h>
 #include <OpenSG/OSGSpotLight.h>
 //#include <OpenSG/OSGOcclusionCullingTreeBuilder.h>
@@ -84,6 +85,7 @@
 
 #include "Player/Commands/KEUndoCommandOfPlayer.h"
 #include "Player/Commands/KERedoCommandOfPlayer.h"
+
 
 OSG_BEGIN_NAMESPACE
 
@@ -1568,15 +1570,8 @@ void ApplicationPlayer::updateWireframeNode(void)
     //Clone the sub-tree rooted at the selected node
     if(_SelectedNode != NULL)
     {
-        NodeRefPtr ClonedTree(cloneTree(_SelectedNode));
-        if(_WireframeNode->getNChildren() > 0)
-        {
-            _WireframeNode->replaceChild(0, ClonedTree);
-        }
-        else
-        {
-            _WireframeNode->addChild(ClonedTree);
-        }
+        dynamic_cast<VisitSubTree*>(_WireframeNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
+
     }
 
     //Update the transformation for the wireframe node
@@ -1603,7 +1598,6 @@ void ApplicationPlayer::updateHighlightNode(void)
 
     if(_SelectedNode != NULL)		// selected node is the node that is being selected.
     {													// highlight node is the pointer to the bounding box for the selected node
-        std::string coreName= _SelectedNode->getCore()->getTypeName();
 
         // calc the world bbox of the highlight object
         BoxVolume      vol;
@@ -1681,6 +1675,13 @@ void ApplicationPlayer::createHighlightNode(void)
     HighlightMaterial->addChunk (TheBlendChunk);
     HighlightMaterial->addChunk (HighlightMatLineChunk);
 
+    //Create the VisitSubTree Node to use to render the wireframe of the
+    //selected node
+    VisitSubTreeRefPtr SelectedSubTree = VisitSubTree::create();
+
+    NodeRefPtr SelectedSubTreeNode = Node::create();
+    SelectedSubTreeNode->setCore(SelectedSubTree);
+    
     //Create the Geometry for the highlight
     GeoUInt8PropertyRecPtr type = GeoUInt8Property::create();
     //Volume bound box
@@ -1814,6 +1815,8 @@ void ApplicationPlayer::createHighlightNode(void)
     _WireframeNode = Node::create();
     setName(_WireframeNode,"DEBUG_MODE_MESH_HIGHLIGHT_NODE");
     _WireframeNode->setCore(WireframeMaterialGroup);
+
+    _WireframeNode->addChild(SelectedSubTreeNode);
 
     //Mesh Highlight Transformation Node
     _WireframeTransform = Transform::create();
