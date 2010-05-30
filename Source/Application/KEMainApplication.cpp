@@ -248,7 +248,7 @@ Int32 MainApplication::run(int argc, char **argv)
     }
     if(osgLogP->getLogType() == LOG_FILE &&
        !OptionsVariableMap.count("log-file") &&
-       getSettings()->getLogFile().string().compare(KELogFilePath.string()) != 0)
+       !boost::filesystem::equivalent(getSettings()->getLogFile(),KELogFilePath))
     {
         initializeLogging(static_cast<LogType>(getSettings()->getLogType()), getSettings()->getLogFile());
     }
@@ -262,9 +262,10 @@ Int32 MainApplication::run(int argc, char **argv)
     SLOG << "Starting Kabala Engine:" << std::endl;
     OSG::indentLog(4,PLOG);
     PLOG << "Version: " << getKabalaEngineVersion() << std::endl;
+    OSG::indentLog(4,PLOG);
     PLOG << "Revision: " << getKabalaEngineBuildRepositoryRevision() << std::endl;
+    OSG::indentLog(4,PLOG);
     PLOG << "Build Type: " << getKabalaEngineBuildType() << std::endl;
-    PLOG << "Website: " << getKabalaEngineWebsite() << std::endl;
 
     //Check if the Data Directory exists
     if(!boost::filesystem::exists(getSettings()->getDataDirectory()))
@@ -393,7 +394,7 @@ Int32 MainApplication::run(int argc, char **argv)
     //Save Settings
     saveSettings(getSettingsLoadFile());
     
-    SLOG << "Stopping Kabala Engine:" << std::endl;
+    SLOG << "Stopping Kabala Engine" << std::endl;
 
 	//OSG exit
     OSG::osgExit();
@@ -416,7 +417,7 @@ void MainApplication::initOpenSG(int argc, char **argv)
     OSG::preloadSharedObject("OSGContribUserInterface");
     OSG::preloadSharedObject("OSGContribVideo");
     OSG::preloadSharedObject("OSGDynamics");
-    OSG::preloadSharedObject("OSGEffectGroup");
+    OSG::preloadSharedObject("OSGEffectGroups");
     OSG::preloadSharedObject("OSGFileIO");
     OSG::preloadSharedObject("OSGGroup");
     OSG::preloadSharedObject("OSGImageFileIO");
