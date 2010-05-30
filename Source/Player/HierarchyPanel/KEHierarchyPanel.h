@@ -227,7 +227,7 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     friend class LuaGraphTreeSelectionListener;
     LuaGraphTreeSelectionListener _LuaGraphTreeSelectionListener;
 
-    class SceneGraphTreeSelectionListener : public TreeSelectionListener
+    class SceneGraphTreeSelectionListener : public TreeSelectionListener, public KeyListener
     {
       public:
         SceneGraphTreeSelectionListener(HierarchyPanelRefPtr TheHierarchyPanel);
@@ -236,6 +236,10 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
         void selectionRemoved(const TreeSelectionEventUnrecPtr e);
         void selectedNodeChanged(void);
         void setParams(TreeRefPtr,ApplicationPlayerRefPtr);
+        
+        void keyPressed (const KeyEventUnrecPtr e);
+        void keyReleased(const KeyEventUnrecPtr e);
+        void keyTyped   (const KeyEventUnrecPtr e);
 
         friend class ShowHideCommand;
 
@@ -300,6 +304,24 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     void showAll(CameraRefPtr TheCameraOrig,
                  NodeRefPtr Scene,
                  ViewportRefPtr LocalViewport);
+
+    
+    /*---------------------------------------------------------------------*/
+    /*! \name               Scene Graph Commands                           */
+    /*! \{                                                                 */
+
+    void sgShowHideToggleSelectedNode(void);
+    void sgImportIntoSelectedNode(void);
+    void sgExportSelectedNode(void);
+    void sgFocusCameraOnSelectedNode(void);
+    void sgCopySelectedNode(void);
+    void sgCutSelectedNode(void);
+    void sgPasteOntoSelectedNode(void);
+    void sgPasteInstOntoSelectedNode(void);
+    void sgShowHideSelectedNodeRecursize(void);
+    void sgDeleteSelectedNode(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
 
   private:

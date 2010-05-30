@@ -106,19 +106,20 @@ void HierarchyPanel::createSceneGraphTree(void)
 	_TheSceneGraphTree = Tree::create();
 	_TheSceneGraphTreeModel = SceneGraphTreeModel::create();
 
-        _TheSceneGraphTree->setPreferredSize(Vec2f(100, 500));
-        _TheSceneGraphTree->setModel(_TheSceneGraphTreeModel);
+    _TheSceneGraphTree->setPreferredSize(Vec2f(100, 500));
+    _TheSceneGraphTree->setModel(_TheSceneGraphTreeModel);
 
 	
     _TheSceneGraphTree->getSelectionModel()->addTreeSelectionListener(&_SceneGraphTreeSelectionListener);
+    _TheSceneGraphTree->addKeyListener(&_SceneGraphTreeSelectionListener);
 	
 	
     BorderLayoutConstraintsRefPtr SceneTreeConstraints = OSG::BorderLayoutConstraints::create();
 	SceneTreeConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
 
     _TheSceneGraphTreeScrollPanel = ScrollPanel::create();
-        _TheSceneGraphTreeScrollPanel->setPreferredSize(Vec2f(350,300));
-        _TheSceneGraphTreeScrollPanel->setConstraints(SceneTreeConstraints);
+    _TheSceneGraphTreeScrollPanel->setPreferredSize(Vec2f(350,300));
+    _TheSceneGraphTreeScrollPanel->setConstraints(SceneTreeConstraints);
     _TheSceneGraphTreeScrollPanel->setViewComponent(_TheSceneGraphTree);
 
 	
@@ -133,10 +134,10 @@ void HierarchyPanel::createSceneGraphTree(void)
 
 	_CreateNewButtonConstraints->setRegion(BorderLayoutConstraints::BORDER_NORTH);
 
-        _CreateNewNodeMenuButton->setText("Create New Node");
-        _CreateNewNodeMenuButton->setPreferredSize(Vec2f(120, 20));
-        _CreateNewNodeMenuButton->setModel(_NewNodeMenuModel);
-		_CreateNewNodeMenuButton->setConstraints(_CreateNewButtonConstraints);
+    _CreateNewNodeMenuButton->setText("Create New Node");
+    _CreateNewNodeMenuButton->setPreferredSize(Vec2f(120, 20));
+    _CreateNewNodeMenuButton->setModel(_NewNodeMenuModel);
+	_CreateNewNodeMenuButton->setConstraints(_CreateNewButtonConstraints);
     
 	_CreateNewNodeMenuButton->addMenuActionListener(&_TheMenuButtonActionListener);
 
@@ -255,107 +256,156 @@ void HierarchyPanel::setView(UInt32 Index)
         _CardLayout->setCard(Index);
 }
 
+void HierarchyPanel::sgShowHideToggleSelectedNode(void)
+{
+	 CommandPtr ShowHideItemCommand =
+         ShowHideCommand::create(_SceneGraphTreeSelectionListener._SelectedNode,
+                                 (_SceneGraphTreeSelectionListener._SelectedNode->getTravMask() ==0),
+                                 false);
+    _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
+}
+
+void HierarchyPanel::sgImportIntoSelectedNode(void)
+{
+    NodeUnrecPtr NodeToAddTo = _ApplicationPlayer->getSelectedNode();
+    if(NodeToAddTo == NULL)
+    {
+        NodeToAddTo =  getSceneGraphTreeModel()->getRootNode();
+    }
+	CommandPtr TheImportModelCommand = ImportModelCommand::create(HierarchyPanelRefPtr(this),NodeToAddTo);
+    _ApplicationPlayer->getCommandManager()->executeCommand(TheImportModelCommand);
+}
+
+void HierarchyPanel::sgExportSelectedNode(void)
+{
+    NodeUnrecPtr NodeToExport = _ApplicationPlayer->getSelectedNode();
+    if(NodeToExport == NULL)
+    {
+        NodeToExport =  getSceneGraphTreeModel()->getRootNode();
+    }
+	CommandPtr TheExportModelCommand = ExportModelCommand::create(NodeToExport);
+    _ApplicationPlayer->getCommandManager()->executeCommand(TheExportModelCommand);
+}
+
+void HierarchyPanel::sgFocusCameraOnSelectedNode(void)
+{
+	//Reset the debug camera to point to the corresponding geometry
+	changeDebugCameraPosition();
+}
+
+void HierarchyPanel::sgCutSelectedNode(void)
+{
+	CommandPtr CutCommandPtr =
+        CutCommand::create(_ApplicationPlayer,_TheSceneGraphTreeModel,_ApplicationPlayer->getSelectedNode());
+    _ApplicationPlayer->getCommandManager()->executeCommand(CutCommandPtr);
+}
+
+void HierarchyPanel::sgCopySelectedNode(void)
+{
+	CommandPtr CopyCommandPtr = CopyCommand::create(_ApplicationPlayer,_ApplicationPlayer->getSelectedNode());
+    _ApplicationPlayer->getCommandManager()->executeCommand(CopyCommandPtr);
+
+}
+
+void HierarchyPanel::sgPasteOntoSelectedNode(void)
+{
+    CommandPtr ThePasteCommand;
+    if(_ApplicationPlayer->getSelectedNode() != NULL)
+    {
+        ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
+                                               HierarchyPanelRefPtr(this),
+                                               _ApplicationPlayer->getSelectedNode(),
+                                               true);
+    }
+    else
+    {
+        ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
+                                               HierarchyPanelRefPtr(this),
+                                               MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
+                                               true);
+    }
+
+    _ApplicationPlayer->getCommandManager()->executeCommand(ThePasteCommand);
+}
+
+void HierarchyPanel::sgPasteInstOntoSelectedNode(void)
+{
+    CommandPtr ThePasteCommand;
+    if(_ApplicationPlayer->getSelectedNode() != NULL)
+    {
+        ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
+                                               HierarchyPanelRefPtr(this),
+                                               _ApplicationPlayer->getSelectedNode(),
+                                               false);
+    }
+    else
+    {
+        ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
+                                               HierarchyPanelRefPtr(this),
+                                               MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
+                                               false);
+    }
+
+    _ApplicationPlayer->getCommandManager()->executeCommand(ThePasteCommand);
+}
+
+void HierarchyPanel::sgShowHideSelectedNodeRecursize(void)
+{
+	 CommandPtr ShowHideItemCommand =
+         ShowHideCommand::create(_SceneGraphTreeSelectionListener._SelectedNode,
+                                 true,
+                                 true);
+    _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
+}
+
+void HierarchyPanel::sgDeleteSelectedNode(void)
+{
+	CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,HierarchyPanelRefPtr(this),_ApplicationPlayer->getSelectedNode());
+    _ApplicationPlayer->getCommandManager()->executeCommand(DeleteCommandPtr);
+}
+
 void HierarchyPanel::actionPerformed(const ActionEventUnrecPtr e)
 {
 	if(e->getSource() == _ShowHideItem)
 	{
-		 CommandPtr ShowHideItemCommand =
-             ShowHideCommand::create(_SceneGraphTreeSelectionListener._SelectedNode,
-                                     (_SceneGraphTreeSelectionListener._SelectedNode->getTravMask() ==0),
-                                     false);
-        _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
+        sgShowHideToggleSelectedNode();
 	}
     else if(e->getSource() == _ShowRecursiveItem)
 	{
-		 CommandPtr ShowHideItemCommand =
-             ShowHideCommand::create(_SceneGraphTreeSelectionListener._SelectedNode,
-                                     true,
-                                     true);
-        _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
+        sgShowHideSelectedNodeRecursize();
 	}
 	else if(e->getSource() == _DeleteItem)
 	{
-		CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,HierarchyPanelRefPtr(this),_ApplicationPlayer->getSelectedNode());
-        _ApplicationPlayer->getCommandManager()->executeCommand(DeleteCommandPtr);
+        sgDeleteSelectedNode();
 	}
 	else if(e->getSource() == _ImportItem)
 	{
-        NodeUnrecPtr NodeToAddTo = _ApplicationPlayer->getSelectedNode();
-        if(NodeToAddTo == NULL)
-        {
-            NodeToAddTo =  getSceneGraphTreeModel()->getRootNode();
-        }
-		CommandPtr TheImportModelCommand = ImportModelCommand::create(HierarchyPanelRefPtr(this),NodeToAddTo);
-        _ApplicationPlayer->getCommandManager()->executeCommand(TheImportModelCommand);
+        sgImportIntoSelectedNode();
 	}
 	else if(e->getSource() == _ExportItem)
 	{
-        NodeUnrecPtr NodeToExport = _ApplicationPlayer->getSelectedNode();
-        if(NodeToExport == NULL)
-        {
-            NodeToExport =  getSceneGraphTreeModel()->getRootNode();
-        }
-		CommandPtr TheExportModelCommand = ExportModelCommand::create(NodeToExport);
-        _ApplicationPlayer->getCommandManager()->executeCommand(TheExportModelCommand);
+        sgExportSelectedNode();
 	}
 	else if(e->getSource() == _FocusCamera)
 	{
-		//Reset the debug camera to point to the corresponding geometry
-		changeDebugCameraPosition();
+        sgFocusCameraOnSelectedNode();
 	}
 	else if(e->getSource() == _CutItem)
 	{
-		CommandPtr CutCommandPtr =
-            CutCommand::create(_ApplicationPlayer,_TheSceneGraphTreeModel,_ApplicationPlayer->getSelectedNode());
-        _ApplicationPlayer->getCommandManager()->executeCommand(CutCommandPtr);
+        sgCutSelectedNode();
 	}
 
 	else if(e->getSource() == _CopyItem)
 	{
-	
-		CommandPtr CopyCommandPtr = CopyCommand::create(_ApplicationPlayer,_ApplicationPlayer->getSelectedNode());
-        _ApplicationPlayer->getCommandManager()->executeCommand(CopyCommandPtr);
-
+        sgCopySelectedNode();
 	}
 	else if(e->getSource() == _PasteItem)
 	{
-        CommandPtr ThePasteCommand;
-        if(_ApplicationPlayer->getSelectedNode() != NULL)
-        {
-            ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
-                                                   HierarchyPanelRefPtr(this),
-                                                   _ApplicationPlayer->getSelectedNode(),
-                                                   true);
-        }
-        else
-        {
-            ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
-                                                   HierarchyPanelRefPtr(this),
-                                                   MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
-                                                   true);
-        }
-
-        _ApplicationPlayer->getCommandManager()->executeCommand(ThePasteCommand);
+        sgPasteOntoSelectedNode();
 	}
 	else if(e->getSource() == _PasteInstanceItem)
 	{
-        CommandPtr ThePasteCommand;
-        if(_ApplicationPlayer->getSelectedNode() != NULL)
-        {
-            ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
-                                                   HierarchyPanelRefPtr(this),
-                                                   _ApplicationPlayer->getSelectedNode(),
-                                                   false);
-        }
-        else
-        {
-            ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
-                                                   HierarchyPanelRefPtr(this),
-                                                   MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
-                                                   false);
-        }
-
-        _ApplicationPlayer->getCommandManager()->executeCommand(ThePasteCommand);
+        sgPasteInstOntoSelectedNode();
 	}
 }
 
@@ -828,6 +878,52 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::selectionRemoved(const Tre
 {
 	_SelectedNode = NULL;
 	selectedNodeChanged();
+}
+        
+void HierarchyPanel::SceneGraphTreeSelectionListener::keyPressed (const KeyEventUnrecPtr e)
+{
+    if(e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND)
+    {
+        switch(e->getKey())
+        {
+        case KeyEvent::KEY_C:
+            _HierarchyPanel->sgCopySelectedNode();
+            break;
+        case KeyEvent::KEY_V:
+            _HierarchyPanel->sgPasteOntoSelectedNode();
+            break;
+        case KeyEvent::KEY_I:
+            _HierarchyPanel->sgImportIntoSelectedNode();
+            break;
+        case KeyEvent::KEY_H:
+            _HierarchyPanel->sgShowHideToggleSelectedNode();
+            break;
+        case KeyEvent::KEY_X:
+            _HierarchyPanel->sgCutSelectedNode();
+            break;
+        }
+    }
+    else
+    {
+        switch(e->getKey())
+        {
+        case KeyEvent::KEY_BACK_SPACE:
+        case KeyEvent::KEY_DELETE:
+            _HierarchyPanel->sgDeleteSelectedNode();
+            break;
+        case KeyEvent::KEY_F:
+            _HierarchyPanel->sgFocusCameraOnSelectedNode();
+            break;
+        }
+    }
+}
+
+void HierarchyPanel::SceneGraphTreeSelectionListener::keyReleased(const KeyEventUnrecPtr e)
+{
+}
+
+void HierarchyPanel::SceneGraphTreeSelectionListener::keyTyped   (const KeyEventUnrecPtr e)
+{
 }
 
 void HierarchyPanel::MenuButtonActionListener::actionPerformed(const ActionEventUnrecPtr e)
