@@ -180,11 +180,11 @@ void ContentPanel::addTabWithText(BoostPath file)
 
     _RightTabPanel->addTab(_NewLeftTabLabelPanel, _NewLeftTabContent);
 
-    _RightTabPanel->setSelectedIndex((_RightTabPanel->getMFTabs()->getSize())-1);
+    _RightTabPanel->setSelectedIndex((_RightTabPanel->getMFTabs()->size())-1);
 
     _LeftTabPanel->addTab(_NewRightTabLabelPanel, _NewRightTabContent);
 
-    _LeftTabPanel->setSelectedIndex((_LeftTabPanel->getMFTabs()->getSize())-1);
+    _LeftTabPanel->setSelectedIndex((_LeftTabPanel->getMFTabs()->size())-1);
 
 }
 

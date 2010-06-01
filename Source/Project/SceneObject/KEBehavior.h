@@ -50,6 +50,12 @@
 
 #include "KEBehaviorBase.h"
 
+#include <Project/Scene/KESceneFields.h>
+#include <Project/SceneObject/KESceneObject.h>
+#include <OpenSG/OSGGenericEvent.h>
+#include <OpenSG/OSGEvent.h>
+#include <OpenSG/OSGEventListener.h>
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief Behavior class. See \ref
@@ -64,8 +70,18 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
   public:
 
+
     typedef BehaviorBase Inherited;
     typedef Behavior     Self;
+
+
+	void addedToSceneObject(SceneObjectUnrecPtr rootSceneObject);
+	void checkForBehaviorDependancy(BehaviorUnrecPtr behavior);
+	void checkForBehaviorDependant(BehaviorUnrecPtr behavior);
+	void setupDependency(BehaviorUnrecPtr behavior);
+	void setupDependant(BehaviorUnrecPtr behavior);
+
+
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -87,8 +103,27 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     /*=========================  PROTECTED  ===============================*/
 
   protected:
+	
+	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
+
+	void initialize(SceneObjectUnrecPtr rootSceneObject);
+
 
     // Variables should all be in BehaviorBase.
+
+    class DepBehaviorListener : public EventListener
+	{
+		public:
+			
+			DepBehaviorListener(BehaviorUnrecPtr TheBehavior);
+
+			virtual void eventProduced(const EventUnrecPtr e);
+
+		protected :
+			BehaviorUnrecPtr _Behavior;
+	};
+
+	DepBehaviorListener		_DepBehaviorListener;
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
