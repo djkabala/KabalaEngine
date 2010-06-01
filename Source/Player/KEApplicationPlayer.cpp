@@ -573,6 +573,9 @@ void ApplicationPlayer::createDebugInterface(void)
 
     //Create the Debug Camera Animation Group
     createDebugCameraAnim();
+
+    //Create the statistic foregrounds
+	initDebugStatForegrounds();
 }
 
 void ApplicationPlayer::updateGotoSceneMenuItems(ProjectRefPtr TheProject)
@@ -1092,16 +1095,16 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
 
     //Basic Statistics
     _DebugBasicStatForeground = SimpleStatisticsForeground::create();
-    //_DebugBasicStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
-    //_DebugBasicStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+    _DebugBasicStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
+    _DebugBasicStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
     _DebugBasicStatForeground->setSize(StatFontSize);
-    //_DebugBasicStatForeground->setColor(StatColor);
-    //_DebugBasicStatForeground->setShadowColor(StatShadowColor);
-    //_DebugBasicStatForeground->setBgColor(StatBackgroundColor);
-    //_DebugBasicStatForeground->setBorderColor(StatBorderColor);
+    _DebugBasicStatForeground->setColor(StatColor);
+    _DebugBasicStatForeground->setShadowColor(StatShadowColor);
+    _DebugBasicStatForeground->setBgColor(StatBackgroundColor);
+    _DebugBasicStatForeground->setBorderColor(StatBorderColor);
     _DebugBasicStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
-    _DebugBasicStatForeground->addElement(Drawable::statNTriangles, "%d triangles drawn");
+    _DebugBasicStatForeground->addElement(RenderAction::statNTriangles, "%d triangles drawn");
 
     //Rendering Statistics
     _DebugRenderStatForeground = SimpleStatisticsForeground::create();
@@ -1132,7 +1135,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugRenderStatForeground->addElement(RenderAction::statNShaderParams, "%d shader param changes");
 
     //Drawn primities
-    _DebugRenderStatForeground->addElement(Drawable::statNTriangles, "%d triangles drawn");
+    _DebugRenderStatForeground->addElement(RenderAction::statNTriangles, "%d triangles drawn");
     _DebugRenderStatForeground->addElement(Drawable::statNLines, "%d lines drawn");
     _DebugRenderStatForeground->addElement(Drawable::statNPoints, "%d points drawn");
     _DebugRenderStatForeground->addElement(Drawable::statNPrimitives,"%d primitive groups drawn");
@@ -1141,7 +1144,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
 
     //Textures
     _DebugRenderStatForeground->addElement(TextureObjChunk::statNTextures, "%d textures used");
-    _DebugRenderStatForeground->addElement(TextureObjChunk::statNTexBytes, "%d bytes of texture used");
+    _DebugRenderStatForeground->addElement(TextureObjChunk::statNTexBytes, "%MB MB of texture used");
 
     //Lights
     _DebugRenderStatForeground->addElement(PointLight::statNPointLights,
@@ -1460,7 +1463,6 @@ ApplicationPlayer::ApplicationPlayer(void) :
 {
 	_TheUndoManager = UndoManager::create();
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
-	initDebugStatForegrounds();
 }
 
 ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
