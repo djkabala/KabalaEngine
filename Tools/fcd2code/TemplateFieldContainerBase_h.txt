@@ -471,6 +471,9 @@ class @!Classname!@Base : public @!Parent!@
     /*! \name                    Event Producer                            */
     /*! \{                                                                 */
     EventProducer _Producer;
+    
+    GetFieldHandlePtr  getHandleEventProducer        (void) const;
+    EditFieldHandlePtr editHandleEventProducer       (void);
 
     /*! \}                                                                 */
 @@endif 
@@ -747,4 +750,4 @@ typedef CoredNodeMTRefPtr<@!Classname!@> @!Classname!@NodeMTRefPtr;
 
 OSG_END_NAMESPACE
 
-#endif /* _KE@!CLASSNAME!@BASE_H_ */
+#endif /* _OSG@!CLASSNAME!@BASE_H_ */

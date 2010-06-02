@@ -442,8 +442,8 @@ void ProjectBase::classDescInserter(TypeObject &oType)
         EventProducerFieldId,EventProducerFieldMask,
         true,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&Project::invalidEditField),
-        static_cast     <FieldGetMethodSig >(&Project::invalidGetField));
+        static_cast     <FieldEditMethodSig>(&Project::editHandleEventProducer),
+        static_cast     <FieldGetMethodSig >(&Project::getHandleEventProducer));
 
     oType.addInitialDesc(pDesc);
 }
@@ -514,7 +514,6 @@ ProjectBase::TypeObject ProjectBase::_type(
     "\t\tfieldHeader=\"Project/Scene/KESceneFields.h\"\n"
     "\t\ttypeHeader=\"Project/Scene/KEScene.h\"\n"
     "\t\taccess=\"public\"\n"
-    "\t\tdefaultValue=\"NULL\"\n"
     "\t>\n"
     "\t</Field>\n"
     "\t<Field\n"
@@ -3068,6 +3067,32 @@ EditFieldHandlePtr ProjectBase::editHandleLuaModulesDirectory(void)
 
 
     editSField(LuaModulesDirectoryFieldMask);
+
+    return returnValue;
+}
+
+
+GetFieldHandlePtr ProjectBase::getHandleEventProducer        (void) const
+{
+    SFEventProducerPtr::GetHandlePtr returnValue(
+        new  SFEventProducerPtr::GetHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleEventProducer       (void)
+{
+    SFEventProducerPtr::EditHandlePtr returnValue(
+        new  SFEventProducerPtr::EditHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             this));
+
+
+    editSField(EventProducerFieldMask);
 
     return returnValue;
 }
