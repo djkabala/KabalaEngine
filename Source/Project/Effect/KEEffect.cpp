@@ -75,9 +75,64 @@ void Effect::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
+void Effect::begin()
+{
+       producerEffectPlayed(EffectEvent::create(EffectRefPtr(this), getTimeStamp()));
+       inheritedBegin();
+}
+bool Effect::isPlaying()
+{
+    return inheritedIsPlaying();
+}
+bool Effect::isPaused()
+{
+    return inheritedIsPaused();
+}
+void Effect::pause()
+{
+    producerEffectPaused(EffectEvent::create(EffectRefPtr(this), getTimeStamp()));
+    inheritedPause();
+}
+void Effect::unpause()
+{
+    producerEffectUnpaused(EffectEvent::create(EffectRefPtr(this), getTimeStamp()));
+    inheritedUnpause();
+}
+void Effect::end()
+{
+    producerEffectStopped(EffectEvent::create(EffectRefPtr(this), getTimeStamp()));
+    inheritedEnd();
+}
+
+//
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
+
+void Effect::producerEffectPlayed(const EffectEventUnrecPtr e)
+{
+    _Producer.produceEvent(EffectPlayedMethodId, e);
+}
+
+void Effect::producerEffectPaused(const EffectEventUnrecPtr e)
+{
+    _Producer.produceEvent(EffectPausedMethodId, e);
+}
+
+void Effect::producerEffectUnpaused(const EffectEventUnrecPtr e)
+{
+    _Producer.produceEvent(EffectUnpausedMethodId, e);
+}
+
+void Effect::producerEffectFinished(const EffectEventUnrecPtr e)
+{
+    _Producer.produceEvent(EffectFinishedMethodId, e);
+}
+
+void Effect::producerEffectStopped(const EffectEventUnrecPtr e)
+{
+    _Producer.produceEvent(EffectStoppedMethodId, e);
+}
 
 /*----------------------- constructors & destructors ----------------------*/
 

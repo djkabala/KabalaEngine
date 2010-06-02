@@ -65,10 +65,15 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <OpenSG/OSGBaseFields.h>       // Name type
 #include <OpenSG/OSGFieldContainerFields.h> // ParentSceneObject type
 
 #include "KEEffectFields.h"
+
+//Event Producer Headers
+#include <OpenSG/OSGEventProducer.h>
+#include <OpenSG/OSGEventProducerType.h>
+#include <OpenSG/OSGMethodDescription.h>
+#include <OpenSG/OSGEventProducerPtrType.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -94,20 +99,30 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
 
     enum
     {
-        NameFieldId = Inherited::NextFieldId,
-        ParentSceneObjectFieldId = NameFieldId + 1,
-        NextFieldId = ParentSceneObjectFieldId + 1
+        ParentSceneObjectFieldId = Inherited::NextFieldId,
+        EventProducerFieldId = ParentSceneObjectFieldId + 1,
+        NextFieldId = EventProducerFieldId + 1
     };
 
-    static const OSG::BitVector NameFieldMask =
-        (TypeTraits<BitVector>::One << NameFieldId);
     static const OSG::BitVector ParentSceneObjectFieldMask =
         (TypeTraits<BitVector>::One << ParentSceneObjectFieldId);
+    static const OSG::BitVector EventProducerFieldMask =
+        (TypeTraits<BitVector>::One << EventProducerFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFString          SFNameType;
     typedef SFParentFieldContainerPtr SFParentSceneObjectType;
+    typedef SFEventProducerPtr          SFEventProducerType;
+
+    enum
+    {
+        EffectPlayedMethodId = 1,
+        EffectPausedMethodId = EffectPlayedMethodId + 1,
+        EffectUnpausedMethodId = EffectPausedMethodId + 1,
+        EffectFinishedMethodId = EffectUnpausedMethodId + 1,
+        EffectStoppedMethodId = EffectFinishedMethodId + 1,
+        NextProducedMethodId = EffectStoppedMethodId + 1
+    };
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -116,6 +131,8 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
     static FieldContainerType &getClassType   (void);
     static UInt32              getClassTypeId (void);
     static UInt16              getClassGroupId(void);
+    static const  EventProducerType  &getProducerClassType  (void);
+    static        UInt32              getProducerClassTypeId(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -140,9 +157,39 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
 
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Method Produced Get                           */
+    /*! \{                                                                 */
+
+    virtual const EventProducerType &getProducerType(void) const; 
+
+    EventConnection          attachActivity             (ActivityRefPtr TheActivity,
+                                                         UInt32 ProducedEventId);
+    bool                     isActivityAttached         (ActivityRefPtr TheActivity,
+                                                         UInt32 ProducedEventId) const;
+    UInt32                   getNumActivitiesAttached   (UInt32 ProducedEventId) const;
+    ActivityRefPtr           getAttachedActivity        (UInt32 ProducedEventId,
+                                                         UInt32 ActivityIndex) const;
+    void                     detachActivity             (ActivityRefPtr TheActivity,
+                                                         UInt32 ProducedEventId);
+    UInt32                   getNumProducedEvents       (void) const;
+    const MethodDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
+    const MethodDescription *getProducedEventDescription(UInt32 ProducedEventId) const;
+    UInt32                   getProducedEventId         (const std::string &ProducedEventName) const;
+
+    SFEventProducerPtr *editSFEventProducer(void);
+    EventProducerPtr   &editEventProducer  (void);
+
+    /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
   protected:
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Event Producer                            */
+    /*! \{                                                                 */
+    EventProducer _Producer;
+
+    /*! \}                                                                 */
 
     static TypeObject _type;
 
@@ -153,8 +200,8 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFString          _sfName;
     SFParentFieldContainerPtr _sfParentSceneObject;
+    SFEventProducerPtr _sfEventProducer;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -193,35 +240,8 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleName            (void) const;
-    EditFieldHandlePtr editHandleName           (void);
     GetFieldHandlePtr  getHandleParentSceneObject (void) const;
     EditFieldHandlePtr editHandleParentSceneObject(void);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-
-                  SFString            *editSFName           (void);
-            const SFString            *getSFName            (void) const;
-
-
-                  std::string         &editName           (void);
-            const std::string         &getName            (void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-            void setName           (const std::string &value);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -268,6 +288,9 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
 
   private:
     /*---------------------------------------------------------------------*/
+    static MethodDescription   *_methodDesc[];
+    static EventProducerType _producerType;
+
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const EffectBase &source);

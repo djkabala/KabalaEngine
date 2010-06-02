@@ -77,7 +77,7 @@ void ParticleSystemEffect::initMethod(InitPhase ePhase)
 \***************************************************************************/
 
 
-void ParticleSystemEffect::begin()
+void ParticleSystemEffect::inheritedBegin()
 {
     if(theUpdateProducer == NULL)
     {
@@ -89,31 +89,35 @@ void ParticleSystemEffect::begin()
     isPausedFlag = false;
 }
 
-bool ParticleSystemEffect::isPlaying()
+bool ParticleSystemEffect::inheritedIsPlaying()
 {
     return isPlayingFlag;
 }
 
-bool ParticleSystemEffect::isPaused()
+bool ParticleSystemEffect::inheritedIsPaused()
 {
     return isPausedFlag;
 }
 
-void ParticleSystemEffect::pause()
+void ParticleSystemEffect::inheritedPause()
 {
     getTheSystem()->detachUpdateProducer();
     isPausedFlag = true;
 }
 
-void ParticleSystemEffect::unpause()
+void ParticleSystemEffect::inheritedUnpause()
 {
     getTheSystem()->attachUpdateProducer(theUpdateProducer);
     isPausedFlag = false;
 }
 
-void ParticleSystemEffect::end()
+void ParticleSystemEffect::inheritedEnd()
 {
-    //getAnimation()->stop();
+    for(UInt32 i(getTheSystem()->getNumParticles()-1); i>=0; --i)
+    {
+        getTheSystem()->killParticle(i);
+    }
+    getTheSystem()->detachUpdateProducer();
 }
 
 /*-------------------------------------------------------------------------*\

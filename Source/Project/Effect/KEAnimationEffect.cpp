@@ -81,7 +81,7 @@ void AnimationEffect::initMethod(InitPhase ePhase)
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-void AnimationEffect::begin()
+void AnimationEffect::inheritedBegin()
 {
     if(theUpdateProducer == NULL)
     {
@@ -91,27 +91,27 @@ void AnimationEffect::begin()
     getAnimation()->start();
 }
 
-bool AnimationEffect::isPlaying()
+bool AnimationEffect::inheritedIsPlaying()
 {
     return getAnimation()->isPlaying();
 }
 
-bool AnimationEffect::isPaused()
+bool AnimationEffect::inheritedIsPaused()
 {
     return getAnimation()->isPaused();
 }
 
-void AnimationEffect::pause()
+void AnimationEffect::inheritedPause()
 {
     getAnimation()->pause(true);
 }
 
-void AnimationEffect::unpause()
+void AnimationEffect::inheritedUnpause()
 {
     getAnimation()->pause(false);
 }
 
-void AnimationEffect::end()
+void AnimationEffect::inheritedEnd()
 {
     getAnimation()->stop();
 }

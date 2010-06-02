@@ -40,6 +40,7 @@
 #endif
 
 #include "KEEffectBase.h"
+#include "KEEffectEvent.h"
 #include "Project/SceneObject/KESceneObject.h"
 
 OSG_BEGIN_NAMESPACE
@@ -59,12 +60,12 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     typedef EffectBase Inherited;
     typedef Effect     Self;
 
-    virtual void begin() = 0;
-    virtual bool isPlaying() = 0;
-    virtual bool isPaused() = 0;
-    virtual void pause() = 0;
-    virtual void unpause() = 0;
-    virtual void end() = 0;
+    void begin(void);
+    bool isPlaying(void);
+    bool isPaused(void);
+    void pause(void);
+    void unpause(void);
+    void end(void);
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Get                                     */
@@ -93,6 +94,19 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     /*=========================  PROTECTED  ===============================*/
 
   protected:
+    
+    virtual void inheritedBegin    (void) = 0;
+    virtual bool inheritedIsPlaying(void) = 0;
+    virtual bool inheritedIsPaused (void) = 0;
+    virtual void inheritedPause    (void) = 0;
+    virtual void inheritedUnpause  (void) = 0;
+    virtual void inheritedEnd      (void) = 0;
+
+    void producerEffectPlayed  (const EffectEventUnrecPtr e);
+    void producerEffectPaused  (const EffectEventUnrecPtr e);
+    void producerEffectUnpaused(const EffectEventUnrecPtr e);
+    void producerEffectFinished(const EffectEventUnrecPtr e);
+    void producerEffectStopped (const EffectEventUnrecPtr e);
 
     // Variables should all be in EffectBase.
 

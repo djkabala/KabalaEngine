@@ -39,9 +39,11 @@
 
 OSG_BEGIN_NAMESPACE
 
+inline
 const SceneObject* Effect::getParentSceneObject(void) const
 {
-    return dynamic_cast<SceneObject*>(_sfParentSceneObject.getValue());
+    return dynamic_cast<const SceneObject*>(_sfParentSceneObject.getValue());
 }
+
 
 OSG_END_NAMESPACE

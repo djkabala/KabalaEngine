@@ -58,14 +58,6 @@ class KE_KABALAENGINE_DLLMAPPING SoundEffect : public SoundEffectBase
     typedef SoundEffectBase Inherited;
     typedef SoundEffect     Self;
 
-    void begin();
-    bool isPlaying();
-    bool isPaused();
-    void pause();
-    void unpause();
-    void end();
-
-
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
@@ -88,6 +80,14 @@ class KE_KABALAENGINE_DLLMAPPING SoundEffect : public SoundEffectBase
   protected:
 
     // Variables should all be in SoundEffectBase.
+
+    void inheritedBegin    (void);
+    bool inheritedIsPlaying(void);
+    bool inheritedIsPaused (void);
+    void inheritedPause    (void);
+    void inheritedUnpause  (void);
+    void inheritedEnd      (void);
+
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */

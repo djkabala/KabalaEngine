@@ -75,35 +75,35 @@ void SoundEffect::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void SoundEffect::begin()
+void SoundEffect::inheritedBegin()
 {
     getSound()->play();
     isPausedFlag = false;
 }
 
-bool SoundEffect::isPlaying()
+bool SoundEffect::inheritedIsPlaying()
 {
     return getSound()->getNumPlayingChannels() != 0;
 }
 
-bool SoundEffect::isPaused()
+bool SoundEffect::inheritedIsPaused()
 {
     return isPausedFlag;
 }
 
-void SoundEffect::pause()
+void SoundEffect::inheritedPause()
 {
     isPausedFlag = true;
     getSound()->setAllChannelPaused(isPausedFlag);
 }
 
-void SoundEffect::unpause()
+void SoundEffect::inheritedUnpause()
 {
     isPausedFlag = false;
     getSound()->setAllChannelPaused(isPausedFlag);
 }
 
-void SoundEffect::end()
+void SoundEffect::inheritedEnd()
 {
     getSound()->stopAllChannels();
 }

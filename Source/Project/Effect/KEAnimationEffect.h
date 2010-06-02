@@ -58,13 +58,6 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
 
     typedef AnimationEffectBase Inherited;
     typedef AnimationEffect     Self;
-    
-    void begin();
-    bool isPlaying();
-    bool isPaused();
-    void pause();
-    void unpause();
-    void end();
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -88,6 +81,14 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
   protected:
 
     // Variables should all be in AnimationEffectBase.
+
+    virtual void inheritedBegin    (void);
+    virtual bool inheritedIsPlaying(void);
+    virtual bool inheritedIsPaused (void);
+    virtual void inheritedPause    (void);
+    virtual void inheritedUnpause  (void);
+    virtual void inheritedEnd      (void);
+
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
