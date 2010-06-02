@@ -83,4 +83,46 @@ The Main Application Settings.
 		access="public"
 	>
 	</Field>
+	<Field
+		name="LogType"
+		type="UInt8"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		defaultValue="OSG::LOG_FILE"
+		defaultHeader="OpenSG/OSGLog.h"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="LogLevel"
+		type="UInt8"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		defaultValue="OSG::LOG_NOTICE"
+		defaultHeader="OpenSG/OSGLog.h"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="LogFile"
+		type="BoostPath"
+		category="data"
+		cardinality="single"
+		defaultValue="./KabalaEngine.log"
+		access="public"
+	>
+	</Field>
+	<Field
+		name="LogHeaderElements"
+		type="UInt32"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		defaultValue="OSG::LOG_TYPE_HEADER | OSG::LOG_TIMESTAMP_HEADER"
+		defaultHeader="OpenSG/OSGLog.h"
+		access="public"
+	>
+	</Field>
 </FieldContainer>

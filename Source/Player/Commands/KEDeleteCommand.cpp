@@ -115,7 +115,7 @@ void DeleteCommand::undo(void)
 {
     Inherited::undo();
 
-    _HierarchyPanel->getSceneGraphTreeModel()->insertNode(boost::any(_Parent),boost::any(_DeletedNode),_IndexOfDeletion);
+    _HierarchyPanel->getSceneGraphTreeModel()->insertNode(_Parent,_DeletedNode,_IndexOfDeletion);
 		
 }
 

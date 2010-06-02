@@ -58,8 +58,10 @@
 
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
+#include "KEConfig.h"
 
 //#include "OpenSG/OSGBaseTypes.h"
+
 
 #include <OpenSG/OSGFieldContainer.h> // Parent
 
@@ -100,7 +102,11 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
         DefaultWindowSizeFieldId = DefaultWindowPositionFieldId + 1,
         FullscreenFieldId = DefaultWindowSizeFieldId + 1,
         HideAdvancedFieldsFieldId = FullscreenFieldId + 1,
-        NextFieldId = HideAdvancedFieldsFieldId + 1
+        LogTypeFieldId = HideAdvancedFieldsFieldId + 1,
+        LogLevelFieldId = LogTypeFieldId + 1,
+        LogFileFieldId = LogLevelFieldId + 1,
+        LogHeaderElementsFieldId = LogFileFieldId + 1,
+        NextFieldId = LogHeaderElementsFieldId + 1
     };
 
     static const OSG::BitVector DataDirectoryFieldMask =
@@ -117,6 +123,14 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
         (TypeTraits<BitVector>::One << FullscreenFieldId);
     static const OSG::BitVector HideAdvancedFieldsFieldMask =
         (TypeTraits<BitVector>::One << HideAdvancedFieldsFieldId);
+    static const OSG::BitVector LogTypeFieldMask =
+        (TypeTraits<BitVector>::One << LogTypeFieldId);
+    static const OSG::BitVector LogLevelFieldMask =
+        (TypeTraits<BitVector>::One << LogLevelFieldId);
+    static const OSG::BitVector LogFileFieldMask =
+        (TypeTraits<BitVector>::One << LogFileFieldId);
+    static const OSG::BitVector LogHeaderElementsFieldMask =
+        (TypeTraits<BitVector>::One << LogHeaderElementsFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
@@ -127,6 +141,10 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
     typedef SFVec2f           SFDefaultWindowSizeType;
     typedef SFBool            SFFullscreenType;
     typedef SFBool            SFHideAdvancedFieldsType;
+    typedef SFUInt8           SFLogTypeType;
+    typedef SFUInt8           SFLogLevelType;
+    typedef SFBoostPath       SFLogFileType;
+    typedef SFUInt32          SFLogHeaderElementsType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -173,6 +191,18 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
                   SFBool              *editSFHideAdvancedFields(void);
             const SFBool              *getSFHideAdvancedFields (void) const;
 
+                  SFUInt8             *editSFLogType        (void);
+            const SFUInt8             *getSFLogType         (void) const;
+
+                  SFUInt8             *editSFLogLevel       (void);
+            const SFUInt8             *getSFLogLevel        (void) const;
+
+                  SFBoostPath         *editSFLogFile        (void);
+            const SFBoostPath         *getSFLogFile         (void) const;
+
+                  SFUInt32            *editSFLogHeaderElements(void);
+            const SFUInt32            *getSFLogHeaderElements (void) const;
+
 
                   BoostPath           &editDataDirectory  (void);
             const BoostPath           &getDataDirectory   (void) const;
@@ -195,6 +225,18 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
                   bool                &editHideAdvancedFields(void);
                   bool                 getHideAdvancedFields (void) const;
 
+                  UInt8               &editLogType        (void);
+                  UInt8                getLogType         (void) const;
+
+                  UInt8               &editLogLevel       (void);
+                  UInt8                getLogLevel        (void) const;
+
+                  BoostPath           &editLogFile        (void);
+            const BoostPath           &getLogFile         (void) const;
+
+                  UInt32              &editLogHeaderElements(void);
+                  UInt32               getLogHeaderElements (void) const;
+
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
@@ -206,6 +248,10 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
             void setDefaultWindowSize(const Vec2f &value);
             void setFullscreen     (const bool value);
             void setHideAdvancedFields(const bool value);
+            void setLogType        (const UInt8 value);
+            void setLogLevel       (const UInt8 value);
+            void setLogFile        (const BoostPath &value);
+            void setLogHeaderElements(const UInt32 value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -272,6 +318,10 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
     SFVec2f           _sfDefaultWindowSize;
     SFBool            _sfFullscreen;
     SFBool            _sfHideAdvancedFields;
+    SFUInt8           _sfLogType;
+    SFUInt8           _sfLogLevel;
+    SFBoostPath       _sfLogFile;
+    SFUInt32          _sfLogHeaderElements;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -313,6 +363,14 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettingsBase : public FieldContainer
     EditFieldHandlePtr editHandleFullscreen     (void);
     GetFieldHandlePtr  getHandleHideAdvancedFields (void) const;
     EditFieldHandlePtr editHandleHideAdvancedFields(void);
+    GetFieldHandlePtr  getHandleLogType         (void) const;
+    EditFieldHandlePtr editHandleLogType        (void);
+    GetFieldHandlePtr  getHandleLogLevel        (void) const;
+    EditFieldHandlePtr editHandleLogLevel       (void);
+    GetFieldHandlePtr  getHandleLogFile         (void) const;
+    EditFieldHandlePtr editHandleLogFile        (void);
+    GetFieldHandlePtr  getHandleLogHeaderElements (void) const;
+    EditFieldHandlePtr editHandleLogHeaderElements(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

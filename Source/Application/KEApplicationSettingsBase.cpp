@@ -54,6 +54,9 @@
 #include <OpenSG/OSGConfig.h>
 
 
+#include "OpenSG/OSGLog.h"                // LogType default header
+#include "OpenSG/OSGLog.h"                // LogLevel default header
+#include "OpenSG/OSGLog.h"                // LogHeaderElements default header
 
 
 #include "KEApplicationSettingsBase.h"
@@ -104,6 +107,22 @@ OSG_BEGIN_NAMESPACE
 */
 
 /*! \var bool            ApplicationSettingsBase::_sfHideAdvancedFields
+    
+*/
+
+/*! \var UInt8           ApplicationSettingsBase::_sfLogType
+    
+*/
+
+/*! \var UInt8           ApplicationSettingsBase::_sfLogLevel
+    
+*/
+
+/*! \var BoostPath       ApplicationSettingsBase::_sfLogFile
+    
+*/
+
+/*! \var UInt32          ApplicationSettingsBase::_sfLogHeaderElements
     
 */
 
@@ -218,6 +237,54 @@ void ApplicationSettingsBase::classDescInserter(TypeObject &oType)
         static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleHideAdvancedFields));
 
     oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUInt8::Description(
+        SFUInt8::getClassType(),
+        "LogType",
+        "",
+        LogTypeFieldId, LogTypeFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleLogType),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleLogType));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUInt8::Description(
+        SFUInt8::getClassType(),
+        "LogLevel",
+        "",
+        LogLevelFieldId, LogLevelFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleLogLevel),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleLogLevel));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFBoostPath::Description(
+        SFBoostPath::getClassType(),
+        "LogFile",
+        "",
+        LogFileFieldId, LogFileFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleLogFile),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleLogFile));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUInt32::Description(
+        SFUInt32::getClassType(),
+        "LogHeaderElements",
+        "",
+        LogHeaderElementsFieldId, LogHeaderElementsFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationSettings::editHandleLogHeaderElements),
+        static_cast<FieldGetMethodSig >(&ApplicationSettings::getHandleLogHeaderElements));
+
+    oType.addInitialDesc(pDesc);
 }
 
 
@@ -314,6 +381,48 @@ ApplicationSettingsBase::TypeObject ApplicationSettingsBase::_type(
     "\t\tcardinality=\"single\"\n"
     "\t\tvisibility=\"external\"\n"
     "\t\tdefaultValue=\"true\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"LogType\"\n"
+    "\t\ttype=\"UInt8\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"OSG::Log::LOG_STDOUT\"\n"
+    "\t\tdefaultHeader=\"OpenSG/OSGLog.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"LogLevel\"\n"
+    "\t\ttype=\"UInt8\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"OSG::Log::LOG_NOTICE\"\n"
+    "\t\tdefaultHeader=\"OpenSG/OSGLog.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"LogFile\"\n"
+    "\t\ttype=\"BoostPath\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tdefaultValue=\"./KabalaEngine.log\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"LogHeaderElements\"\n"
+    "\t\ttype=\"UInt32\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"OSG::Log::LOG_TYPE_HEADER | OSG::Log::LOG_TIMESTAMP_HEADER\"\n"
+    "\t\tdefaultHeader=\"OpenSG/OSGLog.h\"\n"
     "\t\taccess=\"public\"\n"
     "\t>\n"
     "\t</Field>\n"
@@ -432,6 +541,58 @@ const SFBool *ApplicationSettingsBase::getSFHideAdvancedFields(void) const
 }
 
 
+SFUInt8 *ApplicationSettingsBase::editSFLogType(void)
+{
+    editSField(LogTypeFieldMask);
+
+    return &_sfLogType;
+}
+
+const SFUInt8 *ApplicationSettingsBase::getSFLogType(void) const
+{
+    return &_sfLogType;
+}
+
+
+SFUInt8 *ApplicationSettingsBase::editSFLogLevel(void)
+{
+    editSField(LogLevelFieldMask);
+
+    return &_sfLogLevel;
+}
+
+const SFUInt8 *ApplicationSettingsBase::getSFLogLevel(void) const
+{
+    return &_sfLogLevel;
+}
+
+
+SFBoostPath *ApplicationSettingsBase::editSFLogFile(void)
+{
+    editSField(LogFileFieldMask);
+
+    return &_sfLogFile;
+}
+
+const SFBoostPath *ApplicationSettingsBase::getSFLogFile(void) const
+{
+    return &_sfLogFile;
+}
+
+
+SFUInt32 *ApplicationSettingsBase::editSFLogHeaderElements(void)
+{
+    editSField(LogHeaderElementsFieldMask);
+
+    return &_sfLogHeaderElements;
+}
+
+const SFUInt32 *ApplicationSettingsBase::getSFLogHeaderElements(void) const
+{
+    return &_sfLogHeaderElements;
+}
+
+
 
 
 
@@ -470,6 +631,22 @@ UInt32 ApplicationSettingsBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfHideAdvancedFields.getBinSize();
     }
+    if(FieldBits::NoField != (LogTypeFieldMask & whichField))
+    {
+        returnValue += _sfLogType.getBinSize();
+    }
+    if(FieldBits::NoField != (LogLevelFieldMask & whichField))
+    {
+        returnValue += _sfLogLevel.getBinSize();
+    }
+    if(FieldBits::NoField != (LogFileFieldMask & whichField))
+    {
+        returnValue += _sfLogFile.getBinSize();
+    }
+    if(FieldBits::NoField != (LogHeaderElementsFieldMask & whichField))
+    {
+        returnValue += _sfLogHeaderElements.getBinSize();
+    }
 
     return returnValue;
 }
@@ -507,6 +684,22 @@ void ApplicationSettingsBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfHideAdvancedFields.copyToBin(pMem);
     }
+    if(FieldBits::NoField != (LogTypeFieldMask & whichField))
+    {
+        _sfLogType.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (LogLevelFieldMask & whichField))
+    {
+        _sfLogLevel.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (LogFileFieldMask & whichField))
+    {
+        _sfLogFile.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (LogHeaderElementsFieldMask & whichField))
+    {
+        _sfLogHeaderElements.copyToBin(pMem);
+    }
 }
 
 void ApplicationSettingsBase::copyFromBin(BinaryDataHandler &pMem,
@@ -541,6 +734,22 @@ void ApplicationSettingsBase::copyFromBin(BinaryDataHandler &pMem,
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
     {
         _sfHideAdvancedFields.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (LogTypeFieldMask & whichField))
+    {
+        _sfLogType.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (LogLevelFieldMask & whichField))
+    {
+        _sfLogLevel.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (LogFileFieldMask & whichField))
+    {
+        _sfLogFile.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (LogHeaderElementsFieldMask & whichField))
+    {
+        _sfLogHeaderElements.copyFromBin(pMem);
     }
 }
 
@@ -673,7 +882,11 @@ ApplicationSettingsBase::ApplicationSettingsBase(void) :
     _sfDefaultWindowPosition  (Pnt2f(0.5f,0.5f)),
     _sfDefaultWindowSize      (Vec2f(0.85f,0.85f)),
     _sfFullscreen             (bool(false)),
-    _sfHideAdvancedFields     (bool(true))
+    _sfHideAdvancedFields     (bool(true)),
+    _sfLogType                (UInt8(OSG::LOG_FILE)),
+    _sfLogLevel               (UInt8(OSG::LOG_NOTICE)),
+    _sfLogFile                (BoostPath("./KabalaEngine.log")),
+    _sfLogHeaderElements      (UInt32(OSG::LOG_TYPE_HEADER | OSG::LOG_TIMESTAMP_HEADER))
 {
 }
 
@@ -685,7 +898,11 @@ ApplicationSettingsBase::ApplicationSettingsBase(const ApplicationSettingsBase &
     _sfDefaultWindowPosition  (source._sfDefaultWindowPosition  ),
     _sfDefaultWindowSize      (source._sfDefaultWindowSize      ),
     _sfFullscreen             (source._sfFullscreen             ),
-    _sfHideAdvancedFields     (source._sfHideAdvancedFields     )
+    _sfHideAdvancedFields     (source._sfHideAdvancedFields     ),
+    _sfLogType                (source._sfLogType                ),
+    _sfLogLevel               (source._sfLogLevel               ),
+    _sfLogFile                (source._sfLogFile                ),
+    _sfLogHeaderElements      (source._sfLogHeaderElements      )
 {
 }
 
@@ -868,6 +1085,106 @@ EditFieldHandlePtr ApplicationSettingsBase::editHandleHideAdvancedFields(void)
 
 
     editSField(HideAdvancedFieldsFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleLogType         (void) const
+{
+    SFUInt8::GetHandlePtr returnValue(
+        new  SFUInt8::GetHandle(
+             &_sfLogType,
+             this->getType().getFieldDesc(LogTypeFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleLogType        (void)
+{
+    SFUInt8::EditHandlePtr returnValue(
+        new  SFUInt8::EditHandle(
+             &_sfLogType,
+             this->getType().getFieldDesc(LogTypeFieldId),
+             this));
+
+
+    editSField(LogTypeFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleLogLevel        (void) const
+{
+    SFUInt8::GetHandlePtr returnValue(
+        new  SFUInt8::GetHandle(
+             &_sfLogLevel,
+             this->getType().getFieldDesc(LogLevelFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleLogLevel       (void)
+{
+    SFUInt8::EditHandlePtr returnValue(
+        new  SFUInt8::EditHandle(
+             &_sfLogLevel,
+             this->getType().getFieldDesc(LogLevelFieldId),
+             this));
+
+
+    editSField(LogLevelFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleLogFile         (void) const
+{
+    SFBoostPath::GetHandlePtr returnValue(
+        new  SFBoostPath::GetHandle(
+             &_sfLogFile,
+             this->getType().getFieldDesc(LogFileFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleLogFile        (void)
+{
+    SFBoostPath::EditHandlePtr returnValue(
+        new  SFBoostPath::EditHandle(
+             &_sfLogFile,
+             this->getType().getFieldDesc(LogFileFieldId),
+             this));
+
+
+    editSField(LogFileFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationSettingsBase::getHandleLogHeaderElements (void) const
+{
+    SFUInt32::GetHandlePtr returnValue(
+        new  SFUInt32::GetHandle(
+             &_sfLogHeaderElements,
+             this->getType().getFieldDesc(LogHeaderElementsFieldId),
+             const_cast<ApplicationSettingsBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationSettingsBase::editHandleLogHeaderElements(void)
+{
+    SFUInt32::EditHandlePtr returnValue(
+        new  SFUInt32::EditHandle(
+             &_sfLogHeaderElements,
+             this->getType().getFieldDesc(LogHeaderElementsFieldId),
+             this));
+
+
+    editSField(LogHeaderElementsFieldMask);
 
     return returnValue;
 }

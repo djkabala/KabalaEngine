@@ -222,6 +222,106 @@ void ApplicationSettingsBase::setHideAdvancedFields(const bool value)
 
     _sfHideAdvancedFields.setValue(value);
 }
+//! Get the value of the ApplicationSettings::_sfLogType field.
+
+inline
+UInt8 &ApplicationSettingsBase::editLogType(void)
+{
+    editSField(LogTypeFieldMask);
+
+    return _sfLogType.getValue();
+}
+
+//! Get the value of the ApplicationSettings::_sfLogType field.
+inline
+      UInt8  ApplicationSettingsBase::getLogType(void) const
+{
+    return _sfLogType.getValue();
+}
+
+//! Set the value of the ApplicationSettings::_sfLogType field.
+inline
+void ApplicationSettingsBase::setLogType(const UInt8 value)
+{
+    editSField(LogTypeFieldMask);
+
+    _sfLogType.setValue(value);
+}
+//! Get the value of the ApplicationSettings::_sfLogLevel field.
+
+inline
+UInt8 &ApplicationSettingsBase::editLogLevel(void)
+{
+    editSField(LogLevelFieldMask);
+
+    return _sfLogLevel.getValue();
+}
+
+//! Get the value of the ApplicationSettings::_sfLogLevel field.
+inline
+      UInt8  ApplicationSettingsBase::getLogLevel(void) const
+{
+    return _sfLogLevel.getValue();
+}
+
+//! Set the value of the ApplicationSettings::_sfLogLevel field.
+inline
+void ApplicationSettingsBase::setLogLevel(const UInt8 value)
+{
+    editSField(LogLevelFieldMask);
+
+    _sfLogLevel.setValue(value);
+}
+//! Get the value of the ApplicationSettings::_sfLogFile field.
+
+inline
+BoostPath &ApplicationSettingsBase::editLogFile(void)
+{
+    editSField(LogFileFieldMask);
+
+    return _sfLogFile.getValue();
+}
+
+//! Get the value of the ApplicationSettings::_sfLogFile field.
+inline
+const BoostPath &ApplicationSettingsBase::getLogFile(void) const
+{
+    return _sfLogFile.getValue();
+}
+
+//! Set the value of the ApplicationSettings::_sfLogFile field.
+inline
+void ApplicationSettingsBase::setLogFile(const BoostPath &value)
+{
+    editSField(LogFileFieldMask);
+
+    _sfLogFile.setValue(value);
+}
+//! Get the value of the ApplicationSettings::_sfLogHeaderElements field.
+
+inline
+UInt32 &ApplicationSettingsBase::editLogHeaderElements(void)
+{
+    editSField(LogHeaderElementsFieldMask);
+
+    return _sfLogHeaderElements.getValue();
+}
+
+//! Get the value of the ApplicationSettings::_sfLogHeaderElements field.
+inline
+      UInt32  ApplicationSettingsBase::getLogHeaderElements(void) const
+{
+    return _sfLogHeaderElements.getValue();
+}
+
+//! Set the value of the ApplicationSettings::_sfLogHeaderElements field.
+inline
+void ApplicationSettingsBase::setLogHeaderElements(const UInt32 value)
+{
+    editSField(LogHeaderElementsFieldMask);
+
+    _sfLogHeaderElements.setValue(value);
+}
 
 //! Get the value of the \a index element the ApplicationSettings::_mfRecentProjectFiles field.
 inline
@@ -273,6 +373,18 @@ void ApplicationSettingsBase::execSync (      ApplicationSettingsBase *pFrom,
 
     if(FieldBits::NoField != (HideAdvancedFieldsFieldMask & whichField))
         _sfHideAdvancedFields.syncWith(pFrom->_sfHideAdvancedFields);
+
+    if(FieldBits::NoField != (LogTypeFieldMask & whichField))
+        _sfLogType.syncWith(pFrom->_sfLogType);
+
+    if(FieldBits::NoField != (LogLevelFieldMask & whichField))
+        _sfLogLevel.syncWith(pFrom->_sfLogLevel);
+
+    if(FieldBits::NoField != (LogFileFieldMask & whichField))
+        _sfLogFile.syncWith(pFrom->_sfLogFile);
+
+    if(FieldBits::NoField != (LogHeaderElementsFieldMask & whichField))
+        _sfLogHeaderElements.syncWith(pFrom->_sfLogHeaderElements);
 }
 #endif
 
