@@ -47,5 +47,8 @@
 //---------------------------------------------------------------------------
 
 OSG_BEGIN_NAMESPACE
-
+inline
+Behavior::DepBehaviorListener::DepBehaviorListener(BehaviorUnrecPtr TheBehavior) : _Behavior(TheBehavior)
+{
+}
 OSG_END_NAMESPACE

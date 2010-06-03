@@ -1,24 +1,27 @@
 /*---------------------------------------------------------------------------*\
- *                             Kabala Engine                                 *
+ *                                OpenSG                                     *
  *                                                                           *
- *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *             Copyright (C) 2000-2002 by the OpenSG Forum                   *
+ *                                                                           *
+ *                            www.opensg.org                                 *
+ *                                                                           *
+ *   contact: dirk@opensg.org, gerrit.voss@vossg.org, jbehr@zgdv.de          *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU General Public License as published            *
- * by the Free Software Foundation, version 3.                               *
+ * under the terms of the GNU Library General Public License as published    *
+ * by the Free Software Foundation, version 2.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
  * WITHOUT ANY WARRANTY; without even the implied warranty of                *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU General Public                 *
+ * You should have received a copy of the GNU Library General Public         *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -32,102 +35,188 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
-#ifndef _KEBEHAVIORTYPE_H_
-#define _KEBEHAVIORTYPE_H_
-#ifdef __sgi
-#pragma once
-#endif
+#ifndef _OSGEVENTPRODUCERTYPE_H_
+#define _OSGEVENTPRODUCERTYPE_H_
 
-#include "KEBehaviorTypeBase.h"
+#include "OSGConfig.h"
+#include "OSGBaseDef.h"
+
+#include "OSGBaseTypes.h"
+
+#include <map>
+#include <boost/function.hpp>
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief BehaviorType class. See \ref
-           PageKabalaEngineBehaviorType for a description.
-*/
+class MethodDescription;
 
-class KE_KABALAENGINE_DLLMAPPING BehaviorType : public BehaviorTypeBase
+/*! \ingroup GrpSystemFieldContainerFuncs
+ */
+
+//typedef void              (*InitContainerF)  (void);
+
+/*! \ingroup GrpSystemFieldContainerFuncs
+ */
+
+//typedef FieldContainerPtr (*PrototypeCreateF)(void);
+
+/*! \ingroup GrpSystemFieldContainer
+ */
+typedef boost::function<void ( void )> InitEventProducerFunctor;
+
+class OSG_BASE_DLLMAPPING EventProducerType : public TypeBase
 {
-  protected:
-
     /*==========================  PUBLIC  =================================*/
 
-  public:
-
-    typedef BehaviorTypeBase Inherited;
-    typedef BehaviorType     Self;
+  public :
 
     /*---------------------------------------------------------------------*/
-    /*! \name                      Sync                                    */
+    /*! \name                   Constructors                               */
     /*! \{                                                                 */
+   
+    EventProducerType(const std::string                &szName,
+                       const std::string    &szParentName      = "",
+                       const std::string    &szGroupName       = "",
+                       //PrototypeCreateF    fPrototypeCreate  = NULL,
+                       InitEventProducerFunctor      fInitMethod       = InitEventProducerFunctor(),
+                       MethodDescription **pDesc             = NULL,
+                       UInt32              uiDescByteCounter = 0);
 
-    virtual void changed(ConstFieldMaskArg whichField,
-                         UInt32            origin,
-                         BitVector         details    );
+    EventProducerType(const EventProducerType &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                     Output                                   */
+    /*! \name                   Destructor                                 */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32     uiIndent = 0,
-                      const BitVector  bvFlags  = 0) const;
+    virtual ~EventProducerType(void); 
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                  Type Information                            */
+    /*! \{                                                                 */
+
+    UInt16              getGroupId(void) const;
+    EventProducerType *getParent (void) const;
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                 Description                                  */
+    /*! \{                                                                 */
+
+          MethodDescription *getMethodDescription (UInt32 uiMethodId);
+    const MethodDescription *getMethodDescription (UInt32 uiMethodId) const;
+
+          MethodDescription *findMethodDescription(const std::string &szMethodName);
+
+    const MethodDescription *findMethodDescription(
+        const std::string &szMethodName) const; 
+
+    UInt32                 getNumMethodDescs(void) const;
+
+    UInt32                 addDescription  (const MethodDescription &desc     );
+    bool                   subDescription  (      UInt32            uiMethodId);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                 Prototype                                    */
+    /*! \{                                                                 */
+
+    //FieldContainerPtr getPrototype(void                        ) const;
+    //bool              setPrototype(FieldContainerPtr pPrototype);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Query Properties                              */
+    /*! \{                                                                 */
+
+    bool isInitialized(void                           ) const;
+
+    bool isAbstract   (void                           ) const;
+
+    bool isDerivedFrom(const TypeBase           &other) const;
+    bool isDerivedFrom(const EventProducerType &other) const;    
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                        Dump                                  */
+    /*! \{                                                                 */
+
+    virtual void dump(      UInt32    uiIndent = 0, 
+                      const BitVector bvFlags  = 0) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
   protected:
 
-    // Variables should all be in BehaviorTypeBase.
+    typedef std::map   <std::string,  MethodDescription *> DescMap;
+    typedef std::vector<              MethodDescription *> DescVec;
+
+    typedef DescMap::iterator                             DescMapIt;
+    typedef DescVec::iterator                             DescVecIt;
+
+    typedef DescMap::const_iterator                       DescMapConstIt;
+    typedef DescVec::const_iterator                       DescVecConstIt;
 
     /*---------------------------------------------------------------------*/
-    /*! \name                  Constructors                                */
+    /*! \name                      Member                                  */
     /*! \{                                                                 */
 
-    BehaviorType(void);
-    BehaviorType(const BehaviorType &source);
+    UInt16              _uiGroupId;
+    std::string            _szGroupName;
+
+    bool                _bInitialized;
+
+    EventProducerType *_pParent;
+    std::string                _szParentName;
+
+    MethodDescription  **_pDesc;
+    UInt32              _uiDescByteCounter;
+
+    DescMap             _mDescMap;
+    DescVec             _vDescVec;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                   Destructors                                */
+    /*! \name                    Register                                  */
     /*! \{                                                                 */
 
-    virtual ~BehaviorType(void);
+    void registerType(const std::string &szGroupName);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                      Init                                    */
+    /*! \name             Intialization / Termination                      */
     /*! \{                                                                 */
 
-    static void initMethod(InitPhase ePhase);
+    bool initMethods      (void);
+    bool initParentMethods(void);
+
+    bool initialize      (void);
+    void terminate       (void);
 
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
 
   private:
 
-    friend class FieldContainer;
-    friend class BehaviorTypeBase;
+    typedef TypeBase Inherited;
 
-    // prohibit default functions (move to 'public' if you need one)
-    void operator =(const BehaviorType &source);
+    friend class EventProducerFactoryBase;
+
+    /*!\brief prohibit default function (move to 'public' if needed) */
+    void operator =(const EventProducerType &source);
 };
 
-typedef BehaviorType *BehaviorTypeP;
+struct OSG_BASE_DLLMAPPING MethodDescriptionPLT
+{
+    bool operator()(const MethodDescription *pElemDesc1, 
+                    const MethodDescription *pElemDesc2) const;
+};
 
 OSG_END_NAMESPACE
 
-#include "KEBehaviorTypeBase.inl"
-#include "KEBehaviorType.inl"
+#include "OSGEventProducerType.inl"
 
-#endif /* _KEBEHAVIORTYPE_H_ */
+#endif /* _OSGEVENTPRODUCERTYPE_H_ */

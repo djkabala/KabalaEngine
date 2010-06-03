@@ -76,10 +76,10 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
 
 	void addedToSceneObject(SceneObjectUnrecPtr rootSceneObject);
-	void checkForBehaviorDependancy(BehaviorUnrecPtr behavior);
-	void checkForBehaviorDependant(BehaviorUnrecPtr behavior);
-	void setupDependency(BehaviorUnrecPtr behavior);
-	void setupDependant(BehaviorUnrecPtr behavior);
+
+
+	bool initialized;
+	bool isInitialized();
 
 
 
@@ -107,7 +107,8 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
 
 	void initialize(SceneObjectUnrecPtr rootSceneObject);
-
+	void setupDependency(BehaviorUnrecPtr behavior);
+	void setupDependant(BehaviorUnrecPtr behavior);
 
     // Variables should all be in BehaviorBase.
 
@@ -120,7 +121,7 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 			virtual void eventProduced(const EventUnrecPtr e);
 
 		protected :
-			BehaviorUnrecPtr _Behavior;
+			BehaviorRecPtr _Behavior;
 	};
 
 	DepBehaviorListener		_DepBehaviorListener;

@@ -79,6 +79,10 @@ void Behavior::initMethod(InitPhase ePhase)
     }
 }
 
+bool Behavior::isInitialized()
+{
+	return Behavior::initialized;
+}
 
 /***************************************************************************\
  *                           Instance methods                              *
@@ -86,53 +90,20 @@ void Behavior::initMethod(InitPhase ePhase)
 
 void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
 {
-	setSceneObject(rootSceneObject);
 
-	setInitialized(true);
-
-	//getEventProducer(getSceneObject()->getScene())->attachEventListener(
 }
 
 void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
 {
+	_sfSceneObject.setValue(rootSceneObject, _sfSceneObject.getParentFieldPos());
 
 	initialize(rootSceneObject);
-
-	for(UInt32 i = 0; i < rootSceneObject.getScene()->getSceneObjects().size(); i++)
-	{
-		for(UInt32 c = 0; c < rootSceneObject.getScene()->getSceneObjects(i)->getBehaviors().size(); i++)
-		{
-			checkForBehaviorDependancy(OSG::BehaviorUnrecPtr(this));
-			checkForBehaviorDependant(OSG::BehaviorUnrecPtr(this));
-		}
-	}
-}
-
-void Behavior::checkForBehaviorDependancy(BehaviorUnrecPtr behavior)
-{
-	for(UInt32 i = 0; i < getDependencyTypes().size(); i++)
-	{
-		if(getDependencyTypes(i) == behavior.getBehaviorType())
-		{
-			setupDependency(behavior);
-		}
-	}
-}
-
-void Behavior::checkForBehaviorDependant(BehaviorUnrecPtr behavior)
-{
-	for(UInt32 i = 0; i < getDependantTypes().size(); i++)
-	{
-		if(getDependantTypes(i) == behavior.getBehaviorType())
-		{
-			setupDependant(behavior);
-		}
-	}
 }
 
 void Behavior::setupDependency(BehaviorUnrecPtr behavior)
 {
 }
+
 void Behavior::setupDependant(BehaviorUnrecPtr behavior)
 {
 }
@@ -143,8 +114,9 @@ void Behavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
 
 void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e)
 {
-	_Behavior->depBehaviorProducedMethod(e, GenericEventPtr::dcast(e)->getTypeId());
+	_Behavior->depBehaviorProducedMethod(e, e->getTypeId());
 }
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -153,13 +125,15 @@ void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e)
 
 Behavior::Behavior(void) :
     Inherited(),
-	_DepBehaviorListener(BehaviorUnrecPtr(this))
+	_DepBehaviorListener(BehaviorUnrecPtr(this)),
+	initialized(false)
 {
 }
 
 Behavior::Behavior(const Behavior &source) :
     Inherited(source),
-	_DepBehaviorListener(BehaviorUnrecPtr(this))
+	_DepBehaviorListener(BehaviorUnrecPtr(this)),
+	initialized(false)
 {
 }
 

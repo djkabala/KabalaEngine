@@ -84,10 +84,6 @@ OSG_BEGIN_NAMESPACE
     
 */
 
-/*! \var std::string     BehaviorBase::_mfDependencies
-    
-*/
-
 
 /***************************************************************************\
  *                      FieldType/FieldTrait Instantiation                 *
@@ -139,18 +135,6 @@ void BehaviorBase::classDescInserter(TypeObject &oType)
         static_cast     <FieldGetMethodSig >(&Behavior::invalidGetField));
 
     oType.addInitialDesc(pDesc);
-
-    pDesc = new MFString::Description(
-        MFString::getClassType(),
-        "Dependencies",
-        "",
-        DependenciesFieldId, DependenciesFieldMask,
-        false,
-        (Field::MFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&Behavior::editHandleDependencies),
-        static_cast<FieldGetMethodSig >(&Behavior::getHandleDependencies));
-
-    oType.addInitialDesc(pDesc);
 }
 
 
@@ -194,15 +178,6 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     "        passFieldMask=\"true\"\n"
     "\t>\n"
     "\t</Field>\n"
-    "\t<Field\n"
-    "\t\tname=\"Dependencies\"\n"
-    "\t\ttype=\"std::string\"\n"
-    "\t\tcategory=\"data\"\n"
-    "\t\tcardinality=\"multi\"\n"
-    "\t\tvisibility=\"external\"\n"
-    "\t\taccess=\"public\"\n"
-    "\t>\n"
-    "\t</Field>\n"
     "</FieldContainer>\n",
     "The SceneObject.\n"
     );
@@ -228,19 +203,6 @@ UInt32 BehaviorBase::getContainerSize(void) const
 
 
 
-MFString *BehaviorBase::editMFDependencies(void)
-{
-    editMField(DependenciesFieldMask, _mfDependencies);
-
-    return &_mfDependencies;
-}
-
-const MFString *BehaviorBase::getMFDependencies(void) const
-{
-    return &_mfDependencies;
-}
-
-
 
 
 
@@ -255,10 +217,6 @@ UInt32 BehaviorBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfSceneObject.getBinSize();
     }
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-    {
-        returnValue += _mfDependencies.getBinSize();
-    }
 
     return returnValue;
 }
@@ -272,10 +230,6 @@ void BehaviorBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyToBin(pMem);
     }
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-    {
-        _mfDependencies.copyToBin(pMem);
-    }
 }
 
 void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
@@ -287,10 +241,6 @@ void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyFromBin(pMem);
     }
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-    {
-        _mfDependencies.copyFromBin(pMem);
-    }
 }
 
 
@@ -300,15 +250,13 @@ void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
 
 BehaviorBase::BehaviorBase(void) :
     Inherited(),
-    _sfSceneObject            (NULL),
-    _mfDependencies           ()
+    _sfSceneObject            (NULL)
 {
 }
 
 BehaviorBase::BehaviorBase(const BehaviorBase &source) :
     Inherited(source),
-    _sfSceneObject            (NULL),
-    _mfDependencies           (source._mfDependencies           )
+    _sfSceneObject            (NULL)
 {
 }
 
@@ -405,31 +353,6 @@ EditFieldHandlePtr BehaviorBase::editHandleSceneObject    (void)
     return returnValue;
 }
 
-GetFieldHandlePtr BehaviorBase::getHandleDependencies    (void) const
-{
-    MFString::GetHandlePtr returnValue(
-        new  MFString::GetHandle(
-             &_mfDependencies,
-             this->getType().getFieldDesc(DependenciesFieldId),
-             const_cast<BehaviorBase *>(this)));
-
-    return returnValue;
-}
-
-EditFieldHandlePtr BehaviorBase::editHandleDependencies   (void)
-{
-    MFString::EditHandlePtr returnValue(
-        new  MFString::EditHandle(
-             &_mfDependencies,
-             this->getType().getFieldDesc(DependenciesFieldId),
-             this));
-
-
-    editMField(DependenciesFieldMask, _mfDependencies);
-
-    return returnValue;
-}
-
 
 #ifdef OSG_MT_CPTR_ASPECT
 void BehaviorBase::execSyncV(      FieldContainer    &oFrom,
@@ -454,16 +377,7 @@ void BehaviorBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
 
-#ifdef OSG_MT_CPTR_ASPECT
-    AspectOffsetStore oOffsets;
 
-    _pAspectStore->fillOffsetArray(oOffsets, this);
-#endif
-
-#ifdef OSG_MT_CPTR_ASPECT
-    _mfDependencies.terminateShare(Thread::getCurrentAspect(),
-                                      oOffsets);
-#endif
 }
 
 

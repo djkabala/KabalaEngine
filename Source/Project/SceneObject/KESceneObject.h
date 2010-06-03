@@ -58,6 +58,9 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     typedef SceneObjectBase Inherited;
     typedef SceneObject     Self;
 
+	BehaviorUnrecPtr getBehaviors (UInt32 index);
+
+
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
@@ -78,6 +81,9 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     /*=========================  PROTECTED  ===============================*/
 
   protected:
+
+	  void InitializeAll();
+	  void InitializeBehaviors();
 
     // Variables should all be in SceneObjectBase.
 

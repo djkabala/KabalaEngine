@@ -78,11 +78,43 @@ void SceneObject::initMethod(InitPhase ePhase)
     {
     }
 }
+BehaviorUnrecPtr SceneObject::getBehaviors (UInt32 index)
+{
+	if(index >= _mfBehaviors.size())
+	{
+		SWARNING << "Scene Object attempted to access a index of MFBehaviors that doesn't exist. Returning last index of MFBehaviors!" << std::endl;
+		index = _mfBehaviors.size() - 1;
+	}
 
+	return _mfBehaviors[index];
+}
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
+
+void SceneObject::InitializeAll()
+{
+	SLOG << "Initializing All Behaviors"  << std::endl;
+
+	for(UInt32 i = 0; i < _mfBehaviors.size(); i++)
+	{
+		getBehaviors(i)->addedToSceneObject(SceneObjectUnrecPtr(this));
+	}
+}
+
+void SceneObject::InitializeBehaviors()
+{
+	SLOG << "Initializing all uninitialized behaviors"  << std::endl;
+
+	for(UInt32 i = 0; i < _mfBehaviors.size(); i++)
+	{
+		if(!getBehaviors(i)->isInitialized())
+		{
+			getBehaviors(i)->addedToSceneObject(SceneObjectUnrecPtr(this));
+		}
+	}
+}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -111,6 +143,15 @@ void SceneObject::changed(ConstFieldMaskArg whichField,
                             BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
+
+	if(whichField & SceneFieldMask)
+	{
+		InitializeAll();
+	}
+	if(whichField & BehaviorsFieldMask)
+	{
+		InitializeBehaviors();
+	}
 }
 
 void SceneObject::dump(      UInt32    ,
