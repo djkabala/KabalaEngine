@@ -46,16 +46,15 @@ MainApplication::MainWindowListener::MainWindowListener(MainApplication* TheMain
         _MainApplication(TheMainApplication)
 {
 }
-        
 
 inline
-ApplicationSettingsRefPtr &MainApplication::getSettings(void)
+ApplicationSettings &MainApplication::getSettings(void)
 {
     return _Settings;
 }
 
 inline
-const ApplicationSettingsRefPtr &MainApplication::getSettings(void) const
+const ApplicationSettings &MainApplication::getSettings(void) const
 {
     return _Settings;
 }

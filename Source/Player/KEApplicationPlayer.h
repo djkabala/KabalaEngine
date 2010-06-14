@@ -44,6 +44,8 @@
 
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGTransform.h>
+#include <OpenSG/OSGLineChunk.h>
+#include <OpenSG/OSGMaterialChunk.h>
 #include <OpenSG/OSGNavigator.h>
 #include <OpenSG/OSGEventListener.h>
 
@@ -329,10 +331,20 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
 
     NodeRefPtr _HighlightNode;
+    NodeRefPtr _HighlightVolumeBoxNode;
+    GeometryRefPtr _HighlightVolumeBoxGeo;
+    LineChunkRefPtr _HighlightBoundBoxMatLineChunk;
+    NodeRefPtr _HighlightAxisNode;
+    GeometryRefPtr _HighlightAxisGeo;
+    LineChunkRefPtr _HighlightAxisLineChunk;
+    NodeRefPtr _WireframeMatGroupNode;
     NodeRefPtr _WireframeNode;
     TransformRefPtr _WireframeTransform;
+    MaterialChunkRefPtr _WireframeMatMaterialChunk;
+    LineChunkRefPtr _WireframeMatLineChunk;
     NodeRefPtr _SelectedNode;
     NodeRefPtr _WorkspaceGrid;
+    LineChunkRefPtr _WorkspaceGridLineChunk;
 
     HierarchyPanelRefPtr	_HierarchyPanel;
     HelperPanelRefPtr		_HelperPanel;
@@ -464,6 +476,9 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void updateDebugSceneChange(void);
 
     void createHighlightNode(void);
+    void createHighlightBoundBoxNode(void);
+    void createHighlightAxisNode(void);
+    void createHighlightTriMeshNode(void);
 
     InternalWindowRefPtr MainInternalWindow;		
     GraphicsRefPtr DebuggerGraphics;				
@@ -476,6 +491,8 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     NodeRefPtr                           _PhysDrawableNode;
     bool _WasMouseHidden;
     bool _WasMouseAttached;
+
+    void updateFromSettings(void);
 
     /*==========================  PRIVATE  ================================*/
 
