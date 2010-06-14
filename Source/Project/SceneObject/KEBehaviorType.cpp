@@ -45,8 +45,8 @@
 
 #include <algorithm>
 
-#include "OSGEventProducerType.h"
-#include "OSGEventProducerFactory.h"
+#include "KEBehaviorType.h"
+#include "KEBehaviorFactory.h"
 
 #include "OSGMethodDescription.h"
 #include "OSGLog.h"
@@ -60,10 +60,10 @@ OSG_USING_NAMESPACE
 /*-------------------------------------------------------------------------*/
 /*                              Register                                   */
 
-inline
-void EventProducerType::registerType(const std::string &szGroupName)
+
+void BehaviorType::registerType(const std::string &szGroupName)
 {
-    EventProducerFactory::the()->registerType (this);
+//    BehaviorFactory::the()->registerType (this);
 
     //_uiGroupId = EventProducerFactory::the()->registerGroup(
         //!szGroupName.empty() ? szGroupName : _szName);
@@ -72,7 +72,7 @@ void EventProducerType::registerType(const std::string &szGroupName)
 /*-------------------------------------------------------------------------*/
 /*                            Constructors                                 */
 
-EventProducerType::EventProducerType(const std::string &szName,
+/*BehaviorType::BehaviorType(const std::string &szName,
                                    const std::string &szParentName,
                                    const std::string &szGroupName,
                                    //PrototypeCreateF    fPrototypeCreate,
@@ -96,7 +96,7 @@ EventProducerType::EventProducerType(const std::string &szName,
     _pDesc            (pDesc            ),
     _uiDescByteCounter(uiDescByteCounter),
 
-    _mDescMap         (                 ),
+    _mDescMap         (                 )//,
     _vDescVec         (0                )
 {
     registerType(szGroupName);
@@ -105,7 +105,7 @@ EventProducerType::EventProducerType(const std::string &szName,
         fInitMethod();
 }
 
-EventProducerType::EventProducerType(const EventProducerType &obj) :
+BehaviorType::BehaviorType(const BehaviorType &obj) :
 
      Inherited        (obj                   ),
     _uiGroupId        (obj._uiGroupId        ),
@@ -133,12 +133,12 @@ EventProducerType::EventProducerType(const EventProducerType &obj) :
     initParentMethods();
 
     _bInitialized = true;
-}
+}*/
 
 /*-------------------------------------------------------------------------*/
 /*                             Destructor                                  */
 
-EventProducerType::~EventProducerType(void)
+BehaviorType::~BehaviorType(void)
 {
     if(GlobalSystemState != Shutdown)
     {
@@ -149,7 +149,7 @@ EventProducerType::~EventProducerType(void)
 /*-------------------------------------------------------------------------*/
 /*                            Add / Sub                                    */
 
-UInt32 EventProducerType::addDescription(const MethodDescription &desc)
+UInt32 BehaviorType::addDescription(const MethodDescription &desc)
 {
     UInt32            returnValue = 0;
     DescMapConstIt    descIt;
@@ -207,7 +207,7 @@ UInt32 EventProducerType::addDescription(const MethodDescription &desc)
     return returnValue;
 }
 
-bool EventProducerType::subDescription(UInt32 uiMethodId)
+bool BehaviorType::subDescription(UInt32 uiMethodId)
 {
     MethodDescription  *pDesc = getMethodDescription(uiMethodId);
     DescMapIt          descMIt;
@@ -246,7 +246,7 @@ bool EventProducerType::subDescription(UInt32 uiMethodId)
     return returnValue;
 }
 
-bool EventProducerType::isAbstract   (void) const
+bool BehaviorType::isAbstract   (void) const
 {
     return false;
 }
@@ -254,10 +254,10 @@ bool EventProducerType::isAbstract   (void) const
 /*-------------------------------------------------------------------------*/
 /*                                Dump                                     */
 
-void EventProducerType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
+void BehaviorType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
                               const BitVector OSG_CHECK_ARG(bvFlags )) const
 {
-    SLOG << "EventProducerType: "
+    SLOG << "BehaviorType: "
          << getCName()
          << ", Id: "       
          << getId()
@@ -281,7 +281,7 @@ void EventProducerType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
 /*-------------------------------------------------------------------------*/
 /*                                Init                                     */
 
-/*bool EventProducerType::initPrototype(void)
+/*bool BehaviorType::initPrototype(void)
 {
     _bInitialized = true;
 
@@ -295,7 +295,7 @@ void EventProducerType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
     return _bInitialized;
 }*/
 
-bool EventProducerType::initMethods(void)
+bool BehaviorType::initMethods(void)
 {
     UInt32    i;
     DescMapIt descIt;
@@ -343,7 +343,7 @@ bool EventProducerType::initMethods(void)
     return _bInitialized;
 }
 
-bool EventProducerType::initParentMethods(void)
+bool BehaviorType::initParentMethods(void)
 {
     DescMapIt dPIt;
 
@@ -351,8 +351,8 @@ bool EventProducerType::initParentMethods(void)
 
     if(!_szParentName.empty())
     {
-        _pParent =
-            dynamic_cast<EventProducerType*>(EventProducerFactory::the()->findType(_szParentName.c_str()));
+  //      _pParent =
+  //          dynamic_cast<BehaviorType*>(EventProducerFactory::the()->findType(_szParentName.c_str()));
 
         if(_pParent != NULL)
         {
@@ -399,7 +399,7 @@ bool EventProducerType::initParentMethods(void)
     return _bInitialized;
 }
 
-bool EventProducerType::initialize(void)
+bool BehaviorType::initialize(void)
 {
     if(_bInitialized == true)
         return _bInitialized;
@@ -419,13 +419,13 @@ bool EventProducerType::initialize(void)
     //if(_bInitialized == false)
     //    return _bInitialized;
 
-    //FDEBUG ( ( "init EventProducerType %s (%d)\n",
+    //FDEBUG ( ( "init BehaviorType %s (%d)\n",
                //_szName, int(_bInitialized) ));
     
     return _bInitialized;
 }
 
-void EventProducerType::terminate(void)
+void BehaviorType::terminate(void)
 {
     UInt32 i;
 

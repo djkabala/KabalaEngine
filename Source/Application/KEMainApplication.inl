@@ -144,5 +144,11 @@ const ApplicationModeRefPtr &MainApplication::getCurrentMode(void) const
     return _CurrentMode;
 }
 
+inline
+bool MainApplication::isLogListenerAttached(LogListenerPtr Listener) const
+{
+    return _LogListeners.find(Listener) != _LogListeners.end();
+}
+
 OSG_END_NAMESPACE
 

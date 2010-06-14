@@ -41,6 +41,7 @@
 #include "OSGFactoryController.h"
 #include "OSGLog.h"
 #include "OSGTypeBase.h"
+#include "KEBehaviorFactory.h"
 
 #include "OSGSingletonHolder.ins"
 
@@ -53,9 +54,9 @@ OSG_BEGIN_NAMESPACE
 //  Class
 //---------------------------------------------------------------------------
 
-OSG_SINGLETON_INST(EventProducerFactoryBase, addPostFactoryExitFunction)
+OSG_SINGLETON_INST(BehaviorFactory, addPostFactoryExitFunction)
 
-template class SingletonHolder<EventProducerFactoryBase>;
+template class SingletonHolder<BehaviorFactory>;
 
 /***************************************************************************\
  *                               Types                                     *
@@ -77,7 +78,7 @@ template class SingletonHolder<EventProducerFactoryBase>;
  -  protected                                                              -
 \*-------------------------------------------------------------------------*/
 
-void EventProducerFactoryBase::writeTypeDot(FILE     *pOut,
+void BehaviorFactory::writeTypeDot(FILE     *pOut,
                                    TypeBase *pTypeBase)
 {
     fprintf(pOut, "    OpenSG%s [shape=record,label=\"%s - %s\"]\n", 
@@ -112,7 +113,7 @@ void EventProducerFactoryBase::writeTypeDot(FILE     *pOut,
 
 /*------------- constructors & destructors --------------------------------*/
 
-EventProducerFactoryBase::EventProducerFactoryBase(void) :
+BehaviorFactory::BehaviorFactory(void) :
      Inherited    ("EventProducerFactory"),
     _vTypeNameMaps(             ),
     _vTypeStore   (             )
@@ -125,7 +126,7 @@ EventProducerFactoryBase::EventProducerFactoryBase(void) :
     FactoryController::the()->registerFactory(this);
 }
 
-EventProducerFactoryBase::EventProducerFactoryBase(const Char8 *szName) :
+BehaviorFactory::BehaviorFactory(const Char8 *szName) :
      Inherited    (szName),
     _vTypeNameMaps(      ),
     _vTypeStore   (      )
@@ -138,19 +139,19 @@ EventProducerFactoryBase::EventProducerFactoryBase(const Char8 *szName) :
     FactoryController::the()->registerFactory(this);
 }
 
-EventProducerFactoryBase::~EventProducerFactoryBase(void)
+BehaviorFactory::~BehaviorFactory(void)
 {
 }
 
-bool EventProducerFactoryBase::initialize(void)
+bool BehaviorFactory::initialize(void)
 {
     TypeStoreIt typeIt  = _vTypeStore.begin();
     TypeStoreIt typeEnd = _vTypeStore.end  ();
 
     while(typeIt != typeEnd)
     {
-        if((*typeIt) != NULL)
-            (*typeIt)->initialize();
+  //      if((*typeIt) != NULL)
+  //          (*typeIt)->initialize();
 
         ++typeIt;
     }
@@ -158,12 +159,12 @@ bool EventProducerFactoryBase::initialize(void)
     return true;
 }
 
-bool EventProducerFactoryBase::initializeFactoryPost(void)
+bool BehaviorFactory::initializeFactoryPost(void)
 {
     return true;
 }
 
-bool EventProducerFactoryBase::terminate(void)
+bool BehaviorFactory::terminate(void)
 {
     for(UInt32 i = 0; i < _vTypeNameMaps.size(); ++i)
     {
@@ -175,7 +176,7 @@ bool EventProducerFactoryBase::terminate(void)
     return true;
 }
 
-bool EventProducerFactoryBase::onLoadInitialize(void)
+bool BehaviorFactory::onLoadInitialize(void)
 {
     return true;
 }
@@ -184,7 +185,7 @@ bool EventProducerFactoryBase::onLoadInitialize(void)
  -  public                                                                 -
 \*-------------------------------------------------------------------------*/
 
-UInt32 EventProducerFactoryBase::registerType(TypeBase *pType)
+UInt32 BehaviorFactory::registerType(TypeBase *pType)
 {
     UInt32 returnValue = 0;
 
@@ -250,7 +251,7 @@ UInt32 EventProducerFactoryBase::registerType(TypeBase *pType)
     return returnValue;
 }
 
-UInt32 EventProducerFactoryBase::findTypeId(const Char8 *szName,
+UInt32 BehaviorFactory::findTypeId(const Char8 *szName,
                                    const UInt32 uiNameSpace)
 {
     TypeNameMapConstIt typeIt;
@@ -271,7 +272,7 @@ UInt32 EventProducerFactoryBase::findTypeId(const Char8 *szName,
     return uiTypeId;
 }
 
-TypeBase *EventProducerFactoryBase::findType(UInt32 uiTypeId)
+TypeBase *BehaviorFactory::findType(UInt32 uiTypeId)
 {
     if(uiTypeId < _vTypeStore.size())
     {
@@ -283,7 +284,7 @@ TypeBase *EventProducerFactoryBase::findType(UInt32 uiTypeId)
     }
 }
 
-TypeBase *EventProducerFactoryBase::findType(const Char8    *szName,
+TypeBase *BehaviorFactory::findType(const Char8    *szName,
                                     const UInt32    uiNameSpace)
 {
     UInt32 uiTypeId = findTypeId(szName, uiNameSpace);
@@ -291,12 +292,12 @@ TypeBase *EventProducerFactoryBase::findType(const Char8    *szName,
     return findType(uiTypeId);
 }
 
-UInt32 EventProducerFactoryBase::getNumTypes(void)
+UInt32 BehaviorFactory::getNumTypes(void)
 {
     return _vTypeStore.size();
 }
 
-void EventProducerFactoryBase::writeTypeGraph(FILE *pOut)
+void BehaviorFactory::writeTypeGraph(FILE *pOut)
 {
     if(pOut == NULL)
         return;
@@ -322,7 +323,7 @@ void EventProducerFactoryBase::writeTypeGraph(FILE *pOut)
     fprintf(pOut, "}\n");
 }
 
-void EventProducerFactoryBase::writeTypeGraph(const Char8 *szFilename)
+void BehaviorFactory::writeTypeGraph(const Char8 *szFilename)
 {
     if(szFilename == NULL)
         return;

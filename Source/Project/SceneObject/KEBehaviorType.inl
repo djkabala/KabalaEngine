@@ -36,12 +36,13 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _OSGEVENTPRODUCERTYPE_INL_
-#define _OSGEVENTPRODUCERTYPE_INL_
+#ifndef _KEBEHAVIORTYPE_INL_
+#define _KEBEHAVIORTYPE_INL_
 
 #include "OSGConfig.h"
 #include "OSGBaseDef.h"
 #include "OSGMethodDescription.h"
+#include "KEBehaviorType.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -49,19 +50,19 @@ OSG_BEGIN_NAMESPACE
 /*                                Get                                      */
 
 inline
-UInt16 EventProducerType::getGroupId (void) const
+UInt16 BehaviorType::getGroupId (void) const
 {
     return _uiGroupId;
 }
 
 inline
-EventProducerType *EventProducerType::getParent(void) const
+BehaviorType *BehaviorType::getParent(void) const
 {
     return _pParent;
 }
 
 inline
-MethodDescription *EventProducerType::getMethodDescription(UInt32 uiMethodId)
+MethodDescription *BehaviorType::getMethodDescription(UInt32 uiMethodId)
 {
     MethodDescription *foundDesc = NULL;
     MethodDescription *testDesc;
@@ -81,7 +82,7 @@ MethodDescription *EventProducerType::getMethodDescription(UInt32 uiMethodId)
 }
 
 inline
-const MethodDescription *EventProducerType::getMethodDescription(
+const MethodDescription *BehaviorType::getMethodDescription(
     UInt32 uiMethodId) const
 {
     MethodDescription *foundDesc = NULL;
@@ -102,7 +103,7 @@ const MethodDescription *EventProducerType::getMethodDescription(
 }
 
 inline
-MethodDescription *EventProducerType::findMethodDescription(
+MethodDescription *BehaviorType::findMethodDescription(
     const std::string &szMethodName)
 {
     DescMapIt descIt = _mDescMap.find(szMethodName);
@@ -111,7 +112,7 @@ MethodDescription *EventProducerType::findMethodDescription(
 }
 
 inline
-const MethodDescription *EventProducerType::findMethodDescription(
+const MethodDescription *BehaviorType::findMethodDescription(
     const std::string &szMethodName) const
 {
     DescMapConstIt descIt = _mDescMap.find(szMethodName);
@@ -120,7 +121,7 @@ const MethodDescription *EventProducerType::findMethodDescription(
 }
 
 inline
-UInt32 EventProducerType::getNumMethodDescs(void) const
+UInt32 BehaviorType::getNumMethodDescs(void) const
 {
     return _vDescVec.size();
 }
@@ -130,37 +131,9 @@ UInt32 EventProducerType::getNumMethodDescs(void) const
 /*                                 Is                                      */
 
 inline
-bool EventProducerType::isInitialized(void) const
+bool BehaviorType::isInitialized(void) const
 {
     return _bInitialized;
-}
-
-inline
-bool EventProducerType::isDerivedFrom(const TypeBase &other) const
-{
-    return Inherited::isDerivedFrom(other);
-}
-
-inline
-bool EventProducerType::isDerivedFrom(const EventProducerType &other) const
-{
-    if(_uiTypeId == other._uiTypeId)
-    {
-        return true;
-    }
-    else
-    {
-        EventProducerType *pCurrType   = _pParent;
-        while(pCurrType != NULL)
-        {
-            if(other._uiTypeId == pCurrType->_uiTypeId)
-            {
-                return true;
-            }
-            pCurrType = pCurrType->_pParent;
-        }
-    }
-    return false;
 }
 
 inline
@@ -173,4 +146,4 @@ bool MethodDescriptionPLT::operator()(const MethodDescription *pElemDesc1,
 OSG_END_NAMESPACE
 
 
-#endif /* _OSGEVENTPRODUCERTYPE_INL_ */
+#endif /* _KEBEHAVIORTYPE_INL_ */

@@ -36,8 +36,8 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _OSGEVENTPRODUCERTYPE_H_
-#define _OSGEVENTPRODUCERTYPE_H_
+#ifndef _KEBEHAVIORTYPE_H_
+#define _KEBEHAVIORTYPE_H_
 
 #include "OSGConfig.h"
 #include "OSGBaseDef.h"
@@ -46,6 +46,7 @@
 
 #include <map>
 #include <boost/function.hpp>
+#include "OSGTypeBase.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -65,7 +66,7 @@ class MethodDescription;
  */
 typedef boost::function<void ( void )> InitEventProducerFunctor;
 
-class OSG_BASE_DLLMAPPING EventProducerType : public TypeBase
+class OSG_BASE_DLLMAPPING BehaviorType : public TypeBase
 {
     /*==========================  PUBLIC  =================================*/
 
@@ -75,7 +76,7 @@ class OSG_BASE_DLLMAPPING EventProducerType : public TypeBase
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
    
-    EventProducerType(const std::string                &szName,
+    BehaviorType(const std::string                &szName,
                        const std::string    &szParentName      = "",
                        const std::string    &szGroupName       = "",
                        //PrototypeCreateF    fPrototypeCreate  = NULL,
@@ -83,22 +84,22 @@ class OSG_BASE_DLLMAPPING EventProducerType : public TypeBase
                        MethodDescription **pDesc             = NULL,
                        UInt32              uiDescByteCounter = 0);
 
-    EventProducerType(const EventProducerType &source);
+    BehaviorType(const BehaviorType &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructor                                 */
     /*! \{                                                                 */
 
-    virtual ~EventProducerType(void); 
+    virtual ~BehaviorType(void); 
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                  Type Information                            */
     /*! \{                                                                 */
 
-    UInt16              getGroupId(void) const;
-    EventProducerType *getParent (void) const;
+    UInt16  getGroupId(void) const;
+    BehaviorType *getParent (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -134,9 +135,7 @@ class OSG_BASE_DLLMAPPING EventProducerType : public TypeBase
     bool isInitialized(void                           ) const;
 
     bool isAbstract   (void                           ) const;
-
-    bool isDerivedFrom(const TypeBase           &other) const;
-    bool isDerivedFrom(const EventProducerType &other) const;    
+  
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -169,7 +168,7 @@ class OSG_BASE_DLLMAPPING EventProducerType : public TypeBase
 
     bool                _bInitialized;
 
-    EventProducerType *_pParent;
+    BehaviorType *_pParent;
     std::string                _szParentName;
 
     MethodDescription  **_pDesc;
@@ -201,12 +200,12 @@ class OSG_BASE_DLLMAPPING EventProducerType : public TypeBase
 
   private:
 
-    typedef TypeBase Inherited;
+   // typedef TypeBase Inherited;
 
-    friend class EventProducerFactoryBase;
+    friend class BehaviorTypeFactoryBase;
 
     /*!\brief prohibit default function (move to 'public' if needed) */
-    void operator =(const EventProducerType &source);
+    void operator =(const BehaviorType &source);
 };
 
 struct OSG_BASE_DLLMAPPING MethodDescriptionPLT
@@ -217,6 +216,6 @@ struct OSG_BASE_DLLMAPPING MethodDescriptionPLT
 
 OSG_END_NAMESPACE
 
-#include "OSGEventProducerType.inl"
+#include "KEBehaviorType.inl"
 
-#endif /* _OSGEVENTPRODUCERTYPE_H_ */
+#endif /* _KEBEHAVIORTYPE_H_ */

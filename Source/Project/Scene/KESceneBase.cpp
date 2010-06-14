@@ -495,8 +495,8 @@ void SceneBase::classDescInserter(TypeObject &oType)
         EventProducerFieldId,EventProducerFieldMask,
         true,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&Scene::invalidEditField),
-        static_cast     <FieldGetMethodSig >(&Scene::invalidGetField));
+        static_cast     <FieldEditMethodSig>(&Scene::editHandleEventProducer),
+        static_cast     <FieldGetMethodSig >(&Scene::getHandleEventProducer));
 
     oType.addInitialDesc(pDesc);
 }
@@ -3402,6 +3402,32 @@ EditFieldHandlePtr SceneBase::editHandleGenericMethodIDs(void)
 
 
     editSField(GenericMethodIDsFieldMask);
+
+    return returnValue;
+}
+
+
+GetFieldHandlePtr SceneBase::getHandleEventProducer        (void) const
+{
+    SFEventProducerPtr::GetHandlePtr returnValue(
+        new  SFEventProducerPtr::GetHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleEventProducer       (void)
+{
+    SFEventProducerPtr::EditHandlePtr returnValue(
+        new  SFEventProducerPtr::EditHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             this));
+
+
+    editSField(EventProducerFieldMask);
 
     return returnValue;
 }

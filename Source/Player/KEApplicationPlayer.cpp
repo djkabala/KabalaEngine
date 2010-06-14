@@ -62,6 +62,7 @@
 #include <OpenSG/OSGTypedGeoIntegralProperty.h>
 #include <OpenSG/OSGTypedGeoVectorProperty.h>
 #include <OpenSG/OSGPointLight.h>
+#include <OpenSG/OSGVisitSubTree.h>
 #include <OpenSG/OSGDirectionalLight.h>
 #include <OpenSG/OSGSpotLight.h>
 //#include <OpenSG/OSGOcclusionCullingTreeBuilder.h>
@@ -84,6 +85,7 @@
 
 #include "Player/Commands/KEUndoCommandOfPlayer.h"
 #include "Player/Commands/KERedoCommandOfPlayer.h"
+
 
 OSG_BEGIN_NAMESPACE
 
@@ -210,22 +212,22 @@ void ApplicationPlayer::createDebugInterface(void)
     // setting the fields of the menu items
     _ResetItem->setText("Reset");
     _ResetItem->setAcceleratorKey(KeyEvent::KEY_E);
-    _ResetItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _ResetItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _ResetItem->setMnemonicKey(KeyEvent::KEY_E);
 
     _ForceQuitItem ->setText("Force Quit");
     _ForceQuitItem ->setAcceleratorKey(KeyEvent::KEY_Q);
-    _ForceQuitItem ->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _ForceQuitItem ->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _ForceQuitItem ->setMnemonicKey(KeyEvent::KEY_Q);
 
     _UndoItem->setText("Undo");
     _UndoItem->setAcceleratorKey(KeyEvent::KEY_Z);
-    _UndoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _UndoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _UndoItem->setMnemonicKey(KeyEvent::KEY_U);
 
     _RedoItem->setText("Redo");
     _RedoItem->setAcceleratorKey(KeyEvent::KEY_Z);
-    _RedoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL |
+    _RedoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND |
                                        KeyEvent::KEY_MODIFIER_SHIFT);
     _RedoItem->setMnemonicKey(KeyEvent::KEY_R);
 
@@ -239,34 +241,34 @@ void ApplicationPlayer::createDebugInterface(void)
 
     _FirstItem->setText("First");
     _FirstItem->setAcceleratorKey(KeyEvent::KEY_F);
-    _FirstItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _FirstItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _FirstItem->setMnemonicKey(KeyEvent::KEY_F);
 
     _LastItem->setText("Last");
     _LastItem->setAcceleratorKey(KeyEvent::KEY_L);
-    _LastItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _LastItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _LastItem->setMnemonicKey(KeyEvent::KEY_L);
 
     _SceneSubItem->setText("Scenes");
 
     _FlyNavigatorItem->setText("FlyNavigator ");
     _FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_N);
-    _FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_N);
 
     _TrackballNavigatorItem->setText("TrackballNavigator ");
     _TrackballNavigatorItem->setAcceleratorKey(KeyEvent::KEY_T);
-    _TrackballNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _TrackballNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _TrackballNavigatorItem->setMnemonicKey(KeyEvent::KEY_T);
 
     _BasicItem->setText("Basic ");
     _BasicItem->setAcceleratorKey(KeyEvent::KEY_B);
-    _BasicItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _BasicItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _BasicItem->setMnemonicKey(KeyEvent::KEY_B);
 
     _RenderItem->setText("Render ");
     _RenderItem->setAcceleratorKey(KeyEvent::KEY_R);
-    _RenderItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _RenderItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _RenderItem->setMnemonicKey(KeyEvent::KEY_R);
 
     _PhysicsItem->setText("Physics ");
@@ -284,24 +286,24 @@ void ApplicationPlayer::createDebugInterface(void)
 
     _DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
     _DrawBoundingVolumesItem->setAcceleratorKey(KeyEvent::KEY_V);
-    _DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL | KeyEvent::KEY_MODIFIER_SHIFT);
+    _DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND | KeyEvent::KEY_MODIFIER_SHIFT);
     _DrawBoundingVolumesItem->setMnemonicKey(KeyEvent::KEY_V);
 
     _FrustrumCullingItem->setText("Disable Frustrum Culling ");
     _FrustrumCullingItem->setAcceleratorKey(KeyEvent::KEY_F);
-    _FrustrumCullingItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _FrustrumCullingItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _FrustrumCullingItem->setMnemonicKey(KeyEvent::KEY_F);
 
     _DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics ");
     _DrawPhysicsCharacteristicsItem->setAcceleratorKey(KeyEvent::KEY_P);
-    _DrawPhysicsCharacteristicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    _DrawPhysicsCharacteristicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _DrawPhysicsCharacteristicsItem->setMnemonicKey(KeyEvent::KEY_P);
 
 
     /*
        HideItem->setText("Hide Item");
     // HideItem->setAcceleratorKey(KeyEvent::KEY_H);
-    // HideItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+    // HideItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     // HideItem->setMnemonicKey(KeyEvent::KEY_P);
     */	
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -571,6 +573,9 @@ void ApplicationPlayer::createDebugInterface(void)
 
     //Create the Debug Camera Animation Group
     createDebugCameraAnim();
+
+    //Create the statistic foregrounds
+	initDebugStatForegrounds();
 }
 
 void ApplicationPlayer::updateGotoSceneMenuItems(ProjectRefPtr TheProject)
@@ -920,7 +925,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
 
 void ApplicationPlayer::keyTyped(const KeyEventUnrecPtr e)
 {
-    if(e->getKey() == KeyEvent::KEY_D && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+    if(e->getKey() == KeyEvent::KEY_D && e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
     {
         enableDebug(!_IsDebugActive);
         return;
@@ -930,7 +935,7 @@ void ApplicationPlayer::keyTyped(const KeyEventUnrecPtr e)
     {
 
 
-        if(isNumericKey(static_cast<KeyEvent::Key>(e->getKey())) && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+        if(isNumericKey(static_cast<KeyEvent::Key>(e->getKey())) && e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
         {
             //Switch To scene #
             UInt32 SceneNumber(boost::lexical_cast<UInt32>(KeyEvent::getCharFromKey(e->getKey(),0)));
@@ -940,14 +945,14 @@ void ApplicationPlayer::keyTyped(const KeyEventUnrecPtr e)
             }
         }
 
-        //if(e->getKey() == KeyEvent::KEY_1 && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        //if(e->getKey() == KeyEvent::KEY_1 && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
         //{
             //MainInternalWindow->setFocusedComponent(_HelperPanel->_CodeTextArea);
             //_HelperPanel->_InfoTabPanel->setSelectedIndex(0);
 
         //}
 
-        if(e->getKey() == KeyEvent::KEY_T && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        if(e->getKey() == KeyEvent::KEY_T && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
         {
             _ContentPanel->setIsSplit(!_ContentPanel->getIsSplit());
         }
@@ -959,13 +964,13 @@ void ApplicationPlayer::keyTyped(const KeyEventUnrecPtr e)
         //}
 
         ////Toggle Input Blocking
-        else if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        else if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
         {
             toggleSceneInputBlocking();
         }
 
         //Scene Activation
-        if(e->getKey() == KeyEvent::KEY_E && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+        if(e->getKey() == KeyEvent::KEY_E && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
         {
             //Reset the Project
             MainApplication::the()->getProject()->reset();
@@ -1099,7 +1104,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugBasicStatForeground->setBorderColor(StatBorderColor);
     _DebugBasicStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
-    _DebugBasicStatForeground->addElement(Drawable::statNTriangles, "%d triangles drawn");
+    _DebugBasicStatForeground->addElement(RenderAction::statNTriangles, "%d triangles drawn");
 
     //Rendering Statistics
     _DebugRenderStatForeground = SimpleStatisticsForeground::create();
@@ -1130,7 +1135,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugRenderStatForeground->addElement(RenderAction::statNShaderParams, "%d shader param changes");
 
     //Drawn primities
-    _DebugRenderStatForeground->addElement(Drawable::statNTriangles, "%d triangles drawn");
+    _DebugRenderStatForeground->addElement(RenderAction::statNTriangles, "%d triangles drawn");
     _DebugRenderStatForeground->addElement(Drawable::statNLines, "%d lines drawn");
     _DebugRenderStatForeground->addElement(Drawable::statNPoints, "%d points drawn");
     _DebugRenderStatForeground->addElement(Drawable::statNPrimitives,"%d primitive groups drawn");
@@ -1139,7 +1144,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
 
     //Textures
     _DebugRenderStatForeground->addElement(TextureObjChunk::statNTextures, "%d textures used");
-    _DebugRenderStatForeground->addElement(TextureObjChunk::statNTexBytes, "%d bytes of texture used");
+    _DebugRenderStatForeground->addElement(TextureObjChunk::statNTexBytes, "%MB MB of texture used");
 
     //Lights
     _DebugRenderStatForeground->addElement(PointLight::statNPointLights,
@@ -1290,8 +1295,7 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     _WorkspaceGrid = Node::create();
 
     _WorkspaceGrid->setCore(GridMatGroup);
-    //TODO:Readd
-    //_WorkspaceGrid->addChild(makeGrid(100.0f, 100.0f, 1.0, Color3f(0.7f,0.7f,0.7f)));
+    _WorkspaceGrid->addChild(makeGrid(100.0f, 100.0f, 1.0, Color3f(0.7f,0.7f,0.7f)));
 
     //Create the Highlight Node
     createHighlightNode();
@@ -1344,8 +1348,8 @@ void ApplicationPlayer::moveDebugCamera(const Matrix& Transform)
         //_DebugCameraFovKeyframes->addKeyframe(dynamic_pointer_cast<PerspectiveCamera>(_SceneViewportCamera)->getFov(),1.0f);
 
         //Attach the Debug Camera Animation
-        /*_DebugCameraTransAnimation->setAnimatedField(_DebugBeaconTransform,
-                                                     Transform::MatrixFieldId);*/
+        _DebugCameraTransAnimation->setAnimatedField(_DebugBeaconTransform,
+                                                     Transform::MatrixFieldId);
 
         //_DebugCameraFovAnimation->setAnimatedField(_DebugCamera,
         //PerspectiveCamera::FovFieldId);
@@ -1375,10 +1379,10 @@ void ApplicationPlayer::createDebugCameraAnim(void)
     KeyframeAnimatorRefPtr DebugCameraTransformationAnimator = KeyframeAnimator::create();
     DebugCameraTransformationAnimator->setKeyframeSequence(_DebugCameraTransformationKeyframes);
 
-    /*_DebugCameraTransAnimation = FieldAnimation::create();
+    _DebugCameraTransAnimation = FieldAnimation::create();
     _DebugCameraTransAnimation->setAnimator(DebugCameraTransformationAnimator);
     _DebugCameraTransAnimation->setInterpolationType(Animator::LINEAR_INTERPOLATION);
-    _DebugCameraTransAnimation->setCycling(1);*/
+    _DebugCameraTransAnimation->setCycling(1);
 
     //Fov Animation
     //_DebugCameraFovKeyframes = KeyframeNumbersSequenceReal32::create();
@@ -1393,7 +1397,7 @@ void ApplicationPlayer::createDebugCameraAnim(void)
 
     //Animation Group
     _DebugCameraAnimationGroup = AnimationGroup::create();
-    //_DebugCameraAnimationGroup->pushToAnimations(_DebugCameraTransAnimation);
+    _DebugCameraAnimationGroup->pushToAnimations(_DebugCameraTransAnimation);
     //_DebugCameraAnimationGroup->pushToAnimations(_DebugCameraFovAnimation);
 }
 
@@ -1459,7 +1463,6 @@ ApplicationPlayer::ApplicationPlayer(void) :
 {
 	_TheUndoManager = UndoManager::create();
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
-	initDebugStatForegrounds();
 }
 
 ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
@@ -1569,15 +1572,8 @@ void ApplicationPlayer::updateWireframeNode(void)
     //Clone the sub-tree rooted at the selected node
     if(_SelectedNode != NULL)
     {
-        NodeRefPtr ClonedTree(cloneTree(_SelectedNode));
-        if(_WireframeNode->getNChildren() > 0)
-        {
-            _WireframeNode->replaceChild(0, ClonedTree);
-        }
-        else
-        {
-            _WireframeNode->addChild(ClonedTree);
-        }
+        dynamic_cast<VisitSubTree*>(_WireframeNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
+
     }
 
     //Update the transformation for the wireframe node
@@ -1604,7 +1600,6 @@ void ApplicationPlayer::updateHighlightNode(void)
 
     if(_SelectedNode != NULL)		// selected node is the node that is being selected.
     {													// highlight node is the pointer to the bounding box for the selected node
-        std::string coreName= _SelectedNode->getCore()->getTypeName();
 
         // calc the world bbox of the highlight object
         BoxVolume      vol;
@@ -1682,6 +1677,13 @@ void ApplicationPlayer::createHighlightNode(void)
     HighlightMaterial->addChunk (TheBlendChunk);
     HighlightMaterial->addChunk (HighlightMatLineChunk);
 
+    //Create the VisitSubTree Node to use to render the wireframe of the
+    //selected node
+    VisitSubTreeRefPtr SelectedSubTree = VisitSubTree::create();
+
+    NodeRefPtr SelectedSubTreeNode = Node::create();
+    SelectedSubTreeNode->setCore(SelectedSubTree);
+    
     //Create the Geometry for the highlight
     GeoUInt8PropertyRecPtr type = GeoUInt8Property::create();
     //Volume bound box
@@ -1815,6 +1817,8 @@ void ApplicationPlayer::createHighlightNode(void)
     _WireframeNode = Node::create();
     setName(_WireframeNode,"DEBUG_MODE_MESH_HIGHLIGHT_NODE");
     _WireframeNode->setCore(WireframeMaterialGroup);
+
+    _WireframeNode->addChild(SelectedSubTreeNode);
 
     //Mesh Highlight Transformation Node
     _WireframeTransform = Transform::create();

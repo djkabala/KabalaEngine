@@ -77,6 +77,12 @@
 //#include <OpenSG/OSGInventory.h>
 #include <OpenSG/OSGPhysicsHandler.h>
 
+//Bindings for the OSGToolbox libraries
+#include <OpenSG/OSGToolbox_wrap.h>
+
+//Kabala Engine Lua Bindings
+#include "LuaBindings/KELuaBindings.h"
+
 OSG_USING_NAMESPACE
 
 /***************************************************************************\
@@ -116,7 +122,10 @@ MainApplication *MainApplication::the(void)
             ("project-file,f", boost::program_options::value<std::string>(), "The Project file to use.")
             ("builder,b", "Start the world builder.")
             ("play,p", "Play the project file.")
-            ("debug,d", "Only relevant if -p option is used.  Startup with the dubugger attached.")
+            ("debug,d", "Only relevant if -p option is present.  Startup with the dubugger attached.")
+		    ("log-level,l", boost::program_options::value<UInt32>(), "The logging level.  Higher values logs more information. 0=LOG_LOG,1=LOG_FATAL,2=LOG_WARNING,3=LOG_NOTICE,4=LOG_INFO,5=LOG_DEBUG.  This will override the value defined in the settings file.")
+		    ("log-type,t", boost::program_options::value<UInt32>(), "The location to route the logging. 0=LOG_NONE,1=LOG_STDOUT,2=LOG_STDERR,3=LOG_FILE,4=LOG_BUFFER.  This will override the value defined in the settings file.")
+		    ("log-file,g", boost::program_options::value<std::string>(), "The file to route the logging to.  This will override the value defined in the settings file.  This option is only relavent if log-route is 3(LOG_FILE).")
             ;
 
         _PositionalOptions.add("project-file", -1);
@@ -140,6 +149,25 @@ ApplicationSettingsRefPtr MainApplication::createDefaultSettings(void)
  *                           Instance methods                              *
 \***************************************************************************/
 
+
+EventConnection MainApplication::addLogListener(LogListenerPtr Listener)
+{
+    _LogListeners.insert(Listener);
+
+    return EventConnection(
+                           boost::bind(&MainApplication::isLogListenerAttached, this, Listener),
+                           boost::bind(&MainApplication::removeLogListener, this, Listener));
+}
+
+void MainApplication::removeLogListener(LogListenerPtr Listener)
+{
+    LogListenerSetItor EraseIter(_LogListeners.find(Listener));
+    if(EraseIter != _LogListeners.end())
+    {
+        _LogListeners.erase(EraseIter);
+    }
+}
+
 void MainApplication::printCommandLineHelp(void) const
 {
     std::cout << _OptionsDescription << std::endl;
@@ -154,19 +182,6 @@ Int32 MainApplication::run(int argc, char **argv)
         CommandPath = boost::filesystem::complete(CommandPath);
     }
     CommandPath.normalize();
-
-    //Make Dummy Values to link in external libs
-    //Physics
-    if(PhysicsHandler::getClassType().getId() == 0)
-    {
-        return -1;
-    }
-
-    //Game
-    //if(Inventory::getClassType().getId() == 0)
-    //{
-    //return -1;
-    //}
 
     //Parse the Program arguments
     boost::program_options::variables_map OptionsVariableMap;
@@ -188,6 +203,29 @@ Int32 MainApplication::run(int argc, char **argv)
         printCommandLineHelp();
         return 1;
     }
+    
+    //Setup the Logging
+    LogLevel KELogLevel(LOG_NOTICE);
+    if(OptionsVariableMap.count("log-level"))
+    {
+        KELogLevel = OptionsVariableMap["log-level"].as<LogLevel>();
+    }
+    LogType KELogType(LOG_FILE);
+    if(OptionsVariableMap.count("log-type"))
+    {
+        KELogType = OptionsVariableMap["log-type"].as<LogType>();
+    }
+    BoostPath KELogFilePath("./KabalaEngine.log");
+    if(KELogType == LOG_FILE && OptionsVariableMap.count("log-file"))
+    {
+        KELogFilePath = BoostPath(OptionsVariableMap["log-file"].as<std::string>());
+    }
+    initializeLogging(KELogType, KELogFilePath);
+    osgLogP->setLogLevel(KELogLevel, true);
+	osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_TIMESTAMP_HEADER), true);
+
+    //Initialize OpenSG
+    initOpenSG(argc,argv);
 
     // Set up Settings
     //Check for the settings file
@@ -201,6 +239,33 @@ Int32 MainApplication::run(int argc, char **argv)
     {
         setSettings(createDefaultSettings());
     }
+
+    //If the settings aren't being overriden by the command-line options
+    //then set the logging with the settings values
+    if(!OptionsVariableMap.count("log-level"))
+    {
+	    osgLogP->setLogLevel(static_cast<LogLevel>(getSettings()->getLogLevel()), true);
+    }
+    if(osgLogP->getLogType() == LOG_FILE &&
+       !OptionsVariableMap.count("log-file") &&
+       !boost::filesystem::equivalent(getSettings()->getLogFile(),KELogFilePath))
+    {
+        initializeLogging(static_cast<LogType>(getSettings()->getLogType()), getSettings()->getLogFile());
+    }
+    if(!OptionsVariableMap.count("log-type"))
+    {
+	    osgLogP->setLogType(static_cast<LogType>(getSettings()->getLogType()), true);
+    }
+	osgLogP->setHeaderElem(getSettings()->getLogHeaderElements(), true);
+
+    //Log information about the Engine
+    SLOG << "Starting Kabala Engine:" << std::endl;
+    OSG::indentLog(4,PLOG);
+    PLOG << "Version: " << getKabalaEngineVersion() << std::endl;
+    OSG::indentLog(4,PLOG);
+    PLOG << "Revision: " << getKabalaEngineBuildRepositoryRevision() << std::endl;
+    OSG::indentLog(4,PLOG);
+    PLOG << "Build Type: " << getKabalaEngineBuildType() << std::endl;
 
     //Check if the Data Directory exists
     if(!boost::filesystem::exists(getSettings()->getDataDirectory()))
@@ -328,8 +393,44 @@ Int32 MainApplication::run(int argc, char **argv)
     //Exited Main Loop
     //Save Settings
     saveSettings(getSettingsLoadFile());
+    
+    SLOG << "Stopping Kabala Engine" << std::endl;
+
+	//OSG exit
+    OSG::osgExit();
 
     return 0;
+}
+
+void MainApplication::initOpenSG(int argc, char **argv)
+{
+    OSG::preloadSharedObject("OSGCluster");
+    OSG::preloadSharedObject("OSGContribBackgroundloader");
+    OSG::preloadSharedObject("OSGContribComputeBase");
+    OSG::preloadSharedObject("OSGContribGUI");
+    OSG::preloadSharedObject("OSGContribLuaToolbox");
+    OSG::preloadSharedObject("OSGContribParticleSystem");
+    OSG::preloadSharedObject("OSGContribPhysics");
+    OSG::preloadSharedObject("OSGContribPLY");
+    OSG::preloadSharedObject("OSGContribSound");
+    OSG::preloadSharedObject("OSGContribTrapezoidalShadowMaps");
+    OSG::preloadSharedObject("OSGContribUserInterface");
+    OSG::preloadSharedObject("OSGContribVideo");
+    OSG::preloadSharedObject("OSGDynamics");
+    OSG::preloadSharedObject("OSGEffectGroups");
+    OSG::preloadSharedObject("OSGFileIO");
+    OSG::preloadSharedObject("OSGGroup");
+    OSG::preloadSharedObject("OSGImageFileIO");
+    OSG::preloadSharedObject("OSGTBAnimation");
+
+    // OSG init
+	OSG::osgInit(argc,argv);
+
+    //Toolbox Bindings
+    OSG::LuaManager::the()->openLuaBindingLib(getOSGToolboxLuaBindingsLibFunctor());
+    
+    //Kabala Engine Bindings
+    OSG::LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
 }
 
 void MainApplication::attachStartScreen(void)
@@ -501,8 +602,8 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     PerspectiveCameraRefPtr DefaultSceneCamera = PerspectiveCamera::create();
     setName(DefaultSceneCamera, "Untitled Camera" );
     DefaultSceneCamera->setFov(60.f);
-    DefaultSceneCamera->setNear(0.1f);
-    DefaultSceneCamera->setFar(100.0f);
+    DefaultSceneCamera->setNear(10.0f);
+    DefaultSceneCamera->setFar(50000.0f);
     DefaultSceneCamera->setBeacon(CameraBeaconNode);
 
     // Make Torus Node (creates Torus in background of scene)
@@ -640,6 +741,10 @@ void MainApplication::setProject ( const ProjectRefPtr &value )
     {
         getCurrentMode()->reset();
     }
+    if(_Project != NULL)
+    {
+        SLOG << "Set Project to " << ( getName(_Project) ? getName(_Project) : "UNNAMED_PROJECT" ) << std::endl;
+    }
 }
 
 void MainApplication::setBuilderMode( const ApplicationModeRefPtr &value )
@@ -665,6 +770,58 @@ void MainApplication::setCurrentMode( const ApplicationModeRefPtr &value )
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
+
+void MainApplication::KELogBufferCallback(const Char8 *data, 
+                         Int32  size,
+                         void  *clientData)
+{
+	//Send to the Log Listeners
+    std::string value(data,size);
+    LogEventUnrecPtr e = LogEvent::create(NULL, getTimeStamp(),value);
+    MainApplication::the()->produceLog(e);
+}
+
+
+void MainApplication::initializeLogging(LogType KELogType, BoostPath KELogFilePath)
+{
+	//Set the log type
+	//LOG_NONE, 
+	//LOG_STDOUT, 
+	//LOG_STDERR, 
+	//LOG_FILE,
+
+    if(osgLogP->getLogType() != KELogType)
+    {
+	    osgLogP->setLogType(KELogType, true);
+
+	    if(osgLogP->getLogType() == LOG_BUFFER)
+	    {
+		    //Configure the LogBuffer
+		    osgLogP->getLogBuf().setEnabled(true);
+		    osgLogP->getLogBuf().setCallback(KELogBufferCallback);
+	    }
+	    else
+	    {
+		    osgLogP->getLogBuf().setEnabled(false);
+		    osgLogP->getLogBuf().removeCallback();
+	    }
+    }
+
+	if(osgLogP->getLogType() == LOG_FILE)
+	{
+		//If the Log is to a file then set the file
+		osgLogP->setLogFile(KELogFilePath.string().c_str(), true);
+	}
+}
+
+void MainApplication::produceLog(const LogEventUnrecPtr e)
+{
+    LogListenerSet ListenerSet(_LogListeners);
+    for(LogListenerSetConstItor SetItor(ListenerSet.begin()) ; SetItor != ListenerSet.end() ; ++SetItor)
+    {
+        (*SetItor)->log(e);
+    }
+}
 
 /*----------------------- constructors & destructors ----------------------*/
 

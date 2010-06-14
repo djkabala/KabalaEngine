@@ -36,14 +36,15 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _OSGEVENTPRODUCERFACTORYIMPL_H_
-#define _OSGEVENTPRODUCERFACTORYIMPL_H_
+#ifndef _KEBEHAVIORFACTORYIMPL_H_
+#define _KEBEHAVIORFACTORYIMPL_H_
 
 #include "OSGConfig.h"
-#include "OSGBaseDef.h"
+#include "KEKabalaEngineDef.h"
 
 #include "OSGSingletonHolder.h"
 #include "OSGTypeBase.h"
+#include "OSGFactoryBase.h"
 
 #include <map>
 #include <vector>
@@ -69,7 +70,7 @@ OSG_BEGIN_NAMESPACE
     \ingroup GrpLibOSGBase
  */
 
-class OSG_BASE_DLLMAPPING EventProducerFactoryBase : public FactoryBase
+class KE_KABALAENGINE_DLLMAPPING BehaviorFactory : public FactoryBase
 {
   public:
 
@@ -139,9 +140,9 @@ class OSG_BASE_DLLMAPPING EventProducerFactoryBase : public FactoryBase
     //-----------------------------------------------------------------------
 
     //! \brief prohibit default function (move to 'public' if needed) 
-    EventProducerFactoryBase(const EventProducerFactoryBase &source);
+    BehaviorFactory(const BehaviorFactory &source);
     //! \brief prohibit default function (move to 'public' if needed) 
-    void operator =(const EventProducerFactoryBase &source);
+    void operator =(const BehaviorFactory &source);
 
   protected:
 
@@ -181,10 +182,10 @@ class OSG_BASE_DLLMAPPING EventProducerFactoryBase : public FactoryBase
     //   instance functions                                                  
     //-----------------------------------------------------------------------
 
-    EventProducerFactoryBase(void);
-    EventProducerFactoryBase(const Char8 *szName);
+    BehaviorFactory(void);
+    BehaviorFactory(const Char8 *szName);
 
-    virtual ~EventProducerFactoryBase(void); 
+    virtual ~BehaviorFactory(void); 
 
     virtual bool initialize           (void);
     virtual bool terminate            (void);
@@ -236,8 +237,8 @@ class OSG_BASE_DLLMAPPING EventProducerFactoryBase : public FactoryBase
     \relatesalso OSG::EventProducerFactoryBase
  */
 
-typedef OSG::SingletonHolder<OSG::EventProducerFactoryBase> EventProducerFactory;
+typedef OSG::SingletonHolder<OSG::BehaviorFactory> TheBehaviorFactory;
 
 OSG_END_NAMESPACE
 
-#endif /* _OSGEVENTPRODUCERFACTORYIMPL_H_ */
+#endif /* _KEBEHAVIORFACTORYIMPL_H_ */

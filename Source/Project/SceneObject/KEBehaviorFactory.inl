@@ -45,7 +45,7 @@ OSG_BEGIN_NAMESPACE
 /*                              Mapper                                     */
 
 inline
-void EventProducerFactory::setMapper(EventProducerMapper *pMapper)
+void BehaviorFactory::setMapper(EventProducerMapper *pMapper)
 {
     _pMapper = pMapper;
 }
@@ -54,16 +54,16 @@ void EventProducerFactory::setMapper(EventProducerMapper *pMapper)
 /*                                Get                                      */
 
 inline
-EventProducerPtr EventProducerFactory::getContainer(
+BehaviorPtr BehaviorFactoryBase::getContainer(
     UInt32 uiContainerId) const
 {
-    EventProducerPtr returnValue = NullFC;
+    BehaviorPtr returnValue = NullFC;
 
     _pStoreLock->aquire();
 
-    if(uiContainerId < _pEventProducerStore->size())
+    if(uiContainerId < _pBehaviorStore->size())
     {
-        returnValue = (*_pEventProducerStore)[uiContainerId];
+        returnValue = (*_pBehaviorStore)[uiContainerId];
     }
 
     _pStoreLock->release();
@@ -72,7 +72,7 @@ EventProducerPtr EventProducerFactory::getContainer(
 }
 
 inline
-EventProducerPtr EventProducerFactory::getMappedContainer(
+BehaviorPtr BehaviorFactory::getMappedContainer(
     UInt32 uiContainerId) const
 {
     if(_pMapper != NULL)
@@ -89,24 +89,24 @@ EventProducerPtr EventProducerFactory::getMappedContainer(
 /*                              Register                                   */
 
 inline
-UInt32 EventProducerFactory::registerEventProducer(
-    const EventProducerPtr &pEventProducer)
+UInt32 BehaviorFactory::registerBehavior(
+    const BehaviorPtr &pBehavior)
 {
     UInt32 returnValue = 0;
 
     if(_pStoreLock != NULL)
         _pStoreLock->aquire();
 
-    if(_pEventProducerStore == NULL)
+    if(_pBehaviorStore == NULL)
     {
-        _pEventProducerStore = new EventProducerStore;
+        _pBehaviorStore = new BehaviorStore;
 
-        _pEventProducerStore->push_back(NullFC);
+        _pBehaviorStore->push_back(NullFC);
     }
 
-    _pEventProducerStore->push_back(pEventProducer);
+    _pBehaviorStore->push_back(pBehavior);
 
-    returnValue = _pEventProducerStore->size() - 1;
+    returnValue = _pBehaviorStore->size() - 1;
 
     if(_pStoreLock != NULL)
         _pStoreLock->release();
@@ -115,31 +115,31 @@ UInt32 EventProducerFactory::registerEventProducer(
 }
 
 inline
-bool EventProducerFactory::unregisterEventProducer(
-    const EventProducerPtr &pEventProducer)
+bool BehaviorFactory::unregisterBehavior(
+    const BehaviorPtr &pBehavior)
 {
-    if(pEventProducer == NullFC)
+    if(pBehavior == NullFC)
         return false;
 
     if(_pStoreLock != NULL)
         _pStoreLock->aquire();
 
-    if(_pEventProducerStore != NULL)
+    if(_pBehaviorStore != NULL)
     {
 #ifdef OSG_DEBUG
-        if (pEventProducer.getEventProducerId() >=
-                    (*_pEventProducerStore).size())
+        if (pBehavior.getBehaviorId() >=
+                    (*_pBehaviorStore).size())
         {
             FWARNING(("EventProducerFactory::unregisterEventProducer:"
                 "id %d inconsistent with store size %d!\n", 
-                pEventProducer.getEventProducerId(), 
-                (*_pEventProducerStore).size() ));   
+                _pBehavior.getBehaviorId(), 
+                (*_pBehaviorStore).size() ));   
             return true;         
         }
         else
 #endif
 
-        (*_pEventProducerStore)[pEventProducer.getEventProducerId()] =
+        (*_pBehaviorStore)[pBehavior.getBehaviorId()] =
             NullFC;
     }
 
@@ -153,7 +153,7 @@ bool EventProducerFactory::unregisterEventProducer(
 /*                            Invalid Pointer                              */
 
 inline
-void EventProducerFactory::setThrowInvalidPointerException(bool s)
+void BehaviorFactory::setThrowInvalidPointerException(bool s)
 {
 #ifndef OSG_INVALID_PTR_CHECK
     FFATAL(("EventProducerFactory::setThrowInvalidPointerException: invalid pointer check is not enabled, use the 'invalid_pointer_check' option in the scons build system!\n"));
@@ -163,13 +163,13 @@ void EventProducerFactory::setThrowInvalidPointerException(bool s)
 }
 
 inline
-bool EventProducerFactory::getThrowInvalidPointerException(void) const
+bool BehaviorFactory::getThrowInvalidPointerException(void) const
 {
     return _throw_invalid_pointer_exception;
 }
 
 inline
-void EventProducerFactory::checkThrowInvalidPointerException(void) const
+void BehaviorFactory::checkThrowInvalidPointerException(void) const
 {
     if(!_throw_invalid_pointer_exception)
         return;

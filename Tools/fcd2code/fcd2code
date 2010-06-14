@@ -252,7 +252,7 @@ class FCDProcess:
                 self.m_filePrefix + fieldContainer["Classname"] + self.m_inlFileSuffix);
             decName = os.path.join(outPath,
                 self.m_filePrefix + fieldContainer["Classname"] + self.m_decFileSuffix);
-                
+            
             self.m_log.info("filling template for file: %s", impName);
             outLines = TemplateFiller(tmplCPP).fill(lookupDicts);
             if not os.path.exists(impName):

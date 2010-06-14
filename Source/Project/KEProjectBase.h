@@ -58,8 +58,10 @@
 
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
+#include "KEConfig.h"
 
 //#include "OpenSG/OSGBaseTypes.h"
+
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
@@ -451,6 +453,9 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \name                    Event Producer                            */
     /*! \{                                                                 */
     EventProducer _Producer;
+    
+    GetFieldHandlePtr  getHandleEventProducer        (void) const;
+    EditFieldHandlePtr editHandleEventProducer       (void);
 
     /*! \}                                                                 */
 
@@ -688,4 +693,4 @@ typedef ProjectBase *ProjectBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEPROJECTBASE_H_ */
+#endif /* _OSGPROJECTBASE_H_ */

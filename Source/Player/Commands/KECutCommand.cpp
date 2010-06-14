@@ -84,7 +84,7 @@ void CutCommand::execute(void)
 
 	_ApplicationPlayer->setClonedNodeInCopyClipboard(_CutNode);
 
-	_SceneGraphTreeModel->removeNode(boost::any(_CutNode));
+	_SceneGraphTreeModel->removeNode(_CutNode);
 	
 	_HasBeenDone = true;
 }
@@ -112,13 +112,13 @@ void CutCommand::redo(void)
 {
     Inherited::redo();
 
-	_SceneGraphTreeModel->removeNode(boost::any(_CutNode));
+	_SceneGraphTreeModel->removeNode(_CutNode);
 }
 
 void CutCommand::undo(void)
 {
     Inherited::undo();
-	_SceneGraphTreeModel->insertNode(boost::any(_Parent),boost::any(_CutNode), _IndexOfCut);
+	_SceneGraphTreeModel->insertNode(_Parent,_CutNode, _IndexOfCut);
 }
 
 const CommandType &CutCommand::getType(void) const
