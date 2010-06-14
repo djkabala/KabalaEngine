@@ -134,14 +134,64 @@ MainApplication *MainApplication::the(void)
     return _Instance;
 }
 
-ApplicationSettingsRefPtr MainApplication::createDefaultSettings(void)
+void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, bool overwriteIfDefined)
+{
+
+
+    TheSettings.put("basic.data.directory", BoostPath("./share") / EngineAppDataDirectory, overwriteIfDefined);
+    
+    TheSettings.put("basic.window.position",   Pnt2f(-1.0f,-1.0f), overwriteIfDefined);
+    TheSettings.put("basic.window.size",       Vec2f(0.85f,0.85f), overwriteIfDefined);
+    TheSettings.put("basic.window.fullscreen", false, overwriteIfDefined);
+
+    TheSettings.put<UInt32>("basic.recent_projects.max", 8, overwriteIfDefined);
+
+    //Logging
+    TheSettings.put<UInt8>    ("logging.type",            LOG_FILE, overwriteIfDefined);
+    TheSettings.put<UInt8>    ("logging.level",           LOG_NOTICE, overwriteIfDefined);
+    TheSettings.put<BoostPath>("logging.file",            BoostPath("./KabalaEngine.log"), overwriteIfDefined);
+    TheSettings.put<UInt32>   ("logging.header_elements", (LOG_TYPE_HEADER | LOG_TIMESTAMP_HEADER), overwriteIfDefined);
+
+    //Player
+    //Debugger
+    TheSettings.put<std::string>("player.key_bindings", "", overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.block_scene_input",           true, overwriteIfDefined);
+
+    TheSettings.put<UInt32>("player.debugger.lua.console.max_history", 50, overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.grid.draw",           true, overwriteIfDefined);
+    TheSettings.put<Vec2f>  ("player.debugger.grid.dimensions",     Vec2f(100.0f,100.0f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.grid.segment_length", 1.0f, overwriteIfDefined);
+    TheSettings.put<Color3f>("player.debugger.grid.color",          Color3f(0.7f,0.7f,0.7f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.grid.line_thickness", 1.0f, overwriteIfDefined);
+
+    
+    TheSettings.put<bool>   ("player.debugger.undo_history.enable", true, overwriteIfDefined);
+    TheSettings.put<Int32> ("player.debugger.undo_history.max_length", 200, overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.selected_node.volume_box.draw", true, overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.volume_box.color", Color4f(0.0f,1.0f,1.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.selected_node.volume_box.line_thickness", 2.0f, overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.selected_node.axis.draw", true, overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.axis.x_axis_color", Color4f(1.0f,0.0f,0.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.axis.y_axis_color", Color4f(0.0f,1.0f,0.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.axis.z_axis_color", Color4f(0.0f,0.0f,1.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.selected_node.axis.line_thickness", 2.0f, overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.selected_node.axis.relative_length", 0.55f, overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.selected_node.mesh.draw", true, overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.mesh.color", Color4f(1.0f,0.0f,1.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.selected_node.mesh.line_thickness", 1.0f, overwriteIfDefined);
+}
+
+ApplicationSettings MainApplication::createDefaultSettings(void)
 {
     SLOG << "Creating default settings." << std::endl;
-    ApplicationSettingsRefPtr DefaultSettings = ApplicationSettings::create();
-    DefaultSettings->setDataDirectory(BoostPath("./share") / EngineAppDataDirectory);
-    DefaultSettings->setDefaultWindowPosition(Pnt2f(-1.0f,-1.0f));
-    DefaultSettings->setDefaultWindowSize(Vec2f(0.85f,0.85f));
-    DefaultSettings->setFullscreen(false);
+    ApplicationSettings DefaultSettings;
+    applyDefaultSettings(DefaultSettings, true);
+
     return DefaultSettings;
 }
 
@@ -224,9 +274,6 @@ Int32 MainApplication::run(int argc, char **argv)
     osgLogP->setLogLevel(KELogLevel, true);
 	osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_TIMESTAMP_HEADER), true);
 
-    //Initialize OpenSG
-    initOpenSG(argc,argv);
-
     // Set up Settings
     //Check for the settings file
     if(OptionsVariableMap.count("settings-file"))
@@ -235,28 +282,26 @@ Int32 MainApplication::run(int argc, char **argv)
     }
     loadSettings(getSettingsLoadFile());
 
-    if(getSettings() == NULL)
-    {
-        setSettings(createDefaultSettings());
-    }
-
     //If the settings aren't being overriden by the command-line options
     //then set the logging with the settings values
     if(!OptionsVariableMap.count("log-level"))
     {
-	    osgLogP->setLogLevel(static_cast<LogLevel>(getSettings()->getLogLevel()), true);
+        osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
     }
     if(osgLogP->getLogType() == LOG_FILE &&
        !OptionsVariableMap.count("log-file") &&
-       !boost::filesystem::equivalent(getSettings()->getLogFile(),KELogFilePath))
+       !boost::filesystem::equivalent(getSettings().get<BoostPath>("logging.file"),KELogFilePath))
     {
-        initializeLogging(static_cast<LogType>(getSettings()->getLogType()), getSettings()->getLogFile());
+        initializeLogging(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), getSettings().get<BoostPath>("logging.file"));
     }
     if(!OptionsVariableMap.count("log-type"))
     {
-	    osgLogP->setLogType(static_cast<LogType>(getSettings()->getLogType()), true);
+       osgLogP->setLogType(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), true);
     }
-	osgLogP->setHeaderElem(getSettings()->getLogHeaderElements(), true);
+	osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
+
+    //Initialize OpenSG
+    initOpenSG(argc,argv);
 
     //Log information about the Engine
     SLOG << "Starting Kabala Engine:" << std::endl;
@@ -268,10 +313,10 @@ Int32 MainApplication::run(int argc, char **argv)
     PLOG << "Build Type: " << getKabalaEngineBuildType() << std::endl;
 
     //Check if the Data Directory exists
-    if(!boost::filesystem::exists(getSettings()->getDataDirectory()))
+    if(!boost::filesystem::exists(getSettings().get<BoostPath>("basic.data.directory")))
     {
         SWARNING << "Could not find Application Data directory: \""
-                 << getSettings()->getDataDirectory().string()
+                 << getSettings().get<BoostPath>("basic.data.directory").string()
                  << "\" specified in the Settings file because the directory doesn't exist." << std::endl;
 
         //Try to find the data directory in a few locations
@@ -290,7 +335,7 @@ Int32 MainApplication::run(int argc, char **argv)
             {
                 PNOTICE << "FOUND" << std::endl;
                 PathsToTry[i].normalize();
-                getSettings()->setDataDirectory(PathsToTry[i]);
+                getSettings().put("basic.data.directory",PathsToTry[i]);
                 break;
             }
             else
@@ -300,16 +345,16 @@ Int32 MainApplication::run(int argc, char **argv)
         }
     }
 
-    if(!boost::filesystem::exists(getSettings()->getDataDirectory()))
+    if(!boost::filesystem::exists(getSettings().get<BoostPath>("basic.data.directory")))
     {
         SWARNING << "Could not find Application Data directory: \""
-                 << getSettings()->getDataDirectory().string()
+                 << getSettings().get<BoostPath>("basic.data.directory").string()
                  << "\" because the directory doesn't exist." << std::endl;
     }
     else
     {
         SLOG << "Using Application Data directory: \""
-                 << getSettings()->getDataDirectory().string()
+                 << getSettings().get<BoostPath>("basic.data.directory").string()
                  << "\"" << std::endl;
     }
 
@@ -319,33 +364,30 @@ Int32 MainApplication::run(int argc, char **argv)
 
     getMainWindow()->initWindow();
 
-    getMainWindow()->setFullscreen(getSettings()->getFullscreen());
+    getMainWindow()->setFullscreen(getSettings().get<bool>("basic.window.fullscreen"));
 
     getMainWindow()->addWindowListener(&_MainWindowListener);
 
     // Initialize the LookAndFeelManager to enable default settings
     LookAndFeelManager::the()->getLookAndFeel()->init();
 
-    //Initialize Kabala Engine Specific Types
-    //FieldContainerEditorFactory::the()->init();
-
 
     //Open Window
-    Vec2f WindowSize(getSettings()->getDefaultWindowSize());
-    if(getSettings()->getDefaultWindowSize().x() <= 1.0f )
+    Vec2f WindowSize(getSettings().get<Vec2f>("basic.window.size"));
+    if(getSettings().get<Vec2f>("basic.window.size").x() <= 1.0f )
     {
-        WindowSize[0] = getMainWindow()->getDesktopSize().x() * getSettings()->getDefaultWindowSize().x();
+        WindowSize[0] = getMainWindow()->getDesktopSize().x() * getSettings().get<Vec2f>("basic.window.size").x();
     }
-    if(getSettings()->getDefaultWindowSize().y() <= 1.0f )
+    if(getSettings().get<Vec2f>("basic.window.size").y() <= 1.0f )
     {
-        WindowSize[1] = getMainWindow()->getDesktopSize().y() * getSettings()->getDefaultWindowSize().y();
+        WindowSize[1] = getMainWindow()->getDesktopSize().y() * getSettings().get<Vec2f>("basic.window.size").y();
     }
-    Pnt2f WindowPos(getSettings()->getDefaultWindowPosition());
-    if(getSettings()->getDefaultWindowPosition().x() < 0.0f )
+    Pnt2f WindowPos(getSettings().get<Pnt2f>("basic.window.position"));
+    if(getSettings().get<Pnt2f>("basic.window.position").x() < 0.0f )
     {
         WindowPos[0] = (getMainWindow()->getDesktopSize().x() - WindowSize.x()) * 0.5f;
     }
-    if(getSettings()->getDefaultWindowPosition().y() < 0.0f )
+    if(getSettings().get<Pnt2f>("basic.window.position").y() < 0.0f )
     {
         WindowPos[1] = (getMainWindow()->getDesktopSize().y() - WindowSize.y()) * 0.5f;
     }
@@ -361,7 +403,11 @@ Int32 MainApplication::run(int argc, char **argv)
     }
     else
     {
-        loadProject(getSettings()->getLastOpenedProjectFile());
+        boost::optional<BoostPath> LastOpenedProjectFile = getSettings().get_optional<BoostPath>("basic.last_opened_project");
+        if(LastOpenedProjectFile)
+        {
+            loadProject(LastOpenedProjectFile.get());
+        }
     }
 
     if(getProject() == NULL)
@@ -497,39 +543,47 @@ void MainApplication::loadProject(const BoostPath& ProjectFile)
     {
         setProject(LoadedProject);
 
-        getSettings()->setLastOpenedProjectFile(ProjectFile);
+        getSettings().put<BoostPath>("basic.last_opened_project",ProjectFile);
 
         //Update Recent Projects
-        MFBoostPath::iterator
-            SearchItor(getSettings()->editMFRecentProjectFiles()->begin());
-        for( ; SearchItor!=getSettings()->editMFRecentProjectFiles()->end() ; ++SearchItor)
+        std::vector<BoostPath> RecentProjects(getSettings().get_vec<BoostPath>("basic.recent_projects"));
+        std::vector<BoostPath>::iterator SearchItor(RecentProjects.begin());
+        for( ; SearchItor!=RecentProjects.end() ; ++SearchItor)
         {
-            if(boost::filesystem::equivalent(*SearchItor,ProjectFile))
+            if(boost::filesystem::equivalent((*SearchItor),ProjectFile))
             {
                 break;
             }
         }
-        if(SearchItor != getSettings()->editMFRecentProjectFiles()->end())
+        if(SearchItor != RecentProjects.end())
         {
-            getSettings()->editMFRecentProjectFiles()->erase(SearchItor);
+            RecentProjects.erase(SearchItor);
         }
-        getSettings()->editMFRecentProjectFiles()->push_back(ProjectFile);
+        RecentProjects.push_back(ProjectFile);
+
+        //Resize
+        UInt32 MaxRecProj(getSettings().get<UInt32>("basic.recent_projects.max"));
+        while(RecentProjects.size() > MaxRecProj)
+        {
+            //Pop off the front
+            RecentProjects.erase(RecentProjects.begin());
+        }
+
+
+        getSettings().put_vec("basic.recent_projects.file", RecentProjects);
 
     }
 }
 
 void MainApplication::saveSettings(const BoostPath& SettingsFile)
 {
-    if(getSettings() != NULL)
-    {
-        getSettings()->save(SettingsFile);
-    }
+    getSettings().writeXML(SettingsFile);
 }
 
 void MainApplication::loadSettings(const BoostPath& SettingsFile)
 {
 
-    ApplicationSettingsRefPtr LoadedSettings;
+    ApplicationSettings LoadedSettings;
     if(!boost::filesystem::exists(SettingsFile))
     {
         SWARNING << "Could not load Settings from: \""
@@ -546,13 +600,11 @@ void MainApplication::loadSettings(const BoostPath& SettingsFile)
 
         SLOG << "Loading Settings from: " << SettingsFullPath.string() << std::endl;
 
-        LoadedSettings = ApplicationSettings::load(SettingsFile);
+        LoadedSettings.readXML(SettingsFile);
     }
-
-    if(LoadedSettings != NULL)
-    {
-        setSettings(LoadedSettings);
-    }
+    //Apply default settings to any settings that are not defined in loaded settings files
+    applyDefaultSettings(LoadedSettings, false);
+    setSettings(LoadedSettings);
 }
 
 void MainApplication::createDefaultBuilderMode(void)
@@ -719,7 +771,7 @@ ProjectRefPtr MainApplication::createDefaultProject(void)
 }
 
 
-void MainApplication::setSettings( const ApplicationSettingsRefPtr &value )
+void MainApplication::setSettings( const ApplicationSettings &value )
 {
     _Settings = value;
 }

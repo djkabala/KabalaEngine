@@ -295,9 +295,23 @@ void HierarchyPanel::sgFocusCameraOnSelectedNode(void)
 
 void HierarchyPanel::sgCutSelectedNode(void)
 {
+    UInt32 NewSelectedRow(0);
+    if(!_TheSceneGraphTree->isSelectionEmpty())
+    {
+        NewSelectedRow = _TheSceneGraphTree->getMinSelectionRow();
+        if(NewSelectedRow != 0)
+        {
+            --NewSelectedRow;
+        }
+        else
+        {
+            ++NewSelectedRow;
+        }
+    }
 	CommandPtr CutCommandPtr =
         CutCommand::create(_ApplicationPlayer,_TheSceneGraphTreeModel,_ApplicationPlayer->getSelectedNode());
     _ApplicationPlayer->getCommandManager()->executeCommand(CutCommandPtr);
+    _TheSceneGraphTree->setSelectionRow(NewSelectedRow);
 }
 
 void HierarchyPanel::sgCopySelectedNode(void)
@@ -360,8 +374,22 @@ void HierarchyPanel::sgShowHideSelectedNodeRecursize(void)
 
 void HierarchyPanel::sgDeleteSelectedNode(void)
 {
+    UInt32 NewSelectedRow(0);
+    if(!_TheSceneGraphTree->isSelectionEmpty())
+    {
+        NewSelectedRow = _TheSceneGraphTree->getMinSelectionRow();
+        if(NewSelectedRow != 0)
+        {
+            --NewSelectedRow;
+        }
+        else
+        {
+            ++NewSelectedRow;
+        }
+    }
 	CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,HierarchyPanelRefPtr(this),_ApplicationPlayer->getSelectedNode());
     _ApplicationPlayer->getCommandManager()->executeCommand(DeleteCommandPtr);
+    _TheSceneGraphTree->setSelectionRow(NewSelectedRow);
 }
 
 void HierarchyPanel::actionPerformed(const ActionEventUnrecPtr e)
