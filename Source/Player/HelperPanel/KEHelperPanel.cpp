@@ -87,6 +87,7 @@ void HelperPanel::setupLuaTab()
     // Create a _CodeTextArea
     _CodeTextArea = OSG::TextArea::create();
     _CodeTextArea->setText("");
+    setName(_CodeTextArea,"__KABALA_ENGINE_PLAYER_CODE_TEXT_AREA");
 
     _LuaConsoleScrollPanel = ScrollPanel::create();
     _LuaConsoleScrollPanel->setPreferredSize(Vec2f(300,1200));
@@ -155,6 +156,7 @@ void HelperPanel::setupErrorTab()
     _ErrorTextArea = OSG::TextArea::create();
     _ErrorTextArea->setText("Error List");
     _ErrorTextArea->setEditable(false);
+    setName(_ErrorTextArea,"__KABALA_ENGINE_PLAYER_ERROR_TEXT_AREA");
 
     _TabPanel2Content = ScrollPanel::create();
     _TabPanel2Content->setPreferredSize(Vec2f(200,1200));
@@ -183,6 +185,8 @@ void HelperPanel::createLoggingTab()
     //Text Area
     _LoggingArea = OSG::TextArea::create();
     _LoggingArea->setEditable(false);
+    _LoggingArea->setText("Logging Area\n");
+    setName(_LoggingArea,"__KABALA_ENGINE_PLAYER_LOGGING_TEXT_AREA");
 
     //Scroll Panel
     _LoggingScrollPanel = OSG::ScrollPanel::create();
@@ -196,7 +200,7 @@ void HelperPanel::createLoggingTab()
 
     LoggingContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _LoggingScrollPanel, 5, SpringLayoutConstraints::NORTH_EDGE, _LoggingContent);  
     LoggingContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, _LoggingContent); 
-    LoggingContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::WEST_EDGE, _LoggingContent);
+    LoggingContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::EAST_EDGE, _LoggingContent);
     LoggingContentLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _LoggingScrollPanel, 5, SpringLayoutConstraints::WEST_EDGE, _LoggingContent);  
 
     _LoggingContent->setLayout(LoggingContentLayout);

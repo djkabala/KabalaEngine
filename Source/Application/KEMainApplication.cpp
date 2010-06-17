@@ -829,7 +829,7 @@ void MainApplication::KELogBufferCallback(const Char8 *data,
 {
 	//Send to the Log Listeners
     std::string value(data,size);
-    LogEventUnrecPtr e = LogEvent::create(NullFC, getTimeStamp(),value);
+    LogEventUnrecPtr e = LogEvent::create(NULL, getTimeStamp(),value);
     MainApplication::the()->produceLog(e);
 }
 

@@ -32,15 +32,6 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
 #ifndef _KESCENEOBJECT_H_
 #define _KESCENEOBJECT_H_
@@ -49,7 +40,6 @@
 #endif
 
 #include "KESceneObjectBase.h"
-#include <OpenSG/OSGNode.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -128,7 +118,9 @@ typedef SceneObject *SceneObjectP;
 
 OSG_END_NAMESPACE
 
-#include "Project/SceneObject/KEBehavior.h"
+#include "Project/SceneObject/KEBehavior.h" // Behaviors Class
+#include <OpenSG/OSGNode.h>             // Node Class
+#include "Project/Effect/KEEffect.h"    // AttachedEffects Class
 #include "KESceneObjectBase.inl"
 #include "KESceneObject.inl"
 

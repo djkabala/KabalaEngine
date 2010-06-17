@@ -7,12 +7,13 @@
 #include <OpenSG/OSGConfig.h>
 #include <OpenSG/OSGActivity.h>
 #include <OpenSG/OSGLuaActivity.h>
-//#include <OpenSG/OSGGenericEvent.h>
-//#include <OpenSG/OSGEventProducerType.h>
+#include <OpenSG/OSGGenericEvent.h>
+#include <OpenSG/OSGEventProducerType.h>
 #include <boost/bind.hpp>
 #include "KELuaBindings.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
+#include "Project/Effect/KEEffect.h"
 
 //#include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGSound.h>
@@ -38,7 +39,7 @@
 namespace OSG {
     class Scene;
     class Project;
-    class GenericEventUnrecPtr;
+    class Effect;
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -66,7 +67,7 @@ namespace OSG {
     /******************************************************/
     /*                     Scene                          */
     /******************************************************/
-    class Scene : public SceneBase
+    class Scene
     {
       public:
     
@@ -83,13 +84,19 @@ namespace OSG {
         bool isGenericMethodDefined(const std::string& MethodName) const;
         UInt32 getGenericMethodId(const std::string& MethodName) const;
     
-        void produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e);
-    
       protected:
         Scene(void);
         Scene(const Scene &source);
         virtual ~Scene(void); 
     };
+    %extend Scene
+    {
+        void produceGenericEvent(UInt32 GenericEventId, GenericEventRefPtr e)
+        {
+            self->produceGenericEvent(GenericEventId, e);
+        }
+    };
+    
 
     /******************************************************/
     /*                  ProjectRefPtr                        */
@@ -156,9 +163,49 @@ namespace OSG {
         SceneRefPtr getLastActiveScene(void) const;
       protected:
         Project(void);
-        Project(const Animation &source);
+        Project(const Project &source);
         virtual ~Project(void); 
     };
     
+    /******************************************************/
+    /*                  EffectRefPtr                        */
+    /******************************************************/
+    class EffectRefPtr : public AttachmentContainerRefPtr
+    {
+      public:
+         EffectRefPtr(void);
+         EffectRefPtr(const EffectRefPtr               &source);
+         /*ProjectRefPtr(const NullFieldContainerRefPtr &source);*/
+
+
+        ~EffectRefPtr(void); 
+        Effect *operator->(void);
+        
+    };
+    %extend EffectRefPtr
+    {
+        static EffectRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::Effect>(oIn);
+        }
+    };
+    
+    /******************************************************/
+    /*                    Effect                         */
+    /******************************************************/
+    class Effect : public AttachmentContainer
+    {
+      public:
+        void begin(void);
+        bool isPlaying(void);
+        bool isPaused(void);
+        void pause(void);
+        void unpause(void);
+        void stop(void);
+      protected:
+        Project(void);
+        Project(const Animation &source);
+        virtual ~Project(void); 
+    };
 }
 

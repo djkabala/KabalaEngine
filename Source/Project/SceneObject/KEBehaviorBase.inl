@@ -73,22 +73,6 @@ OSG::UInt16 BehaviorBase::getClassGroupId(void)
 /*------------------------------ get -----------------------------------*/
 
 
-//! Get the value of the Behavior::_sfSceneObject field.
-inline
-SceneObject * BehaviorBase::getSceneObject(void) const
-{
-    return _sfSceneObject.getValue();
-}
-
-//! Set the value of the Behavior::_sfSceneObject field.
-inline
-void BehaviorBase::setSceneObject(SceneObject * const value)
-{
-    editSField(SceneObjectFieldMask);
-
-    _sfSceneObject.setValue(value);
-}
-
 //! Get the value of the \a index element the Behavior::_mfDependencies field.
 inline
 const std::string &BehaviorBase::getDependencies(const UInt32 index) const

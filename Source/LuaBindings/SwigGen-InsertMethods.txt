@@ -1,10 +1,6 @@
-
 Add the following to the end of the file KELuaBindings.cpp after code generation
-
 
 OSG::LuaManager::OpenBoundLuaLibFunctor getKabalaEngineLuaBindingsLibFunctor(void)
 {
     return boost::bind(&luaopen_KabalaEngine, _1);
 }
-
-GenericEventPtrs may need to be appended w/ OSG::

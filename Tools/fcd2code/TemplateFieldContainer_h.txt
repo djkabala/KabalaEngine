@@ -130,6 +130,11 @@ typedef @!Classname!@ *@!Classname!@P;
 
 OSG_END_NAMESPACE
 
+@@BeginFieldLoop@@
+    @@if field.isPtrField
+#include @!field.TypeInclude:30!@ // @!field.Name!@ Class
+    @@endif // field.needTypeInclude
+@@EndFieldLoop@@
 #include "KE@!Classname!@Base.inl"
 #include "KE@!Classname!@.inl"
 

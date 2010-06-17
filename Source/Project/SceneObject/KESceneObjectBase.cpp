@@ -56,7 +56,9 @@
 
 
 #include "Project/SceneObject/KEBehavior.h" // Behaviors Class
+#include "Project/Effect/KEEffect.h"    // AttachedEffects Class
 #include <OpenSG/OSGNode.h>             // Node Class
+#include "Project/Scene/KEScene.h"      // Scene Class
 
 #include "KESceneObjectBase.h"
 #include "KESceneObject.h"
@@ -85,7 +87,15 @@ OSG_BEGIN_NAMESPACE
     
 */
 
+/*! \var Effect *        SceneObjectBase::_mfAttachedEffects
+    
+*/
+
 /*! \var Node *          SceneObjectBase::_sfNode
+    
+*/
+
+/*! \var Scene *         SceneObjectBase::_sfScene
     
 */
 
@@ -117,8 +127,8 @@ void SceneObjectBase::classDescInserter(TypeObject &oType)
     FieldDescriptionBase *pDesc = NULL;
 
 
-    pDesc = new MFUnrecBehaviorPtr::Description(
-        MFUnrecBehaviorPtr::getClassType(),
+    pDesc = new MFUnrecChildBehaviorPtr::Description(
+        MFUnrecChildBehaviorPtr::getClassType(),
         "Behaviors",
         "",
         BehaviorsFieldId, BehaviorsFieldMask,
@@ -126,6 +136,18 @@ void SceneObjectBase::classDescInserter(TypeObject &oType)
         (Field::MFDefaultFlags | Field::FStdAccess),
         static_cast<FieldEditMethodSig>(&SceneObject::editHandleBehaviors),
         static_cast<FieldGetMethodSig >(&SceneObject::getHandleBehaviors));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecChildEffectPtr::Description(
+        MFUnrecChildEffectPtr::getClassType(),
+        "AttachedEffects",
+        "",
+        AttachedEffectsFieldId, AttachedEffectsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&SceneObject::editHandleAttachedEffects),
+        static_cast<FieldGetMethodSig >(&SceneObject::getHandleAttachedEffects));
 
     oType.addInitialDesc(pDesc);
 
@@ -138,6 +160,18 @@ void SceneObjectBase::classDescInserter(TypeObject &oType)
         (Field::SFDefaultFlags | Field::FStdAccess),
         static_cast<FieldEditMethodSig>(&SceneObject::editHandleNode),
         static_cast<FieldGetMethodSig >(&SceneObject::getHandleNode));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecScenePtr::Description(
+        SFUnrecScenePtr::getClassType(),
+        "Scene",
+        "",
+        SceneFieldId, SceneFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&SceneObject::editHandleScene),
+        static_cast<FieldGetMethodSig >(&SceneObject::getHandleScene));
 
     oType.addInitialDesc(pDesc);
 }
@@ -170,23 +204,52 @@ SceneObjectBase::TypeObject SceneObjectBase::_type(
     "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
     ">\n"
     "The SceneObject.\n"
-    "\t<Field\n"
+    "    <Field\n"
     "\t\tname=\"Behaviors\"\n"
     "\t\ttype=\"Behavior\"\n"
-    "\t\tcategory=\"pointer\"\n"
+    "        childParentType=\"FieldContainer\"\n"
+    "\t\tcategory=\"childpointer\"\n"
     "\t\tcardinality=\"multi\"\n"
     "\t\tvisibility=\"external\"\n"
-    "\t\tfieldHeader=\"Project/SceneObject/KEBehaviorTypeFields.h\"\n"
-    "\t\ttypeHeader=\"Project/SceneObject/KEBehaviorType.h\"\n"
-    "\t\taccess=\"protected\"\n"
+    "\t\tfieldHeader=\"Project/SceneObject/KEBehaviorFields.h\"\n"
+    "\t\ttypeHeader=\"Project/SceneObject/KEBehavior.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "        linkParentField=\"SceneObject\"\n"
     "\t>\n"
     "\t</Field>\n"
-    "\t<Field\n"
+    "    <Field\n"
+    "\t\tname=\"AttachedEffects\"\n"
+    "\t\ttype=\"Effect\"\n"
+    "        childParentType=\"FieldContainer\"\n"
+    "\t\tcategory=\"childpointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/Effect/KEEffectFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Effect/KEEffect.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "        linkParentField=\"ParentSceneObject\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "    <Field\n"
     "\t\tname=\"Node\"\n"
     "\t\ttype=\"Node\"\n"
     "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"single\"\n"
     "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t\tdefaultValue=\"NULL\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "    <Field\n"
+    "\t\tname=\"Scene\"\n"
+    "\t\ttype=\"Scene\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "        fieldHeader=\"Project/Scene/KEScene.h\"\n"
+    "\t\ttypeHeader=\"Project/Scene/KEScene.h\"\n"
     "\t\taccess=\"public\"\n"
     "\t\tdefaultValue=\"NULL\"\n"
     "\t>\n"
@@ -216,16 +279,29 @@ UInt32 SceneObjectBase::getContainerSize(void) const
 
 
 //! Get the SceneObject::_mfBehaviors field.
-const MFUnrecBehaviorPtr *SceneObjectBase::getMFBehaviors(void) const
+const MFUnrecChildBehaviorPtr *SceneObjectBase::getMFBehaviors(void) const
 {
     return &_mfBehaviors;
 }
 
-MFUnrecBehaviorPtr  *SceneObjectBase::editMFBehaviors      (void)
+MFUnrecChildBehaviorPtr *SceneObjectBase::editMFBehaviors      (void)
 {
     editMField(BehaviorsFieldMask, _mfBehaviors);
 
     return &_mfBehaviors;
+}
+
+//! Get the SceneObject::_mfAttachedEffects field.
+const MFUnrecChildEffectPtr *SceneObjectBase::getMFAttachedEffects(void) const
+{
+    return &_mfAttachedEffects;
+}
+
+MFUnrecChildEffectPtr *SceneObjectBase::editMFAttachedEffects(void)
+{
+    editMField(AttachedEffectsFieldMask, _mfAttachedEffects);
+
+    return &_mfAttachedEffects;
 }
 
 //! Get the SceneObject::_sfNode field.
@@ -241,6 +317,19 @@ SFUnrecNodePtr      *SceneObjectBase::editSFNode           (void)
     return &_sfNode;
 }
 
+//! Get the SceneObject::_sfScene field.
+const SFUnrecScenePtr *SceneObjectBase::getSFScene(void) const
+{
+    return &_sfScene;
+}
+
+SFUnrecScenePtr     *SceneObjectBase::editSFScene          (void)
+{
+    editSField(SceneFieldMask);
+
+    return &_sfScene;
+}
+
 
 
 void SceneObjectBase::pushToBehaviors(Behavior * const value)
@@ -250,11 +339,11 @@ void SceneObjectBase::pushToBehaviors(Behavior * const value)
     _mfBehaviors.push_back(value);
 }
 
-void SceneObjectBase::assignBehaviors(const MFUnrecBehaviorPtr &value)
+void SceneObjectBase::assignBehaviors(const MFUnrecChildBehaviorPtr &value)
 {
-    MFUnrecBehaviorPtr::const_iterator elemIt  =
+    MFUnrecChildBehaviorPtr::const_iterator elemIt  =
         value.begin();
-    MFUnrecBehaviorPtr::const_iterator elemEnd =
+    MFUnrecChildBehaviorPtr::const_iterator elemEnd =
         value.end  ();
 
     static_cast<SceneObject *>(this)->clearBehaviors();
@@ -296,6 +385,59 @@ void SceneObjectBase::clearBehaviors(void)
     _mfBehaviors.clear();
 }
 
+void SceneObjectBase::pushToAttachedEffects(Effect * const value)
+{
+    editMField(AttachedEffectsFieldMask, _mfAttachedEffects);
+
+    _mfAttachedEffects.push_back(value);
+}
+
+void SceneObjectBase::assignAttachedEffects(const MFUnrecChildEffectPtr &value)
+{
+    MFUnrecChildEffectPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecChildEffectPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<SceneObject *>(this)->clearAttachedEffects();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToAttachedEffects(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneObjectBase::removeFromAttachedEffects(UInt32 uiIndex)
+{
+    if(uiIndex < _mfAttachedEffects.size())
+    {
+        editMField(AttachedEffectsFieldMask, _mfAttachedEffects);
+
+        _mfAttachedEffects.erase(uiIndex);
+    }
+}
+
+void SceneObjectBase::removeObjFromAttachedEffects(Effect * const value)
+{
+    Int32 iElemIdx = _mfAttachedEffects.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(AttachedEffectsFieldMask, _mfAttachedEffects);
+
+        _mfAttachedEffects.erase(iElemIdx);
+    }
+}
+void SceneObjectBase::clearAttachedEffects(void)
+{
+    editMField(AttachedEffectsFieldMask, _mfAttachedEffects);
+
+
+    _mfAttachedEffects.clear();
+}
+
 
 
 /*------------------------------ access -----------------------------------*/
@@ -308,9 +450,17 @@ UInt32 SceneObjectBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _mfBehaviors.getBinSize();
     }
+    if(FieldBits::NoField != (AttachedEffectsFieldMask & whichField))
+    {
+        returnValue += _mfAttachedEffects.getBinSize();
+    }
     if(FieldBits::NoField != (NodeFieldMask & whichField))
     {
         returnValue += _sfNode.getBinSize();
+    }
+    if(FieldBits::NoField != (SceneFieldMask & whichField))
+    {
+        returnValue += _sfScene.getBinSize();
     }
 
     return returnValue;
@@ -325,9 +475,17 @@ void SceneObjectBase::copyToBin(BinaryDataHandler &pMem,
     {
         _mfBehaviors.copyToBin(pMem);
     }
+    if(FieldBits::NoField != (AttachedEffectsFieldMask & whichField))
+    {
+        _mfAttachedEffects.copyToBin(pMem);
+    }
     if(FieldBits::NoField != (NodeFieldMask & whichField))
     {
         _sfNode.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (SceneFieldMask & whichField))
+    {
+        _sfScene.copyToBin(pMem);
     }
 }
 
@@ -340,9 +498,17 @@ void SceneObjectBase::copyFromBin(BinaryDataHandler &pMem,
     {
         _mfBehaviors.copyFromBin(pMem);
     }
+    if(FieldBits::NoField != (AttachedEffectsFieldMask & whichField))
+    {
+        _mfAttachedEffects.copyFromBin(pMem);
+    }
     if(FieldBits::NoField != (NodeFieldMask & whichField))
     {
         _sfNode.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (SceneFieldMask & whichField))
+    {
+        _sfScene.copyFromBin(pMem);
     }
 }
 
@@ -469,15 +635,27 @@ FieldContainerTransitPtr SceneObjectBase::shallowCopy(void) const
 
 SceneObjectBase::SceneObjectBase(void) :
     Inherited(),
-    _mfBehaviors              (),
-    _sfNode                   (NULL)
+    _mfBehaviors              (this,
+                          BehaviorsFieldId,
+                          Behavior::SceneObjectFieldId),
+    _mfAttachedEffects        (this,
+                          AttachedEffectsFieldId,
+                          Effect::ParentSceneObjectFieldId),
+    _sfNode                   (NULL),
+    _sfScene                  (NULL)
 {
 }
 
 SceneObjectBase::SceneObjectBase(const SceneObjectBase &source) :
     Inherited(source),
-    _mfBehaviors              (),
-    _sfNode                   (NULL)
+    _mfBehaviors              (this,
+                          BehaviorsFieldId,
+                          Behavior::SceneObjectFieldId),
+    _mfAttachedEffects        (this,
+                          AttachedEffectsFieldId,
+                          Effect::ParentSceneObjectFieldId),
+    _sfNode                   (NULL),
+    _sfScene                  (NULL)
 {
 }
 
@@ -488,6 +666,71 @@ SceneObjectBase::~SceneObjectBase(void)
 {
 }
 
+/*-------------------------------------------------------------------------*/
+/* Child linking                                                           */
+
+bool SceneObjectBase::unlinkChild(
+    FieldContainer * const pChild,
+    UInt16           const childFieldId)
+{
+    if(childFieldId == BehaviorsFieldId)
+    {
+        Behavior * pTypedChild =
+            dynamic_cast<Behavior *>(pChild);
+
+        if(pTypedChild != NULL)
+        {
+            Int32 iChildIdx = _mfBehaviors.findIndex(pTypedChild);
+
+            if(iChildIdx != -1)
+            {
+                editMField(BehaviorsFieldMask, _mfBehaviors);
+
+                _mfBehaviors.erase(iChildIdx);
+
+                return true;
+            }
+
+            FWARNING(("SceneObjectBase::unlinkParent: Child <-> "
+                      "Parent link inconsistent.\n"));
+
+            return false;
+        }
+
+        return false;
+    }
+
+    if(childFieldId == AttachedEffectsFieldId)
+    {
+        Effect * pTypedChild =
+            dynamic_cast<Effect *>(pChild);
+
+        if(pTypedChild != NULL)
+        {
+            Int32 iChildIdx = _mfAttachedEffects.findIndex(pTypedChild);
+
+            if(iChildIdx != -1)
+            {
+                editMField(AttachedEffectsFieldMask, _mfAttachedEffects);
+
+                _mfAttachedEffects.erase(iChildIdx);
+
+                return true;
+            }
+
+            FWARNING(("SceneObjectBase::unlinkParent: Child <-> "
+                      "Parent link inconsistent.\n"));
+
+            return false;
+        }
+
+        return false;
+    }
+
+
+    return Inherited::unlinkChild(pChild, childFieldId);
+}
+
 void SceneObjectBase::onCreate(const SceneObject *source)
 {
     Inherited::onCreate(source);
@@ -496,9 +739,9 @@ void SceneObjectBase::onCreate(const SceneObject *source)
     {
         SceneObject *pThis = static_cast<SceneObject *>(this);
 
-        MFUnrecBehaviorPtr::const_iterator BehaviorsIt  =
+        MFUnrecChildBehaviorPtr::const_iterator BehaviorsIt  =
             source->_mfBehaviors.begin();
-        MFUnrecBehaviorPtr::const_iterator BehaviorsEnd =
+        MFUnrecChildBehaviorPtr::const_iterator BehaviorsEnd =
             source->_mfBehaviors.end  ();
 
         while(BehaviorsIt != BehaviorsEnd)
@@ -508,14 +751,28 @@ void SceneObjectBase::onCreate(const SceneObject *source)
             ++BehaviorsIt;
         }
 
+        MFUnrecChildEffectPtr::const_iterator AttachedEffectsIt  =
+            source->_mfAttachedEffects.begin();
+        MFUnrecChildEffectPtr::const_iterator AttachedEffectsEnd =
+            source->_mfAttachedEffects.end  ();
+
+        while(AttachedEffectsIt != AttachedEffectsEnd)
+        {
+            pThis->pushToAttachedEffects(*AttachedEffectsIt);
+
+            ++AttachedEffectsIt;
+        }
+
         pThis->setNode(source->getNode());
+
+        pThis->setScene(source->getScene());
     }
 }
 
 GetFieldHandlePtr SceneObjectBase::getHandleBehaviors       (void) const
 {
-    MFUnrecBehaviorPtr::GetHandlePtr returnValue(
-        new  MFUnrecBehaviorPtr::GetHandle(
+    MFUnrecChildBehaviorPtr::GetHandlePtr returnValue(
+        new  MFUnrecChildBehaviorPtr::GetHandle(
              &_mfBehaviors,
              this->getType().getFieldDesc(BehaviorsFieldId),
              const_cast<SceneObjectBase *>(this)));
@@ -525,8 +782,8 @@ GetFieldHandlePtr SceneObjectBase::getHandleBehaviors       (void) const
 
 EditFieldHandlePtr SceneObjectBase::editHandleBehaviors      (void)
 {
-    MFUnrecBehaviorPtr::EditHandlePtr returnValue(
-        new  MFUnrecBehaviorPtr::EditHandle(
+    MFUnrecChildBehaviorPtr::EditHandlePtr returnValue(
+        new  MFUnrecChildBehaviorPtr::EditHandle(
              &_mfBehaviors,
              this->getType().getFieldDesc(BehaviorsFieldId),
              this));
@@ -545,6 +802,43 @@ EditFieldHandlePtr SceneObjectBase::editHandleBehaviors      (void)
                     static_cast<SceneObject *>(this)));
 
     editMField(BehaviorsFieldMask, _mfBehaviors);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneObjectBase::getHandleAttachedEffects (void) const
+{
+    MFUnrecChildEffectPtr::GetHandlePtr returnValue(
+        new  MFUnrecChildEffectPtr::GetHandle(
+             &_mfAttachedEffects,
+             this->getType().getFieldDesc(AttachedEffectsFieldId),
+             const_cast<SceneObjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneObjectBase::editHandleAttachedEffects(void)
+{
+    MFUnrecChildEffectPtr::EditHandlePtr returnValue(
+        new  MFUnrecChildEffectPtr::EditHandle(
+             &_mfAttachedEffects,
+             this->getType().getFieldDesc(AttachedEffectsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&SceneObject::pushToAttachedEffects,
+                    static_cast<SceneObject *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&SceneObject::removeFromAttachedEffects,
+                    static_cast<SceneObject *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&SceneObject::removeObjFromAttachedEffects,
+                    static_cast<SceneObject *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&SceneObject::clearAttachedEffects,
+                    static_cast<SceneObject *>(this)));
+
+    editMField(AttachedEffectsFieldMask, _mfAttachedEffects);
 
     return returnValue;
 }
@@ -573,6 +867,34 @@ EditFieldHandlePtr SceneObjectBase::editHandleNode           (void)
                     static_cast<SceneObject *>(this), _1));
 
     editSField(NodeFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneObjectBase::getHandleScene           (void) const
+{
+    SFUnrecScenePtr::GetHandlePtr returnValue(
+        new  SFUnrecScenePtr::GetHandle(
+             &_sfScene,
+             this->getType().getFieldDesc(SceneFieldId),
+             const_cast<SceneObjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneObjectBase::editHandleScene          (void)
+{
+    SFUnrecScenePtr::EditHandlePtr returnValue(
+        new  SFUnrecScenePtr::EditHandle(
+             &_sfScene,
+             this->getType().getFieldDesc(SceneFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&SceneObject::setScene,
+                    static_cast<SceneObject *>(this), _1));
+
+    editSField(SceneFieldMask);
 
     return returnValue;
 }
@@ -616,7 +938,11 @@ void SceneObjectBase::resolveLinks(void)
 
     static_cast<SceneObject *>(this)->clearBehaviors();
 
+    static_cast<SceneObject *>(this)->clearAttachedEffects();
+
     static_cast<SceneObject *>(this)->setNode(NULL);
+
+    static_cast<SceneObject *>(this)->setScene(NULL);
 
 
 }
