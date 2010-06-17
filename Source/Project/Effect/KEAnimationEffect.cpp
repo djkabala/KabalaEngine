@@ -47,6 +47,7 @@
 
 #include "KEAnimationEffect.h"
 #include "Project/SceneObject/KESceneObject.h"
+#include "KEEffectEvent.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -81,14 +82,25 @@ void AnimationEffect::initMethod(InitPhase ePhase)
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
+void AnimationEffect::initEffect()
+{
+    theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
+    theInternalAnimationListener = InternalAnimationListener(this);
+}
+
 void AnimationEffect::inheritedBegin()
 {
-    if(theUpdateProducer == NULL)
-    {
-        theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
+    AnimationUnrecPtr anim = getAnimation();
+    if(anim != NULL)
+    { 
+        anim->attachUpdateProducer(theUpdateProducer);
+        anim->start();
+        anim->addAnimationListener(&theInternalAnimationListener);
     }
-    getAnimation()->attachUpdateProducer(theUpdateProducer);
-    getAnimation()->start();
+    else
+    {
+          SWARNING << "AnimationEffect::inheritedBegin(): Null Animation. Not set yet?";
+    }
 }
 
 bool AnimationEffect::inheritedIsPlaying()
@@ -111,9 +123,53 @@ void AnimationEffect::inheritedUnpause()
     getAnimation()->pause(false);
 }
 
-void AnimationEffect::inheritedEnd()
+void AnimationEffect::inheritedStop()
 {
     getAnimation()->stop();
+}
+
+void AnimationEffect::finished()
+{
+    AnimationUnrecPtr anim = getAnimation();
+    anim->detachUpdateProducer();
+    anim->removeAnimationListener(&theInternalAnimationListener);
+    Inherited::finished();
+}
+
+/*----------------------- Internal Listener methods -----------------------*/
+
+AnimationEffect::InternalAnimationListener::InternalAnimationListener(AnimationEffect* parent)
+{
+    fx = parent;
+}
+
+void AnimationEffect::InternalAnimationListener::animationEnded(const AnimationEventUnrecPtr e)
+{
+    fx->finished();
+}
+
+void AnimationEffect::InternalAnimationListener::animationStopped(const AnimationEventUnrecPtr e)
+{
+    fx->finished();
+}
+
+void AnimationEffect::InternalAnimationListener::animationPaused(const AnimationEventUnrecPtr e)
+{
+
+}
+void AnimationEffect::InternalAnimationListener::animationUnpaused(const AnimationEventUnrecPtr e)
+{
+
+}
+
+void AnimationEffect::InternalAnimationListener::animationStarted(const AnimationEventUnrecPtr e)
+{
+
+}
+
+void AnimationEffect::InternalAnimationListener::animationCycled(const AnimationEventUnrecPtr e)
+{
+
 }
 
 /*----------------------- constructors & destructors ----------------------*/

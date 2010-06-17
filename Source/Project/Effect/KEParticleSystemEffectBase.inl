@@ -88,6 +88,138 @@ void ParticleSystemEffectBase::setTheSystem(ParticleSystem * const value)
 
     _sfTheSystem.setValue(value);
 }
+//! Get the value of the ParticleSystemEffect::_sfMaxVolume field.
+
+inline
+Real32 &ParticleSystemEffectBase::editMaxVolume(void)
+{
+    editSField(MaxVolumeFieldMask);
+
+    return _sfMaxVolume.getValue();
+}
+
+//! Get the value of the ParticleSystemEffect::_sfMaxVolume field.
+inline
+      Real32  ParticleSystemEffectBase::getMaxVolume(void) const
+{
+    return _sfMaxVolume.getValue();
+}
+
+//! Set the value of the ParticleSystemEffect::_sfMaxVolume field.
+inline
+void ParticleSystemEffectBase::setMaxVolume(const Real32 value)
+{
+    editSField(MaxVolumeFieldMask);
+
+    _sfMaxVolume.setValue(value);
+}
+//! Get the value of the ParticleSystemEffect::_sfMinVolume field.
+
+inline
+Real32 &ParticleSystemEffectBase::editMinVolume(void)
+{
+    editSField(MinVolumeFieldMask);
+
+    return _sfMinVolume.getValue();
+}
+
+//! Get the value of the ParticleSystemEffect::_sfMinVolume field.
+inline
+      Real32  ParticleSystemEffectBase::getMinVolume(void) const
+{
+    return _sfMinVolume.getValue();
+}
+
+//! Set the value of the ParticleSystemEffect::_sfMinVolume field.
+inline
+void ParticleSystemEffectBase::setMinVolume(const Real32 value)
+{
+    editSField(MinVolumeFieldMask);
+
+    _sfMinVolume.setValue(value);
+}
+//! Get the value of the ParticleSystemEffect::_sfLifespan field.
+
+inline
+Real32 &ParticleSystemEffectBase::editLifespan(void)
+{
+    editSField(LifespanFieldMask);
+
+    return _sfLifespan.getValue();
+}
+
+//! Get the value of the ParticleSystemEffect::_sfLifespan field.
+inline
+      Real32  ParticleSystemEffectBase::getLifespan(void) const
+{
+    return _sfLifespan.getValue();
+}
+
+//! Set the value of the ParticleSystemEffect::_sfLifespan field.
+inline
+void ParticleSystemEffectBase::setLifespan(const Real32 value)
+{
+    editSField(LifespanFieldMask);
+
+    _sfLifespan.setValue(value);
+}
+//! Get the value of the ParticleSystemEffect::_sfMaxParticles field.
+
+inline
+UInt32 &ParticleSystemEffectBase::editMaxParticles(void)
+{
+    editSField(MaxParticlesFieldMask);
+
+    return _sfMaxParticles.getValue();
+}
+
+//! Get the value of the ParticleSystemEffect::_sfMaxParticles field.
+inline
+      UInt32  ParticleSystemEffectBase::getMaxParticles(void) const
+{
+    return _sfMaxParticles.getValue();
+}
+
+//! Set the value of the ParticleSystemEffect::_sfMaxParticles field.
+inline
+void ParticleSystemEffectBase::setMaxParticles(const UInt32 value)
+{
+    editSField(MaxParticlesFieldMask);
+
+    _sfMaxParticles.setValue(value);
+}
+//! Get the value of the ParticleSystemEffect::_sfMinParticles field.
+
+inline
+UInt32 &ParticleSystemEffectBase::editMinParticles(void)
+{
+    editSField(MinParticlesFieldMask);
+
+    return _sfMinParticles.getValue();
+}
+
+//! Get the value of the ParticleSystemEffect::_sfMinParticles field.
+inline
+      UInt32  ParticleSystemEffectBase::getMinParticles(void) const
+{
+    return _sfMinParticles.getValue();
+}
+
+//! Set the value of the ParticleSystemEffect::_sfMinParticles field.
+inline
+void ParticleSystemEffectBase::setMinParticles(const UInt32 value)
+{
+    editSField(MinParticlesFieldMask);
+
+    _sfMinParticles.setValue(value);
+}
+
+//! Get the value of the \a index element the ParticleSystemEffect::_mfGenerators field.
+inline
+ParticleGenerator * ParticleSystemEffectBase::getGenerators(const UInt32 index) const
+{
+    return _mfGenerators[index];
+}
 
 
 #ifdef OSG_MT_CPTR_ASPECT
@@ -102,6 +234,27 @@ void ParticleSystemEffectBase::execSync (      ParticleSystemEffectBase *pFrom,
 
     if(FieldBits::NoField != (TheSystemFieldMask & whichField))
         _sfTheSystem.syncWith(pFrom->_sfTheSystem);
+
+    if(FieldBits::NoField != (GeneratorsFieldMask & whichField))
+        _mfGenerators.syncWith(pFrom->_mfGenerators,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
+
+    if(FieldBits::NoField != (MaxVolumeFieldMask & whichField))
+        _sfMaxVolume.syncWith(pFrom->_sfMaxVolume);
+
+    if(FieldBits::NoField != (MinVolumeFieldMask & whichField))
+        _sfMinVolume.syncWith(pFrom->_sfMinVolume);
+
+    if(FieldBits::NoField != (LifespanFieldMask & whichField))
+        _sfLifespan.syncWith(pFrom->_sfLifespan);
+
+    if(FieldBits::NoField != (MaxParticlesFieldMask & whichField))
+        _sfMaxParticles.syncWith(pFrom->_sfMaxParticles);
+
+    if(FieldBits::NoField != (MinParticlesFieldMask & whichField))
+        _sfMinParticles.syncWith(pFrom->_sfMinParticles);
 }
 #endif
 

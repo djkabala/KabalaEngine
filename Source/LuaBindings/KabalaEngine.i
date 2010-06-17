@@ -193,7 +193,7 @@ namespace OSG {
     /******************************************************/
     /*                    Effect                         */
     /******************************************************/
-    class Project : public AttachmentContainer
+    class Effect : public AttachmentContainer
     {
       public:
         void begin(void);
@@ -201,14 +201,11 @@ namespace OSG {
         bool isPaused(void);
         void pause(void);
         void unpause(void);
-        void end(void);
+        void stop(void);
       protected:
         Project(void);
         Project(const Animation &source);
         virtual ~Project(void); 
     };
-    
-    
-    
 }
 

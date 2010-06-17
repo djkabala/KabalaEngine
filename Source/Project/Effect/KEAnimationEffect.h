@@ -82,12 +82,14 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
 
     // Variables should all be in AnimationEffectBase.
 
-    virtual void inheritedBegin    (void);
-    virtual bool inheritedIsPlaying(void);
-    virtual bool inheritedIsPaused (void);
-    virtual void inheritedPause    (void);
-    virtual void inheritedUnpause  (void);
-    virtual void inheritedEnd      (void);
+    void initEffect        (void);
+    void inheritedBegin    (void);
+    bool inheritedIsPlaying(void);
+    bool inheritedIsPaused (void);
+    void inheritedPause    (void);
+    void inheritedUnpause  (void);
+    void inheritedStop     (void);
+    void finished          (void);
 
 
     /*---------------------------------------------------------------------*/
@@ -120,6 +122,34 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
     friend class AnimationEffectBase;
 
     EventProducerPtr theUpdateProducer;
+
+    class InternalAnimationListener : public AnimationListener
+    {
+        public:
+
+            InternalAnimationListener(AnimationEffect* parent);
+            InternalAnimationListener(){};
+            ~InternalAnimationListener(){};
+
+            void animationStarted(const AnimationEventUnrecPtr e);
+
+            void animationStopped(const AnimationEventUnrecPtr e);
+
+            void animationPaused(const AnimationEventUnrecPtr e);
+            void animationUnpaused(const AnimationEventUnrecPtr e);
+
+            void animationEnded(const AnimationEventUnrecPtr e);
+            
+            void animationCycled(const AnimationEventUnrecPtr e);
+
+        private:
+
+            AnimationEffect* fx;
+            
+
+    };
+
+    InternalAnimationListener theInternalAnimationListener;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const AnimationEffect &source);

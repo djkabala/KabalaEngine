@@ -28,7 +28,7 @@ The SceneObject.
 	>
 	</Field>
     <ProducedMethod
-		name="EffectPlayed"
+		name="EffectBegan"
 		type="EffectEvent"
 	>
 	</ProducedMethod>

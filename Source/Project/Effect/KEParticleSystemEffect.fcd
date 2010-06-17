@@ -21,9 +21,72 @@ The SceneObject.
 		category="pointer"
 		cardinality="single"
 		visibility="external"
-		access="protected"
+		access="public"
         fieldHeader="OSGParticleSystemFields.h"
 		typeHeader="OSGParticleSystem.h"
 	>
 	</Field>
+    <Field
+		name="Generators"
+		type="ParticleGenerator"
+        category="pointer"
+		cardinality="multi"
+		visibility="external"
+		access="public"
+        fieldHeader="OSGParticleGeneratorFields.h"
+		typeHeader="OSGParticleGenerator.h"
+	>
+   List of Particle Generators.
+	</Field>
+    <Field
+		name="MaxVolume"
+		type="Real32"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		access="public"
+        defaultValue ="-1.0f"
+	>
+	</Field>
+    <Field
+		name="MinVolume"
+		type="Real32"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		access="public"
+        defaultValue ="0.0f"
+	>
+	</Field>
+    <Field
+		name="Lifespan"
+		type="Real32"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		access="public"
+        defaultValue ="-1.0f"
+	>
+	</Field>
+    <Field
+		name="MaxParticles"
+		type="UInt32"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		access="public"
+        defaultValue ="-1"
+	>
+	</Field>
+    <Field
+		name="MinParticles"
+		type="UInt32"
+		category="data"
+		cardinality="single"
+		visibility="external"
+		access="public"
+        defaultValue ="0"
+	>
+	</Field>
+    
 </FieldContainer>

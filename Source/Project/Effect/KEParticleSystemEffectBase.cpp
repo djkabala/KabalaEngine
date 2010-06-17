@@ -56,6 +56,7 @@
 
 
 #include "OSGParticleSystem.h"          // TheSystem Class
+#include "OSGParticleGenerator.h"       // Generators Class
 
 #include "KEParticleSystemEffectBase.h"
 #include "KEParticleSystemEffect.h"
@@ -81,6 +82,30 @@ OSG_BEGIN_NAMESPACE
 \***************************************************************************/
 
 /*! \var ParticleSystem * ParticleSystemEffectBase::_sfTheSystem
+    
+*/
+
+/*! \var ParticleGenerator * ParticleSystemEffectBase::_mfGenerators
+    List of Particle Generators.
+*/
+
+/*! \var Real32          ParticleSystemEffectBase::_sfMaxVolume
+    
+*/
+
+/*! \var Real32          ParticleSystemEffectBase::_sfMinVolume
+    
+*/
+
+/*! \var Real32          ParticleSystemEffectBase::_sfLifespan
+    
+*/
+
+/*! \var UInt32          ParticleSystemEffectBase::_sfMaxParticles
+    
+*/
+
+/*! \var UInt32          ParticleSystemEffectBase::_sfMinParticles
     
 */
 
@@ -123,6 +148,78 @@ void ParticleSystemEffectBase::classDescInserter(TypeObject &oType)
         static_cast<FieldGetMethodSig >(&ParticleSystemEffect::getHandleTheSystem));
 
     oType.addInitialDesc(pDesc);
+
+    pDesc = new MFUnrecParticleGeneratorPtr::Description(
+        MFUnrecParticleGeneratorPtr::getClassType(),
+        "Generators",
+        "List of Particle Generators.\n",
+        GeneratorsFieldId, GeneratorsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ParticleSystemEffect::editHandleGenerators),
+        static_cast<FieldGetMethodSig >(&ParticleSystemEffect::getHandleGenerators));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFReal32::Description(
+        SFReal32::getClassType(),
+        "MaxVolume",
+        "",
+        MaxVolumeFieldId, MaxVolumeFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ParticleSystemEffect::editHandleMaxVolume),
+        static_cast<FieldGetMethodSig >(&ParticleSystemEffect::getHandleMaxVolume));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFReal32::Description(
+        SFReal32::getClassType(),
+        "MinVolume",
+        "",
+        MinVolumeFieldId, MinVolumeFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ParticleSystemEffect::editHandleMinVolume),
+        static_cast<FieldGetMethodSig >(&ParticleSystemEffect::getHandleMinVolume));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFReal32::Description(
+        SFReal32::getClassType(),
+        "Lifespan",
+        "",
+        LifespanFieldId, LifespanFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ParticleSystemEffect::editHandleLifespan),
+        static_cast<FieldGetMethodSig >(&ParticleSystemEffect::getHandleLifespan));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUInt32::Description(
+        SFUInt32::getClassType(),
+        "MaxParticles",
+        "",
+        MaxParticlesFieldId, MaxParticlesFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ParticleSystemEffect::editHandleMaxParticles),
+        static_cast<FieldGetMethodSig >(&ParticleSystemEffect::getHandleMaxParticles));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUInt32::Description(
+        SFUInt32::getClassType(),
+        "MinParticles",
+        "",
+        MinParticlesFieldId, MinParticlesFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ParticleSystemEffect::editHandleMinParticles),
+        static_cast<FieldGetMethodSig >(&ParticleSystemEffect::getHandleMinParticles));
+
+    oType.addInitialDesc(pDesc);
 }
 
 
@@ -160,11 +257,74 @@ ParticleSystemEffectBase::TypeObject ParticleSystemEffectBase::_type(
     "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"single\"\n"
     "\t\tvisibility=\"external\"\n"
-    "\t\taccess=\"protected\"\n"
+    "\t\taccess=\"public\"\n"
     "        fieldHeader=\"OSGParticleSystemFields.h\"\n"
     "\t\ttypeHeader=\"OSGParticleSystem.h\"\n"
     "\t>\n"
     "\t</Field>\n"
+    "    <Field\n"
+    "\t\tname=\"Generators\"\n"
+    "\t\ttype=\"ParticleGenerator\"\n"
+    "        category=\"pointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        fieldHeader=\"OSGParticleGeneratorFields.h\"\n"
+    "\t\ttypeHeader=\"OSGParticleGenerator.h\"\n"
+    "\t>\n"
+    "   List of Particle Generators.\n"
+    "\t</Field>\n"
+    "    <Field\n"
+    "\t\tname=\"MaxVolume\"\n"
+    "\t\ttype=\"Real32\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        defaultValue =\"-1.0f\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "    <Field\n"
+    "\t\tname=\"MinVolume\"\n"
+    "\t\ttype=\"Real32\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        defaultValue =\"-0.0f\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "    <Field\n"
+    "\t\tname=\"Lifespan\"\n"
+    "\t\ttype=\"Real32\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        defaultValue =\"-1.0f\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "    <Field\n"
+    "\t\tname=\"MaxParticles\"\n"
+    "\t\ttype=\"UInt32\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        defaultValue =\"-1\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "    <Field\n"
+    "\t\tname=\"MinParticles\"\n"
+    "\t\ttype=\"UInt32\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        defaultValue =\"0\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "    \n"
     "</FieldContainer>\n",
     "The SceneObject.\n"
     );
@@ -202,7 +362,138 @@ SFUnrecParticleSystemPtr *ParticleSystemEffectBase::editSFTheSystem      (void)
     return &_sfTheSystem;
 }
 
+//! Get the ParticleSystemEffect::_mfGenerators field.
+const MFUnrecParticleGeneratorPtr *ParticleSystemEffectBase::getMFGenerators(void) const
+{
+    return &_mfGenerators;
+}
 
+MFUnrecParticleGeneratorPtr *ParticleSystemEffectBase::editMFGenerators     (void)
+{
+    editMField(GeneratorsFieldMask, _mfGenerators);
+
+    return &_mfGenerators;
+}
+
+SFReal32 *ParticleSystemEffectBase::editSFMaxVolume(void)
+{
+    editSField(MaxVolumeFieldMask);
+
+    return &_sfMaxVolume;
+}
+
+const SFReal32 *ParticleSystemEffectBase::getSFMaxVolume(void) const
+{
+    return &_sfMaxVolume;
+}
+
+
+SFReal32 *ParticleSystemEffectBase::editSFMinVolume(void)
+{
+    editSField(MinVolumeFieldMask);
+
+    return &_sfMinVolume;
+}
+
+const SFReal32 *ParticleSystemEffectBase::getSFMinVolume(void) const
+{
+    return &_sfMinVolume;
+}
+
+
+SFReal32 *ParticleSystemEffectBase::editSFLifespan(void)
+{
+    editSField(LifespanFieldMask);
+
+    return &_sfLifespan;
+}
+
+const SFReal32 *ParticleSystemEffectBase::getSFLifespan(void) const
+{
+    return &_sfLifespan;
+}
+
+
+SFUInt32 *ParticleSystemEffectBase::editSFMaxParticles(void)
+{
+    editSField(MaxParticlesFieldMask);
+
+    return &_sfMaxParticles;
+}
+
+const SFUInt32 *ParticleSystemEffectBase::getSFMaxParticles(void) const
+{
+    return &_sfMaxParticles;
+}
+
+
+SFUInt32 *ParticleSystemEffectBase::editSFMinParticles(void)
+{
+    editSField(MinParticlesFieldMask);
+
+    return &_sfMinParticles;
+}
+
+const SFUInt32 *ParticleSystemEffectBase::getSFMinParticles(void) const
+{
+    return &_sfMinParticles;
+}
+
+
+
+
+void ParticleSystemEffectBase::pushToGenerators(ParticleGenerator * const value)
+{
+    editMField(GeneratorsFieldMask, _mfGenerators);
+
+    _mfGenerators.push_back(value);
+}
+
+void ParticleSystemEffectBase::assignGenerators(const MFUnrecParticleGeneratorPtr &value)
+{
+    MFUnrecParticleGeneratorPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecParticleGeneratorPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<ParticleSystemEffect *>(this)->clearGenerators();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToGenerators(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void ParticleSystemEffectBase::removeFromGenerators(UInt32 uiIndex)
+{
+    if(uiIndex < _mfGenerators.size())
+    {
+        editMField(GeneratorsFieldMask, _mfGenerators);
+
+        _mfGenerators.erase(uiIndex);
+    }
+}
+
+void ParticleSystemEffectBase::removeObjFromGenerators(ParticleGenerator * const value)
+{
+    Int32 iElemIdx = _mfGenerators.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(GeneratorsFieldMask, _mfGenerators);
+
+        _mfGenerators.erase(iElemIdx);
+    }
+}
+void ParticleSystemEffectBase::clearGenerators(void)
+{
+    editMField(GeneratorsFieldMask, _mfGenerators);
+
+
+    _mfGenerators.clear();
+}
 
 
 
@@ -215,6 +506,30 @@ UInt32 ParticleSystemEffectBase::getBinSize(ConstFieldMaskArg whichField)
     if(FieldBits::NoField != (TheSystemFieldMask & whichField))
     {
         returnValue += _sfTheSystem.getBinSize();
+    }
+    if(FieldBits::NoField != (GeneratorsFieldMask & whichField))
+    {
+        returnValue += _mfGenerators.getBinSize();
+    }
+    if(FieldBits::NoField != (MaxVolumeFieldMask & whichField))
+    {
+        returnValue += _sfMaxVolume.getBinSize();
+    }
+    if(FieldBits::NoField != (MinVolumeFieldMask & whichField))
+    {
+        returnValue += _sfMinVolume.getBinSize();
+    }
+    if(FieldBits::NoField != (LifespanFieldMask & whichField))
+    {
+        returnValue += _sfLifespan.getBinSize();
+    }
+    if(FieldBits::NoField != (MaxParticlesFieldMask & whichField))
+    {
+        returnValue += _sfMaxParticles.getBinSize();
+    }
+    if(FieldBits::NoField != (MinParticlesFieldMask & whichField))
+    {
+        returnValue += _sfMinParticles.getBinSize();
     }
 
     return returnValue;
@@ -229,6 +544,30 @@ void ParticleSystemEffectBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfTheSystem.copyToBin(pMem);
     }
+    if(FieldBits::NoField != (GeneratorsFieldMask & whichField))
+    {
+        _mfGenerators.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (MaxVolumeFieldMask & whichField))
+    {
+        _sfMaxVolume.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (MinVolumeFieldMask & whichField))
+    {
+        _sfMinVolume.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (LifespanFieldMask & whichField))
+    {
+        _sfLifespan.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (MaxParticlesFieldMask & whichField))
+    {
+        _sfMaxParticles.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (MinParticlesFieldMask & whichField))
+    {
+        _sfMinParticles.copyToBin(pMem);
+    }
 }
 
 void ParticleSystemEffectBase::copyFromBin(BinaryDataHandler &pMem,
@@ -239,6 +578,30 @@ void ParticleSystemEffectBase::copyFromBin(BinaryDataHandler &pMem,
     if(FieldBits::NoField != (TheSystemFieldMask & whichField))
     {
         _sfTheSystem.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (GeneratorsFieldMask & whichField))
+    {
+        _mfGenerators.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (MaxVolumeFieldMask & whichField))
+    {
+        _sfMaxVolume.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (MinVolumeFieldMask & whichField))
+    {
+        _sfMinVolume.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (LifespanFieldMask & whichField))
+    {
+        _sfLifespan.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (MaxParticlesFieldMask & whichField))
+    {
+        _sfMaxParticles.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (MinParticlesFieldMask & whichField))
+    {
+        _sfMinParticles.copyFromBin(pMem);
     }
 }
 
@@ -365,13 +728,25 @@ FieldContainerTransitPtr ParticleSystemEffectBase::shallowCopy(void) const
 
 ParticleSystemEffectBase::ParticleSystemEffectBase(void) :
     Inherited(),
-    _sfTheSystem              (NULL)
+    _sfTheSystem              (NULL),
+    _mfGenerators             (),
+    _sfMaxVolume              (Real32(-1.0f)),
+    _sfMinVolume              (Real32(-0.0f)),
+    _sfLifespan               (Real32(-1.0f)),
+    _sfMaxParticles           (UInt32(-1)),
+    _sfMinParticles           (UInt32(0))
 {
 }
 
 ParticleSystemEffectBase::ParticleSystemEffectBase(const ParticleSystemEffectBase &source) :
     Inherited(source),
-    _sfTheSystem              (NULL)
+    _sfTheSystem              (NULL),
+    _mfGenerators             (),
+    _sfMaxVolume              (source._sfMaxVolume              ),
+    _sfMinVolume              (source._sfMinVolume              ),
+    _sfLifespan               (source._sfLifespan               ),
+    _sfMaxParticles           (source._sfMaxParticles           ),
+    _sfMinParticles           (source._sfMinParticles           )
 {
 }
 
@@ -391,6 +766,18 @@ void ParticleSystemEffectBase::onCreate(const ParticleSystemEffect *source)
         ParticleSystemEffect *pThis = static_cast<ParticleSystemEffect *>(this);
 
         pThis->setTheSystem(source->getTheSystem());
+
+        MFUnrecParticleGeneratorPtr::const_iterator GeneratorsIt  =
+            source->_mfGenerators.begin();
+        MFUnrecParticleGeneratorPtr::const_iterator GeneratorsEnd =
+            source->_mfGenerators.end  ();
+
+        while(GeneratorsIt != GeneratorsEnd)
+        {
+            pThis->pushToGenerators(*GeneratorsIt);
+
+            ++GeneratorsIt;
+        }
     }
 }
 
@@ -418,6 +805,168 @@ EditFieldHandlePtr ParticleSystemEffectBase::editHandleTheSystem      (void)
                     static_cast<ParticleSystemEffect *>(this), _1));
 
     editSField(TheSystemFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ParticleSystemEffectBase::getHandleGenerators      (void) const
+{
+    MFUnrecParticleGeneratorPtr::GetHandlePtr returnValue(
+        new  MFUnrecParticleGeneratorPtr::GetHandle(
+             &_mfGenerators,
+             this->getType().getFieldDesc(GeneratorsFieldId),
+             const_cast<ParticleSystemEffectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ParticleSystemEffectBase::editHandleGenerators     (void)
+{
+    MFUnrecParticleGeneratorPtr::EditHandlePtr returnValue(
+        new  MFUnrecParticleGeneratorPtr::EditHandle(
+             &_mfGenerators,
+             this->getType().getFieldDesc(GeneratorsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&ParticleSystemEffect::pushToGenerators,
+                    static_cast<ParticleSystemEffect *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&ParticleSystemEffect::removeFromGenerators,
+                    static_cast<ParticleSystemEffect *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&ParticleSystemEffect::removeObjFromGenerators,
+                    static_cast<ParticleSystemEffect *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&ParticleSystemEffect::clearGenerators,
+                    static_cast<ParticleSystemEffect *>(this)));
+
+    editMField(GeneratorsFieldMask, _mfGenerators);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ParticleSystemEffectBase::getHandleMaxVolume       (void) const
+{
+    SFReal32::GetHandlePtr returnValue(
+        new  SFReal32::GetHandle(
+             &_sfMaxVolume,
+             this->getType().getFieldDesc(MaxVolumeFieldId),
+             const_cast<ParticleSystemEffectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ParticleSystemEffectBase::editHandleMaxVolume      (void)
+{
+    SFReal32::EditHandlePtr returnValue(
+        new  SFReal32::EditHandle(
+             &_sfMaxVolume,
+             this->getType().getFieldDesc(MaxVolumeFieldId),
+             this));
+
+
+    editSField(MaxVolumeFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ParticleSystemEffectBase::getHandleMinVolume       (void) const
+{
+    SFReal32::GetHandlePtr returnValue(
+        new  SFReal32::GetHandle(
+             &_sfMinVolume,
+             this->getType().getFieldDesc(MinVolumeFieldId),
+             const_cast<ParticleSystemEffectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ParticleSystemEffectBase::editHandleMinVolume      (void)
+{
+    SFReal32::EditHandlePtr returnValue(
+        new  SFReal32::EditHandle(
+             &_sfMinVolume,
+             this->getType().getFieldDesc(MinVolumeFieldId),
+             this));
+
+
+    editSField(MinVolumeFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ParticleSystemEffectBase::getHandleLifespan        (void) const
+{
+    SFReal32::GetHandlePtr returnValue(
+        new  SFReal32::GetHandle(
+             &_sfLifespan,
+             this->getType().getFieldDesc(LifespanFieldId),
+             const_cast<ParticleSystemEffectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ParticleSystemEffectBase::editHandleLifespan       (void)
+{
+    SFReal32::EditHandlePtr returnValue(
+        new  SFReal32::EditHandle(
+             &_sfLifespan,
+             this->getType().getFieldDesc(LifespanFieldId),
+             this));
+
+
+    editSField(LifespanFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ParticleSystemEffectBase::getHandleMaxParticles    (void) const
+{
+    SFUInt32::GetHandlePtr returnValue(
+        new  SFUInt32::GetHandle(
+             &_sfMaxParticles,
+             this->getType().getFieldDesc(MaxParticlesFieldId),
+             const_cast<ParticleSystemEffectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ParticleSystemEffectBase::editHandleMaxParticles   (void)
+{
+    SFUInt32::EditHandlePtr returnValue(
+        new  SFUInt32::EditHandle(
+             &_sfMaxParticles,
+             this->getType().getFieldDesc(MaxParticlesFieldId),
+             this));
+
+
+    editSField(MaxParticlesFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ParticleSystemEffectBase::getHandleMinParticles    (void) const
+{
+    SFUInt32::GetHandlePtr returnValue(
+        new  SFUInt32::GetHandle(
+             &_sfMinParticles,
+             this->getType().getFieldDesc(MinParticlesFieldId),
+             const_cast<ParticleSystemEffectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ParticleSystemEffectBase::editHandleMinParticles   (void)
+{
+    SFUInt32::EditHandlePtr returnValue(
+        new  SFUInt32::EditHandle(
+             &_sfMinParticles,
+             this->getType().getFieldDesc(MinParticlesFieldId),
+             this));
+
+
+    editSField(MinParticlesFieldMask);
 
     return returnValue;
 }
@@ -460,6 +1009,8 @@ void ParticleSystemEffectBase::resolveLinks(void)
     Inherited::resolveLinks();
 
     static_cast<ParticleSystemEffect *>(this)->setTheSystem(NULL);
+
+    static_cast<ParticleSystemEffect *>(this)->clearGenerators();
 
 
 }

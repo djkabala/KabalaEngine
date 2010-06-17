@@ -144,8 +144,8 @@ void EffectBase::classDescInserter(TypeObject &oType)
         EventProducerFieldId,EventProducerFieldMask,
         true,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&Effect::invalidEditField),
-        static_cast     <FieldGetMethodSig >(&Effect::invalidGetField));
+        static_cast     <FieldEditMethodSig>(&Effect::editHandleEventProducer),
+        static_cast     <FieldGetMethodSig >(&Effect::getHandleEventProducer));
 
     oType.addInitialDesc(pDesc);
 }
@@ -192,7 +192,7 @@ EffectBase::TypeObject EffectBase::_type(
     "\t>\n"
     "\t</Field>\n"
     "    <ProducedMethod\n"
-    "\t\tname=\"EffectPlayed\"\n"
+    "\t\tname=\"EffectBegan\"\n"
     "\t\ttype=\"EffectEvent\"\n"
     "\t>\n"
     "\t</ProducedMethod>\n"
@@ -224,9 +224,9 @@ EffectBase::TypeObject EffectBase::_type(
 
 MethodDescription *EffectBase::_methodDesc[] =
 {
-    new MethodDescription("EffectPlayed", 
+    new MethodDescription("EffectBegan", 
                     "",
-                     EffectPlayedMethodId, 
+                     EffectBeganMethodId, 
                      SFUnrecEventPtr::getClassType(),
                      FunctorAccessMethod()),
     new MethodDescription("EffectPaused", 
@@ -447,6 +447,32 @@ GetFieldHandlePtr EffectBase::getHandleParentSceneObject (void) const
 EditFieldHandlePtr EffectBase::editHandleParentSceneObject(void)
 {
     EditFieldHandlePtr returnValue;
+
+    return returnValue;
+}
+
+
+GetFieldHandlePtr EffectBase::getHandleEventProducer        (void) const
+{
+    SFEventProducerPtr::GetHandlePtr returnValue(
+        new  SFEventProducerPtr::GetHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             const_cast<EffectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr EffectBase::editHandleEventProducer       (void)
+{
+    SFEventProducerPtr::EditHandlePtr returnValue(
+        new  SFEventProducerPtr::EditHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             this));
+
+
+    editSField(EventProducerFieldMask);
 
     return returnValue;
 }

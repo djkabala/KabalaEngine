@@ -48,16 +48,4 @@
 
 OSG_BEGIN_NAMESPACE
 
-inline
-const Effect* SceneObject::getEffects(void) const
-{
-    return _mfBehaviors;
-}
-
-inline
-const Behavior* SceneObject::getBehaviors(void) const
-{
-    return _mfBehaviors;
-}
-
 OSG_END_NAMESPACE

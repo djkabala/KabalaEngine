@@ -482,10 +482,17 @@ IF(INCLUDE_APP_DATA)
         DESTINATION share/KabalaEngine/Data
         COMPONENT Data
         PATTERN ".svn" EXCLUDE)
+        
     #Installing the Documentation
     INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/Documentation
         DESTINATION share/KabalaEngine/Data
         COMPONENT Documentation
+        PATTERN ".svn" EXCLUDE)
+        
+    #Installing the Scripts
+    INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/Data/Scripts
+        DESTINATION share/KabalaEngine/Data
+        COMPONENT Scirpts
         PATTERN ".svn" EXCLUDE)
 ENDIF(INCLUDE_APP_DATA)
 

@@ -4465,12 +4465,732 @@ fail:
 }
 
 
+static int _wrap_EffectRefPtr_begin(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  
+  SWIG_check_num_args("begin",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("begin",1,"OSG::EffectRefPtr *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_begin",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  (*arg1)->begin();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_isPlaying(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("isPlaying",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isPlaying",1,"OSG::EffectRefPtr *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_isPlaying",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  result = (bool)(*arg1)->isPlaying();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_isPaused(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("isPaused",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isPaused",1,"OSG::EffectRefPtr *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_isPaused",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  result = (bool)(*arg1)->isPaused();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_pause(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  
+  SWIG_check_num_args("pause",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("pause",1,"OSG::EffectRefPtr *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_pause",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  (*arg1)->pause();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_unpause(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  
+  SWIG_check_num_args("unpause",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("unpause",1,"OSG::EffectRefPtr *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_unpause",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  (*arg1)->unpause();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_stop(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  
+  SWIG_check_num_args("stop",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("stop",1,"OSG::EffectRefPtr *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_stop",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  (*arg1)->stop();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_addAttachment__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::AttachmentRefPtr *arg2 = 0 ;
+  OSG::UInt16 arg3 ;
+  
+  SWIG_check_num_args("addAttachment",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("addAttachment",1,"OSG::EffectRefPtr *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("addAttachment",2,"OSG::AttachmentRefPtr const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("addAttachment",3,"OSG::UInt16");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_addAttachment",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__AttachmentRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_addAttachment",2,SWIGTYPE_p_OSG__AttachmentRefPtr);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
+  arg3 = (OSG::UInt16)lua_tonumber(L, 3);
+  (*arg1)->addAttachment((OSG::AttachmentRefPtr const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_addAttachment__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::AttachmentRefPtr *arg2 = 0 ;
+  
+  SWIG_check_num_args("addAttachment",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("addAttachment",1,"OSG::EffectRefPtr *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("addAttachment",2,"OSG::AttachmentRefPtr const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_addAttachment",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__AttachmentRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_addAttachment",2,SWIGTYPE_p_OSG__AttachmentRefPtr);
+  }
+  
+  (*arg1)->addAttachment((OSG::AttachmentRefPtr const &)*arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_addAttachment(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__EffectRefPtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__AttachmentRefPtr, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap_EffectRefPtr_addAttachment__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__EffectRefPtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__AttachmentRefPtr, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_EffectRefPtr_addAttachment__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'EffectRefPtr_addAttachment'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    addAttachment(OSG::EffectRefPtr *,OSG::AttachmentRefPtr const &,OSG::UInt16)\n"
+    "    addAttachment(OSG::EffectRefPtr *,OSG::AttachmentRefPtr const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_EffectRefPtr_subAttachment__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::AttachmentRefPtr *arg2 = 0 ;
+  OSG::UInt16 arg3 ;
+  
+  SWIG_check_num_args("subAttachment",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("subAttachment",1,"OSG::EffectRefPtr *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("subAttachment",2,"OSG::AttachmentRefPtr const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("subAttachment",3,"OSG::UInt16");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_subAttachment",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__AttachmentRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_subAttachment",2,SWIGTYPE_p_OSG__AttachmentRefPtr);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
+  arg3 = (OSG::UInt16)lua_tonumber(L, 3);
+  (*arg1)->subAttachment((OSG::AttachmentRefPtr const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_subAttachment__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::AttachmentRefPtr *arg2 = 0 ;
+  
+  SWIG_check_num_args("subAttachment",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("subAttachment",1,"OSG::EffectRefPtr *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("subAttachment",2,"OSG::AttachmentRefPtr const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_subAttachment",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__AttachmentRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_subAttachment",2,SWIGTYPE_p_OSG__AttachmentRefPtr);
+  }
+  
+  (*arg1)->subAttachment((OSG::AttachmentRefPtr const &)*arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_subAttachment(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__EffectRefPtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__AttachmentRefPtr, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap_EffectRefPtr_subAttachment__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__EffectRefPtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__AttachmentRefPtr, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_EffectRefPtr_subAttachment__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'EffectRefPtr_subAttachment'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    subAttachment(OSG::EffectRefPtr *,OSG::AttachmentRefPtr const &,OSG::UInt16)\n"
+    "    subAttachment(OSG::EffectRefPtr *,OSG::AttachmentRefPtr const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_EffectRefPtr_findAttachment__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::UInt32 arg2 ;
+  OSG::UInt16 arg3 ;
+  OSG::AttachmentRefPtr result;
+  
+  SWIG_check_num_args("findAttachment",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("findAttachment",1,"OSG::EffectRefPtr *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("findAttachment",2,"OSG::UInt32");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("findAttachment",3,"OSG::UInt16");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_findAttachment",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (OSG::UInt32)lua_tonumber(L, 2);
+  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
+  arg3 = (OSG::UInt16)lua_tonumber(L, 3);
+  result = (*arg1)->findAttachment(arg2,arg3);
+  {
+    OSG::AttachmentRefPtr * resultptr = new OSG::AttachmentRefPtr((const OSG::AttachmentRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__AttachmentRefPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_findAttachment__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::UInt32 arg2 ;
+  OSG::AttachmentRefPtr result;
+  
+  SWIG_check_num_args("findAttachment",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("findAttachment",1,"OSG::EffectRefPtr *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("findAttachment",2,"OSG::UInt32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_findAttachment",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (OSG::UInt32)lua_tonumber(L, 2);
+  result = (*arg1)->findAttachment(arg2);
+  {
+    OSG::AttachmentRefPtr * resultptr = new OSG::AttachmentRefPtr((const OSG::AttachmentRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__AttachmentRefPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_findAttachment__SWIG_2(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::FieldContainerType *arg2 = 0 ;
+  OSG::UInt16 arg3 ;
+  OSG::AttachmentRefPtr result;
+  
+  SWIG_check_num_args("findAttachment",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("findAttachment",1,"OSG::EffectRefPtr *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("findAttachment",2,"OSG::FieldContainerType const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("findAttachment",3,"OSG::UInt16");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_findAttachment",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__FieldContainerType,0))){
+    SWIG_fail_ptr("EffectRefPtr_findAttachment",2,SWIGTYPE_p_OSG__FieldContainerType);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
+  arg3 = (OSG::UInt16)lua_tonumber(L, 3);
+  result = (*arg1)->findAttachment((OSG::FieldContainerType const &)*arg2,arg3);
+  {
+    OSG::AttachmentRefPtr * resultptr = new OSG::AttachmentRefPtr((const OSG::AttachmentRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__AttachmentRefPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_findAttachment__SWIG_3(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::FieldContainerType *arg2 = 0 ;
+  OSG::AttachmentRefPtr result;
+  
+  SWIG_check_num_args("findAttachment",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("findAttachment",1,"OSG::EffectRefPtr *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("findAttachment",2,"OSG::FieldContainerType const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_findAttachment",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__FieldContainerType,0))){
+    SWIG_fail_ptr("EffectRefPtr_findAttachment",2,SWIGTYPE_p_OSG__FieldContainerType);
+  }
+  
+  result = (*arg1)->findAttachment((OSG::FieldContainerType const &)*arg2);
+  {
+    OSG::AttachmentRefPtr * resultptr = new OSG::AttachmentRefPtr((const OSG::AttachmentRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__AttachmentRefPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_findAttachment(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__EffectRefPtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__FieldContainerType, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap_EffectRefPtr_findAttachment__SWIG_3(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__EffectRefPtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_EffectRefPtr_findAttachment__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__EffectRefPtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__FieldContainerType, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_EffectRefPtr_findAttachment__SWIG_2(L);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__EffectRefPtr, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_EffectRefPtr_findAttachment__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'EffectRefPtr_findAttachment'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    findAttachment(OSG::EffectRefPtr *,OSG::UInt32,OSG::UInt16)\n"
+    "    findAttachment(OSG::EffectRefPtr *,OSG::UInt32)\n"
+    "    findAttachment(OSG::EffectRefPtr *,OSG::FieldContainerType const &,OSG::UInt16)\n"
+    "    findAttachment(OSG::EffectRefPtr *,OSG::FieldContainerType const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_EffectRefPtr_getType(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::FieldContainerType *result = 0 ;
+  
+  SWIG_check_num_args("getType",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getType",1,"OSG::EffectRefPtr *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_getType",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  result = (OSG::FieldContainerType *) &(*arg1)->getType();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__FieldContainerType,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_EffectRefPtr_shallowCopy(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) 0 ;
+  OSG::FieldContainerRefPtr result;
+  
+  SWIG_check_num_args("shallowCopy",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("shallowCopy",1,"OSG::EffectRefPtr const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__EffectRefPtr,0))){
+    SWIG_fail_ptr("EffectRefPtr_shallowCopy",1,SWIGTYPE_p_OSG__EffectRefPtr);
+  }
+  
+  result = (*arg1)->shallowCopy();
+  {
+    OSG::FieldContainerRefPtr * resultptr = new OSG::FieldContainerRefPtr((const OSG::FieldContainerRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__FieldContainerRefPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static void swig_delete_EffectRefPtr(void *obj) {
 OSG::EffectRefPtr *arg1 = (OSG::EffectRefPtr *) obj;
 delete arg1;
 }
 static swig_lua_method swig_OSG_EffectRefPtr_methods[] = {
     {"__deref__", _wrap_EffectRefPtr___deref__}, 
+    {"begin", _wrap_EffectRefPtr_begin}, 
+    {"isPlaying", _wrap_EffectRefPtr_isPlaying}, 
+    {"isPaused", _wrap_EffectRefPtr_isPaused}, 
+    {"pause", _wrap_EffectRefPtr_pause}, 
+    {"unpause", _wrap_EffectRefPtr_unpause}, 
+    {"stop", _wrap_EffectRefPtr_stop}, 
+    {"addAttachment", _wrap_EffectRefPtr_addAttachment}, 
+    {"subAttachment", _wrap_EffectRefPtr_subAttachment}, 
+    {"findAttachment", _wrap_EffectRefPtr_findAttachment}, 
+    {"getType", _wrap_EffectRefPtr_getType}, 
+    {"shallowCopy", _wrap_EffectRefPtr_shallowCopy}, 
     {0,0}
 };
 static swig_lua_attribute swig_OSG_EffectRefPtr_attributes[] = {
@@ -4479,6 +5199,162 @@ static swig_lua_attribute swig_OSG_EffectRefPtr_attributes[] = {
 static swig_lua_class *swig_OSG_EffectRefPtr_bases[] = {0,0};
 static const char *swig_OSG_EffectRefPtr_base_names[] = {"OSG::AttachmentContainerRefPtr *",0};
 static swig_lua_class _wrap_class_OSG_EffectRefPtr = { "EffectRefPtr", &SWIGTYPE_p_OSG__EffectRefPtr,_wrap_new_EffectRefPtr, swig_delete_EffectRefPtr, swig_OSG_EffectRefPtr_methods, swig_OSG_EffectRefPtr_attributes, swig_OSG_EffectRefPtr_bases, swig_OSG_EffectRefPtr_base_names };
+
+static int _wrap_Effect_begin(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Effect *arg1 = (OSG::Effect *) 0 ;
+  
+  SWIG_check_num_args("begin",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("begin",1,"OSG::Effect *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Effect,0))){
+    SWIG_fail_ptr("Effect_begin",1,SWIGTYPE_p_OSG__Effect);
+  }
+  
+  (arg1)->begin();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Effect_isPlaying(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Effect *arg1 = (OSG::Effect *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("isPlaying",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isPlaying",1,"OSG::Effect *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Effect,0))){
+    SWIG_fail_ptr("Effect_isPlaying",1,SWIGTYPE_p_OSG__Effect);
+  }
+  
+  result = (bool)(arg1)->isPlaying();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Effect_isPaused(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Effect *arg1 = (OSG::Effect *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("isPaused",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isPaused",1,"OSG::Effect *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Effect,0))){
+    SWIG_fail_ptr("Effect_isPaused",1,SWIGTYPE_p_OSG__Effect);
+  }
+  
+  result = (bool)(arg1)->isPaused();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Effect_pause(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Effect *arg1 = (OSG::Effect *) 0 ;
+  
+  SWIG_check_num_args("pause",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("pause",1,"OSG::Effect *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Effect,0))){
+    SWIG_fail_ptr("Effect_pause",1,SWIGTYPE_p_OSG__Effect);
+  }
+  
+  (arg1)->pause();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Effect_unpause(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Effect *arg1 = (OSG::Effect *) 0 ;
+  
+  SWIG_check_num_args("unpause",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("unpause",1,"OSG::Effect *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Effect,0))){
+    SWIG_fail_ptr("Effect_unpause",1,SWIGTYPE_p_OSG__Effect);
+  }
+  
+  (arg1)->unpause();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Effect_stop(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Effect *arg1 = (OSG::Effect *) 0 ;
+  
+  SWIG_check_num_args("stop",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("stop",1,"OSG::Effect *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Effect,0))){
+    SWIG_fail_ptr("Effect_stop",1,SWIGTYPE_p_OSG__Effect);
+  }
+  
+  (arg1)->stop();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static swig_lua_method swig_OSG_Effect_methods[] = {
+    {"begin", _wrap_Effect_begin}, 
+    {"isPlaying", _wrap_Effect_isPlaying}, 
+    {"isPaused", _wrap_Effect_isPaused}, 
+    {"pause", _wrap_Effect_pause}, 
+    {"unpause", _wrap_Effect_unpause}, 
+    {"stop", _wrap_Effect_stop}, 
+    {0,0}
+};
+static swig_lua_attribute swig_OSG_Effect_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_class *swig_OSG_Effect_bases[] = {0,0};
+static const char *swig_OSG_Effect_base_names[] = {"OSG::AttachmentContainer *",0};
+static swig_lua_class _wrap_class_OSG_Effect = { "Effect", &SWIGTYPE_p_OSG__Effect,0,0, swig_OSG_Effect_methods, swig_OSG_Effect_attributes, swig_OSG_Effect_bases, swig_OSG_Effect_base_names };
 
 #ifdef __cplusplus
 }
@@ -4527,6 +5403,9 @@ static void *_p_OSG__CameraTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSE
 }
 static void *_p_OSG__ProjectTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *)  ((OSG::Project *) x));
+}
+static void *_p_OSG__EffectTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::AttachmentContainer *)  ((OSG::Effect *) x));
 }
 static void *_p_OSG__ParticleSystemTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *)  ((OSG::ParticleSystem *) x));
@@ -4584,6 +5463,9 @@ static void *_p_OSG__GenericEventTo_p_OSG__FieldContainer(void *x, int *SWIGUNUS
 }
 static void *_p_OSG__ProjectTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::Project *) x));
+}
+static void *_p_OSG__EffectTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::Effect *) x));
 }
 static void *_p_OSG__PhysicsHandlerTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *)  ((OSG::PhysicsHandler *) x));
@@ -4797,9 +5679,9 @@ static swig_type_info _swigt__p_OSG__SoundGroup = {"_p_OSG__SoundGroup", 0, 0, 0
 static swig_type_info _swigt__p_OSG__Viewport = {"_p_OSG__Viewport", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__ParticleSystem = {"_p_OSG__ParticleSystem", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__NodeCore = {"_p_OSG__NodeCore", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_OSG__Distribution3D = {"_p_OSG__Distribution3D", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__Geometry = {"_p_OSG__Geometry", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__LuaActivity = {"_p_OSG__LuaActivity", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_OSG__Distribution3D = {"_p_OSG__Distribution3D", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__Node = {"_p_OSG__Node", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__VideoWrapper = {"_p_OSG__VideoWrapper", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__Image = {"_p_OSG__Image", 0, 0, 0, 0, 0};
@@ -4820,7 +5702,7 @@ static swig_type_info _swigt__p_OSG__CameraRefPtr = {"_p_OSG__CameraRefPtr", 0, 
 static swig_type_info _swigt__p_OSG__GeometryRefPtr = {"_p_OSG__GeometryRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__NodeCoreRefPtr = {"_p_OSG__NodeCoreRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__AttachmentRefPtr = {"_p_OSG__AttachmentRefPtr", "OSG::AttachmentRefPtr *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_OSG__Effect = {"_p_OSG__Effect", "OSG::Effect *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OSG__Effect = {"_p_OSG__Effect", "OSG::Effect *", 0, 0, (void*)&_wrap_class_OSG_Effect, 0};
 static swig_type_info _swigt__p_OSG__EffectRefPtr = {"_p_OSG__EffectRefPtr", "OSG::EffectRefPtr *", 0, 0, (void*)&_wrap_class_OSG_EffectRefPtr, 0};
 static swig_type_info _swigt__p_OSG__FieldContainer = {"_p_OSG__FieldContainer", "OSG::FieldContainer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OSG__PhysicsBody = {"_p_OSG__PhysicsBody", 0, 0, 0, 0, 0};
@@ -4984,14 +5866,14 @@ static swig_cast_info _swigc__p_OSG__SoundGroup[] = {{&_swigt__p_OSG__SoundGroup
 static swig_cast_info _swigc__p_OSG__Viewport[] = {{&_swigt__p_OSG__Viewport, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__ParticleSystem[] = {{&_swigt__p_OSG__ParticleSystem, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__NodeCore[] = {{&_swigt__p_OSG__NodeCore, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OSG__Distribution3D[] = {{&_swigt__p_OSG__Distribution3D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Geometry[] = {{&_swigt__p_OSG__Geometry, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__LuaActivity[] = {{&_swigt__p_OSG__LuaActivity, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__Distribution3D[] = {{&_swigt__p_OSG__Distribution3D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Node[] = {{&_swigt__p_OSG__Node, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__VideoWrapper[] = {{&_swigt__p_OSG__VideoWrapper, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Image[] = {{&_swigt__p_OSG__Image, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Distribution2D[] = {{&_swigt__p_OSG__Distribution2D, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OSG__AttachmentContainer[] = {  {&_swigt__p_OSG__Distribution1D, _p_OSG__Distribution1DTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Camera, _p_OSG__CameraTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Sound, _p_OSG__SoundTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Component, _p_OSG__ComponentTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Animation, _p_OSG__AnimationTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__SoundGroup, _p_OSG__SoundGroupTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Viewport, _p_OSG__ViewportTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Project, _p_OSG__ProjectTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__ParticleSystem, _p_OSG__ParticleSystemTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__NodeCore, _p_OSG__NodeCoreTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__AttachmentContainer, 0, 0, 0},  {&_swigt__p_OSG__Distribution3D, _p_OSG__Distribution3DTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Geometry, _p_OSG__GeometryTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__LuaActivity, _p_OSG__LuaActivityTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Node, _p_OSG__NodeTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__VideoWrapper, _p_OSG__VideoWrapperTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Image, _p_OSG__ImageTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Distribution2D, _p_OSG__Distribution2DTo_p_OSG__AttachmentContainer, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__AttachmentContainer[] = {  {&_swigt__p_OSG__Distribution1D, _p_OSG__Distribution1DTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Camera, _p_OSG__CameraTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Sound, _p_OSG__SoundTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Component, _p_OSG__ComponentTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Effect, _p_OSG__EffectTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Animation, _p_OSG__AnimationTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__SoundGroup, _p_OSG__SoundGroupTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Viewport, _p_OSG__ViewportTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Project, _p_OSG__ProjectTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__ParticleSystem, _p_OSG__ParticleSystemTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__NodeCore, _p_OSG__NodeCoreTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__AttachmentContainer, 0, 0, 0},  {&_swigt__p_OSG__Geometry, _p_OSG__GeometryTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__LuaActivity, _p_OSG__LuaActivityTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Distribution3D, _p_OSG__Distribution3DTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Node, _p_OSG__NodeTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__VideoWrapper, _p_OSG__VideoWrapperTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Image, _p_OSG__ImageTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Distribution2D, _p_OSG__Distribution2DTo_p_OSG__AttachmentContainer, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__SoundGroupRefPtr[] = {{&_swigt__p_OSG__SoundGroupRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__SoundRefPtr[] = {{&_swigt__p_OSG__SoundRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__ComponentRefPtr[] = {{&_swigt__p_OSG__ComponentRefPtr, 0, 0, 0},{0, 0, 0, 0}};
@@ -5018,7 +5900,7 @@ static swig_cast_info _swigc__p_OSG__PhysicsSpace[] = {{&_swigt__p_OSG__PhysicsS
 static swig_cast_info _swigc__p_OSG__PhysicsWorld[] = {{&_swigt__p_OSG__PhysicsWorld, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Event[] = {{&_swigt__p_OSG__Event, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__TextureObjChunk[] = {{&_swigt__p_OSG__TextureObjChunk, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OSG__FieldContainer[] = {  {&_swigt__p_OSG__PhysicsBody, _p_OSG__PhysicsBodyTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution1D, _p_OSG__Distribution1DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Camera, _p_OSG__CameraTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Sound, _p_OSG__SoundTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Component, _p_OSG__ComponentTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Animation, _p_OSG__AnimationTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__SoundGroup, _p_OSG__SoundGroupTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Viewport, _p_OSG__ViewportTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Project, _p_OSG__ProjectTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__GenericEvent, _p_OSG__GenericEventTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__ParticleSystem, _p_OSG__ParticleSystemTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsHandler, _p_OSG__PhysicsHandlerTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Attachment, _p_OSG__AttachmentTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__NodeCore, _p_OSG__NodeCoreTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__FieldContainer, 0, 0, 0},  {&_swigt__p_OSG__AttachmentContainer, _p_OSG__AttachmentContainerTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsSpace, _p_OSG__PhysicsSpaceTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Geometry, _p_OSG__GeometryTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__LuaActivity, _p_OSG__LuaActivityTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution3D, _p_OSG__Distribution3DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Node, _p_OSG__NodeTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__VideoWrapper, _p_OSG__VideoWrapperTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsWorld, _p_OSG__PhysicsWorldTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Image, _p_OSG__ImageTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution2D, _p_OSG__Distribution2DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Event, _p_OSG__EventTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__TextureObjChunk, _p_OSG__TextureObjChunkTo_p_OSG__FieldContainer, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__FieldContainer[] = {  {&_swigt__p_OSG__PhysicsBody, _p_OSG__PhysicsBodyTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution1D, _p_OSG__Distribution1DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Camera, _p_OSG__CameraTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Sound, _p_OSG__SoundTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Component, _p_OSG__ComponentTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Effect, _p_OSG__EffectTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Animation, _p_OSG__AnimationTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__SoundGroup, _p_OSG__SoundGroupTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Viewport, _p_OSG__ViewportTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Project, _p_OSG__ProjectTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__GenericEvent, _p_OSG__GenericEventTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsHandler, _p_OSG__PhysicsHandlerTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Attachment, _p_OSG__AttachmentTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__ParticleSystem, _p_OSG__ParticleSystemTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__NodeCore, _p_OSG__NodeCoreTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__FieldContainer, 0, 0, 0},  {&_swigt__p_OSG__AttachmentContainer, _p_OSG__AttachmentContainerTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsSpace, _p_OSG__PhysicsSpaceTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Geometry, _p_OSG__GeometryTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__LuaActivity, _p_OSG__LuaActivityTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution3D, _p_OSG__Distribution3DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Node, _p_OSG__NodeTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__VideoWrapper, _p_OSG__VideoWrapperTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsWorld, _p_OSG__PhysicsWorldTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Image, _p_OSG__ImageTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution2D, _p_OSG__Distribution2DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Event, _p_OSG__EventTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__TextureObjChunk, _p_OSG__TextureObjChunkTo_p_OSG__FieldContainer, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__PhysicsHandlerRefPtr[] = {{&_swigt__p_OSG__PhysicsHandlerRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__PhysicsWorldRefPtr[] = {{&_swigt__p_OSG__PhysicsWorldRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__EventRefPtr[] = {{&_swigt__p_OSG__EventRefPtr, 0, 0, 0},{0, 0, 0, 0}};

@@ -116,8 +116,8 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
 
     enum
     {
-        EffectPlayedMethodId = 1,
-        EffectPausedMethodId = EffectPlayedMethodId + 1,
+        EffectBeganMethodId = 1,
+        EffectPausedMethodId = EffectBeganMethodId + 1,
         EffectUnpausedMethodId = EffectPausedMethodId + 1,
         EffectFinishedMethodId = EffectUnpausedMethodId + 1,
         EffectStoppedMethodId = EffectFinishedMethodId + 1,
@@ -188,6 +188,9 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
     /*! \name                    Event Producer                            */
     /*! \{                                                                 */
     EventProducer _Producer;
+    
+    GetFieldHandlePtr  getHandleEventProducer        (void) const;
+    EditFieldHandlePtr editHandleEventProducer       (void);
 
     /*! \}                                                                 */
 
@@ -300,4 +303,4 @@ typedef EffectBase *EffectBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEEFFECTBASE_H_ */
+#endif /* _OSGEFFECTBASE_H_ */

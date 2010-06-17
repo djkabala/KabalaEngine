@@ -41,6 +41,7 @@
 
 #include "KEParticleSystemEffectBase.h"
 #include <OpenSG/OSGEventProducer.h>
+#include <OpenSG/OSGUpdateListener.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -56,14 +57,7 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
 
   public:
 
-    enum:short//End Conditions
-    {
-       END_ON_TIMEOUT,
-       END_ON_PARTICLE_COUNT,
-       END_ON_VOLUME,
-       
-    };
-
+//Volume,Timeout,ParticleCount
     typedef ParticleSystemEffectBase Inherited;
     typedef ParticleSystemEffect     Self;
 
@@ -90,12 +84,16 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
 
     // Variables should all be in ParticleSystemEffectBase.
 
-    virtual void inheritedBegin    (void);
-    virtual bool inheritedIsPlaying(void);
-    virtual bool inheritedIsPaused (void);
-    virtual void inheritedPause    (void);
-    virtual void inheritedUnpause  (void);
-    virtual void inheritedEnd      (void);
+    void handleEffectFinished(void);
+    
+    void initEffect        (void);
+    void inheritedBegin    (void);
+    bool inheritedIsPlaying(void);
+    bool inheritedIsPaused (void);
+    void inheritedPause    (void);
+    void inheritedUnpause  (void);
+    void inheritedStop     (void);
+    void finished          (void);
 
 
     /*---------------------------------------------------------------------*/
@@ -127,11 +125,64 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
     friend class FieldContainer;
     friend class ParticleSystemEffectBase;
 
-    bool isPlayingFlag;
-    bool isPausedFlag;
-    bool isBurstSystem;
-    short endCondition;
+    Real32 lifetime;
+
     EventProducerPtr theUpdateProducer;
+
+    void updateLifetime(Time elps);
+    void endSystem();
+    void killSystem();
+    bool checkTimeoutEndCondition();
+    bool checkVolumeEndCondition();
+    bool checkParticleCountEndCondition();
+
+
+    /************************************************************
+    *   Internal listener for getting time since last frame.
+    *************************************************************/
+    class InternalUpdateListener : public EventListener
+    {
+      public:
+        InternalUpdateListener(ParticleSystemEffect* parent);
+        InternalUpdateListener(){};
+        ~InternalUpdateListener(){};
+
+        void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
+
+      protected:
+
+        ParticleSystemEffect* fx;
+    };
+
+    InternalUpdateListener theInternalUpdateListener;
+
+    /************************************************************
+    *   Internal listener for checking end conditions. Has a 
+    *   reference to the "parent" particlesystemeffect.
+    *************************************************************/
+    class InternalParticleSystemListener : public ParticleSystemListener
+    {
+      public:
+
+        InternalParticleSystemListener(ParticleSystemEffect* parent);
+        InternalParticleSystemListener(){};
+        ~InternalParticleSystemListener(){};
+
+        void systemUpdated(const ParticleSystemEventUnrecPtr e);
+
+        void volumeChanged(const ParticleSystemEventUnrecPtr e);
+
+        void particleKilled(const ParticleEventUnrecPtr e);
+
+        void particleStolen(const ParticleEventUnrecPtr e);
+
+        void particleGenerated(const ParticleEventUnrecPtr e);
+      protected:
+        
+        ParticleSystemEffect* fx;
+    };
+
+    InternalParticleSystemListener theInternalParticleSystemListener;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const ParticleSystemEffect &source);
