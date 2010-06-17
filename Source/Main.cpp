@@ -37,47 +37,45 @@
 #include <OpenSG/OSGBaseFunctions.h>
 #include "Application/KEMainApplication.h"
 
-//Bindings for the OSGToolbox libraries
-#include <OpenSG/OSGToolbox_wrap.h>
+#ifdef WIN32
+#include <Windowsx.h>
 
-//Kabala Engine Lua Bindings
-#include "LuaBindings/KELuaBindings.h"
+int APIENTRY WinMain(HINSTANCE hInstance,
+                     HINSTANCE hPrevInstance,
+                     LPTSTR    lpCmdLine,
+                     int       nCmdShow)
+{
+    //Get the Command line
+    int argc(0);
+    LPWSTR* argv_w = CommandLineToArgvW(GetCommandLineW (), &argc);
+    
+    // Convert the wide string array into an ANSI array (input is ASCII-7)
 
+    LPSTR * argv = new LPSTR [argc];
+
+    for (int i = 0; i < argc; ++i)
+    {
+        size_t qStrLen = wcslen(argv_w[i]), qConverted = 0;
+
+        argv[i] = new CHAR [qStrLen+1];
+
+        wcstombs_s(&qConverted,argv[i],qStrLen+1, argv_w [i],qStrLen+1);
+    }
+
+	//Run the Main Application
+    int ReturnValue = OSG::MainApplication::the()->run(argc, argv);
+
+    //Free the memory
+    LocalFree(argv);
+
+    return ReturnValue;
+
+}
+#else
 int main(int argc, char **argv)
 {
-    OSG::preloadSharedObject("OSGCluster");
-    OSG::preloadSharedObject("OSGContribBackgroundloader");
-    OSG::preloadSharedObject("OSGContribComputeBase");
-    OSG::preloadSharedObject("OSGContribGUI");
-    OSG::preloadSharedObject("OSGContribLuaToolbox");
-    OSG::preloadSharedObject("OSGContribParticleSystem");
-    OSG::preloadSharedObject("OSGContribPhysics");
-    OSG::preloadSharedObject("OSGContribPLY");
-    OSG::preloadSharedObject("OSGContribSound");
-    OSG::preloadSharedObject("OSGContribTrapezoidalShadowMaps");
-    OSG::preloadSharedObject("OSGContribUserInterface");
-    OSG::preloadSharedObject("OSGContribVideo");
-    OSG::preloadSharedObject("OSGDynamics");
-    OSG::preloadSharedObject("OSGEffectGroup");
-    OSG::preloadSharedObject("OSGFileIO");
-    OSG::preloadSharedObject("OSGGroup");
-    OSG::preloadSharedObject("OSGImageFileIO");
-    OSG::preloadSharedObject("OSGTBAnimation");
-    // OSG init
-	OSG::osgInit(argc,argv);
-
-    //Toolbox Bindings
-    OSG::LuaManager::the()->openLuaBindingLib(getOSGToolboxLuaBindingsLibFunctor());
-    
-    //Kabala Engine Bindings
-    OSG::LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
-
-	//Start the Main Application
-    OSG::Int32 AppReturnValue = OSG::MainApplication::the()->run(argc, argv);
-
-	//OSG exit
-    OSG::osgExit();
-
-    return AppReturnValue;
+	//Run the Main Application
+    return OSG::MainApplication::the()->run(argc, argv);
 }
+#endif
 
