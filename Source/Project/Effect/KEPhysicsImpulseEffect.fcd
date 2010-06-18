@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="PhysicsImpulseEffect"
+	parent="Effect"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="Robert Goetz (rdgoetz@iastate.edu)                            "
+>
+The SceneObject.
+	<Field
+		name="PhysicsBodies"
+		type="PhysicsBody"
+		category="pointer"
+		cardinality="multi"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+    <Field
+		name="PhysicsWorld"
+		type="PhysicsWorld"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+    <Field
+		name="PhysicsSpace"
+		type="PhysicsSpace"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+    <Field
+		name="PhysicsWorld"
+		type="PhysicsWorld"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+</FieldContainer>
