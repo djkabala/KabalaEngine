@@ -1,24 +1,27 @@
 /*---------------------------------------------------------------------------*\
- *                             Kabala Engine                                 *
+ *                                OpenSG                                     *
  *                                                                           *
- *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *             Copyright (C) 2000-2002 by the OpenSG Forum                   *
+ *                                                                           *
+ *                            www.opensg.org                                 *
+ *                                                                           *
+ *   contact: dirk@opensg.org, gerrit.voss@vossg.org, jbehr@zgdv.de          *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU General Public License as published            *
- * by the Free Software Foundation, version 3.                               *
+ * under the terms of the GNU Library General Public License as published    *
+ * by the Free Software Foundation, version 2.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
  * WITHOUT ANY WARRANTY; without even the implied warranty of                *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU General Public                 *
+ * You should have received a copy of the GNU Library General Public         *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -32,91 +35,138 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
-//---------------------------------------------------------------------------
-//  Includes
-//---------------------------------------------------------------------------
+#include <stdlib.h>
+#include <stdio.h>
 
-#include <cstdlib>
-#include <cstdio>
+#include "OSGConfig.h"
 
-#define KE_COMPILEKABALAENGINELIB
+#include <iostream>
 
-#include <OpenSG/OSGConfig.h>
+#include <algorithm>
 
 #include "KEBehaviorType.h"
+#include "KEBehaviorFactory.h"
 
-OSG_BEGIN_NAMESPACE
+#include "OSGMethodDescription.h"
+#include "OSGLog.h"
+#include "OSGTypeBase.h"
 
-// Documentation for this class is emitted in the
-// OSGBehaviorTypeBase.cpp file.
-// To modify it, please change the .fcd file (OSGBehaviorType.fcd) and
-// regenerate the base file.
+OSG_USING_NAMESPACE
 
-/***************************************************************************\
- *                           Class variables                               *
-\***************************************************************************/
+//---------------------------------------------------------------------------
+//  Class
+//---------------------------------------------------------------------------
 
-/***************************************************************************\
- *                           Class methods                                 *
-\***************************************************************************/
+/*-------------------------------------------------------------------------*/
+/*                              Register                                   */
 
-void BehaviorType::initMethod(InitPhase ePhase)
+
+void BehaviorType::registerType()
 {
-    Inherited::initMethod(ePhase);
+    BehaviorFactory::the()->registerType(this);
 
-    if(ePhase == TypeObject::SystemPost)
-    {
-    }
+    //_uiGroupId = EventProducerFactory::the()->registerGroup(
+        //!szGroupName.empty() ? szGroupName : _szName);
 }
 
+/*-------------------------------------------------------------------------*/
+/*                            Constructors                                 */
 
-/***************************************************************************\
- *                           Instance methods                              *
-\***************************************************************************/
+BehaviorType::BehaviorType(const std::string &szName,
+                                   const std::string &szParentName,
+								   std::vector<BehaviorType> bDependencies) :
+     Inherited        (szName.c_str(), 
+                       szParentName.c_str()     ),
 
-/*-------------------------------------------------------------------------*\
- -  private                                                                 -
-\*-------------------------------------------------------------------------*/
+    _bInitialized     (false            ),
 
-/*----------------------- constructors & destructors ----------------------*/
+    _pParent          (NULL             ),
 
-BehaviorType::BehaviorType(void) :
-    Inherited()
+    _szParentName     (szParentName     ),
+
+	_bDependencies	  (bDependencies	),
+
+	_bName			  (szName			)
 {
 }
 
-BehaviorType::BehaviorType(const BehaviorType &source) :
-    Inherited(source)
+BehaviorType::BehaviorType(const BehaviorType &obj) :
+
+     Inherited        (obj                   ),
+
+    _bInitialized     (false                 ),
+
+    _pParent          (obj._pParent          ),
+
+    _szParentName     (obj._szParentName     ),
+	
+	_bDependencies	  (obj._bDependencies	 ),
+
+	_bName			  (obj._bName			 )
 {
+
+    _bInitialized = true;
 }
+
+/*-------------------------------------------------------------------------*/
+/*                             Destructor                                  */
 
 BehaviorType::~BehaviorType(void)
 {
+    if(GlobalSystemState != Shutdown)
+    {
+        terminate();
+    }
 }
 
-/*----------------------------- class specific ----------------------------*/
+/*-------------------------------------------------------------------------*/
+/*                            Add / Sub                                    */
 
-void BehaviorType::changed(ConstFieldMaskArg whichField, 
-                            UInt32            origin,
-                            BitVector         details)
+bool BehaviorType::isAbstract   (void) const
 {
-    Inherited::changed(whichField, origin, details);
+    return false;
 }
 
-void BehaviorType::dump(      UInt32    ,
-                         const BitVector ) const
+/*-------------------------------------------------------------------------*/
+/*                                Dump                                     */
+
+void BehaviorType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
+                              const BitVector OSG_CHECK_ARG(bvFlags )) const
 {
-    SLOG << "Dump BehaviorType NI" << std::endl;
+    SLOG << "BehaviorType: "
+         << getCName()
+         << ", Id: "       
+         << getId()
+         << ", parentP: " 
+         << (_pParent ? _pParent->getCName() : "NONE")
+         << std::endl;
 }
 
-OSG_END_NAMESPACE
+
+/*-------------------------------------------------------------------------*/
+/*                                Init                                     */
+
+bool BehaviorType::initialize(void)
+{
+    if(_bInitialized == true)
+        return _bInitialized;
+
+    _bInitialized = true;
+
+    if(_bInitialized == false)
+        return _bInitialized;
+
+    if(_bInitialized == false)
+        return _bInitialized;
+    
+    return _bInitialized;
+}
+
+void BehaviorType::terminate(void)
+{
+    UInt32 i;
+
+    _bInitialized = false;
+}
+

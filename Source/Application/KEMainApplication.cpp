@@ -77,6 +77,12 @@
 //#include <OpenSG/OSGInventory.h>
 #include <OpenSG/OSGPhysicsHandler.h>
 
+//Bindings for the OSGToolbox libraries
+#include <OpenSG/OSGToolbox_wrap.h>
+
+//Kabala Engine Lua Bindings
+#include "LuaBindings/KELuaBindings.h"
+
 OSG_USING_NAMESPACE
 
 /***************************************************************************\
@@ -116,7 +122,10 @@ MainApplication *MainApplication::the(void)
             ("project-file,f", boost::program_options::value<std::string>(), "The Project file to use.")
             ("builder,b", "Start the world builder.")
             ("play,p", "Play the project file.")
-            ("debug,d", "Only relevant if -p option is used.  Startup with the dubugger attached.")
+            ("debug,d", "Only relevant if -p option is present.  Startup with the dubugger attached.")
+		    ("log-level,l", boost::program_options::value<UInt32>(), "The logging level.  Higher values logs more information. 0=LOG_LOG,1=LOG_FATAL,2=LOG_WARNING,3=LOG_NOTICE,4=LOG_INFO,5=LOG_DEBUG.  This will override the value defined in the settings file.")
+		    ("log-type,t", boost::program_options::value<UInt32>(), "The location to route the logging. 0=LOG_NONE,1=LOG_STDOUT,2=LOG_STDERR,3=LOG_FILE,4=LOG_BUFFER.  This will override the value defined in the settings file.")
+		    ("log-file,g", boost::program_options::value<std::string>(), "The file to route the logging to.  This will override the value defined in the settings file.  This option is only relavent if log-route is 3(LOG_FILE).")
             ;
 
         _PositionalOptions.add("project-file", -1);
@@ -125,20 +134,89 @@ MainApplication *MainApplication::the(void)
     return _Instance;
 }
 
-ApplicationSettingsRefPtr MainApplication::createDefaultSettings(void)
+void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, bool overwriteIfDefined)
+{
+
+
+    TheSettings.put("basic.data.directory", BoostPath("./share") / EngineAppDataDirectory, overwriteIfDefined);
+    
+    TheSettings.put("basic.window.position",   Pnt2f(-1.0f,-1.0f), overwriteIfDefined);
+    TheSettings.put("basic.window.size",       Vec2f(0.85f,0.85f), overwriteIfDefined);
+    TheSettings.put("basic.window.fullscreen", false, overwriteIfDefined);
+
+    TheSettings.put<UInt32>("basic.recent_projects.max", 8, overwriteIfDefined);
+
+    //Logging
+    TheSettings.put<UInt8>    ("logging.type",            LOG_FILE, overwriteIfDefined);
+    TheSettings.put<UInt8>    ("logging.level",           LOG_NOTICE, overwriteIfDefined);
+    TheSettings.put<BoostPath>("logging.file",            BoostPath("./KabalaEngine.log"), overwriteIfDefined);
+    TheSettings.put<UInt32>   ("logging.header_elements", (LOG_TYPE_HEADER | LOG_TIMESTAMP_HEADER), overwriteIfDefined);
+
+    //Player
+    //Debugger
+    TheSettings.put<std::string>("player.key_bindings", "", overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.block_scene_input",           true, overwriteIfDefined);
+
+    TheSettings.put<UInt32>("player.debugger.lua.console.max_history", 50, overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.grid.draw",           true, overwriteIfDefined);
+    TheSettings.put<Vec2f>  ("player.debugger.grid.dimensions",     Vec2f(100.0f,100.0f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.grid.segment_length", 1.0f, overwriteIfDefined);
+    TheSettings.put<Color3f>("player.debugger.grid.color",          Color3f(0.7f,0.7f,0.7f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.grid.line_thickness", 1.0f, overwriteIfDefined);
+
+    
+    TheSettings.put<bool>   ("player.debugger.undo_history.enable", true, overwriteIfDefined);
+    TheSettings.put<Int32> ("player.debugger.undo_history.max_length", 200, overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.selected_node.volume_box.draw", true, overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.volume_box.color", Color4f(0.0f,1.0f,1.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.selected_node.volume_box.line_thickness", 2.0f, overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.selected_node.axis.draw", true, overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.axis.x_axis_color", Color4f(1.0f,0.0f,0.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.axis.y_axis_color", Color4f(0.0f,1.0f,0.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.axis.z_axis_color", Color4f(0.0f,0.0f,1.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.selected_node.axis.line_thickness", 2.0f, overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.selected_node.axis.relative_length", 0.55f, overwriteIfDefined);
+
+    TheSettings.put<bool>   ("player.debugger.selected_node.mesh.draw", true, overwriteIfDefined);
+    TheSettings.put<Color4f>("player.debugger.selected_node.mesh.color", Color4f(1.0f,0.0f,1.0f,1.0f), overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.selected_node.mesh.line_thickness", 1.0f, overwriteIfDefined);
+}
+
+ApplicationSettings MainApplication::createDefaultSettings(void)
 {
     SLOG << "Creating default settings." << std::endl;
-    ApplicationSettingsRefPtr DefaultSettings = ApplicationSettings::create();
-    DefaultSettings->setDataDirectory(BoostPath("./share") / EngineAppDataDirectory);
-    DefaultSettings->setDefaultWindowPosition(Pnt2f(-1.0f,-1.0f));
-    DefaultSettings->setDefaultWindowSize(Vec2f(0.85f,0.85f));
-    DefaultSettings->setFullscreen(false);
+    ApplicationSettings DefaultSettings;
+    applyDefaultSettings(DefaultSettings, true);
+
     return DefaultSettings;
 }
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
+
+
+EventConnection MainApplication::addLogListener(LogListenerPtr Listener)
+{
+    _LogListeners.insert(Listener);
+
+    return EventConnection(
+                           boost::bind(&MainApplication::isLogListenerAttached, this, Listener),
+                           boost::bind(&MainApplication::removeLogListener, this, Listener));
+}
+
+void MainApplication::removeLogListener(LogListenerPtr Listener)
+{
+    LogListenerSetItor EraseIter(_LogListeners.find(Listener));
+    if(EraseIter != _LogListeners.end())
+    {
+        _LogListeners.erase(EraseIter);
+    }
+}
 
 void MainApplication::printCommandLineHelp(void) const
 {
@@ -154,19 +232,6 @@ Int32 MainApplication::run(int argc, char **argv)
         CommandPath = boost::filesystem::complete(CommandPath);
     }
     CommandPath.normalize();
-
-    //Make Dummy Values to link in external libs
-    //Physics
-    if(PhysicsHandler::getClassType().getId() == 0)
-    {
-        return -1;
-    }
-
-    //Game
-    //if(Inventory::getClassType().getId() == 0)
-    //{
-    //return -1;
-    //}
 
     //Parse the Program arguments
     boost::program_options::variables_map OptionsVariableMap;
@@ -188,6 +253,26 @@ Int32 MainApplication::run(int argc, char **argv)
         printCommandLineHelp();
         return 1;
     }
+    
+    //Setup the Logging
+    LogLevel KELogLevel(LOG_NOTICE);
+    if(OptionsVariableMap.count("log-level"))
+    {
+        KELogLevel = OptionsVariableMap["log-level"].as<LogLevel>();
+    }
+    LogType KELogType(LOG_FILE);
+    if(OptionsVariableMap.count("log-type"))
+    {
+        KELogType = OptionsVariableMap["log-type"].as<LogType>();
+    }
+    BoostPath KELogFilePath("./KabalaEngine.log");
+    if(KELogType == LOG_FILE && OptionsVariableMap.count("log-file"))
+    {
+        KELogFilePath = BoostPath(OptionsVariableMap["log-file"].as<std::string>());
+    }
+    initializeLogging(KELogType, KELogFilePath);
+    osgLogP->setLogLevel(KELogLevel, true);
+	osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_TIMESTAMP_HEADER), true);
 
     // Set up Settings
     //Check for the settings file
@@ -197,16 +282,41 @@ Int32 MainApplication::run(int argc, char **argv)
     }
     loadSettings(getSettingsLoadFile());
 
-    if(getSettings() == NULL)
+    //If the settings aren't being overriden by the command-line options
+    //then set the logging with the settings values
+    if(!OptionsVariableMap.count("log-level"))
     {
-        setSettings(createDefaultSettings());
+        osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
     }
+    if(osgLogP->getLogType() == LOG_FILE &&
+       !OptionsVariableMap.count("log-file") &&
+       !boost::filesystem::equivalent(getSettings().get<BoostPath>("logging.file"),KELogFilePath))
+    {
+        initializeLogging(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), getSettings().get<BoostPath>("logging.file"));
+    }
+    if(!OptionsVariableMap.count("log-type"))
+    {
+       osgLogP->setLogType(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), true);
+    }
+	osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
+
+    //Initialize OpenSG
+    initOpenSG(argc,argv);
+
+    //Log information about the Engine
+    SLOG << "Starting Kabala Engine:" << std::endl;
+    OSG::indentLog(4,PLOG);
+    PLOG << "Version: " << getKabalaEngineVersion() << std::endl;
+    OSG::indentLog(4,PLOG);
+    PLOG << "Revision: " << getKabalaEngineBuildRepositoryRevision() << std::endl;
+    OSG::indentLog(4,PLOG);
+    PLOG << "Build Type: " << getKabalaEngineBuildType() << std::endl;
 
     //Check if the Data Directory exists
-    if(!boost::filesystem::exists(getSettings()->getDataDirectory()))
+    if(!boost::filesystem::exists(getSettings().get<BoostPath>("basic.data.directory")))
     {
         SWARNING << "Could not find Application Data directory: \""
-                 << getSettings()->getDataDirectory().string()
+                 << getSettings().get<BoostPath>("basic.data.directory").string()
                  << "\" specified in the Settings file because the directory doesn't exist." << std::endl;
 
         //Try to find the data directory in a few locations
@@ -225,7 +335,7 @@ Int32 MainApplication::run(int argc, char **argv)
             {
                 PNOTICE << "FOUND" << std::endl;
                 PathsToTry[i].normalize();
-                getSettings()->setDataDirectory(PathsToTry[i]);
+                getSettings().put("basic.data.directory",PathsToTry[i]);
                 break;
             }
             else
@@ -235,16 +345,16 @@ Int32 MainApplication::run(int argc, char **argv)
         }
     }
 
-    if(!boost::filesystem::exists(getSettings()->getDataDirectory()))
+    if(!boost::filesystem::exists(getSettings().get<BoostPath>("basic.data.directory")))
     {
         SWARNING << "Could not find Application Data directory: \""
-                 << getSettings()->getDataDirectory().string()
+                 << getSettings().get<BoostPath>("basic.data.directory").string()
                  << "\" because the directory doesn't exist." << std::endl;
     }
     else
     {
         SLOG << "Using Application Data directory: \""
-                 << getSettings()->getDataDirectory().string()
+                 << getSettings().get<BoostPath>("basic.data.directory").string()
                  << "\"" << std::endl;
     }
 
@@ -254,33 +364,30 @@ Int32 MainApplication::run(int argc, char **argv)
 
     getMainWindow()->initWindow();
 
-    getMainWindow()->setFullscreen(getSettings()->getFullscreen());
+    getMainWindow()->setFullscreen(getSettings().get<bool>("basic.window.fullscreen"));
 
     getMainWindow()->addWindowListener(&_MainWindowListener);
 
     // Initialize the LookAndFeelManager to enable default settings
     LookAndFeelManager::the()->getLookAndFeel()->init();
 
-    //Initialize Kabala Engine Specific Types
-    //FieldContainerEditorFactory::the()->init();
-
 
     //Open Window
-    Vec2f WindowSize(getSettings()->getDefaultWindowSize());
-    if(getSettings()->getDefaultWindowSize().x() <= 1.0f )
+    Vec2f WindowSize(getSettings().get<Vec2f>("basic.window.size"));
+    if(getSettings().get<Vec2f>("basic.window.size").x() <= 1.0f )
     {
-        WindowSize[0] = getMainWindow()->getDesktopSize().x() * getSettings()->getDefaultWindowSize().x();
+        WindowSize[0] = getMainWindow()->getDesktopSize().x() * getSettings().get<Vec2f>("basic.window.size").x();
     }
-    if(getSettings()->getDefaultWindowSize().y() <= 1.0f )
+    if(getSettings().get<Vec2f>("basic.window.size").y() <= 1.0f )
     {
-        WindowSize[1] = getMainWindow()->getDesktopSize().y() * getSettings()->getDefaultWindowSize().y();
+        WindowSize[1] = getMainWindow()->getDesktopSize().y() * getSettings().get<Vec2f>("basic.window.size").y();
     }
-    Pnt2f WindowPos(getSettings()->getDefaultWindowPosition());
-    if(getSettings()->getDefaultWindowPosition().x() < 0.0f )
+    Pnt2f WindowPos(getSettings().get<Pnt2f>("basic.window.position"));
+    if(getSettings().get<Pnt2f>("basic.window.position").x() < 0.0f )
     {
         WindowPos[0] = (getMainWindow()->getDesktopSize().x() - WindowSize.x()) * 0.5f;
     }
-    if(getSettings()->getDefaultWindowPosition().y() < 0.0f )
+    if(getSettings().get<Pnt2f>("basic.window.position").y() < 0.0f )
     {
         WindowPos[1] = (getMainWindow()->getDesktopSize().y() - WindowSize.y()) * 0.5f;
     }
@@ -296,7 +403,11 @@ Int32 MainApplication::run(int argc, char **argv)
     }
     else
     {
-        loadProject(getSettings()->getLastOpenedProjectFile());
+        boost::optional<BoostPath> LastOpenedProjectFile = getSettings().get_optional<BoostPath>("basic.last_opened_project");
+        if(LastOpenedProjectFile)
+        {
+            loadProject(LastOpenedProjectFile.get());
+        }
     }
 
     if(getProject() == NULL)
@@ -328,8 +439,44 @@ Int32 MainApplication::run(int argc, char **argv)
     //Exited Main Loop
     //Save Settings
     saveSettings(getSettingsLoadFile());
+    
+    SLOG << "Stopping Kabala Engine" << std::endl;
+
+	//OSG exit
+    OSG::osgExit();
 
     return 0;
+}
+
+void MainApplication::initOpenSG(int argc, char **argv)
+{
+    OSG::preloadSharedObject("OSGCluster");
+    OSG::preloadSharedObject("OSGContribBackgroundloader");
+    OSG::preloadSharedObject("OSGContribComputeBase");
+    OSG::preloadSharedObject("OSGContribGUI");
+    OSG::preloadSharedObject("OSGContribLuaToolbox");
+    OSG::preloadSharedObject("OSGContribParticleSystem");
+    OSG::preloadSharedObject("OSGContribPhysics");
+    OSG::preloadSharedObject("OSGContribPLY");
+    OSG::preloadSharedObject("OSGContribSound");
+    OSG::preloadSharedObject("OSGContribTrapezoidalShadowMaps");
+    OSG::preloadSharedObject("OSGContribUserInterface");
+    OSG::preloadSharedObject("OSGContribVideo");
+    OSG::preloadSharedObject("OSGDynamics");
+    OSG::preloadSharedObject("OSGEffectGroups");
+    OSG::preloadSharedObject("OSGFileIO");
+    OSG::preloadSharedObject("OSGGroup");
+    OSG::preloadSharedObject("OSGImageFileIO");
+    OSG::preloadSharedObject("OSGTBAnimation");
+
+    // OSG init
+	OSG::osgInit(argc,argv);
+
+    //Toolbox Bindings
+    OSG::LuaManager::the()->openLuaBindingLib(getOSGToolboxLuaBindingsLibFunctor());
+    
+    //Kabala Engine Bindings
+    OSG::LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
 }
 
 void MainApplication::attachStartScreen(void)
@@ -396,39 +543,47 @@ void MainApplication::loadProject(const BoostPath& ProjectFile)
     {
         setProject(LoadedProject);
 
-        getSettings()->setLastOpenedProjectFile(ProjectFile);
+        getSettings().put<BoostPath>("basic.last_opened_project",ProjectFile);
 
         //Update Recent Projects
-        MFBoostPath::iterator
-            SearchItor(getSettings()->editMFRecentProjectFiles()->begin());
-        for( ; SearchItor!=getSettings()->editMFRecentProjectFiles()->end() ; ++SearchItor)
+        std::vector<BoostPath> RecentProjects(getSettings().get_vec<BoostPath>("basic.recent_projects"));
+        std::vector<BoostPath>::iterator SearchItor(RecentProjects.begin());
+        for( ; SearchItor!=RecentProjects.end() ; ++SearchItor)
         {
-            if(boost::filesystem::equivalent(*SearchItor,ProjectFile))
+            if(boost::filesystem::equivalent((*SearchItor),ProjectFile))
             {
                 break;
             }
         }
-        if(SearchItor != getSettings()->editMFRecentProjectFiles()->end())
+        if(SearchItor != RecentProjects.end())
         {
-            getSettings()->editMFRecentProjectFiles()->erase(SearchItor);
+            RecentProjects.erase(SearchItor);
         }
-        getSettings()->editMFRecentProjectFiles()->push_back(ProjectFile);
+        RecentProjects.push_back(ProjectFile);
+
+        //Resize
+        UInt32 MaxRecProj(getSettings().get<UInt32>("basic.recent_projects.max"));
+        while(RecentProjects.size() > MaxRecProj)
+        {
+            //Pop off the front
+            RecentProjects.erase(RecentProjects.begin());
+        }
+
+
+        getSettings().put_vec("basic.recent_projects.file", RecentProjects);
 
     }
 }
 
 void MainApplication::saveSettings(const BoostPath& SettingsFile)
 {
-    if(getSettings() != NULL)
-    {
-        getSettings()->save(SettingsFile);
-    }
+    getSettings().writeXML(SettingsFile);
 }
 
 void MainApplication::loadSettings(const BoostPath& SettingsFile)
 {
 
-    ApplicationSettingsRefPtr LoadedSettings;
+    ApplicationSettings LoadedSettings;
     if(!boost::filesystem::exists(SettingsFile))
     {
         SWARNING << "Could not load Settings from: \""
@@ -445,13 +600,11 @@ void MainApplication::loadSettings(const BoostPath& SettingsFile)
 
         SLOG << "Loading Settings from: " << SettingsFullPath.string() << std::endl;
 
-        LoadedSettings = ApplicationSettings::load(SettingsFile);
+        LoadedSettings.readXML(SettingsFile);
     }
-
-    if(LoadedSettings != NULL)
-    {
-        setSettings(LoadedSettings);
-    }
+    //Apply default settings to any settings that are not defined in loaded settings files
+    applyDefaultSettings(LoadedSettings, false);
+    setSettings(LoadedSettings);
 }
 
 void MainApplication::createDefaultBuilderMode(void)
@@ -501,8 +654,8 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     PerspectiveCameraRefPtr DefaultSceneCamera = PerspectiveCamera::create();
     setName(DefaultSceneCamera, "Untitled Camera" );
     DefaultSceneCamera->setFov(60.f);
-    DefaultSceneCamera->setNear(0.1f);
-    DefaultSceneCamera->setFar(100.0f);
+    DefaultSceneCamera->setNear(10.0f);
+    DefaultSceneCamera->setFar(50000.0f);
     DefaultSceneCamera->setBeacon(CameraBeaconNode);
 
     // Make Torus Node (creates Torus in background of scene)
@@ -618,7 +771,7 @@ ProjectRefPtr MainApplication::createDefaultProject(void)
 }
 
 
-void MainApplication::setSettings( const ApplicationSettingsRefPtr &value )
+void MainApplication::setSettings( const ApplicationSettings &value )
 {
     _Settings = value;
 }
@@ -639,6 +792,10 @@ void MainApplication::setProject ( const ProjectRefPtr &value )
     if(getCurrentMode() != NULL)
     {
         getCurrentMode()->reset();
+    }
+    if(_Project != NULL)
+    {
+        SLOG << "Set Project to " << ( getName(_Project) ? getName(_Project) : "UNNAMED_PROJECT" ) << std::endl;
     }
 }
 
@@ -665,6 +822,58 @@ void MainApplication::setCurrentMode( const ApplicationModeRefPtr &value )
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
+
+void MainApplication::KELogBufferCallback(const Char8 *data, 
+                         Int32  size,
+                         void  *clientData)
+{
+	//Send to the Log Listeners
+    std::string value(data,size);
+    LogEventUnrecPtr e = LogEvent::create(NULL, getTimeStamp(),value);
+    MainApplication::the()->produceLog(e);
+}
+
+
+void MainApplication::initializeLogging(LogType KELogType, BoostPath KELogFilePath)
+{
+	//Set the log type
+	//LOG_NONE, 
+	//LOG_STDOUT, 
+	//LOG_STDERR, 
+	//LOG_FILE,
+
+    if(osgLogP->getLogType() != KELogType)
+    {
+	    osgLogP->setLogType(KELogType, true);
+
+	    if(osgLogP->getLogType() == LOG_BUFFER)
+	    {
+		    //Configure the LogBuffer
+		    osgLogP->getLogBuf().setEnabled(true);
+		    osgLogP->getLogBuf().setCallback(KELogBufferCallback);
+	    }
+	    else
+	    {
+		    osgLogP->getLogBuf().setEnabled(false);
+		    osgLogP->getLogBuf().removeCallback();
+	    }
+    }
+
+	if(osgLogP->getLogType() == LOG_FILE)
+	{
+		//If the Log is to a file then set the file
+		osgLogP->setLogFile(KELogFilePath.string().c_str(), true);
+	}
+}
+
+void MainApplication::produceLog(const LogEventUnrecPtr e)
+{
+    LogListenerSet ListenerSet(_LogListeners);
+    for(LogListenerSetConstItor SetItor(ListenerSet.begin()) ; SetItor != ListenerSet.end() ; ++SetItor)
+    {
+        (*SetItor)->log(e);
+    }
+}
 
 /*----------------------- constructors & destructors ----------------------*/
 

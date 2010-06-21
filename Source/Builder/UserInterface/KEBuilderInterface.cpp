@@ -168,14 +168,14 @@ void BuilderInterface::createInterface(ApplicationBuilderPtr TheApplicationBuild
     beginEditCP(_NewProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _NewProjectMenuItem->setText("New Project ...");
         _NewProjectMenuItem->setAcceleratorKey(KeyEvent::KEY_N);
-        _NewProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _NewProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _NewProjectMenuItem->setMnemonicKey(KeyEvent::KEY_N);
     endEditCP(_NewProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
     beginEditCP(_OpenProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _OpenProjectMenuItem->setText("Open Project ...");
         _OpenProjectMenuItem->setAcceleratorKey(KeyEvent::KEY_O);
-        _OpenProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _OpenProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _OpenProjectMenuItem->setMnemonicKey(KeyEvent::KEY_O);
     endEditCP(_OpenProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
@@ -187,28 +187,28 @@ void BuilderInterface::createInterface(ApplicationBuilderPtr TheApplicationBuild
     beginEditCP(_CloseProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _CloseProjectMenuItem->setText("Close Project ...");
         _CloseProjectMenuItem->setAcceleratorKey(KeyEvent::KEY_W);
-        _CloseProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _CloseProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _CloseProjectMenuItem->setMnemonicKey(KeyEvent::KEY_C);
     endEditCP(_CloseProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	beginEditCP(_SaveProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _SaveProjectMenuItem->setText("Save Project ...");
         _SaveProjectMenuItem->setAcceleratorKey(KeyEvent::KEY_S);
-        _SaveProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _SaveProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _SaveProjectMenuItem->setMnemonicKey(KeyEvent::KEY_S);
     endEditCP(_SaveProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
 	beginEditCP(_SaveProjectAsMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _SaveProjectAsMenuItem->setText("Save Project As ...");
         _SaveProjectAsMenuItem->setAcceleratorKey(KeyEvent::KEY_S);
-        _SaveProjectAsMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL | KeyEvent::KEY_MODIFIER_SHIFT);
+        _SaveProjectAsMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND | KeyEvent::KEY_MODIFIER_SHIFT);
         _SaveProjectAsMenuItem->setMnemonicKey(KeyEvent::KEY_A);
     endEditCP(_SaveProjectAsMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
 	beginEditCP(_PlayProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _PlayProjectMenuItem->setText("Play Project");
         _PlayProjectMenuItem->setAcceleratorKey(KeyEvent::KEY_P);
-        _PlayProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _PlayProjectMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _PlayProjectMenuItem->setMnemonicKey(KeyEvent::KEY_P);
     endEditCP(_PlayProjectMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     
@@ -220,7 +220,7 @@ void BuilderInterface::createInterface(ApplicationBuilderPtr TheApplicationBuild
     beginEditCP(_ExitMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _ExitMenuItem->setText("Quit");
         _ExitMenuItem->setAcceleratorKey(KeyEvent::KEY_Q);
-        _ExitMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _ExitMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _ExitMenuItem->setMnemonicKey(KeyEvent::KEY_Q);
     endEditCP(_ExitMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
 
@@ -228,41 +228,41 @@ void BuilderInterface::createInterface(ApplicationBuilderPtr TheApplicationBuild
     beginEditCP(_UndoMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
         _UndoMenuItem->setText("Undo");
         _UndoMenuItem->setAcceleratorKey(KeyEvent::KEY_Z);
-        _UndoMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _UndoMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _UndoMenuItem->setMnemonicKey(KeyEvent::KEY_U);
     endEditCP(_UndoMenuItem, MenuItem::TextFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask | MenuItem::MnemonicKeyFieldMask);
     beginEditCP(_RedoMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
         _RedoMenuItem->setText("Redo");
         _RedoMenuItem->setAcceleratorKey(KeyEvent::KEY_Z);
-        _RedoMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL |KeyEvent::KEY_MODIFIER_SHIFT);
+        _RedoMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND |KeyEvent::KEY_MODIFIER_SHIFT);
         _RedoMenuItem->setMnemonicKey(KeyEvent::KEY_R);
     endEditCP(_RedoMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
     
 	beginEditCP(_CutMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
         _CutMenuItem->setText("Cut");
         _CutMenuItem->setAcceleratorKey(KeyEvent::KEY_X);
-        _CutMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _CutMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _CutMenuItem->setMnemonicKey(KeyEvent::KEY_U);
     endEditCP(_CutMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
     
 	beginEditCP(_CopyMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
         _CopyMenuItem->setText("Copy");
         _CopyMenuItem->setAcceleratorKey(KeyEvent::KEY_C);
-        _CopyMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _CopyMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _CopyMenuItem->setMnemonicKey(KeyEvent::KEY_C);
     endEditCP(_CopyMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
     
 	beginEditCP(_PasteMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
         _PasteMenuItem->setText("Paste");
         _PasteMenuItem->setAcceleratorKey(KeyEvent::KEY_V);
-        _PasteMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _PasteMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _PasteMenuItem->setMnemonicKey(KeyEvent::KEY_P);
     endEditCP(_PasteMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
     
 	beginEditCP(_DeleteMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
         _DeleteMenuItem->setText("Delete");
         _DeleteMenuItem->setAcceleratorKey(KeyEvent::KEY_D);
-        _DeleteMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_CONTROL);
+        _DeleteMenuItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
         _DeleteMenuItem->setMnemonicKey(KeyEvent::KEY_D);
     endEditCP(_DeleteMenuItem, MenuItem::TextFieldMask | MenuItem::MnemonicKeyFieldMask | MenuItem::AcceleratorKeyFieldMask | MenuItem::AcceleratorModifiersFieldMask);
 

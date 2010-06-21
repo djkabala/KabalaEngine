@@ -42,7 +42,7 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class BehaviorFactory!
+ **     class LogEvent!
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
@@ -55,10 +55,9 @@
 
 
 
-#include "Project/SceneObject/KEBehaviorType.h" // BehaviorTypes Class
 
-#include "KEBehaviorFactoryBase.h"
-#include "KEBehaviorFactory.h"
+#include "KELogEventBase.h"
+#include "KELogEvent.h"
 
 #include <boost/bind.hpp>
 
@@ -72,15 +71,15 @@ OSG_BEGIN_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class OSG::BehaviorFactory
-    The Capability Factory.
+/*! \class OSG::LogEvent
+    
  */
 
 /***************************************************************************\
  *                        Field Documentation                              *
 \***************************************************************************/
 
-/*! \var BehaviorType *  BehaviorFactoryBase::_mfBehaviorTypes
+/*! \var std::string     LogEventBase::_sfValue
     
 */
 
@@ -90,60 +89,57 @@ OSG_BEGIN_NAMESPACE
 \***************************************************************************/
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldTraits<BehaviorFactory *>::_type("BehaviorFactoryPtr", "AttachmentContainerPtr");
+DataType FieldTraits<LogEvent *>::_type("LogEventPtr", "EventPtr");
 #endif
 
-OSG_FIELDTRAITS_GETTYPE(BehaviorFactory *)
+OSG_FIELDTRAITS_GETTYPE(LogEvent *)
 
 OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
-                           BehaviorFactory *,
+                           LogEvent *,
                            0);
 
-OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
-                           BehaviorFactory *,
-                           0);
 
 /***************************************************************************\
  *                         Field Description                               *
 \***************************************************************************/
 
-void BehaviorFactoryBase::classDescInserter(TypeObject &oType)
+void LogEventBase::classDescInserter(TypeObject &oType)
 {
     FieldDescriptionBase *pDesc = NULL;
 
 
-    pDesc = new MFUnrecBehaviorTypePtr::Description(
-        MFUnrecBehaviorTypePtr::getClassType(),
-        "BehaviorTypes",
+    pDesc = new SFString::Description(
+        SFString::getClassType(),
+        "Value",
         "",
-        BehaviorTypesFieldId, BehaviorTypesFieldMask,
-        false,
-        (Field::MFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&BehaviorFactory::editHandleBehaviorTypes),
-        static_cast<FieldGetMethodSig >(&BehaviorFactory::getHandleBehaviorTypes));
+        ValueFieldId, ValueFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&LogEvent::editHandleValue),
+        static_cast<FieldGetMethodSig >(&LogEvent::getHandleValue));
 
     oType.addInitialDesc(pDesc);
 }
 
 
-BehaviorFactoryBase::TypeObject BehaviorFactoryBase::_type(
-    BehaviorFactoryBase::getClassname(),
+LogEventBase::TypeObject LogEventBase::_type(
+    LogEventBase::getClassname(),
     Inherited::getClassname(),
     "NULL",
     0,
-    reinterpret_cast<PrototypeCreateF>(&BehaviorFactoryBase::createEmptyLocal),
-    BehaviorFactory::initMethod,
-    BehaviorFactory::exitMethod,
-    reinterpret_cast<InitalInsertDescFunc>(&BehaviorFactory::classDescInserter),
+    reinterpret_cast<PrototypeCreateF>(&LogEventBase::createEmptyLocal),
+    LogEvent::initMethod,
+    LogEvent::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&LogEvent::classDescInserter),
     false,
     0,
     "<?xml version=\"1.0\"?>\n"
     "\n"
     "<FieldContainer\n"
-    "\tname=\"BehaviorFactory\"\n"
-    "\tparent=\"AttachmentContainer\"\n"
+    "\tname=\"LogEvent\"\n"
+    "\tparent=\"Event\"\n"
     "\tlibrary=\"KabalaEngine\"\n"
-    "\tpointerfieldtypes=\"both\"\n"
+    "\tpointerfieldtypes=\"single\"\n"
     "\tstructure=\"concrete\"\n"
     "\tsystemcomponent=\"false\"\n"
     "\tparentsystemcomponent=\"true\"\n"
@@ -152,201 +148,147 @@ BehaviorFactoryBase::TypeObject BehaviorFactoryBase::_type(
     "\tlibnamespace=\"KE\"\n"
     "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
     ">\n"
-    "The Capability Factory.\n"
     "\t<Field\n"
-    "\t\tname=\"BehaviorTypes\"\n"
-    "\t\ttype=\"BehaviorType\"\n"
-    "\t\tcategory=\"pointer\"\n"
-    "\t\tcardinality=\"multi\"\n"
-    "\t\tvisibility=\"external\"\n"
-    "\t\tfieldHeader=\"Project/SceneObject/KEBehaviorTypeFields.h\"\n"
-    "\t\ttypeHeader=\"Project/SceneObject/KEBehaviorType.h\"\n"
-    "\t\taccess=\"public\"\n"
+    "\t\tname=\"Value\"\n"
+    "\t\ttype=\"std::string\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"internal\"\n"
+    "\t\taccess=\"protected\"\n"
+    "\t\tdefaultValue=\"\"\n"
+    "        publicRead=\"true\"\n"
     "\t>\n"
     "\t</Field>\n"
     "</FieldContainer>\n",
-    "The Capability Factory.\n"
+    ""
     );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &BehaviorFactoryBase::getType(void)
+FieldContainerType &LogEventBase::getType(void)
 {
     return _type;
 }
 
-const FieldContainerType &BehaviorFactoryBase::getType(void) const
+const FieldContainerType &LogEventBase::getType(void) const
 {
     return _type;
 }
 
-UInt32 BehaviorFactoryBase::getContainerSize(void) const
+UInt32 LogEventBase::getContainerSize(void) const
 {
-    return sizeof(BehaviorFactory);
+    return sizeof(LogEvent);
 }
 
 /*------------------------- decorator get ------------------------------*/
 
 
-//! Get the BehaviorFactory::_mfBehaviorTypes field.
-const MFUnrecBehaviorTypePtr *BehaviorFactoryBase::getMFBehaviorTypes(void) const
+SFString *LogEventBase::editSFValue(void)
 {
-    return &_mfBehaviorTypes;
+    editSField(ValueFieldMask);
+
+    return &_sfValue;
 }
 
-MFUnrecBehaviorTypePtr *BehaviorFactoryBase::editMFBehaviorTypes  (void)
+const SFString *LogEventBase::getSFValue(void) const
 {
-    editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
-
-    return &_mfBehaviorTypes;
+    return &_sfValue;
 }
 
 
 
-void BehaviorFactoryBase::pushToBehaviorTypes(BehaviorType * const value)
-{
-    editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
-
-    _mfBehaviorTypes.push_back(value);
-}
-
-void BehaviorFactoryBase::assignBehaviorTypes(const MFUnrecBehaviorTypePtr &value)
-{
-    MFUnrecBehaviorTypePtr::const_iterator elemIt  =
-        value.begin();
-    MFUnrecBehaviorTypePtr::const_iterator elemEnd =
-        value.end  ();
-
-    static_cast<BehaviorFactory *>(this)->clearBehaviorTypes();
-
-    while(elemIt != elemEnd)
-    {
-        this->pushToBehaviorTypes(*elemIt);
-
-        ++elemIt;
-    }
-}
-
-void BehaviorFactoryBase::removeFromBehaviorTypes(UInt32 uiIndex)
-{
-    if(uiIndex < _mfBehaviorTypes.size())
-    {
-        editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
-
-        _mfBehaviorTypes.erase(uiIndex);
-    }
-}
-
-void BehaviorFactoryBase::removeObjFromBehaviorTypes(BehaviorType * const value)
-{
-    Int32 iElemIdx = _mfBehaviorTypes.findIndex(value);
-
-    if(iElemIdx != -1)
-    {
-        editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
-
-        _mfBehaviorTypes.erase(iElemIdx);
-    }
-}
-void BehaviorFactoryBase::clearBehaviorTypes(void)
-{
-    editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
-
-
-    _mfBehaviorTypes.clear();
-}
 
 
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 BehaviorFactoryBase::getBinSize(ConstFieldMaskArg whichField)
+UInt32 LogEventBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
-    if(FieldBits::NoField != (BehaviorTypesFieldMask & whichField))
+    if(FieldBits::NoField != (ValueFieldMask & whichField))
     {
-        returnValue += _mfBehaviorTypes.getBinSize();
+        returnValue += _sfValue.getBinSize();
     }
 
     return returnValue;
 }
 
-void BehaviorFactoryBase::copyToBin(BinaryDataHandler &pMem,
+void LogEventBase::copyToBin(BinaryDataHandler &pMem,
                                   ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-    if(FieldBits::NoField != (BehaviorTypesFieldMask & whichField))
+    if(FieldBits::NoField != (ValueFieldMask & whichField))
     {
-        _mfBehaviorTypes.copyToBin(pMem);
+        _sfValue.copyToBin(pMem);
     }
 }
 
-void BehaviorFactoryBase::copyFromBin(BinaryDataHandler &pMem,
+void LogEventBase::copyFromBin(BinaryDataHandler &pMem,
                                     ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-    if(FieldBits::NoField != (BehaviorTypesFieldMask & whichField))
+    if(FieldBits::NoField != (ValueFieldMask & whichField))
     {
-        _mfBehaviorTypes.copyFromBin(pMem);
+        _sfValue.copyFromBin(pMem);
     }
 }
 
 //! create a new instance of the class
-BehaviorFactoryTransitPtr BehaviorFactoryBase::createLocal(BitVector bFlags)
+LogEventTransitPtr LogEventBase::createLocal(BitVector bFlags)
 {
-    BehaviorFactoryTransitPtr fc;
+    LogEventTransitPtr fc;
 
     if(getClassType().getPrototype() != NULL)
     {
         FieldContainerTransitPtr tmpPtr =
             getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-        fc = dynamic_pointer_cast<BehaviorFactory>(tmpPtr);
+        fc = dynamic_pointer_cast<LogEvent>(tmpPtr);
     }
 
     return fc;
 }
 
 //! create a new instance of the class, copy the container flags
-BehaviorFactoryTransitPtr BehaviorFactoryBase::createDependent(BitVector bFlags)
+LogEventTransitPtr LogEventBase::createDependent(BitVector bFlags)
 {
-    BehaviorFactoryTransitPtr fc;
+    LogEventTransitPtr fc;
 
     if(getClassType().getPrototype() != NULL)
     {
         FieldContainerTransitPtr tmpPtr =
             getClassType().getPrototype()-> shallowCopyDependent(bFlags);
 
-        fc = dynamic_pointer_cast<BehaviorFactory>(tmpPtr);
+        fc = dynamic_pointer_cast<LogEvent>(tmpPtr);
     }
 
     return fc;
 }
 
 //! create a new instance of the class
-BehaviorFactoryTransitPtr BehaviorFactoryBase::create(void)
+LogEventTransitPtr LogEventBase::create(void)
 {
-    BehaviorFactoryTransitPtr fc;
+    LogEventTransitPtr fc;
 
     if(getClassType().getPrototype() != NULL)
     {
         FieldContainerTransitPtr tmpPtr =
             getClassType().getPrototype()-> shallowCopy();
 
-        fc = dynamic_pointer_cast<BehaviorFactory>(tmpPtr);
+        fc = dynamic_pointer_cast<LogEvent>(tmpPtr);
     }
 
     return fc;
 }
 
-BehaviorFactory *BehaviorFactoryBase::createEmptyLocal(BitVector bFlags)
+LogEvent *LogEventBase::createEmptyLocal(BitVector bFlags)
 {
-    BehaviorFactory *returnValue;
+    LogEvent *returnValue;
 
-    newPtr<BehaviorFactory>(returnValue, bFlags);
+    newPtr<LogEvent>(returnValue, bFlags);
 
     returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
 
@@ -354,11 +296,11 @@ BehaviorFactory *BehaviorFactoryBase::createEmptyLocal(BitVector bFlags)
 }
 
 //! create an empty new instance of the class, do not copy the prototype
-BehaviorFactory *BehaviorFactoryBase::createEmpty(void)
+LogEvent *LogEventBase::createEmpty(void)
 {
-    BehaviorFactory *returnValue;
+    LogEvent *returnValue;
 
-    newPtr<BehaviorFactory>(returnValue, Thread::getCurrentLocalFlags());
+    newPtr<LogEvent>(returnValue, Thread::getCurrentLocalFlags());
 
     returnValue->_pFieldFlags->_bNamespaceMask &=
         ~Thread::getCurrentLocalFlags();
@@ -367,12 +309,12 @@ BehaviorFactory *BehaviorFactoryBase::createEmpty(void)
 }
 
 
-FieldContainerTransitPtr BehaviorFactoryBase::shallowCopyLocal(
+FieldContainerTransitPtr LogEventBase::shallowCopyLocal(
     BitVector bFlags) const
 {
-    BehaviorFactory *tmpPtr;
+    LogEvent *tmpPtr;
 
-    newPtr(tmpPtr, dynamic_cast<const BehaviorFactory *>(this), bFlags);
+    newPtr(tmpPtr, dynamic_cast<const LogEvent *>(this), bFlags);
 
     FieldContainerTransitPtr returnValue(tmpPtr);
 
@@ -381,12 +323,12 @@ FieldContainerTransitPtr BehaviorFactoryBase::shallowCopyLocal(
     return returnValue;
 }
 
-FieldContainerTransitPtr BehaviorFactoryBase::shallowCopyDependent(
+FieldContainerTransitPtr LogEventBase::shallowCopyDependent(
     BitVector bFlags) const
 {
-    BehaviorFactory *tmpPtr;
+    LogEvent *tmpPtr;
 
-    newPtr(tmpPtr, dynamic_cast<const BehaviorFactory *>(this), ~bFlags);
+    newPtr(tmpPtr, dynamic_cast<const LogEvent *>(this), ~bFlags);
 
     FieldContainerTransitPtr returnValue(tmpPtr);
 
@@ -395,12 +337,12 @@ FieldContainerTransitPtr BehaviorFactoryBase::shallowCopyDependent(
     return returnValue;
 }
 
-FieldContainerTransitPtr BehaviorFactoryBase::shallowCopy(void) const
+FieldContainerTransitPtr LogEventBase::shallowCopy(void) const
 {
-    BehaviorFactory *tmpPtr;
+    LogEvent *tmpPtr;
 
     newPtr(tmpPtr,
-           dynamic_cast<const BehaviorFactory *>(this),
+           dynamic_cast<const LogEvent *>(this),
            Thread::getCurrentLocalFlags());
 
     tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
@@ -415,95 +357,62 @@ FieldContainerTransitPtr BehaviorFactoryBase::shallowCopy(void) const
 
 /*------------------------- constructors ----------------------------------*/
 
-BehaviorFactoryBase::BehaviorFactoryBase(void) :
+LogEventBase::LogEventBase(void) :
     Inherited(),
-    _mfBehaviorTypes          ()
+    _sfValue                  ()
 {
 }
 
-BehaviorFactoryBase::BehaviorFactoryBase(const BehaviorFactoryBase &source) :
+LogEventBase::LogEventBase(const LogEventBase &source) :
     Inherited(source),
-    _mfBehaviorTypes          ()
+    _sfValue                  (source._sfValue                  )
 {
 }
 
 
 /*-------------------------- destructors ----------------------------------*/
 
-BehaviorFactoryBase::~BehaviorFactoryBase(void)
+LogEventBase::~LogEventBase(void)
 {
 }
 
-void BehaviorFactoryBase::onCreate(const BehaviorFactory *source)
+
+GetFieldHandlePtr LogEventBase::getHandleValue           (void) const
 {
-    Inherited::onCreate(source);
-
-    if(source != NULL)
-    {
-        BehaviorFactory *pThis = static_cast<BehaviorFactory *>(this);
-
-        MFUnrecBehaviorTypePtr::const_iterator BehaviorTypesIt  =
-            source->_mfBehaviorTypes.begin();
-        MFUnrecBehaviorTypePtr::const_iterator BehaviorTypesEnd =
-            source->_mfBehaviorTypes.end  ();
-
-        while(BehaviorTypesIt != BehaviorTypesEnd)
-        {
-            pThis->pushToBehaviorTypes(*BehaviorTypesIt);
-
-            ++BehaviorTypesIt;
-        }
-    }
-}
-
-GetFieldHandlePtr BehaviorFactoryBase::getHandleBehaviorTypes   (void) const
-{
-    MFUnrecBehaviorTypePtr::GetHandlePtr returnValue(
-        new  MFUnrecBehaviorTypePtr::GetHandle(
-             &_mfBehaviorTypes,
-             this->getType().getFieldDesc(BehaviorTypesFieldId),
-             const_cast<BehaviorFactoryBase *>(this)));
+    SFString::GetHandlePtr returnValue(
+        new  SFString::GetHandle(
+             &_sfValue,
+             this->getType().getFieldDesc(ValueFieldId),
+             const_cast<LogEventBase *>(this)));
 
     return returnValue;
 }
 
-EditFieldHandlePtr BehaviorFactoryBase::editHandleBehaviorTypes  (void)
+EditFieldHandlePtr LogEventBase::editHandleValue          (void)
 {
-    MFUnrecBehaviorTypePtr::EditHandlePtr returnValue(
-        new  MFUnrecBehaviorTypePtr::EditHandle(
-             &_mfBehaviorTypes,
-             this->getType().getFieldDesc(BehaviorTypesFieldId),
+    SFString::EditHandlePtr returnValue(
+        new  SFString::EditHandle(
+             &_sfValue,
+             this->getType().getFieldDesc(ValueFieldId),
              this));
 
-    returnValue->setAddMethod(
-        boost::bind(&BehaviorFactory::pushToBehaviorTypes,
-                    static_cast<BehaviorFactory *>(this), _1));
-    returnValue->setRemoveMethod(
-        boost::bind(&BehaviorFactory::removeFromBehaviorTypes,
-                    static_cast<BehaviorFactory *>(this), _1));
-    returnValue->setRemoveObjMethod(
-        boost::bind(&BehaviorFactory::removeObjFromBehaviorTypes,
-                    static_cast<BehaviorFactory *>(this), _1));
-    returnValue->setClearMethod(
-        boost::bind(&BehaviorFactory::clearBehaviorTypes,
-                    static_cast<BehaviorFactory *>(this)));
 
-    editMField(BehaviorTypesFieldMask, _mfBehaviorTypes);
+    editSField(ValueFieldMask);
 
     return returnValue;
 }
 
 
 #ifdef OSG_MT_CPTR_ASPECT
-void BehaviorFactoryBase::execSyncV(      FieldContainer    &oFrom,
+void LogEventBase::execSyncV(      FieldContainer    &oFrom,
                                         ConstFieldMaskArg  whichField,
                                         AspectOffsetStore &oOffsets,
                                         ConstFieldMaskArg  syncMode,
                                   const UInt32             uiSyncInfo)
 {
-    BehaviorFactory *pThis = static_cast<BehaviorFactory *>(this);
+    LogEvent *pThis = static_cast<LogEvent *>(this);
 
-    pThis->execSync(static_cast<BehaviorFactory *>(&oFrom),
+    pThis->execSync(static_cast<LogEvent *>(&oFrom),
                     whichField,
                     oOffsets,
                     syncMode,
@@ -513,24 +422,22 @@ void BehaviorFactoryBase::execSyncV(      FieldContainer    &oFrom,
 
 
 #ifdef OSG_MT_CPTR_ASPECT
-FieldContainer *BehaviorFactoryBase::createAspectCopy(
+FieldContainer *LogEventBase::createAspectCopy(
     const FieldContainer *pRefAspect) const
 {
-    BehaviorFactory *returnValue;
+    LogEvent *returnValue;
 
     newAspectCopy(returnValue,
-                  dynamic_cast<const BehaviorFactory *>(pRefAspect),
-                  dynamic_cast<const BehaviorFactory *>(this));
+                  dynamic_cast<const LogEvent *>(pRefAspect),
+                  dynamic_cast<const LogEvent *>(this));
 
     return returnValue;
 }
 #endif
 
-void BehaviorFactoryBase::resolveLinks(void)
+void LogEventBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
-
-    static_cast<BehaviorFactory *>(this)->clearBehaviorTypes();
 
 
 }

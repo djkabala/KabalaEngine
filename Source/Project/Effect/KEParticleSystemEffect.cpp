@@ -76,55 +76,9 @@ void ParticleSystemEffect::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-<<<<<<< HEAD
-
-void AnimationEffect::begin()
-{
-    if(theUpdateProducer == NULL)
-    {
-        theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
-    }
-    getAnimation()->attachUpdateProducer(theUpdateProducer);
-    getAnimation()->start();
-}
-
-bool AnimationEffect::isPlaying()
-{
-    return getAnimation()->isPlaying();
-}
-
-bool AnimationEffect::isPaused()
-{
-    return getAnimation()->isPaused();
-}
-
-void AnimationEffect::pause()
-{
-    getAnimation()->pause(true);
-}
-
-void AnimationEffect::unpause()
-{
-    getAnimation()->pause(false);
-}
-
-void AnimationEffect::end()
-{
-    getAnimation()->stop();
-}
-=======
->>>>>>> 9542a97848273e318a4ad564b7f5503c17720057
-
 void ParticleSystemEffect::begin()
 {
-    if(theUpdateProducer == NULL)
-    {
-        theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
-    }
-    getTheSystem()->attachUpdateProducer(theUpdateProducer);
-
-    isPlayingFlag = true;
-    isPausedFlag = false;
+    
 }
 
 bool ParticleSystemEffect::isPlaying()

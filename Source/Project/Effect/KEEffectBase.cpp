@@ -301,7 +301,7 @@ void EffectBase::copyFromBin(BinaryDataHandler &pMem,
 
 EffectBase::EffectBase(void) :
     Inherited(),
-    _sfName                   (std::string(NULL)),
+    _sfName                   (std::string("")),
     _sfParentSceneObject      (NULL)
 {
 }

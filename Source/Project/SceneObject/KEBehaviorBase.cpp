@@ -55,7 +55,7 @@
 
 
 
-#include <OpenSG/OSGFieldContainer.h>   // SceneObject Class
+#include "Project/SceneObject/KESceneObject.h" // SceneObject Class
 
 #include "KEBehaviorBase.h"
 #include "KEBehavior.h"
@@ -80,11 +80,7 @@ OSG_BEGIN_NAMESPACE
  *                        Field Documentation                              *
 \***************************************************************************/
 
-/*! \var FieldContainer * BehaviorBase::_sfSceneObject
-    
-*/
-
-/*! \var std::string     BehaviorBase::_mfDependencies
+/*! \var SceneObject *   BehaviorBase::_sfSceneObject
     
 */
 
@@ -107,18 +103,6 @@ OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
                            Behavior *,
                            0);
 
-DataType &FieldTraits< Behavior *, 1 >::getType(void)
-{
-    return FieldTraits<Behavior *, 0>::getType();
-}
-
-
-OSG_EXPORT_PTR_MFIELD(ChildPointerMField,
-                      Behavior *,
-                      UnrecordedRefCountPolicy,
-                      1);
-
-
 /***************************************************************************\
  *                         Field Description                               *
 \***************************************************************************/
@@ -128,27 +112,15 @@ void BehaviorBase::classDescInserter(TypeObject &oType)
     FieldDescriptionBase *pDesc = NULL;
 
 
-    pDesc = new SFParentFieldContainerPtr::Description(
-        SFParentFieldContainerPtr::getClassType(),
+    pDesc = new SFUnrecSceneObjectPtr::Description(
+        SFUnrecSceneObjectPtr::getClassType(),
         "SceneObject",
         "",
         SceneObjectFieldId, SceneObjectFieldMask,
         false,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&Behavior::invalidEditField),
-        static_cast     <FieldGetMethodSig >(&Behavior::invalidGetField));
-
-    oType.addInitialDesc(pDesc);
-
-    pDesc = new MFString::Description(
-        MFString::getClassType(),
-        "Dependencies",
-        "",
-        DependenciesFieldId, DependenciesFieldMask,
-        false,
-        (Field::MFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&Behavior::editHandleDependencies),
-        static_cast<FieldGetMethodSig >(&Behavior::getHandleDependencies));
+        static_cast<FieldEditMethodSig>(&Behavior::editHandleSceneObject),
+        static_cast<FieldGetMethodSig >(&Behavior::getHandleSceneObject));
 
     oType.addInitialDesc(pDesc);
 }
@@ -178,31 +150,22 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     "\tdecoratable=\"false\"\n"
     "\tuseLocalIncludes=\"false\"\n"
     "\tlibnamespace=\"KE\"\n"
-    "    childFields=\"multi\"\n"
     "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
     ">\n"
     "The SceneObject.\n"
-    "    <Field\n"
+    "\t<Field\n"
     "\t\tname=\"SceneObject\"\n"
-    "\t\ttype=\"FieldContainer\"\n"
-    "\t\tcategory=\"parentpointer\"\n"
+    "\t\ttype=\"SceneObject\"\n"
+    "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"single\"\n"
     "\t\tvisibility=\"external\"\n"
-    "\t\taccess=\"none\"\n"
+    "\t\tfieldHeader=\"Project/SceneObject/KESceneObjectFields.h\"\n"
+    "\t\ttypeHeader=\"Project/SceneObject/KESceneObject.h\"\n"
+    "\t\taccess=\"protected\"\n"
     "\t\tdefaultValue=\"NULL\"\n"
-    "        doRefCount=\"false\"\n"
-    "        passFieldMask=\"true\"\n"
     "\t>\n"
     "\t</Field>\n"
-    "\t<Field\n"
-    "\t\tname=\"Dependencies\"\n"
-    "\t\ttype=\"std::string\"\n"
-    "\t\tcategory=\"data\"\n"
-    "\t\tcardinality=\"multi\"\n"
-    "\t\tvisibility=\"external\"\n"
-    "\t\taccess=\"public\"\n"
-    "\t>\n"
-    "\t</Field>\n"
+    "\t\n"
     "</FieldContainer>\n",
     "The SceneObject.\n"
     );
@@ -227,19 +190,18 @@ UInt32 BehaviorBase::getContainerSize(void) const
 /*------------------------- decorator get ------------------------------*/
 
 
-
-MFString *BehaviorBase::editMFDependencies(void)
+//! Get the Behavior::_sfSceneObject field.
+const SFUnrecSceneObjectPtr *BehaviorBase::getSFSceneObject(void) const
 {
-    editMField(DependenciesFieldMask, _mfDependencies);
-
-    return &_mfDependencies;
+    return &_sfSceneObject;
 }
 
-const MFString *BehaviorBase::getMFDependencies(void) const
+SFUnrecSceneObjectPtr *BehaviorBase::editSFSceneObject    (void)
 {
-    return &_mfDependencies;
-}
+    editSField(SceneObjectFieldMask);
 
+    return &_sfSceneObject;
+}
 
 
 
@@ -255,10 +217,6 @@ UInt32 BehaviorBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfSceneObject.getBinSize();
     }
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-    {
-        returnValue += _mfDependencies.getBinSize();
-    }
 
     return returnValue;
 }
@@ -272,10 +230,6 @@ void BehaviorBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyToBin(pMem);
     }
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-    {
-        _mfDependencies.copyToBin(pMem);
-    }
 }
 
 void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
@@ -287,10 +241,6 @@ void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyFromBin(pMem);
     }
-    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
-    {
-        _mfDependencies.copyFromBin(pMem);
-    }
 }
 
 
@@ -300,15 +250,13 @@ void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
 
 BehaviorBase::BehaviorBase(void) :
     Inherited(),
-    _sfSceneObject            (NULL),
-    _mfDependencies           ()
+    _sfSceneObject            (NULL)
 {
 }
 
 BehaviorBase::BehaviorBase(const BehaviorBase &source) :
     Inherited(source),
-    _sfSceneObject            (NULL),
-    _mfDependencies           (source._mfDependencies           )
+    _sfSceneObject            (NULL)
 {
 }
 
@@ -318,114 +266,43 @@ BehaviorBase::BehaviorBase(const BehaviorBase &source) :
 BehaviorBase::~BehaviorBase(void)
 {
 }
-/*-------------------------------------------------------------------------*/
-/* Parent linking                                                          */
 
-bool BehaviorBase::linkParent(
-    FieldContainer * const pParent,
-    UInt16           const childFieldId,
-    UInt16           const parentFieldId )
+void BehaviorBase::onCreate(const Behavior *source)
 {
-    if(parentFieldId == SceneObjectFieldId)
+    Inherited::onCreate(source);
+
+    if(source != NULL)
     {
-        FieldContainer * pTypedParent =
-            dynamic_cast< FieldContainer * >(pParent);
+        Behavior *pThis = static_cast<Behavior *>(this);
 
-        if(pTypedParent != NULL)
-        {
-            FieldContainer *pOldParent =
-                _sfSceneObject.getValue         ();
-
-            UInt16 oldChildFieldId =
-                _sfSceneObject.getParentFieldPos();
-
-            if(pOldParent != NULL)
-            {
-                pOldParent->unlinkChild(this, oldChildFieldId);
-            }
-
-            editSField(SceneObjectFieldMask);
-
-            _sfSceneObject.setValue(static_cast<FieldContainer *>(pParent), childFieldId);
-
-            return true;
-        }
-
-        return false;
+        pThis->setSceneObject(source->getSceneObject());
     }
-
-    return Inherited::linkParent(pParent, childFieldId, parentFieldId);
 }
-
-bool BehaviorBase::unlinkParent(
-    FieldContainer * const pParent,
-    UInt16           const parentFieldId)
-{
-    if(parentFieldId == SceneObjectFieldId)
-    {
-        FieldContainer * pTypedParent =
-            dynamic_cast< FieldContainer * >(pParent);
-
-        if(pTypedParent != NULL)
-        {
-            if(_sfSceneObject.getValue() == pParent)
-            {
-                editSField(SceneObjectFieldMask);
-
-                _sfSceneObject.setValue(NULL, 0xFFFF);
-
-                return true;
-            }
-
-            FWARNING(("BehaviorBase::unlinkParent: "
-                      "Child <-> Parent link inconsistent.\n"));
-
-            return false;
-        }
-
-        return false;
-    }
-
-    return Inherited::unlinkParent(pParent, parentFieldId);
-}
-
-
 
 GetFieldHandlePtr BehaviorBase::getHandleSceneObject     (void) const
 {
-    SFParentFieldContainerPtr::GetHandlePtr returnValue;
+    SFUnrecSceneObjectPtr::GetHandlePtr returnValue(
+        new  SFUnrecSceneObjectPtr::GetHandle(
+             &_sfSceneObject,
+             this->getType().getFieldDesc(SceneObjectFieldId),
+             const_cast<BehaviorBase *>(this)));
 
     return returnValue;
 }
 
 EditFieldHandlePtr BehaviorBase::editHandleSceneObject    (void)
 {
-    EditFieldHandlePtr returnValue;
-
-    return returnValue;
-}
-
-GetFieldHandlePtr BehaviorBase::getHandleDependencies    (void) const
-{
-    MFString::GetHandlePtr returnValue(
-        new  MFString::GetHandle(
-             &_mfDependencies,
-             this->getType().getFieldDesc(DependenciesFieldId),
-             const_cast<BehaviorBase *>(this)));
-
-    return returnValue;
-}
-
-EditFieldHandlePtr BehaviorBase::editHandleDependencies   (void)
-{
-    MFString::EditHandlePtr returnValue(
-        new  MFString::EditHandle(
-             &_mfDependencies,
-             this->getType().getFieldDesc(DependenciesFieldId),
+    SFUnrecSceneObjectPtr::EditHandlePtr returnValue(
+        new  SFUnrecSceneObjectPtr::EditHandle(
+             &_sfSceneObject,
+             this->getType().getFieldDesc(SceneObjectFieldId),
              this));
 
+    returnValue->setSetMethod(
+        boost::bind(&Behavior::setSceneObject,
+                    static_cast<Behavior *>(this), _1));
 
-    editMField(DependenciesFieldMask, _mfDependencies);
+    editSField(SceneObjectFieldMask);
 
     return returnValue;
 }
@@ -454,16 +331,9 @@ void BehaviorBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
 
-#ifdef OSG_MT_CPTR_ASPECT
-    AspectOffsetStore oOffsets;
+    static_cast<Behavior *>(this)->setSceneObject(NULL);
 
-    _pAspectStore->fillOffsetArray(oOffsets, this);
-#endif
 
-#ifdef OSG_MT_CPTR_ASPECT
-    _mfDependencies.terminateShare(Thread::getCurrentAspect(),
-                                      oOffsets);
-#endif
 }
 
 

@@ -45,8 +45,8 @@
 \*****************************************************************************/
 
 
-#ifndef _KEAPPLICATIONSETTINGSFIELDS_H_
-#define _KEAPPLICATIONSETTINGSFIELDS_H_
+#ifndef _KELOGEVENTFIELDS_H_
+#define _KELOGEVENTFIELDS_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -61,16 +61,16 @@
 
 OSG_BEGIN_NAMESPACE
 
-class ApplicationSettings;
+class LogEvent;
 
-OSG_GEN_CONTAINERPTR(ApplicationSettings);
+OSG_GEN_CONTAINERPTR(LogEvent);
 
 /*! \ingroup GrpKabalaEngineFieldTraits
     \ingroup GrpLibOSGKabalaEngine
  */
 template <>
-struct FieldTraits<ApplicationSettings *> :
-    public FieldTraitsFCPtrBase<ApplicationSettings *>
+struct FieldTraits<LogEvent *> :
+    public FieldTraitsFCPtrBase<LogEvent *>
 {
   private:
 
@@ -78,7 +78,7 @@ struct FieldTraits<ApplicationSettings *> :
 
   public:
 
-    typedef FieldTraits<ApplicationSettings *>  Self;
+    typedef FieldTraits<LogEvent *>  Self;
 
     enum                        { Convertible = NotConvertible };
 
@@ -87,89 +87,48 @@ struct FieldTraits<ApplicationSettings *> :
     template<typename RefCountPolicy> inline
     static const Char8    *getSName     (void);
 
-//    static const char *getSName(void) { return "SFApplicationSettingsPtr"; }
-    template<typename RefCountPolicy> inline
-    static const Char8    *getMName     (void);
-
-//    static const char *getMName(void) { return "MFApplicationSettingsPtr"; }
+//    static const char *getSName(void) { return "SFLogEventPtr"; }
 };
 
 template<> inline
-const Char8 *FieldTraits<ApplicationSettings *, 0>::getSName<RecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<LogEvent *, 0>::getSName<RecordedRefCountPolicy>(void)
 {
-    return "SFRecApplicationSettingsPtr"; 
+    return "SFRecLogEventPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<ApplicationSettings *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<LogEvent *, 0>::getSName<UnrecordedRefCountPolicy>(void)
 {
-    return "SFUnrecApplicationSettingsPtr"; 
+    return "SFUnrecLogEventPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<ApplicationSettings *, 0>::getSName<WeakRefCountPolicy>(void)
+const Char8 *FieldTraits<LogEvent *, 0>::getSName<WeakRefCountPolicy>(void)
 {
-    return "SFWeakApplicationSettingsPtr"; 
+    return "SFWeakLogEventPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<ApplicationSettings *, 0>::getSName<NoRefCountPolicy>(void)
+const Char8 *FieldTraits<LogEvent *, 0>::getSName<NoRefCountPolicy>(void)
 {
-    return "SFUnrefdApplicationSettingsPtr"; 
+    return "SFUnrefdLogEventPtr"; 
 }
 
-template<> inline
-const Char8 *FieldTraits<ApplicationSettings *, 0>::getMName<RecordedRefCountPolicy>(void)
-{
-    return "MFRecApplicationSettingsPtr"; 
-}
-
-template<> inline
-const Char8 *FieldTraits<ApplicationSettings *, 0>::getMName<UnrecordedRefCountPolicy>(void)
-{
-    return "MFUnrecApplicationSettingsPtr"; 
-}
-
-template<> inline
-const Char8 *FieldTraits<ApplicationSettings *, 0>::getMName<WeakRefCountPolicy>(void)
-{
-    return "MFWeakApplicationSettingsPtr"; 
-}
-
-template<> inline
-const Char8 *FieldTraits<ApplicationSettings *, 0>::getMName<NoRefCountPolicy>(void)
-{
-    return "MFUnrefdApplicationSettingsPtr"; 
-}
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<ApplicationSettings *,
-                      RecordedRefCountPolicy  > SFRecApplicationSettingsPtr;
+typedef PointerSField<LogEvent *,
+                      RecordedRefCountPolicy  > SFRecLogEventPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<ApplicationSettings *,
-                      UnrecordedRefCountPolicy> SFUnrecApplicationSettingsPtr;
+typedef PointerSField<LogEvent *,
+                      UnrecordedRefCountPolicy> SFUnrecLogEventPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<ApplicationSettings *,
-                      WeakRefCountPolicy      > SFWeakApplicationSettingsPtr;
+typedef PointerSField<LogEvent *,
+                      WeakRefCountPolicy      > SFWeakLogEventPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<ApplicationSettings *,
-                      NoRefCountPolicy        > SFUncountedApplicationSettingsPtr;
-
-
-/*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<ApplicationSettings *,
-                      RecordedRefCountPolicy  > MFRecApplicationSettingsPtr;
-/*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<ApplicationSettings *,
-                      UnrecordedRefCountPolicy> MFUnrecApplicationSettingsPtr;
-/*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<ApplicationSettings *,
-                      WeakRefCountPolicy      > MFWeakApplicationSettingsPtr;
-/*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<ApplicationSettings *,
-                      NoRefCountPolicy        > MFUncountedApplicationSettingsPtr;
+typedef PointerSField<LogEvent *,
+                      NoRefCountPolicy        > SFUncountedLogEventPtr;
 
 
 
@@ -177,39 +136,21 @@ typedef PointerMField<ApplicationSettings *,
 #else // these are the doxygen hacks
 
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFRecApplicationSettingsPtr : 
-    public PointerSField<ApplicationSettings *,
+struct SFRecLogEventPtr : 
+    public PointerSField<LogEvent *,
                          RecordedRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFUnrecApplicationSettingsPtr : 
-    public PointerSField<ApplicationSettings *,
+struct SFUnrecLogEventPtr : 
+    public PointerSField<LogEvent *,
                          UnrecordedRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFWeakApplicationSettingsPtr :
-    public PointerSField<ApplicationSettings *,
+struct SFWeakLogEventPtr :
+    public PointerSField<LogEvent *,
                          WeakRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFUncountedApplicationSettingsPtr :
-    public PointerSField<ApplicationSettings *,
+struct SFUncountedLogEventPtr :
+    public PointerSField<LogEvent *,
                          NoRefCountPolicy> {};
-
-
-/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFRecApplicationSettingsPtr :
-    public PointerMField<ApplicationSettings *,
-                         RecordedRefCountPolicy  > {};
-/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFUnrecApplicationSettingsPtr :
-    public PointerMField<ApplicationSettings *,
-                         UnrecordedRefCountPolicy> {};
-/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFWeakApplicationSettingsPtr :
-    public PointerMField<ApplicationSettings *,
-                         WeakRefCountPolicy      > {};
-/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFUncountedApplicationSettingsPtr :
-    public PointerMField<ApplicationSettings *,
-                         NoRefCountPolicy        > {};
 
 
 
@@ -217,4 +158,4 @@ struct MFUncountedApplicationSettingsPtr :
 
 OSG_END_NAMESPACE
 
-#endif /* _KEAPPLICATIONSETTINGSFIELDS_H_ */
+#endif /* _KELOGEVENTFIELDS_H_ */

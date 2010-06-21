@@ -240,8 +240,8 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
         EventProducerFieldId,EventProducerFieldMask,
         true,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&@!Classname!@::invalidEditField),
-        static_cast     <FieldGetMethodSig >(&@!Classname!@::invalidGetField));
+        static_cast     <FieldEditMethodSig>(&@!Classname!@::editHandleEventProducer),
+        static_cast     <FieldGetMethodSig >(&@!Classname!@::getHandleEventProducer));
 
     oType.addInitialDesc(pDesc);
         @@endif // isRootProducer
@@ -273,8 +273,8 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
         EventProducerFieldId,EventProducerFieldMask,
         true,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&@!Classname!@::invalidEditField),
-        static_cast     <FieldGetMethodSig >(&@!Classname!@::invalidGetField));
+        static_cast     <FieldEditMethodSig>(&@!Classname!@::editHandleEventProducer),
+        static_cast     <FieldGetMethodSig >(&@!Classname!@::getHandleEventProducer));
 
     oType.addInitialDesc(pDesc);
         @@endif // isRootProducer
@@ -288,7 +288,7 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
     "@!Group!@",
     @!Namespace!@,
 @@if isAbstract
-    NULL,
+    "",
 @@else // isAbstract
     reinterpret_cast<PrototypeCreateF>(&@!Classname!@Base::createEmptyLocal),
 @@endif // isAbstract
@@ -322,7 +322,7 @@ EventProducerType @!Classname!@Base::_producerType(
 @@else 
     "@!parentProducer!@ProducerType",
 @@endif 
-    "",
+    NULL,
     InitEventProducerFunctor(),
     _methodDesc,
     sizeof(_methodDesc));
@@ -1243,6 +1243,34 @@ EditFieldHandlePtr @!Classname!@Base::editHandle@!field.Name:15!@(void)
 }
 
 @@EndFieldLoop@@
+@@if isRootProducer 
+
+GetFieldHandlePtr @!Classname!@Base::getHandleEventProducer        (void) const
+{
+    SFEventProducerPtr::GetHandlePtr returnValue(
+        new  SFEventProducerPtr::GetHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             const_cast<@!Classname!@Base *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr @!Classname!@Base::editHandleEventProducer       (void)
+{
+    SFEventProducerPtr::EditHandlePtr returnValue(
+        new  SFEventProducerPtr::EditHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             this));
+
+
+    editSField(EventProducerFieldMask);
+
+    return returnValue;
+}
+
+@@endif 
 
 #ifdef OSG_MT_CPTR_ASPECT
 void @!Classname!@Base::execSyncV(      FieldContainer    &oFrom,

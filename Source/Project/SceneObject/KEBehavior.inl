@@ -47,5 +47,21 @@
 //---------------------------------------------------------------------------
 
 OSG_BEGIN_NAMESPACE
+inline
+Behavior::DepBehaviorListener::DepBehaviorListener(BehaviorUnrecPtr TheBehavior) : _Behavior(TheBehavior)
+{
+}
+
+inline
+bool Behavior::isInitialized()
+{
+	return Behavior::initialized;
+}
+
+inline
+BehaviorType Behavior::getBehaviorType(void)
+{
+	return *TheBehaviorType;
+}
 
 OSG_END_NAMESPACE

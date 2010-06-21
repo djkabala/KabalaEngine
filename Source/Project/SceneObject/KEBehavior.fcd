@@ -11,29 +11,20 @@
 	decoratable="false"
 	useLocalIncludes="false"
 	libnamespace="KE"
-    childFields="multi"
-    authors="David Kabala (djkabala@gmail.com)                             "
+        authors="David Kabala (djkabala@gmail.com)                             "
 >
 The SceneObject.
-    <Field
+	<Field
 		name="SceneObject"
-		type="FieldContainer"
-		category="parentpointer"
+		type="SceneObject"
+		category="pointer"
 		cardinality="single"
 		visibility="external"
-		access="none"
+		fieldHeader="Project/SceneObject/KESceneObjectFields.h"
+		typeHeader="Project/SceneObject/KESceneObject.h"
+		access="protected"
 		defaultValue="NULL"
-        doRefCount="false"
-        passFieldMask="true"
 	>
 	</Field>
-	<Field
-		name="Dependencies"
-		type="std::string"
-		category="data"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
+	
 </FieldContainer>

@@ -42,14 +42,14 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class BehaviorType
+ **     class LogEvent
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#ifndef _KEBEHAVIORTYPEBASE_H_
-#define _KEBEHAVIORTYPEBASE_H_
+#ifndef _KELOGEVENTBASE_H_
+#define _KELOGEVENTBASE_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -58,33 +58,34 @@
 
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
+#include "KEConfig.h"
 
 //#include "OpenSG/OSGBaseTypes.h"
 
-#include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <OpenSG/OSGBaseFields.h>       // Name type
-#include <OpenSG/OSGSysFields.h>        // ID type
+#include <OpenSG/OSGEvent.h> // Parent
 
-#include "KEBehaviorTypeFields.h"
+#include <OpenSG/OSGBaseFields.h>       // Value type
+
+#include "KELogEventFields.h"
 
 OSG_BEGIN_NAMESPACE
 
-class BehaviorType;
+class LogEvent;
 
-//! \brief BehaviorType Base Class.
+//! \brief LogEvent Base Class.
 
-class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
+class KE_KABALAENGINE_DLLMAPPING LogEventBase : public Event
 {
   public:
 
-    typedef AttachmentContainer Inherited;
-    typedef AttachmentContainer ParentContainer;
+    typedef Event Inherited;
+    typedef Event ParentContainer;
 
     typedef Inherited::TypeObject TypeObject;
     typedef TypeObject::InitPhase InitPhase;
 
-    OSG_GEN_INTERNALPTR(BehaviorType);
+    OSG_GEN_INTERNALPTR(LogEvent);
 
     /*==========================  PUBLIC  =================================*/
 
@@ -92,24 +93,16 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
 
     enum
     {
-        NameFieldId = Inherited::NextFieldId,
-        DescriptionFieldId = NameFieldId + 1,
-        IDFieldId = DescriptionFieldId + 1,
-        NextFieldId = IDFieldId + 1
+        ValueFieldId = Inherited::NextFieldId,
+        NextFieldId = ValueFieldId + 1
     };
 
-    static const OSG::BitVector NameFieldMask =
-        (TypeTraits<BitVector>::One << NameFieldId);
-    static const OSG::BitVector DescriptionFieldMask =
-        (TypeTraits<BitVector>::One << DescriptionFieldId);
-    static const OSG::BitVector IDFieldMask =
-        (TypeTraits<BitVector>::One << IDFieldId);
+    static const OSG::BitVector ValueFieldMask =
+        (TypeTraits<BitVector>::One << ValueFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFString          SFNameType;
-    typedef MFString          MFDescriptionType;
-    typedef SFUInt32          SFIDType;
+    typedef SFString          SFValueType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -135,25 +128,16 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*! \{                                                                 */
 
 
-                  MFString            *editMFDescription    (void);
-            const MFString            *getMFDescription     (void) const;
-
-                  SFUInt32            *editSFID             (void);
-            const SFUInt32            *getSFID              (void) const;
+            const SFString            *getSFValue           (void) const;
 
 
-                  std::string         &editDescription    (const UInt32 index);
-            const std::string         &getDescription     (const UInt32 index) const;
-
-                  UInt32              &editID             (void);
-                  UInt32               getID              (void) const;
+            const std::string         &getValue           (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-            void setID             (const UInt32 value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -177,16 +161,16 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  BehaviorTypeTransitPtr  create          (void);
-    static  BehaviorType           *createEmpty     (void);
+    static  LogEventTransitPtr  create          (void);
+    static  LogEvent           *createEmpty     (void);
 
-    static  BehaviorTypeTransitPtr  createLocal     (
+    static  LogEventTransitPtr  createLocal     (
                                                BitVector bFlags = FCLocal::All);
 
-    static  BehaviorType            *createEmptyLocal(
+    static  LogEvent            *createEmptyLocal(
                                               BitVector bFlags = FCLocal::All);
 
-    static  BehaviorTypeTransitPtr  createDependent  (BitVector bFlags);
+    static  LogEventTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -213,24 +197,22 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFString          _sfName;
-    MFString          _mfDescription;
-    SFUInt32          _sfID;
+    SFString          _sfValue;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    BehaviorTypeBase(void);
-    BehaviorTypeBase(const BehaviorTypeBase &source);
+    LogEventBase(void);
+    LogEventBase(const LogEventBase &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~BehaviorTypeBase(void);
+    virtual ~LogEventBase(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -243,12 +225,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleName            (void) const;
-    EditFieldHandlePtr editHandleName           (void);
-    GetFieldHandlePtr  getHandleDescription     (void) const;
-    EditFieldHandlePtr editHandleDescription    (void);
-    GetFieldHandlePtr  getHandleID              (void) const;
-    EditFieldHandlePtr editHandleID             (void);
+    GetFieldHandlePtr  getHandleValue           (void) const;
+    EditFieldHandlePtr editHandleValue          (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -256,19 +234,17 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*! \{                                                                 */
 
 
-                  SFString            *editSFName           (void);
-            const SFString            *getSFName            (void) const;
+                  SFString            *editSFValue          (void);
 
 
-                  std::string         &editName           (void);
-            const std::string         &getName            (void) const;
+                  std::string         &editValue          (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-            void setName           (const std::string &value);
+            void setValue          (const std::string &value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -287,7 +263,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
                                  ConstFieldMaskArg  syncMode  ,
                            const UInt32             uiSyncInfo);
 
-            void execSync (      BehaviorTypeBase *pFrom,
+            void execSync (      LogEventBase *pFrom,
                                  ConstFieldMaskArg  whichField,
                                  AspectOffsetStore &oOffsets,
                                  ConstFieldMaskArg  syncMode  ,
@@ -327,11 +303,11 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const BehaviorTypeBase &source);
+    void operator =(const LogEventBase &source);
 };
 
-typedef BehaviorTypeBase *BehaviorTypeBaseP;
+typedef LogEventBase *LogEventBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEBEHAVIORTYPEBASE_H_ */
+#endif /* _KELOGEVENTBASE_H_ */

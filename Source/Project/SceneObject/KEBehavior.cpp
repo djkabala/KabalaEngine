@@ -63,11 +63,11 @@ OSG_BEGIN_NAMESPACE
 // regenerate the base file.
 
 /***************************************************************************\
- *                           Class variables                               *
+ *                           Class variables                               * 
 \***************************************************************************/
 
 /***************************************************************************\
- *                           Class methods                                 *
+ *                           Class methods                                 * 
 \***************************************************************************/
 
 void Behavior::initMethod(InitPhase ePhase)
@@ -80,9 +80,39 @@ void Behavior::initMethod(InitPhase ePhase)
 }
 
 
+
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
+
+void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
+{
+	UInt32 GenericMethodID = rootSceneObject->getScene()->registerNewGenericMethod(TheBehaviorType->getName()+"GenericMethod");
+}
+
+void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
+{
+	setSceneObject(rootSceneObject);
+
+	initialize(rootSceneObject);
+}
+
+void Behavior::setupDependency(BehaviorUnrecPtr behavior)
+{
+}
+
+void Behavior::setupDependant(BehaviorUnrecPtr behavior)
+{
+}
+
+void Behavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
+{
+}
+
+void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e)
+{
+	_Behavior->depBehaviorProducedMethod(e, e->getTypeId());
+}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -91,12 +121,16 @@ void Behavior::initMethod(InitPhase ePhase)
 /*----------------------- constructors & destructors ----------------------*/
 
 Behavior::Behavior(void) :
-    Inherited()
+    Inherited(),
+	_DepBehaviorListener(BehaviorUnrecPtr(this)),
+	initialized(false)
 {
 }
 
 Behavior::Behavior(const Behavior &source) :
-    Inherited(source)
+    Inherited(source),
+	_DepBehaviorListener(BehaviorUnrecPtr(this)),
+	initialized(false)
 {
 }
 

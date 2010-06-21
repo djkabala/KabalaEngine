@@ -552,13 +552,13 @@ void HelperPanel::PlayerMouseListener::mouseClicked(const MouseEventUnrecPtr e)
 
 void HelperPanel::keyTyped2(const KeyEventUnrecPtr e)
 {
-    if(e->getKey() == KeyEvent::KEY_X && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+    if(e->getKey() == KeyEvent::KEY_X && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
     {
         LuaManager::the()->runScript(std::string(_CodeTextArea->getText()));
         _ListOfCommands.push_back(std::string(_CodeTextArea->getText()));
         updateListBox();
     }
-    //if(e->getKey() == KeyEvent::KEY_C && (e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL))
+    //if(e->getKey() == KeyEvent::KEY_C && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
     //{
     //	//MainInternalWindow->setFocusedComponent(_CodeTextArea); // need to get the access to the maininternal window.. 
     //	_InfoTabPanel->setSelectedIndex(0);

@@ -42,7 +42,7 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class BehaviorType!
+ **     class LogEvent!
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
@@ -52,97 +52,56 @@ OSG_BEGIN_NAMESPACE
 
 //! access the type of the class
 inline
-OSG::FieldContainerType &BehaviorTypeBase::getClassType(void)
+OSG::FieldContainerType &LogEventBase::getClassType(void)
 {
     return _type;
 }
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 BehaviorTypeBase::getClassTypeId(void)
+OSG::UInt32 LogEventBase::getClassTypeId(void)
 {
     return _type.getId();
 }
 
 inline
-OSG::UInt16 BehaviorTypeBase::getClassGroupId(void)
+OSG::UInt16 LogEventBase::getClassGroupId(void)
 {
     return _type.getGroupId();
 }
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the value of the BehaviorType::_sfName field.
+//! Get the value of the LogEvent::_sfValue field.
 
 inline
-std::string &BehaviorTypeBase::editName(void)
+std::string &LogEventBase::editValue(void)
 {
-    editSField(NameFieldMask);
+    editSField(ValueFieldMask);
 
-    return _sfName.getValue();
+    return _sfValue.getValue();
 }
 
-//! Get the value of the BehaviorType::_sfName field.
+//! Get the value of the LogEvent::_sfValue field.
 inline
-const std::string &BehaviorTypeBase::getName(void) const
+const std::string &LogEventBase::getValue(void) const
 {
-    return _sfName.getValue();
+    return _sfValue.getValue();
 }
 
-//! Set the value of the BehaviorType::_sfName field.
+//! Set the value of the LogEvent::_sfValue field.
 inline
-void BehaviorTypeBase::setName(const std::string &value)
+void LogEventBase::setValue(const std::string &value)
 {
-    editSField(NameFieldMask);
+    editSField(ValueFieldMask);
 
-    _sfName.setValue(value);
+    _sfValue.setValue(value);
 }
-//! Get the value of the BehaviorType::_sfID field.
-
-inline
-UInt32 &BehaviorTypeBase::editID(void)
-{
-    editSField(IDFieldMask);
-
-    return _sfID.getValue();
-}
-
-//! Get the value of the BehaviorType::_sfID field.
-inline
-      UInt32  BehaviorTypeBase::getID(void) const
-{
-    return _sfID.getValue();
-}
-
-//! Set the value of the BehaviorType::_sfID field.
-inline
-void BehaviorTypeBase::setID(const UInt32 value)
-{
-    editSField(IDFieldMask);
-
-    _sfID.setValue(value);
-}
-
-//! Get the value of the \a index element the BehaviorType::_mfDescription field.
-inline
-const std::string &BehaviorTypeBase::getDescription(const UInt32 index) const
-{
-    return _mfDescription[index];
-}
-
-inline
-std::string &BehaviorTypeBase::editDescription(const UInt32 index)
-{
-    editMField(DescriptionFieldMask, _mfDescription);
-
-    return _mfDescription[index];
-}
-
 
 
 #ifdef OSG_MT_CPTR_ASPECT
 inline
-void BehaviorTypeBase::execSync (      BehaviorTypeBase *pFrom,
+void LogEventBase::execSync (      LogEventBase *pFrom,
                                         ConstFieldMaskArg  whichField,
                                         AspectOffsetStore &oOffsets,
                                         ConstFieldMaskArg  syncMode,
@@ -150,27 +109,18 @@ void BehaviorTypeBase::execSync (      BehaviorTypeBase *pFrom,
 {
     Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pFrom->_sfName);
-
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
-        _mfDescription.syncWith(pFrom->_mfDescription,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-        _sfID.syncWith(pFrom->_sfID);
+    if(FieldBits::NoField != (ValueFieldMask & whichField))
+        _sfValue.syncWith(pFrom->_sfValue);
 }
 #endif
 
 
 inline
-const Char8 *BehaviorTypeBase::getClassname(void)
+const Char8 *LogEventBase::getClassname(void)
 {
-    return "BehaviorType";
+    return "LogEvent";
 }
-OSG_GEN_CONTAINERPTR(BehaviorType);
+OSG_GEN_CONTAINERPTR(LogEvent);
 
 OSG_END_NAMESPACE
 
