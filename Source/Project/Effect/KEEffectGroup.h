@@ -59,6 +59,10 @@ class KE_KABALAENGINE_DLLMAPPING EffectGroup : public EffectGroupBase
     typedef EffectGroupBase Inherited;
     typedef EffectGroup     Self;
 
+    //overridden
+    void pushToEffectList(Effect * const value);
+    void setParentSceneObject(SceneObject* newParent);
+
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */

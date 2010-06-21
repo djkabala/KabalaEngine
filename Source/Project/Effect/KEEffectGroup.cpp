@@ -129,19 +129,17 @@ EffectGroup::~EffectGroup(void)
 
 /*----------------------------- class specific ----------------------------*/
 
+void EffectGroup::pushToEffectList(Effect * const value)
+{
+    Inherited::pushToEffectList(value);
+    const_cast<Effect*>(value)->setParentSceneObject(const_cast<SceneObject*>(getParentSceneObject()));
+}
+
 void EffectGroup::changed(ConstFieldMaskArg whichField, 
                             UInt32            origin,
                             BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
-
-    if((whichField & EffectListFieldMask) || (whichField & ParentSceneObjectFieldMask))
-    {
-        for(UInt32 i(0); i < getMFEffectList()->size(); ++i)
-        {
-            getEffectList(i)->setParentSceneObject(const_cast<SceneObject*>(getParentSceneObject()));
-        }
-    }
 }
 
 void EffectGroup::dump(      UInt32    ,

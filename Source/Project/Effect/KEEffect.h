@@ -148,12 +148,10 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     virtual void finished      (void);
     void producerEffectFinished(const EffectEventUnrecPtr e);
 
-
     typedef std::set<EffectListenerPtr> EffectListenerSet;
     typedef EffectListenerSet::iterator EffectListenerSetItor;
     typedef EffectListenerSet::const_iterator EffectListenerSetConstItor;
     EffectListenerSet _EffectListeners;
-
 
     // Variables should all be in EffectBase.
 

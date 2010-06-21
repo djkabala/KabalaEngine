@@ -64,4 +64,14 @@ The SceneObject.
 		defaultValue="NULL"
 	>
 	</Field>
+    <Field
+		name="Node"
+		type="Node"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="public"
+		defaultValue="NULL"
+	>
+	</Field>
 </FieldContainer>

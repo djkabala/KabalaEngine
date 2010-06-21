@@ -39,4 +39,15 @@
 
 OSG_BEGIN_NAMESPACE
 
+inline
+void EffectGroup::setParentSceneObject(SceneObject* newParent)
+{
+    _sfParentSceneObject.setValue(newParent,_sfParentSceneObject.getParentFieldPos());
+
+    for(UInt32 i(0); i < getMFEffectList()->size(); ++i)
+    {
+        getEffectList(i)->setParentSceneObject(const_cast<SceneObject*>(getParentSceneObject()));
+    }   
+}
+
 OSG_END_NAMESPACE
