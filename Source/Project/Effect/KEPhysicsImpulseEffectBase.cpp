@@ -58,6 +58,7 @@
 #include <OpenSG/OSGPhysicsBody.h>      // PhysicsBodies Class
 #include <OpenSG/OSGPhysicsWorld.h>     // PhysicsWorld Class
 #include <OpenSG/OSGPhysicsSpace.h>     // PhysicsSpace Class
+#include <OpenSG/OSGPhysicsHandler.h>   // PhysicsHandler Class
 
 #include "KEPhysicsImpulseEffectBase.h"
 #include "KEPhysicsImpulseEffect.h"
@@ -94,7 +95,7 @@ OSG_BEGIN_NAMESPACE
     
 */
 
-/*! \var PhysicsWorld *  PhysicsImpulseEffectBase::_sfPhysicsWorld
+/*! \var PhysicsHandler * PhysicsImpulseEffectBase::_sfPhysicsHandler
     
 */
 
@@ -162,15 +163,15 @@ void PhysicsImpulseEffectBase::classDescInserter(TypeObject &oType)
 
     oType.addInitialDesc(pDesc);
 
-    pDesc = new SFUnrecPhysicsWorldPtr::Description(
-        SFUnrecPhysicsWorldPtr::getClassType(),
-        "PhysicsWorld",
+    pDesc = new SFUnrecPhysicsHandlerPtr::Description(
+        SFUnrecPhysicsHandlerPtr::getClassType(),
+        "PhysicsHandler",
         "",
-        PhysicsWorldFieldId, PhysicsWorldFieldMask,
+        PhysicsHandlerFieldId, PhysicsHandlerFieldMask,
         false,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&PhysicsImpulseEffect::editHandlePhysicsWorld),
-        static_cast<FieldGetMethodSig >(&PhysicsImpulseEffect::getHandlePhysicsWorld));
+        static_cast<FieldEditMethodSig>(&PhysicsImpulseEffect::editHandlePhysicsHandler),
+        static_cast<FieldGetMethodSig >(&PhysicsImpulseEffect::getHandlePhysicsHandler));
 
     oType.addInitialDesc(pDesc);
 }
@@ -231,8 +232,8 @@ PhysicsImpulseEffectBase::TypeObject PhysicsImpulseEffectBase::_type(
     "\t>\n"
     "\t</Field>\n"
     "    <Field\n"
-    "\t\tname=\"PhysicsWorld\"\n"
-    "\t\ttype=\"PhysicsWorld\"\n"
+    "\t\tname=\"PhysicsHandler\"\n"
+    "\t\ttype=\"PhysicsHandler\"\n"
     "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"single\"\n"
     "\t\tvisibility=\"external\"\n"
@@ -302,17 +303,17 @@ SFUnrecPhysicsSpacePtr *PhysicsImpulseEffectBase::editSFPhysicsSpace   (void)
     return &_sfPhysicsSpace;
 }
 
-//! Get the PhysicsImpulseEffect::_sfPhysicsWorld field.
-const SFUnrecPhysicsWorldPtr *PhysicsImpulseEffectBase::getSFPhysicsWorld(void) const
+//! Get the PhysicsImpulseEffect::_sfPhysicsHandler field.
+const SFUnrecPhysicsHandlerPtr *PhysicsImpulseEffectBase::getSFPhysicsHandler(void) const
 {
-    return &_sfPhysicsWorld;
+    return &_sfPhysicsHandler;
 }
 
-SFUnrecPhysicsWorldPtr *PhysicsImpulseEffectBase::editSFPhysicsWorld   (void)
+SFUnrecPhysicsHandlerPtr *PhysicsImpulseEffectBase::editSFPhysicsHandler (void)
 {
-    editSField(PhysicsWorldFieldMask);
+    editSField(PhysicsHandlerFieldMask);
 
-    return &_sfPhysicsWorld;
+    return &_sfPhysicsHandler;
 }
 
 
@@ -390,9 +391,9 @@ UInt32 PhysicsImpulseEffectBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfPhysicsSpace.getBinSize();
     }
-    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
     {
-        returnValue += _sfPhysicsWorld.getBinSize();
+        returnValue += _sfPhysicsHandler.getBinSize();
     }
 
     return returnValue;
@@ -415,9 +416,9 @@ void PhysicsImpulseEffectBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfPhysicsSpace.copyToBin(pMem);
     }
-    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
     {
-        _sfPhysicsWorld.copyToBin(pMem);
+        _sfPhysicsHandler.copyToBin(pMem);
     }
 }
 
@@ -438,9 +439,9 @@ void PhysicsImpulseEffectBase::copyFromBin(BinaryDataHandler &pMem,
     {
         _sfPhysicsSpace.copyFromBin(pMem);
     }
-    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
     {
-        _sfPhysicsWorld.copyFromBin(pMem);
+        _sfPhysicsHandler.copyFromBin(pMem);
     }
 }
 
@@ -570,7 +571,7 @@ PhysicsImpulseEffectBase::PhysicsImpulseEffectBase(void) :
     _mfPhysicsBodies          (),
     _sfPhysicsWorld           (NULL),
     _sfPhysicsSpace           (NULL),
-    _sfPhysicsWorld           (NULL)
+    _sfPhysicsHandler         (NULL)
 {
 }
 
@@ -579,7 +580,7 @@ PhysicsImpulseEffectBase::PhysicsImpulseEffectBase(const PhysicsImpulseEffectBas
     _mfPhysicsBodies          (),
     _sfPhysicsWorld           (NULL),
     _sfPhysicsSpace           (NULL),
-    _sfPhysicsWorld           (NULL)
+    _sfPhysicsHandler         (NULL)
 {
 }
 
@@ -614,7 +615,7 @@ void PhysicsImpulseEffectBase::onCreate(const PhysicsImpulseEffect *source)
 
         pThis->setPhysicsSpace(source->getPhysicsSpace());
 
-        pThis->setPhysicsWorld(source->getPhysicsWorld());
+        pThis->setPhysicsHandler(source->getPhysicsHandler());
     }
 }
 
@@ -711,30 +712,30 @@ EditFieldHandlePtr PhysicsImpulseEffectBase::editHandlePhysicsSpace   (void)
     return returnValue;
 }
 
-GetFieldHandlePtr PhysicsImpulseEffectBase::getHandlePhysicsWorld    (void) const
+GetFieldHandlePtr PhysicsImpulseEffectBase::getHandlePhysicsHandler  (void) const
 {
-    SFUnrecPhysicsWorldPtr::GetHandlePtr returnValue(
-        new  SFUnrecPhysicsWorldPtr::GetHandle(
-             &_sfPhysicsWorld,
-             this->getType().getFieldDesc(PhysicsWorldFieldId),
+    SFUnrecPhysicsHandlerPtr::GetHandlePtr returnValue(
+        new  SFUnrecPhysicsHandlerPtr::GetHandle(
+             &_sfPhysicsHandler,
+             this->getType().getFieldDesc(PhysicsHandlerFieldId),
              const_cast<PhysicsImpulseEffectBase *>(this)));
 
     return returnValue;
 }
 
-EditFieldHandlePtr PhysicsImpulseEffectBase::editHandlePhysicsWorld   (void)
+EditFieldHandlePtr PhysicsImpulseEffectBase::editHandlePhysicsHandler (void)
 {
-    SFUnrecPhysicsWorldPtr::EditHandlePtr returnValue(
-        new  SFUnrecPhysicsWorldPtr::EditHandle(
-             &_sfPhysicsWorld,
-             this->getType().getFieldDesc(PhysicsWorldFieldId),
+    SFUnrecPhysicsHandlerPtr::EditHandlePtr returnValue(
+        new  SFUnrecPhysicsHandlerPtr::EditHandle(
+             &_sfPhysicsHandler,
+             this->getType().getFieldDesc(PhysicsHandlerFieldId),
              this));
 
     returnValue->setSetMethod(
-        boost::bind(&PhysicsImpulseEffect::setPhysicsWorld,
+        boost::bind(&PhysicsImpulseEffect::setPhysicsHandler,
                     static_cast<PhysicsImpulseEffect *>(this), _1));
 
-    editSField(PhysicsWorldFieldMask);
+    editSField(PhysicsHandlerFieldMask);
 
     return returnValue;
 }
@@ -782,7 +783,7 @@ void PhysicsImpulseEffectBase::resolveLinks(void)
 
     static_cast<PhysicsImpulseEffect *>(this)->setPhysicsSpace(NULL);
 
-    static_cast<PhysicsImpulseEffect *>(this)->setPhysicsWorld(NULL);
+    static_cast<PhysicsImpulseEffect *>(this)->setPhysicsHandler(NULL);
 
 
 }

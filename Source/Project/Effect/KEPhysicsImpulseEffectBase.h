@@ -68,6 +68,7 @@
 #include <OpenSG/OSGPhysicsBodyFields.h> // PhysicsBodies type
 #include <OpenSG/OSGPhysicsWorldFields.h> // PhysicsWorld type
 #include <OpenSG/OSGPhysicsSpaceFields.h> // PhysicsSpace type
+#include <OpenSG/OSGPhysicsHandlerFields.h> // PhysicsHandler type
 
 #include "KEPhysicsImpulseEffectFields.h"
 
@@ -98,8 +99,8 @@ class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffectBase : public Effect
         PhysicsBodiesFieldId = Inherited::NextFieldId,
         PhysicsWorldFieldId = PhysicsBodiesFieldId + 1,
         PhysicsSpaceFieldId = PhysicsWorldFieldId + 1,
-        PhysicsWorldFieldId = PhysicsSpaceFieldId + 1,
-        NextFieldId = PhysicsWorldFieldId + 1
+        PhysicsHandlerFieldId = PhysicsSpaceFieldId + 1,
+        NextFieldId = PhysicsHandlerFieldId + 1
     };
 
     static const OSG::BitVector PhysicsBodiesFieldMask =
@@ -108,15 +109,15 @@ class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffectBase : public Effect
         (TypeTraits<BitVector>::One << PhysicsWorldFieldId);
     static const OSG::BitVector PhysicsSpaceFieldMask =
         (TypeTraits<BitVector>::One << PhysicsSpaceFieldId);
-    static const OSG::BitVector PhysicsWorldFieldMask =
-        (TypeTraits<BitVector>::One << PhysicsWorldFieldId);
+    static const OSG::BitVector PhysicsHandlerFieldMask =
+        (TypeTraits<BitVector>::One << PhysicsHandlerFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
     typedef MFUnrecPhysicsBodyPtr MFPhysicsBodiesType;
     typedef SFUnrecPhysicsWorldPtr SFPhysicsWorldType;
     typedef SFUnrecPhysicsSpacePtr SFPhysicsSpaceType;
-    typedef SFUnrecPhysicsWorldPtr SFPhysicsWorldType;
+    typedef SFUnrecPhysicsHandlerPtr SFPhysicsHandlerType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -147,8 +148,8 @@ class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffectBase : public Effect
                   SFUnrecPhysicsWorldPtr *editSFPhysicsWorld   (void);
             const SFUnrecPhysicsSpacePtr *getSFPhysicsSpace   (void) const;
                   SFUnrecPhysicsSpacePtr *editSFPhysicsSpace   (void);
-            const SFUnrecPhysicsWorldPtr *getSFPhysicsWorld   (void) const;
-                  SFUnrecPhysicsWorldPtr *editSFPhysicsWorld   (void);
+            const SFUnrecPhysicsHandlerPtr *getSFPhysicsHandler (void) const;
+                  SFUnrecPhysicsHandlerPtr *editSFPhysicsHandler (void);
 
 
                   PhysicsBody * getPhysicsBodies  (const UInt32 index) const;
@@ -157,7 +158,7 @@ class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffectBase : public Effect
 
                   PhysicsSpace * getPhysicsSpace   (void) const;
 
-                  PhysicsWorld * getPhysicsWorld   (void) const;
+                  PhysicsHandler * getPhysicsHandler (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -166,7 +167,7 @@ class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffectBase : public Effect
 
             void setPhysicsWorld   (PhysicsWorld * const value);
             void setPhysicsSpace   (PhysicsSpace * const value);
-            void setPhysicsWorld   (PhysicsWorld * const value);
+            void setPhysicsHandler (PhysicsHandler * const value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -240,7 +241,7 @@ class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffectBase : public Effect
     MFUnrecPhysicsBodyPtr _mfPhysicsBodies;
     SFUnrecPhysicsWorldPtr _sfPhysicsWorld;
     SFUnrecPhysicsSpacePtr _sfPhysicsSpace;
-    SFUnrecPhysicsWorldPtr _sfPhysicsWorld;
+    SFUnrecPhysicsHandlerPtr _sfPhysicsHandler;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -275,8 +276,8 @@ class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffectBase : public Effect
     EditFieldHandlePtr editHandlePhysicsWorld   (void);
     GetFieldHandlePtr  getHandlePhysicsSpace    (void) const;
     EditFieldHandlePtr editHandlePhysicsSpace   (void);
-    GetFieldHandlePtr  getHandlePhysicsWorld    (void) const;
-    EditFieldHandlePtr editHandlePhysicsWorld   (void);
+    GetFieldHandlePtr  getHandlePhysicsHandler  (void) const;
+    EditFieldHandlePtr editHandlePhysicsHandler (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

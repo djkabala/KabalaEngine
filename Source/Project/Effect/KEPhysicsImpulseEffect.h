@@ -81,6 +81,15 @@ class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffect : public PhysicsImpulseEff
 
     // Variables should all be in PhysicsImpulseEffectBase.
 
+    void inheritedBegin    (void);
+    bool inheritedIsPlaying(void);
+    bool inheritedIsPaused (void);
+    void inheritedPause    (void);
+    void inheritedUnpause  (void);
+    void inheritedStop     (void);
+    void initEffect        (void);
+    void finished          (void);
+
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */

@@ -42,8 +42,26 @@ The SceneObject.
 	>
 	</Field>
     <Field
-		name="PhysicsWorld"
-		type="PhysicsWorld"
+		name="PhysicsHandler"
+		type="PhysicsHandler"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+    <Field
+		name="Force"
+		type="Vec3f"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="public"
+	>
+	</Field>
+    <Field
+		name="Direction"
+		type="Vec3f"
 		category="pointer"
 		cardinality="single"
 		visibility="external"

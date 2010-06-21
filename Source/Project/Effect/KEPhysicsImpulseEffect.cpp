@@ -75,6 +75,56 @@ void PhysicsImpulseEffect::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
+void PhysicsImpulseEffect::initEffect()
+{
+}
+
+void PhysicsImpulseEffect::inheritedBegin()
+{
+    Pnt3f Location;//get SO's loco
+    Vec3f Impulse;
+    for(UInt32 i(0) ; i<getMFPhysicsBodies()->size() ; ++i)
+    {
+        Vec3f Direction(getPhysicsBodies(i)->getPosition()-Location.subZero());
+
+        Real32 Distance(Direction.length());
+        Direction.normalize();
+
+        getPhysicsBodies(i)->addForce(getPhysicsWorld()->impulseToForce(getPhysicsHandler()->getStepSize(), Direction*Impulse*(1.0f/Distance)));
+        //The bodies need to be enabled because they may be auto-disabled when they
+        //come to rest
+        //The bodies are not re-enabled untill a new collision is detected
+        getPhysicsBodies(i)->setEnable(true);
+    }
+}
+
+bool PhysicsImpulseEffect::inheritedIsPlaying()
+{
+    return false;
+}
+
+bool PhysicsImpulseEffect::inheritedIsPaused()
+{
+    return false;
+}
+
+void PhysicsImpulseEffect::inheritedPause()
+{
+}
+
+void PhysicsImpulseEffect::inheritedUnpause()
+{
+}
+
+void PhysicsImpulseEffect::inheritedStop()
+{
+}
+
+void PhysicsImpulseEffect::finished()
+{
+}
+
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/

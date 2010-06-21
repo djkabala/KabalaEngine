@@ -105,20 +105,20 @@ void PhysicsImpulseEffectBase::setPhysicsSpace(PhysicsSpace * const value)
     _sfPhysicsSpace.setValue(value);
 }
 
-//! Get the value of the PhysicsImpulseEffect::_sfPhysicsWorld field.
+//! Get the value of the PhysicsImpulseEffect::_sfPhysicsHandler field.
 inline
-PhysicsWorld * PhysicsImpulseEffectBase::getPhysicsWorld(void) const
+PhysicsHandler * PhysicsImpulseEffectBase::getPhysicsHandler(void) const
 {
-    return _sfPhysicsWorld.getValue();
+    return _sfPhysicsHandler.getValue();
 }
 
-//! Set the value of the PhysicsImpulseEffect::_sfPhysicsWorld field.
+//! Set the value of the PhysicsImpulseEffect::_sfPhysicsHandler field.
 inline
-void PhysicsImpulseEffectBase::setPhysicsWorld(PhysicsWorld * const value)
+void PhysicsImpulseEffectBase::setPhysicsHandler(PhysicsHandler * const value)
 {
-    editSField(PhysicsWorldFieldMask);
+    editSField(PhysicsHandlerFieldMask);
 
-    _sfPhysicsWorld.setValue(value);
+    _sfPhysicsHandler.setValue(value);
 }
 
 //! Get the value of the \a index element the PhysicsImpulseEffect::_mfPhysicsBodies field.
@@ -151,8 +151,8 @@ void PhysicsImpulseEffectBase::execSync (      PhysicsImpulseEffectBase *pFrom,
     if(FieldBits::NoField != (PhysicsSpaceFieldMask & whichField))
         _sfPhysicsSpace.syncWith(pFrom->_sfPhysicsSpace);
 
-    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
-        _sfPhysicsWorld.syncWith(pFrom->_sfPhysicsWorld);
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
+        _sfPhysicsHandler.syncWith(pFrom->_sfPhysicsHandler);
 }
 #endif
 
