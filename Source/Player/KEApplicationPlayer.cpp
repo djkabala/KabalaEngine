@@ -53,9 +53,7 @@
 #include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGStringUtils.h>
 #include <OpenSG/OSGChunkMaterial.h>
-#include <OpenSG/OSGLineChunk.h>
 #include <OpenSG/OSGBlendChunk.h>
-#include <OpenSG/OSGMaterialChunk.h>
 #include <OpenSG/OSGIntersectAction.h>
 #include <OpenSG/OSGPolygonChunk.h>
 #include <OpenSG/OSGMaterialGroup.h>
@@ -696,7 +694,7 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
         updateWindowTitle();
 
         //Turn on Input Blocking
-        setSceneInputBlocking(true);
+        setSceneInputBlocking(MainApplication::the()->getSettings().get<bool>("player.debugger.block_scene_input"));
 
         _WasMouseHidden = !MainApplication::the()->getMainWindow()->getShowCursor();
         if(_WasMouseHidden)
@@ -1276,9 +1274,9 @@ void ApplicationPlayer::attachDebugViewport(void)
 
 ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
 {
-    LineChunkRefPtr WorkspaceGridLineChunk = LineChunk::create();
-    WorkspaceGridLineChunk->setWidth(1.0f);
-    WorkspaceGridLineChunk->setSmooth(true);
+    _WorkspaceGridLineChunk = LineChunk::create();
+    _WorkspaceGridLineChunk->setWidth(1.0f);
+    _WorkspaceGridLineChunk->setSmooth(true);
 
     BlendChunkRefPtr TheBlendChunk = BlendChunk::create();
     TheBlendChunk->setSrcFactor(GL_SRC_ALPHA);
@@ -1286,7 +1284,7 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
 
     ChunkMaterialRefPtr WorkspaceGridMaterial = ChunkMaterial::create();
     WorkspaceGridMaterial->addChunk (TheBlendChunk);
-    WorkspaceGridMaterial->addChunk (WorkspaceGridLineChunk);
+    WorkspaceGridMaterial->addChunk (_WorkspaceGridLineChunk);
 
     MaterialGroupRefPtr GridMatGroup = MaterialGroup::create();
     GridMatGroup->setMaterial(WorkspaceGridMaterial);
@@ -1438,6 +1436,91 @@ void ApplicationPlayer::setDebugView(UInt32 Index)
     _ContentPanel->setView(Index);
 }
 
+void ApplicationPlayer::updateFromSettings(void)
+{
+    //Undo History
+    if(MainApplication::the()->getSettings().get<bool>("player.debugger.undo_history.enable"))
+    {
+        _TheUndoManager->setLimit(MainApplication::the()->getSettings().get<Int32>("player.debugger.undo_history.max_length"));
+    }
+    else
+    {
+        _TheUndoManager->discardAllEdits();
+        _TheUndoManager->setLimit(0);
+    }
+
+    //Grid
+    if(MainApplication::the()->getSettings().get<bool>("player.debugger.grid.draw"))
+    {
+        _WorkspaceGrid->setTravMask(TypeTraits<UInt32>::getMax());
+    }
+    else
+    {
+        _WorkspaceGrid->setTravMask(0);
+    }
+    Vec2f GridSize(MainApplication::the()->getSettings().get<Vec2f>("player.debugger.grid.dimensions"));
+    NodeRefPtr GridGeoNode = makeGrid(GridSize.x(),
+                                      GridSize.y(), 
+                                      MainApplication::the()->getSettings().get<Real32>("player.debugger.grid.segment_length"), 
+                                      MainApplication::the()->getSettings().get<Color3f>("player.debugger.grid.color"));
+    _WorkspaceGrid->replaceChild(0, GridGeoNode);
+
+    _WorkspaceGridLineChunk->setWidth(MainApplication::the()->getSettings().get<Real32>("player.debugger.grid.line_thickness"));
+
+    //Selected Node
+        //Volume Box
+        if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.volume_box.draw"))
+        {
+            _HighlightVolumeBoxNode->setTravMask(TypeTraits<UInt32>::getMax());
+        }
+        else
+        {
+            _HighlightVolumeBoxNode->setTravMask(0);
+        }
+        Color4f bbColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.volume_box.color"));
+        GeoVec4fPropertyRefPtr bbColors =
+            dynamic_cast<GeoVec4fProperty*>(_HighlightVolumeBoxGeo->getColors());
+        for(UInt32 i(0) ; i<bbColors->size() ; ++i)
+        {
+            bbColors->setValue(bbColor,i);
+        }
+        _HighlightBoundBoxMatLineChunk->setWidth(MainApplication::the()->getSettings().get<Real32>("player.debugger.selected_node.volume_box.line_thickness"));
+
+        //Local Axis
+        if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.axis.draw"))
+        {
+            _HighlightAxisNode->setTravMask(TypeTraits<UInt32>::getMax());
+        }
+        else
+        {
+            _HighlightAxisNode->setTravMask(0);
+        }
+        Color4f xAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.x_axis_color"));
+        Color4f yAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.y_axis_color"));
+        Color4f zAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.z_axis_color"));
+        GeoVec4fPropertyRefPtr axisColors = dynamic_cast<GeoVec4fProperty*>(_HighlightAxisGeo->getColors());
+        axisColors->setValue(xAxisColor,0);
+        axisColors->setValue(xAxisColor,1);
+        axisColors->setValue(yAxisColor,2);
+        axisColors->setValue(yAxisColor,3);
+        axisColors->setValue(zAxisColor,4);
+        axisColors->setValue(zAxisColor,5);
+        _HighlightAxisLineChunk->setWidth(MainApplication::the()->getSettings().get<Real32>("player.debugger.selected_node.axis.line_thickness"));
+
+        //Tri Mesh
+        if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.mesh.draw"))
+        {
+            _WireframeNode->setTravMask(TypeTraits<UInt32>::getMax());
+        }
+        else
+        {
+            _WireframeNode->setTravMask(0);
+        }
+        _WireframeMatMaterialChunk->setEmission(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.mesh.color"));
+        _WireframeMatLineChunk->setWidth(MainApplication::the()->getSettings().get<Real32>("player.debugger.selected_node.mesh.line_thickness"));
+
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -1572,7 +1655,7 @@ void ApplicationPlayer::updateWireframeNode(void)
     //Clone the sub-tree rooted at the selected node
     if(_SelectedNode != NULL)
     {
-        dynamic_cast<VisitSubTree*>(_WireframeNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
+        dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
 
     }
 
@@ -1625,14 +1708,14 @@ void ApplicationPlayer::updateHighlightNode(void)
         //Get the side lengths of the volume
         Vec3f  Sides(max - min);
 
-        if(dynamic_cast<Geometry*>(_HighlightNode->getCore())->getPositions() == NULL)
+        /*if(_HighlightVolumeBoxGeo->getPositions() == NULL)
         {
             GeoPnt3fPropertyUnrecPtr Positions = GeoPnt3fProperty::create();
-            dynamic_cast<Geometry*>(_HighlightNode->getCore())->setPositions(Positions);
-        }
+            _HighlightVolumeBoxGeo->setPositions(Positions);
+        }*/
 
         GeoPnt3fPropertyUnrecPtr temphighlightPoints =
-            dynamic_cast<GeoPnt3fProperty*>(dynamic_cast<Geometry*>(_HighlightNode->getCore())->getPositions());
+            dynamic_cast<GeoPnt3fProperty*>(_HighlightVolumeBoxGeo->getPositions());
 
         //Update Bounding Box
         temphighlightPoints->setValue(Pnt3f(min[0], min[1], min[2]), 0);
@@ -1643,15 +1726,18 @@ void ApplicationPlayer::updateHighlightNode(void)
         temphighlightPoints->setValue(Pnt3f(max[0], min[1], max[2]), 5);
         temphighlightPoints->setValue(Pnt3f(min[0], max[1], max[2]), 6);
         temphighlightPoints->setValue(Pnt3f(max[0], max[1], max[2]), 7);
+        
+        temphighlightPoints =
+            dynamic_cast<GeoPnt3fProperty*>(_HighlightAxisGeo->getPositions());
 
         //Update Local Coordinate Axis
-        Real32 AxisScaling(Sides.maxValue() * 0.55f);
-        temphighlightPoints->setValue(NodeOrigin, 8);
-        temphighlightPoints->setValue(NodeOrigin + (NodeXDir* AxisScaling), 9);
-        temphighlightPoints->setValue(NodeOrigin, 10);
-        temphighlightPoints->setValue(NodeOrigin + (NodeYDir* AxisScaling), 11);
-        temphighlightPoints->setValue(NodeOrigin, 12);
-        temphighlightPoints->setValue(NodeOrigin + (NodeZDir* AxisScaling), 13);
+        Real32 AxisScaling(Sides.maxValue() * MainApplication::the()->getSettings().get<Real32>("player.debugger.selected_node.axis.relative_length"));
+        temphighlightPoints->setValue(NodeOrigin, 0);
+        temphighlightPoints->setValue(NodeOrigin + (NodeXDir* AxisScaling), 1);
+        temphighlightPoints->setValue(NodeOrigin, 2);
+        temphighlightPoints->setValue(NodeOrigin + (NodeYDir* AxisScaling), 3);
+        temphighlightPoints->setValue(NodeOrigin, 4);
+        temphighlightPoints->setValue(NodeOrigin + (NodeZDir* AxisScaling), 5);
 
         //Update the transformation for the wireframe node
         if(_SelectedNode != NULL &&
@@ -1664,10 +1750,30 @@ void ApplicationPlayer::updateHighlightNode(void)
 
 void ApplicationPlayer::createHighlightNode(void)
 {
+    createHighlightBoundBoxNode();
+    createHighlightAxisNode();
+    createHighlightTriMeshNode();
+
+    //Highlight Node
+    _HighlightNode = Node::create();
+    setName(_HighlightNode,"DEBUG_MODE_HIGHLIGHT_NODE");
+
+    GroupUnrecPtr HighlightCore = Group::create();
+    _HighlightNode->setCore(HighlightCore);
+    _HighlightNode->addChild(_HighlightVolumeBoxNode);
+    _HighlightNode->addChild(_HighlightAxisNode);
+    _HighlightNode->addChild(_WireframeNode);
+
+    //Update from settings
+    updateFromSettings();
+}
+
+void ApplicationPlayer::createHighlightBoundBoxNode(void)
+{
     //Create the Material for the Highlight
-    LineChunkRefPtr HighlightMatLineChunk = LineChunk::create();
-    HighlightMatLineChunk->setWidth(2.0f);
-    HighlightMatLineChunk->setSmooth(true);
+    _HighlightBoundBoxMatLineChunk = LineChunk::create();
+    _HighlightBoundBoxMatLineChunk->setWidth(2.0f);
+    _HighlightBoundBoxMatLineChunk->setSmooth(true);
 
     BlendChunkRefPtr TheBlendChunk = BlendChunk::create();
     TheBlendChunk->setSrcFactor(GL_SRC_ALPHA);
@@ -1675,30 +1781,17 @@ void ApplicationPlayer::createHighlightNode(void)
 
     ChunkMaterialRefPtr HighlightMaterial = ChunkMaterial::create();
     HighlightMaterial->addChunk (TheBlendChunk);
-    HighlightMaterial->addChunk (HighlightMatLineChunk);
+    HighlightMaterial->addChunk (_HighlightBoundBoxMatLineChunk);
 
-    //Create the VisitSubTree Node to use to render the wireframe of the
-    //selected node
-    VisitSubTreeRefPtr SelectedSubTree = VisitSubTree::create();
-
-    NodeRefPtr SelectedSubTreeNode = Node::create();
-    SelectedSubTreeNode->setCore(SelectedSubTree);
-    
     //Create the Geometry for the highlight
     GeoUInt8PropertyRecPtr type = GeoUInt8Property::create();
     //Volume bound box
     type->push_back(GL_LINE_STRIP);
     type->push_back(GL_LINES);
 
-    //Local Coordinage axis
-    type->push_back(GL_LINES);
-
     GeoUInt32PropertyRefPtr lens = GeoUInt32Property::create();
     //Volume bound box
     lens->push_back(10);
-    lens->push_back(6);
-
-    //Local Coordinage axis
     lens->push_back(6);
 
     GeoUInt32PropertyRefPtr index = GeoUInt32Property::create();
@@ -1722,14 +1815,6 @@ void ApplicationPlayer::createHighlightNode(void)
     index->push_back(3);
     index->push_back(7);
 
-    //Local Coordinage axis
-    index->push_back(8);
-    index->push_back(9);
-    index->push_back(10);
-    index->push_back(11);
-    index->push_back(12);
-    index->push_back(13);
-
     GeoPnt3fPropertyRefPtr highlightPoints = GeoPnt3fProperty::create();
     //Volume bound box
     highlightPoints->push_back(Pnt3f(-1, -1, -1));
@@ -1741,19 +1826,8 @@ void ApplicationPlayer::createHighlightNode(void)
     highlightPoints->push_back(Pnt3f(-1,  1,  1));
     highlightPoints->push_back(Pnt3f( 1,  1,  1));
 
-    //Local Coordinage axis
-    highlightPoints->push_back(Pnt3f( 0,  0,  0));
-    highlightPoints->push_back(Pnt3f( 1,  0,  0));
-    highlightPoints->push_back(Pnt3f( 0,  0,  0));
-    highlightPoints->push_back(Pnt3f( 0,  1,  0));
-    highlightPoints->push_back(Pnt3f( 0,  0,  0));
-    highlightPoints->push_back(Pnt3f( 0,  0,  1));
-
     //Colors
     Color4f BoundBoxColor(0.0f,1.0f,1.0,1.0f);
-    Color4f XAxisColor   (1.0f,0.0f,0.0,1.0f);
-    Color4f YAxisColor   (0.0f,1.0f,0.0,1.0f);
-    Color4f ZAxisColor   (0.0f,0.0f,1.0,1.0f);
 
     GeoVec4fPropertyRefPtr highlightColors = GeoVec4fProperty::create();
     //Volume bound box
@@ -1766,6 +1840,72 @@ void ApplicationPlayer::createHighlightNode(void)
     highlightColors->push_back(BoundBoxColor);
     highlightColors->push_back(BoundBoxColor);
 
+    _HighlightVolumeBoxGeo =Geometry::create();
+    _HighlightVolumeBoxGeo->setTypes     (type);
+    _HighlightVolumeBoxGeo->setLengths   (lens);
+    _HighlightVolumeBoxGeo->setIndices   (index);
+    _HighlightVolumeBoxGeo->setPositions (highlightPoints);
+    _HighlightVolumeBoxGeo->setColors    (highlightColors);
+    _HighlightVolumeBoxGeo->setMaterial  (HighlightMaterial);
+
+    //Highlight Bound Box Node
+    _HighlightVolumeBoxNode = Node::create();
+    setName(_HighlightVolumeBoxNode,"DEBUG_MODE_HIGHLIGHT_BOUND_BOX_NODE");
+
+    _HighlightVolumeBoxNode->setCore(_HighlightVolumeBoxGeo);
+}
+
+void ApplicationPlayer::createHighlightAxisNode(void)
+{
+    //Create the Material for the Highlight
+    _HighlightAxisLineChunk = LineChunk::create();
+    _HighlightAxisLineChunk->setWidth(2.0f);
+    _HighlightAxisLineChunk->setSmooth(true);
+
+    BlendChunkRefPtr TheBlendChunk = BlendChunk::create();
+    TheBlendChunk->setSrcFactor(GL_SRC_ALPHA);
+    TheBlendChunk->setDestFactor(GL_ONE_MINUS_SRC_ALPHA);
+
+    ChunkMaterialRefPtr HighlightMaterial = ChunkMaterial::create();
+    HighlightMaterial->addChunk (TheBlendChunk);
+    HighlightMaterial->addChunk (_HighlightAxisLineChunk);
+
+    //Create the Geometry for the highlight
+    GeoUInt8PropertyRecPtr type = GeoUInt8Property::create();
+    //Local Coordinage axis
+    type->push_back(GL_LINES);
+
+    GeoUInt32PropertyRefPtr lens = GeoUInt32Property::create();
+    //Local Coordinage axis
+    lens->push_back(6);
+
+    GeoUInt32PropertyRefPtr index = GeoUInt32Property::create();
+
+    //Local Coordinage axis
+    index->push_back(0);
+    index->push_back(1);
+    index->push_back(2);
+    index->push_back(3);
+    index->push_back(4);
+    index->push_back(5);
+
+    GeoPnt3fPropertyRefPtr highlightPoints = GeoPnt3fProperty::create();
+
+    //Local Coordinage axis
+    highlightPoints->push_back(Pnt3f( 0,  0,  0));
+    highlightPoints->push_back(Pnt3f( 1,  0,  0));
+    highlightPoints->push_back(Pnt3f( 0,  0,  0));
+    highlightPoints->push_back(Pnt3f( 0,  1,  0));
+    highlightPoints->push_back(Pnt3f( 0,  0,  0));
+    highlightPoints->push_back(Pnt3f( 0,  0,  1));
+
+    //Colors
+    Color4f XAxisColor   (1.0f,0.0f,0.0,1.0f);
+    Color4f YAxisColor   (0.0f,1.0f,0.0,1.0f);
+    Color4f ZAxisColor   (0.0f,0.0f,1.0,1.0f);
+
+    GeoVec4fPropertyRefPtr highlightColors = GeoVec4fProperty::create();
+
     //Local Coordinage axis
     highlightColors->push_back(XAxisColor);
     highlightColors->push_back(XAxisColor);
@@ -1774,18 +1914,40 @@ void ApplicationPlayer::createHighlightNode(void)
     highlightColors->push_back(ZAxisColor);
     highlightColors->push_back(ZAxisColor);
 
-    GeometryRefPtr geo=Geometry::create();
-    geo->setTypes     (type);
-    geo->setLengths   (lens);
-    geo->setIndices   (index);
-    geo->setPositions (highlightPoints);
-    geo->setColors    (highlightColors);
-    geo->setMaterial  (HighlightMaterial);
+    _HighlightAxisGeo =Geometry::create();
+    _HighlightAxisGeo->setTypes     (type);
+    _HighlightAxisGeo->setLengths   (lens);
+    _HighlightAxisGeo->setIndices   (index);
+    _HighlightAxisGeo->setPositions (highlightPoints);
+    _HighlightAxisGeo->setColors    (highlightColors);
+    _HighlightAxisGeo->setMaterial  (HighlightMaterial);
+
+    //Highlight Bound Box Node
+    _HighlightAxisNode = Node::create();
+    setName(_HighlightAxisNode,"DEBUG_MODE_HIGHLIGHT_AXIS_NODE");
+
+    _HighlightAxisNode->setCore(_HighlightAxisGeo);
+}
+
+void ApplicationPlayer::createHighlightTriMeshNode(void)
+{
+
+    //Create the VisitSubTree Node to use to render the wireframe of the
+    //selected node
+    VisitSubTreeRefPtr SelectedSubTree = VisitSubTree::create();
+
+    NodeRefPtr SelectedSubTreeNode = Node::create();
+    SelectedSubTreeNode->setCore(SelectedSubTree);
+    
 
     //Create the Material for the Mesh Highlight
-    LineChunkRefPtr WireframeMatLineChunk = LineChunk::create();
-    WireframeMatLineChunk->setWidth(1.0f);
-    WireframeMatLineChunk->setSmooth(true);
+    _WireframeMatLineChunk = LineChunk::create();
+    _WireframeMatLineChunk->setWidth(1.0f);
+    _WireframeMatLineChunk->setSmooth(true);
+
+    BlendChunkRefPtr TheBlendChunk = BlendChunk::create();
+    TheBlendChunk->setSrcFactor(GL_SRC_ALPHA);
+    TheBlendChunk->setDestFactor(GL_ONE_MINUS_SRC_ALPHA);
 
     PolygonChunkRefPtr WireframeMatPolygonChunk = PolygonChunk::create();
     WireframeMatPolygonChunk->setCullFace(GL_NONE);
@@ -1796,43 +1958,37 @@ void ApplicationPlayer::createHighlightNode(void)
     WireframeMatPolygonChunk->setOffsetFill(true);
 
     Color4f WireframeColor(1.0f,0.0f,1.0f,1.0f);
-    MaterialChunkRefPtr WireframeMatMaterialChunk = MaterialChunk::create();
-    WireframeMatMaterialChunk->setAmbient (Color4f(0.0f,0.0f,0.0f,1.0f));
-    WireframeMatMaterialChunk->setDiffuse (Color4f(0.0f,0.0f,0.0f,1.0f));
-    WireframeMatMaterialChunk->setSpecular(Color4f(0.0f,0.0f,0.0f,1.0f));
-    WireframeMatMaterialChunk->setEmission(WireframeColor);
-    WireframeMatMaterialChunk->setLit(true);
+    _WireframeMatMaterialChunk = MaterialChunk::create();
+    _WireframeMatMaterialChunk->setAmbient (Color4f(0.0f,0.0f,0.0f,1.0f));
+    _WireframeMatMaterialChunk->setDiffuse (Color4f(0.0f,0.0f,0.0f,1.0f));
+    _WireframeMatMaterialChunk->setSpecular(Color4f(0.0f,0.0f,0.0f,1.0f));
+    _WireframeMatMaterialChunk->setEmission(WireframeColor);
+    _WireframeMatMaterialChunk->setLit(true);
 
     ChunkMaterialRefPtr WireframeMaterial = ChunkMaterial::create();
     WireframeMaterial->addChunk (TheBlendChunk);
     WireframeMaterial->addChunk (WireframeMatPolygonChunk);
-    WireframeMaterial->addChunk (WireframeMatMaterialChunk);
-    WireframeMaterial->addChunk (WireframeMatLineChunk);
+    WireframeMaterial->addChunk (_WireframeMatMaterialChunk);
+    WireframeMaterial->addChunk (_WireframeMatLineChunk);
 
     //MaterialGroup
     MaterialGroupRefPtr WireframeMaterialGroup = MaterialGroup::create(); 
     WireframeMaterialGroup->setMaterial(WireframeMaterial);
 
     //Mesh Highlight Node
-    _WireframeNode = Node::create();
-    setName(_WireframeNode,"DEBUG_MODE_MESH_HIGHLIGHT_NODE");
-    _WireframeNode->setCore(WireframeMaterialGroup);
+    _WireframeMatGroupNode = Node::create();
+    setName(_WireframeMatGroupNode,"DEBUG_MODE_MESH_HIGHLIGHT_MATGROUP_NODE");
+    _WireframeMatGroupNode->setCore(WireframeMaterialGroup);
 
-    _WireframeNode->addChild(SelectedSubTreeNode);
+    _WireframeMatGroupNode->addChild(SelectedSubTreeNode);
 
     //Mesh Highlight Transformation Node
     _WireframeTransform = Transform::create();
 
-    NodeRefPtr WireframeTransfromationNode = Node::create();
-    WireframeTransfromationNode->setCore(_WireframeTransform);
-    WireframeTransfromationNode->addChild(_WireframeNode);
-
-    //Highlight Node
-    _HighlightNode = Node::create();
-    setName(_HighlightNode,"DEBUG_MODE_HIGHLIGHT_NODE");
-
-    _HighlightNode->setCore(geo);
-    _HighlightNode->addChild(WireframeTransfromationNode);
+    _WireframeNode = Node::create();
+    setName(_WireframeNode,"DEBUG_MODE_MESH_HIGHLIGHT_NODE");
+    _WireframeNode->setCore(_WireframeTransform);
+    _WireframeNode->addChild(_WireframeMatGroupNode);
 }
 
 void ApplicationPlayer::selectNode(const Pnt2f& ViewportPoint)

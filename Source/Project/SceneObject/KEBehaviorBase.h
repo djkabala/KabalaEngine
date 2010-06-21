@@ -65,8 +65,7 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <OpenSG/OSGFieldContainerFields.h> // SceneObject type
-#include <OpenSG/OSGBaseFields.h>       // Dependencies type
+#include "Project/SceneObject/KESceneObjectFields.h" // SceneObject type
 
 #include "KEBehaviorFields.h"
 
@@ -95,19 +94,15 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     enum
     {
         SceneObjectFieldId = Inherited::NextFieldId,
-        DependenciesFieldId = SceneObjectFieldId + 1,
-        NextFieldId = DependenciesFieldId + 1
+        NextFieldId = SceneObjectFieldId + 1
     };
 
     static const OSG::BitVector SceneObjectFieldMask =
         (TypeTraits<BitVector>::One << SceneObjectFieldId);
-    static const OSG::BitVector DependenciesFieldMask =
-        (TypeTraits<BitVector>::One << DependenciesFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFParentFieldContainerPtr SFSceneObjectType;
-    typedef MFString          MFDependenciesType;
+    typedef SFUnrecSceneObjectPtr SFSceneObjectType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -126,30 +121,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     virtual const FieldContainerType &getType         (void) const;
 
     virtual       UInt32              getContainerSize(void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-
-                  MFString            *editMFDependencies   (void);
-            const MFString            *getMFDependencies    (void) const;
-
-
-                  std::string         &editDependencies   (const UInt32 index);
-            const std::string         &getDependencies    (const UInt32 index) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -177,8 +148,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFParentFieldContainerPtr _sfSceneObject;
-    MFString          _mfDependencies;
+    SFUnrecSceneObjectPtr _sfSceneObject;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -200,17 +170,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                     onCreate                                */
     /*! \{                                                                 */
 
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name Parent linking                                               */
-    /*! \{                                                                 */
-
-    virtual bool linkParent  (FieldContainer * const pParent,
-                              UInt16           const childFieldId,
-                              UInt16           const parentFieldId);
-    virtual bool unlinkParent(FieldContainer * const pParent,
-                              UInt16           const parentFieldId);
+    void onCreate(const Behavior *source = NULL);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -219,8 +179,29 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
 
     GetFieldHandlePtr  getHandleSceneObject     (void) const;
     EditFieldHandlePtr editHandleSceneObject    (void);
-    GetFieldHandlePtr  getHandleDependencies    (void) const;
-    EditFieldHandlePtr editHandleDependencies   (void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Get                                 */
+    /*! \{                                                                 */
+
+            const SFUnrecSceneObjectPtr *getSFSceneObject     (void) const;
+                  SFUnrecSceneObjectPtr *editSFSceneObject    (void);
+
+
+                  SceneObject * getSceneObject    (void) const;
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Set                                 */
+    /*! \{                                                                 */
+
+            void setSceneObject    (SceneObject * const value);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
+    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -276,4 +257,4 @@ typedef BehaviorBase *BehaviorBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEBEHAVIORBASE_H_ */
+#endif /* _OSGBEHAVIORBASE_H_ */

@@ -52,7 +52,7 @@ The SceneObject.
 	</Field>
     <Field
 		name="Force"
-		type="Vec3f"
+		type="Real32"
 		category="pointer"
 		cardinality="single"
 		visibility="external"
