@@ -54,6 +54,7 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KESceneObject.h"
+#include "KEBehavior.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -63,7 +64,7 @@ OSG_BEGIN_NAMESPACE
 // regenerate the base file.
 
 /***************************************************************************\
- *                           Class variables                               *
+ *                           Class variables                               * 
 \***************************************************************************/
 
 /***************************************************************************\
@@ -80,10 +81,10 @@ void SceneObject::initMethod(InitPhase ePhase)
 }
 BehaviorUnrecPtr SceneObject::getBehaviors (UInt32 index)
 {
-	if(index >= _mfBehaviors.size())
+	if(index >= getMFBehaviors()->size())
 	{
 		SWARNING << "Scene Object attempted to access a index of MFBehaviors that doesn't exist. Returning last index of MFBehaviors!" << std::endl;
-		index = _mfBehaviors.size() - 1;
+		index = getMFBehaviors()->size() - 1;
 	}
 
 	return _mfBehaviors[index];
@@ -97,7 +98,7 @@ void SceneObject::InitializeAll()
 {
 	SLOG << "Initializing All Behaviors"  << std::endl;
 
-	for(UInt32 i = 0; i < _mfBehaviors.size(); i++)
+	for(UInt32 i = 0; i < getMFBehaviors()->size(); i++)
 	{
 		getBehaviors(i)->addedToSceneObject(SceneObjectUnrecPtr(this));
 	}
@@ -107,7 +108,7 @@ void SceneObject::InitializeBehaviors()
 {
 	SLOG << "Initializing all uninitialized behaviors"  << std::endl;
 
-	for(UInt32 i = 0; i < _mfBehaviors.size(); i++)
+	for(UInt32 i = 0; i < getMFBehaviors()->size(); i++)
 	{
 		if(!getBehaviors(i)->isInitialized())
 		{
@@ -117,7 +118,7 @@ void SceneObject::InitializeBehaviors()
 }
 
 /*-------------------------------------------------------------------------*\
- -  private                                                                 -
+ -  private                                                                -
 \*-------------------------------------------------------------------------*/
 
 /*----------------------- constructors & destructors ----------------------*/

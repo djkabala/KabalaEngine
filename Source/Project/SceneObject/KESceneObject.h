@@ -127,6 +127,7 @@ OSG_END_NAMESPACE
 #include "Project/SceneObject/KEBehavior.h" // Behaviors Class
 #include <OpenSG/OSGNode.h>             // Node Class
 #include "Project/Effect/KEEffect.h"    // AttachedEffects Class
+#include "Project/Scene/KEScene.h"
 #include "KESceneObjectBase.inl"
 #include "KESceneObject.inl"
 

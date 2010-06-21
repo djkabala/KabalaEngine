@@ -55,6 +55,7 @@
 #include <OpenSG/OSGGenericEvent.h>
 #include <OpenSG/OSGEvent.h>
 #include <OpenSG/OSGEventListener.h>
+#include "KEBehaviorType.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -81,6 +82,9 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 	bool initialized;
 	bool isInitialized();
 
+	BehaviorType getBehaviorType(void);
+
+	BehaviorType *TheBehaviorType;
 
 
     /*---------------------------------------------------------------------*/

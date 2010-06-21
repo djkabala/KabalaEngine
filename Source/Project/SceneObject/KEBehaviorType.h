@@ -40,7 +40,7 @@
 #define _KEBEHAVIORTYPE_H_
 
 #include "OSGConfig.h"
-#include "OSGBaseDef.h"
+#include "KEKabalaEngineDef.h"
 
 #include "OSGBaseTypes.h"
 
@@ -66,25 +66,24 @@ class MethodDescription;
  */
 typedef boost::function<void ( void )> InitEventProducerFunctor;
 
-class OSG_BASE_DLLMAPPING BehaviorType : public TypeBase
+class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 {
     /*==========================  PUBLIC  =================================*/
 
   public :
+    typedef TypeBase Inherited;
 
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
-   
+
     BehaviorType(const std::string                &szName,
                        const std::string    &szParentName      = "",
-                       const std::string    &szGroupName       = "",
-                       //PrototypeCreateF    fPrototypeCreate  = NULL,
-                       InitEventProducerFunctor      fInitMethod       = InitEventProducerFunctor(),
-                       MethodDescription **pDesc             = NULL,
-                       UInt32              uiDescByteCounter = 0);
+					   std::vector<BehaviorType> bDependencies = std::vector<BehaviorType>());
 
     BehaviorType(const BehaviorType &source);
+
+	std::string getName();
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -98,7 +97,6 @@ class OSG_BASE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name                  Type Information                            */
     /*! \{                                                                 */
 
-    UInt16  getGroupId(void) const;
     BehaviorType *getParent (void) const;
 
     /*! \}                                                                 */
@@ -106,26 +104,10 @@ class OSG_BASE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name                 Description                                  */
     /*! \{                                                                 */
 
-          MethodDescription *getMethodDescription (UInt32 uiMethodId);
-    const MethodDescription *getMethodDescription (UInt32 uiMethodId) const;
-
-          MethodDescription *findMethodDescription(const std::string &szMethodName);
-
-    const MethodDescription *findMethodDescription(
-        const std::string &szMethodName) const; 
-
-    UInt32                 getNumMethodDescs(void) const;
-
-    UInt32                 addDescription  (const MethodDescription &desc     );
-    bool                   subDescription  (      UInt32            uiMethodId);
-
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                 Prototype                                    */
     /*! \{                                                                 */
-
-    //FieldContainerPtr getPrototype(void                        ) const;
-    //bool              setPrototype(FieldContainerPtr pPrototype);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -150,47 +132,30 @@ class OSG_BASE_DLLMAPPING BehaviorType : public TypeBase
 
   protected:
 
-    typedef std::map   <std::string,  MethodDescription *> DescMap;
-    typedef std::vector<              MethodDescription *> DescVec;
-
-    typedef DescMap::iterator                             DescMapIt;
-    typedef DescVec::iterator                             DescVecIt;
-
-    typedef DescMap::const_iterator                       DescMapConstIt;
-    typedef DescVec::const_iterator                       DescVecConstIt;
-
     /*---------------------------------------------------------------------*/
     /*! \name                      Member                                  */
     /*! \{                                                                 */
 
-    UInt16              _uiGroupId;
-    std::string            _szGroupName;
-
     bool                _bInitialized;
+
+	std::vector<BehaviorType>	_bDependencies;
+	std::vector<BehaviorType>	_bDependents;
 
     BehaviorType *_pParent;
     std::string                _szParentName;
-
-    MethodDescription  **_pDesc;
-    UInt32              _uiDescByteCounter;
-
-    DescMap             _mDescMap;
-    DescVec             _vDescVec;
+	std::string				   _bName;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Register                                  */
     /*! \{                                                                 */
 
-    void registerType(const std::string &szGroupName);
+    void registerType();
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name             Intialization / Termination                      */
     /*! \{                                                                 */
-
-    bool initMethods      (void);
-    bool initParentMethods(void);
 
     bool initialize      (void);
     void terminate       (void);
@@ -206,12 +171,6 @@ class OSG_BASE_DLLMAPPING BehaviorType : public TypeBase
 
     /*!\brief prohibit default function (move to 'public' if needed) */
     void operator =(const BehaviorType &source);
-};
-
-struct OSG_BASE_DLLMAPPING MethodDescriptionPLT
-{
-    bool operator()(const MethodDescription *pElemDesc1, 
-                    const MethodDescription *pElemDesc2) const;
 };
 
 OSG_END_NAMESPACE

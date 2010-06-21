@@ -54,7 +54,7 @@ OSG_BEGIN_NAMESPACE
 //  Class
 //---------------------------------------------------------------------------
 
-OSG_SINGLETON_INST(BehaviorFactory, addPostFactoryExitFunction)
+OSG_SINGLETON_INST(BehaviorFactoryBase, addPostFactoryExitFunction)
 
 template class SingletonHolder<BehaviorFactory>;
 
@@ -78,7 +78,7 @@ template class SingletonHolder<BehaviorFactory>;
  -  protected                                                              -
 \*-------------------------------------------------------------------------*/
 
-void BehaviorFactory::writeTypeDot(FILE     *pOut,
+void BehaviorFactoryBase::writeTypeDot(FILE     *pOut,
                                    TypeBase *pTypeBase)
 {
     fprintf(pOut, "    OpenSG%s [shape=record,label=\"%s - %s\"]\n", 
@@ -113,7 +113,7 @@ void BehaviorFactory::writeTypeDot(FILE     *pOut,
 
 /*------------- constructors & destructors --------------------------------*/
 
-BehaviorFactory::BehaviorFactory(void) :
+BehaviorFactoryBase::BehaviorFactoryBase(void) :
      Inherited    ("EventProducerFactory"),
     _vTypeNameMaps(             ),
     _vTypeStore   (             )
@@ -126,7 +126,7 @@ BehaviorFactory::BehaviorFactory(void) :
     FactoryController::the()->registerFactory(this);
 }
 
-BehaviorFactory::BehaviorFactory(const Char8 *szName) :
+BehaviorFactoryBase::BehaviorFactoryBase(const Char8 *szName) :
      Inherited    (szName),
     _vTypeNameMaps(      ),
     _vTypeStore   (      )
@@ -139,11 +139,11 @@ BehaviorFactory::BehaviorFactory(const Char8 *szName) :
     FactoryController::the()->registerFactory(this);
 }
 
-BehaviorFactory::~BehaviorFactory(void)
+BehaviorFactoryBase::~BehaviorFactoryBase(void)
 {
 }
 
-bool BehaviorFactory::initialize(void)
+bool BehaviorFactoryBase::initialize(void)
 {
     TypeStoreIt typeIt  = _vTypeStore.begin();
     TypeStoreIt typeEnd = _vTypeStore.end  ();
@@ -159,12 +159,12 @@ bool BehaviorFactory::initialize(void)
     return true;
 }
 
-bool BehaviorFactory::initializeFactoryPost(void)
+bool BehaviorFactoryBase::initializeFactoryPost(void)
 {
     return true;
 }
 
-bool BehaviorFactory::terminate(void)
+bool BehaviorFactoryBase::terminate(void)
 {
     for(UInt32 i = 0; i < _vTypeNameMaps.size(); ++i)
     {
@@ -176,7 +176,7 @@ bool BehaviorFactory::terminate(void)
     return true;
 }
 
-bool BehaviorFactory::onLoadInitialize(void)
+bool BehaviorFactoryBase::onLoadInitialize(void)
 {
     return true;
 }
@@ -185,7 +185,7 @@ bool BehaviorFactory::onLoadInitialize(void)
  -  public                                                                 -
 \*-------------------------------------------------------------------------*/
 
-UInt32 BehaviorFactory::registerType(TypeBase *pType)
+UInt32 BehaviorFactoryBase::registerType(TypeBase *pType)
 {
     UInt32 returnValue = 0;
 
@@ -251,7 +251,7 @@ UInt32 BehaviorFactory::registerType(TypeBase *pType)
     return returnValue;
 }
 
-UInt32 BehaviorFactory::findTypeId(const Char8 *szName,
+UInt32 BehaviorFactoryBase::findTypeId(const Char8 *szName,
                                    const UInt32 uiNameSpace)
 {
     TypeNameMapConstIt typeIt;
@@ -272,7 +272,7 @@ UInt32 BehaviorFactory::findTypeId(const Char8 *szName,
     return uiTypeId;
 }
 
-TypeBase *BehaviorFactory::findType(UInt32 uiTypeId)
+TypeBase *BehaviorFactoryBase::findType(UInt32 uiTypeId)
 {
     if(uiTypeId < _vTypeStore.size())
     {
@@ -284,7 +284,7 @@ TypeBase *BehaviorFactory::findType(UInt32 uiTypeId)
     }
 }
 
-TypeBase *BehaviorFactory::findType(const Char8    *szName,
+TypeBase *BehaviorFactoryBase::findType(const Char8    *szName,
                                     const UInt32    uiNameSpace)
 {
     UInt32 uiTypeId = findTypeId(szName, uiNameSpace);
@@ -292,12 +292,12 @@ TypeBase *BehaviorFactory::findType(const Char8    *szName,
     return findType(uiTypeId);
 }
 
-UInt32 BehaviorFactory::getNumTypes(void)
+UInt32 BehaviorFactoryBase::getNumTypes(void)
 {
     return _vTypeStore.size();
 }
 
-void BehaviorFactory::writeTypeGraph(FILE *pOut)
+void BehaviorFactoryBase::writeTypeGraph(FILE *pOut)
 {
     if(pOut == NULL)
         return;
@@ -323,7 +323,7 @@ void BehaviorFactory::writeTypeGraph(FILE *pOut)
     fprintf(pOut, "}\n");
 }
 
-void BehaviorFactory::writeTypeGraph(const Char8 *szFilename)
+void BehaviorFactoryBase::writeTypeGraph(const Char8 *szFilename)
 {
     if(szFilename == NULL)
         return;

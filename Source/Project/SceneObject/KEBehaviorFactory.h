@@ -52,16 +52,15 @@
 OSG_BEGIN_NAMESPACE
 
 //---------------------------------------------------------------------------
-//  Forward References
-//---------------------------------------------------------------------------
-
-
-//---------------------------------------------------------------------------
-//   Types
+//  Forward References                                                       
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-//  Class
+//   Types                                                                   
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+//  Class                                                                    
 //---------------------------------------------------------------------------
 
 /*! \brief Accessible via #TypeFactory
@@ -70,7 +69,7 @@ OSG_BEGIN_NAMESPACE
     \ingroup GrpLibOSGBase
  */
 
-class KE_KABALAENGINE_DLLMAPPING BehaviorFactory : public FactoryBase
+class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
 {
   public:
 
@@ -140,9 +139,9 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactory : public FactoryBase
     //-----------------------------------------------------------------------
 
     //! \brief prohibit default function (move to 'public' if needed) 
-    BehaviorFactory(const BehaviorFactory &source);
+    BehaviorFactoryBase(const BehaviorFactoryBase &source);
     //! \brief prohibit default function (move to 'public' if needed) 
-    void operator =(const BehaviorFactory &source);
+    void operator =(const BehaviorFactoryBase &source);
 
   protected:
 
@@ -182,10 +181,10 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactory : public FactoryBase
     //   instance functions                                                  
     //-----------------------------------------------------------------------
 
-    BehaviorFactory(void);
-    BehaviorFactory(const Char8 *szName);
+    BehaviorFactoryBase(void);
+    BehaviorFactoryBase(const Char8 *szName);
 
-    virtual ~BehaviorFactory(void); 
+    virtual ~BehaviorFactoryBase(void); 
 
     virtual bool initialize           (void);
     virtual bool terminate            (void);
@@ -237,7 +236,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactory : public FactoryBase
     \relatesalso OSG::EventProducerFactoryBase
  */
 
-typedef OSG::SingletonHolder<OSG::BehaviorFactory> TheBehaviorFactory;
+typedef OSG::SingletonHolder<OSG::BehaviorFactoryBase> BehaviorFactory;
 
 OSG_END_NAMESPACE
 

@@ -55,7 +55,7 @@
 
 
 
-#include <OpenSG/OSGFieldContainer.h>   // SceneObject Class
+#include "Project/SceneObject/KESceneObject.h" // SceneObject Class
 
 #include "KEBehaviorBase.h"
 #include "KEBehavior.h"
@@ -80,7 +80,7 @@ OSG_BEGIN_NAMESPACE
  *                        Field Documentation                              *
 \***************************************************************************/
 
-/*! \var FieldContainer * BehaviorBase::_sfSceneObject
+/*! \var SceneObject *   BehaviorBase::_sfSceneObject
     
 */
 
@@ -103,18 +103,6 @@ OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
                            Behavior *,
                            0);
 
-DataType &FieldTraits< Behavior *, 1 >::getType(void)
-{
-    return FieldTraits<Behavior *, 0>::getType();
-}
-
-
-OSG_EXPORT_PTR_MFIELD(ChildPointerMField,
-                      Behavior *,
-                      UnrecordedRefCountPolicy,
-                      1);
-
-
 /***************************************************************************\
  *                         Field Description                               *
 \***************************************************************************/
@@ -124,15 +112,15 @@ void BehaviorBase::classDescInserter(TypeObject &oType)
     FieldDescriptionBase *pDesc = NULL;
 
 
-    pDesc = new SFParentFieldContainerPtr::Description(
-        SFParentFieldContainerPtr::getClassType(),
+    pDesc = new SFUnrecSceneObjectPtr::Description(
+        SFUnrecSceneObjectPtr::getClassType(),
         "SceneObject",
         "",
         SceneObjectFieldId, SceneObjectFieldMask,
         false,
         (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&Behavior::invalidEditField),
-        static_cast     <FieldGetMethodSig >(&Behavior::invalidGetField));
+        static_cast<FieldEditMethodSig>(&Behavior::editHandleSceneObject),
+        static_cast<FieldGetMethodSig >(&Behavior::getHandleSceneObject));
 
     oType.addInitialDesc(pDesc);
 }
@@ -162,22 +150,22 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     "\tdecoratable=\"false\"\n"
     "\tuseLocalIncludes=\"false\"\n"
     "\tlibnamespace=\"KE\"\n"
-    "    childFields=\"multi\"\n"
     "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
     ">\n"
     "The SceneObject.\n"
-    "    <Field\n"
+    "\t<Field\n"
     "\t\tname=\"SceneObject\"\n"
-    "\t\ttype=\"FieldContainer\"\n"
-    "\t\tcategory=\"parentpointer\"\n"
+    "\t\ttype=\"SceneObject\"\n"
+    "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"single\"\n"
     "\t\tvisibility=\"external\"\n"
-    "\t\taccess=\"none\"\n"
+    "\t\tfieldHeader=\"Project/SceneObject/KESceneObjectFields.h\"\n"
+    "\t\ttypeHeader=\"Project/SceneObject/KESceneObject.h\"\n"
+    "\t\taccess=\"protected\"\n"
     "\t\tdefaultValue=\"NULL\"\n"
-    "        doRefCount=\"false\"\n"
-    "        passFieldMask=\"true\"\n"
     "\t>\n"
     "\t</Field>\n"
+    "\t\n"
     "</FieldContainer>\n",
     "The SceneObject.\n"
     );
@@ -202,6 +190,18 @@ UInt32 BehaviorBase::getContainerSize(void) const
 /*------------------------- decorator get ------------------------------*/
 
 
+//! Get the Behavior::_sfSceneObject field.
+const SFUnrecSceneObjectPtr *BehaviorBase::getSFSceneObject(void) const
+{
+    return &_sfSceneObject;
+}
+
+SFUnrecSceneObjectPtr *BehaviorBase::editSFSceneObject    (void)
+{
+    editSField(SceneObjectFieldMask);
+
+    return &_sfSceneObject;
+}
 
 
 
@@ -266,89 +266,43 @@ BehaviorBase::BehaviorBase(const BehaviorBase &source) :
 BehaviorBase::~BehaviorBase(void)
 {
 }
-/*-------------------------------------------------------------------------*/
-/* Parent linking                                                          */
 
-bool BehaviorBase::linkParent(
-    FieldContainer * const pParent,
-    UInt16           const childFieldId,
-    UInt16           const parentFieldId )
+void BehaviorBase::onCreate(const Behavior *source)
 {
-    if(parentFieldId == SceneObjectFieldId)
+    Inherited::onCreate(source);
+
+    if(source != NULL)
     {
-        FieldContainer * pTypedParent =
-            dynamic_cast< FieldContainer * >(pParent);
+        Behavior *pThis = static_cast<Behavior *>(this);
 
-        if(pTypedParent != NULL)
-        {
-            FieldContainer *pOldParent =
-                _sfSceneObject.getValue         ();
-
-            UInt16 oldChildFieldId =
-                _sfSceneObject.getParentFieldPos();
-
-            if(pOldParent != NULL)
-            {
-                pOldParent->unlinkChild(this, oldChildFieldId);
-            }
-
-            editSField(SceneObjectFieldMask);
-
-            _sfSceneObject.setValue(static_cast<FieldContainer *>(pParent), childFieldId);
-
-            return true;
-        }
-
-        return false;
+        pThis->setSceneObject(source->getSceneObject());
     }
-
-    return Inherited::linkParent(pParent, childFieldId, parentFieldId);
 }
-
-bool BehaviorBase::unlinkParent(
-    FieldContainer * const pParent,
-    UInt16           const parentFieldId)
-{
-    if(parentFieldId == SceneObjectFieldId)
-    {
-        FieldContainer * pTypedParent =
-            dynamic_cast< FieldContainer * >(pParent);
-
-        if(pTypedParent != NULL)
-        {
-            if(_sfSceneObject.getValue() == pParent)
-            {
-                editSField(SceneObjectFieldMask);
-
-                _sfSceneObject.setValue(NULL, 0xFFFF);
-
-                return true;
-            }
-
-            FWARNING(("BehaviorBase::unlinkParent: "
-                      "Child <-> Parent link inconsistent.\n"));
-
-            return false;
-        }
-
-        return false;
-    }
-
-    return Inherited::unlinkParent(pParent, parentFieldId);
-}
-
-
 
 GetFieldHandlePtr BehaviorBase::getHandleSceneObject     (void) const
 {
-    SFParentFieldContainerPtr::GetHandlePtr returnValue;
+    SFUnrecSceneObjectPtr::GetHandlePtr returnValue(
+        new  SFUnrecSceneObjectPtr::GetHandle(
+             &_sfSceneObject,
+             this->getType().getFieldDesc(SceneObjectFieldId),
+             const_cast<BehaviorBase *>(this)));
 
     return returnValue;
 }
 
 EditFieldHandlePtr BehaviorBase::editHandleSceneObject    (void)
 {
-    EditFieldHandlePtr returnValue;
+    SFUnrecSceneObjectPtr::EditHandlePtr returnValue(
+        new  SFUnrecSceneObjectPtr::EditHandle(
+             &_sfSceneObject,
+             this->getType().getFieldDesc(SceneObjectFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Behavior::setSceneObject,
+                    static_cast<Behavior *>(this), _1));
+
+    editSField(SceneObjectFieldMask);
 
     return returnValue;
 }
@@ -376,6 +330,8 @@ void BehaviorBase::execSyncV(      FieldContainer    &oFrom,
 void BehaviorBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
+
+    static_cast<Behavior *>(this)->setSceneObject(NULL);
 
 
 }

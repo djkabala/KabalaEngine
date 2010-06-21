@@ -39,21 +39,10 @@
 #ifndef _KEBEHAVIORTYPE_INL_
 #define _KEBEHAVIORTYPE_INL_
 
-#include "OSGConfig.h"
-#include "OSGBaseDef.h"
-#include "OSGMethodDescription.h"
-#include "KEBehaviorType.h"
-
 OSG_BEGIN_NAMESPACE
 
 /*-------------------------------------------------------------------------*/
 /*                                Get                                      */
-
-inline
-UInt16 BehaviorType::getGroupId (void) const
-{
-    return _uiGroupId;
-}
 
 inline
 BehaviorType *BehaviorType::getParent(void) const
@@ -62,68 +51,9 @@ BehaviorType *BehaviorType::getParent(void) const
 }
 
 inline
-MethodDescription *BehaviorType::getMethodDescription(UInt32 uiMethodId)
+std::string BehaviorType::getName(void)
 {
-    MethodDescription *foundDesc = NULL;
-    MethodDescription *testDesc;
-    DescVecIt it;
-    for ( it=_vDescVec.begin() ; it < _vDescVec.end(); it++ )
-    {
-        testDesc = *it;
-        if(testDesc != NULL)
-        {
-            if(testDesc->getMethodId() == uiMethodId)
-            {
-                foundDesc = testDesc;
-            }
-        }
-    }
-    return foundDesc;
-}
-
-inline
-const MethodDescription *BehaviorType::getMethodDescription(
-    UInt32 uiMethodId) const
-{
-    MethodDescription *foundDesc = NULL;
-    MethodDescription *testDesc;
-    DescVecConstIt it;
-    for ( it=_vDescVec.begin() ; it < _vDescVec.end(); it++ )
-    {
-        testDesc = *it;
-        if(testDesc != NULL)
-        {
-            if(testDesc->getMethodId() == uiMethodId)
-            {
-                foundDesc = testDesc;
-            }
-        }
-    }
-    return foundDesc;
-}
-
-inline
-MethodDescription *BehaviorType::findMethodDescription(
-    const std::string &szMethodName)
-{
-    DescMapIt descIt = _mDescMap.find(szMethodName);
-
-    return (descIt == _mDescMap.end()) ? NULL : (*descIt).second;
-}
-
-inline
-const MethodDescription *BehaviorType::findMethodDescription(
-    const std::string &szMethodName) const
-{
-    DescMapConstIt descIt = _mDescMap.find(szMethodName);
-
-    return (descIt == _mDescMap.end()) ? NULL : (*descIt).second;
-}
-
-inline
-UInt32 BehaviorType::getNumMethodDescs(void) const
-{
-    return _vDescVec.size();
+	return _bName;
 }
 
 
@@ -134,13 +64,6 @@ inline
 bool BehaviorType::isInitialized(void) const
 {
     return _bInitialized;
-}
-
-inline
-bool MethodDescriptionPLT::operator()(const MethodDescription *pElemDesc1, 
-                const MethodDescription *pElemDesc2) const
-{
-    return pElemDesc1->getMethodId() < pElemDesc2->getMethodId();
 }
 
 OSG_END_NAMESPACE

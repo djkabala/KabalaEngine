@@ -11,7 +11,7 @@
 	decoratable="false"
 	useLocalIncludes="false"
 	libnamespace="KE"
-    authors="David Kabala (djkabala@gmail.com)                             "
+        authors="David Kabala (djkabala@gmail.com)                             "
 >
 The SceneObject.
 	<Field
@@ -26,13 +26,5 @@ The SceneObject.
 		defaultValue="NULL"
 	>
 	</Field>
-	<Field
-		name="Dependencies"
-		type="std::string"
-		category="data"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
+	
 </FieldContainer>

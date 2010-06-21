@@ -63,11 +63,11 @@ OSG_BEGIN_NAMESPACE
 // regenerate the base file.
 
 /***************************************************************************\
- *                           Class variables                               *
+ *                           Class variables                               * 
 \***************************************************************************/
 
 /***************************************************************************\
- *                           Class methods                                 *
+ *                           Class methods                                 * 
 \***************************************************************************/
 
 void Behavior::initMethod(InitPhase ePhase)
@@ -79,10 +79,7 @@ void Behavior::initMethod(InitPhase ePhase)
     }
 }
 
-bool Behavior::isInitialized()
-{
-	return Behavior::initialized;
-}
+
 
 /***************************************************************************\
  *                           Instance methods                              *
@@ -90,12 +87,12 @@ bool Behavior::isInitialized()
 
 void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
 {
-
+	UInt32 GenericMethodID = rootSceneObject->getScene()->registerNewGenericMethod(TheBehaviorType->getName()+"GenericMethod");
 }
 
 void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
 {
-	_sfSceneObject.setValue(rootSceneObject, _sfSceneObject.getParentFieldPos());
+	setSceneObject(rootSceneObject);
 
 	initialize(rootSceneObject);
 }

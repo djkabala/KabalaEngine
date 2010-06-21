@@ -83,12 +83,7 @@ void AnimationEffect::initMethod(InitPhase ePhase)
 
 void AnimationEffect::begin()
 {
-    if(theUpdateProducer == NULL)
-    {
-        theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
-    }
-    getAnimation()->attachUpdateProducer(theUpdateProducer);
-    getAnimation()->start();
+   
 }
 
 bool AnimationEffect::isPlaying()

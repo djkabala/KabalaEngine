@@ -50,6 +50,7 @@
 
 #include "OSGMethodDescription.h"
 #include "OSGLog.h"
+#include "OSGTypeBase.h"
 
 OSG_USING_NAMESPACE
 
@@ -61,9 +62,9 @@ OSG_USING_NAMESPACE
 /*                              Register                                   */
 
 
-void BehaviorType::registerType(const std::string &szGroupName)
+void BehaviorType::registerType()
 {
-//    BehaviorFactory::the()->registerType (this);
+    BehaviorFactory::the()->registerType(this);
 
     //_uiGroupId = EventProducerFactory::the()->registerGroup(
         //!szGroupName.empty() ? szGroupName : _szName);
@@ -72,68 +73,41 @@ void BehaviorType::registerType(const std::string &szGroupName)
 /*-------------------------------------------------------------------------*/
 /*                            Constructors                                 */
 
-/*BehaviorType::BehaviorType(const std::string &szName,
+BehaviorType::BehaviorType(const std::string &szName,
                                    const std::string &szParentName,
-                                   const std::string &szGroupName,
-                                   //PrototypeCreateF    fPrototypeCreate,
-                                   InitEventProducerFunctor      fInitMethod,
-                                   MethodDescription  **pDesc,
-                                   UInt32              uiDescByteCounter) :
+								   std::vector<BehaviorType> bDependencies) :
      Inherited        (szName.c_str(), 
                        szParentName.c_str()     ),
-    _uiGroupId        (0                ),
-    _szGroupName      (szGroupName      ),
 
     _bInitialized     (false            ),
-    
+
     _pParent          (NULL             ),
 
     _szParentName     (szParentName     ),
 
-    //_pPrototype       (NullFC           ),
-    //_fPrototypeCreate (fPrototypeCreate ),
+	_bDependencies	  (bDependencies	),
 
-    _pDesc            (pDesc            ),
-    _uiDescByteCounter(uiDescByteCounter),
-
-    _mDescMap         (                 )//,
-    _vDescVec         (0                )
+	_bName			  (szName			)
 {
-    registerType(szGroupName);
-
-    if(!fInitMethod.empty())
-        fInitMethod();
 }
 
 BehaviorType::BehaviorType(const BehaviorType &obj) :
 
      Inherited        (obj                   ),
-    _uiGroupId        (obj._uiGroupId        ),
-    _szGroupName      (obj._szGroupName      ),
 
     _bInitialized     (false                 ),
-    
+
     _pParent          (obj._pParent          ),
 
     _szParentName     (obj._szParentName     ),
+	
+	_bDependencies	  (obj._bDependencies	 ),
 
-    //_pPrototype       (obj._pPrototype       ),
-    //_fPrototypeCreate (obj._fPrototypeCreate ),
-
-    _pDesc            (obj._pDesc            ),
-    _uiDescByteCounter(obj._uiDescByteCounter),
-
-    _mDescMap         (                      ),
-    _vDescVec         (0                     )
+	_bName			  (obj._bName			 )
 {
-    //if(_pPrototype != NullFC)
-    //    addRefCP(_pPrototype);
-
-    initMethods();
-    initParentMethods();
 
     _bInitialized = true;
-}*/
+}
 
 /*-------------------------------------------------------------------------*/
 /*                             Destructor                                  */
@@ -148,103 +122,6 @@ BehaviorType::~BehaviorType(void)
 
 /*-------------------------------------------------------------------------*/
 /*                            Add / Sub                                    */
-
-UInt32 BehaviorType::addDescription(const MethodDescription &desc)
-{
-    UInt32            returnValue = 0;
-    DescMapConstIt    descIt;
-    DescVecIt         descVIt;
-
-    MethodDescription  *pDesc;
-    MethodDescription  *pNullDesc = NULL;
-
-    //if(_bDescsAddable == false)
-    //    return returnValue;
-
-    descIt = _mDescMap.find(desc.getName());
-
-    if(desc.isValid())
-    {
-        if(descIt == _mDescMap.end())
-        {
-            pDesc = new MethodDescription(desc);
-
-            _mDescMap[pDesc->getName()] = pDesc;
-
-            descVIt = std::find(_vDescVec.begin(),
-                                _vDescVec.end(),
-                                 pNullDesc);
-
-            if(descVIt == _vDescVec.end())
-            {
-                _vDescVec.push_back(pDesc);
-
-                returnValue = _vDescVec.size();
-            }
-            else
-            {
-                (*descVIt) = pDesc;
-
-                returnValue  = descVIt - _vDescVec.begin();
-                returnValue += 1;
-            }
-        }
-        else
-        {
-            SWARNING << "ERROR: Double method description "
-                        << "in " << _szName << " from "
-                        << desc.getCName() << " (id:"
-                        << desc.getMethodId() << ")" << std::endl;
-        }
-    }
-    else
-    {
-        SWARNING << "ERROR: Invalid method description "
-                    << "in " << _szName << " from "
-                    << desc.getMethodId() << std::endl;
-    }
-
-    return returnValue;
-}
-
-bool BehaviorType::subDescription(UInt32 uiMethodId)
-{
-    MethodDescription  *pDesc = getMethodDescription(uiMethodId);
-    DescMapIt          descMIt;
-    DescVecIt          descVIt;
-    bool               returnValue = true;
-
-    //if(pDesc == NULL || _bDescsAddable == false)
-    //    return false;
-
-    descMIt = _mDescMap.find(pDesc->getName());
-
-    if(descMIt != _mDescMap.end())
-    {
-        _mDescMap.erase(descMIt);
-    }
-    else
-    {
-        returnValue = false;
-    }
-
-    descVIt = std::find(_vDescVec.begin(), _vDescVec.end(), pDesc);
-
-    if(descVIt != _vDescVec.end())
-    {
-        (*descVIt) = NULL;
-
-        returnValue &= true;
-    }
-    else
-    {
-        returnValue = false;
-    }
-
-    delete pDesc;
-
-    return returnValue;
-}
 
 bool BehaviorType::isAbstract   (void) const
 {
@@ -263,164 +140,25 @@ void BehaviorType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
          << getId()
          << ", parentP: " 
          << (_pParent ? _pParent->getCName() : "NONE")
-         << ", groupId: "  
-         << _uiGroupId
-         //<< ", abstract: "
-         //<< ((_pPrototype != NullFC) ? "false" : "true")
-         << " "
-         << _vDescVec.size()
          << std::endl;
-
-    for(UInt32 i = 0; i < _vDescVec.size(); i++)
-    {
-        SLOG << "Desc : " << _vDescVec[i]->getCName() << std::endl;
-    }
 }
 
 
 /*-------------------------------------------------------------------------*/
 /*                                Init                                     */
 
-/*bool BehaviorType::initPrototype(void)
-{
-    _bInitialized = true;
-
-    if(_fPrototypeCreate != NULL)
-    {
-        _pPrototype = _fPrototypeCreate();
-
-        addRefCP(_pPrototype);
-    }
-
-    return _bInitialized;
-}*/
-
-bool BehaviorType::initMethods(void)
-{
-    UInt32    i;
-    DescMapIt descIt;
-
-    _bInitialized = true;
-
-	if(_pDesc == NULL)
-		return true;
-
-    for(i = 0; i < _uiDescByteCounter / sizeof(MethodDescription *); i++)
-    {
-        if(_pDesc[i]->isValid())
-        {
-            descIt = _mDescMap.find(_pDesc[i]->getName());
-
-            if(descIt == _mDescMap.end())
-            {
-                _mDescMap[_pDesc[i]->getName()] = _pDesc[i];
-
-                _vDescVec.push_back(_pDesc[i]);
-            }
-            else
-            {
-                SWARNING << "ERROR: Double method description "
-                            << "in " << _szName << " from "
-                            << _pDesc[i]->getName() << " (id:"
-                            << _pDesc[i]->getMethodId() << ")" << std::endl;
-
-                _bInitialized = false;
-            }
-        }
-        else
-        {
-            SWARNING << "ERROR: Invalid method description "
-                        << "in " << _szName << "from "
-                        << (_pDesc[i]?_pDesc[i]->getMethodId():0) << std::endl;
-
-            _bInitialized = false;
-        }
-
-    }
-
-    std::sort(_vDescVec.begin(), _vDescVec.end(), MethodDescriptionPLT());
-
-    return _bInitialized;
-}
-
-bool BehaviorType::initParentMethods(void)
-{
-    DescMapIt dPIt;
-
-    _bInitialized = true;
-
-    if(!_szParentName.empty())
-    {
-  //      _pParent =
-  //          dynamic_cast<BehaviorType*>(EventProducerFactory::the()->findType(_szParentName.c_str()));
-
-        if(_pParent != NULL)
-        {
-            _bInitialized = _pParent->initialize();
-
-            if(_bInitialized == false)
-            {
-                return _bInitialized;
-            }
-
-            for(  dPIt  = _pParent->_mDescMap.begin();
-                  dPIt != _pParent->_mDescMap.end();
-                ++dPIt)
-            {
-                if(_mDescMap.find((*dPIt).first) == _mDescMap.end())
-                {
-                    _mDescMap[(*dPIt).first] = (*dPIt).second;
-                }
-                else
-                {
-                    SWARNING << "ERROR: Can't add method "
-                                << "description a second time: "
-                                << (*dPIt).first
-                                << " to producer of type " << getCName() << std::endl;
-                }
-            }
-
-            _vDescVec.insert(_vDescVec.end(),
-                             _pParent->_vDescVec.begin(),
-                             _pParent->_vDescVec.end());
-
-        }
-        else
-        {
-            SWARNING << "ERROR: Can't find producer with "
-                        << "name " << _szParentName
-                        << " to set as parent of producer type " << getCName()
-                        <<  std::endl;
-
-            _bInitialized = false;
-        }
-    }
-
-    return _bInitialized;
-}
-
 bool BehaviorType::initialize(void)
 {
     if(_bInitialized == true)
         return _bInitialized;
 
-    _bInitialized = initParentMethods();
+    _bInitialized = true;
 
     if(_bInitialized == false)
         return _bInitialized;
 
-    _bInitialized = initMethods      ();
-
     if(_bInitialized == false)
         return _bInitialized;
-
-    //_bInitialized = initPrototype   ();
-
-    //if(_bInitialized == false)
-    //    return _bInitialized;
-
-    //FDEBUG ( ( "init BehaviorType %s (%d)\n",
-               //_szName, int(_bInitialized) ));
     
     return _bInitialized;
 }
@@ -429,13 +167,6 @@ void BehaviorType::terminate(void)
 {
     UInt32 i;
 
-    //subRefCP(_pPrototype);
-
     _bInitialized = false;
-
-    for(i = 0; i < _uiDescByteCounter / sizeof(MethodDescription *); i++)
-    {
-        delete _pDesc[i];
-    }
 }
 

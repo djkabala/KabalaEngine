@@ -35,4 +35,14 @@ The SceneObject.
 		defaultValue="NULL"
 	>
 	</Field>
+	<Field
+		name="Scene"
+		type="Scene"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		access="public"
+		defaultValue="NULL"
+	>
+	</Field>
 </FieldContainer>

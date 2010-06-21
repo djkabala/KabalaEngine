@@ -65,7 +65,7 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <OpenSG/OSGFieldContainerFields.h> // SceneObject type
+#include "Project/SceneObject/KESceneObjectFields.h" // SceneObject type
 
 #include "KEBehaviorFields.h"
 
@@ -102,7 +102,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFParentFieldContainerPtr SFSceneObjectType;
+    typedef SFUnrecSceneObjectPtr SFSceneObjectType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -148,7 +148,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFParentFieldContainerPtr _sfSceneObject;
+    SFUnrecSceneObjectPtr _sfSceneObject;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -170,17 +170,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                     onCreate                                */
     /*! \{                                                                 */
 
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name Parent linking                                               */
-    /*! \{                                                                 */
-
-    virtual bool linkParent  (FieldContainer * const pParent,
-                              UInt16           const childFieldId,
-                              UInt16           const parentFieldId);
-    virtual bool unlinkParent(FieldContainer * const pParent,
-                              UInt16           const parentFieldId);
+    void onCreate(const Behavior *source = NULL);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -189,6 +179,29 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
 
     GetFieldHandlePtr  getHandleSceneObject     (void) const;
     EditFieldHandlePtr editHandleSceneObject    (void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Get                                 */
+    /*! \{                                                                 */
+
+            const SFUnrecSceneObjectPtr *getSFSceneObject     (void) const;
+                  SFUnrecSceneObjectPtr *editSFSceneObject    (void);
+
+
+                  SceneObject * getSceneObject    (void) const;
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Set                                 */
+    /*! \{                                                                 */
+
+            void setSceneObject    (SceneObject * const value);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
+    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -244,4 +257,4 @@ typedef BehaviorBase *BehaviorBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEBEHAVIORBASE_H_ */
+#endif /* _OSGBEHAVIORBASE_H_ */

@@ -78,14 +78,7 @@ void ParticleSystemEffect::initMethod(InitPhase ePhase)
 
 void ParticleSystemEffect::begin()
 {
-    if(theUpdateProducer == NULL)
-    {
-        theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
-    }
-    getTheSystem()->attachUpdateProducer(theUpdateProducer);
-
-    isPlayingFlag = true;
-    isPausedFlag = false;
+    
 }
 
 bool ParticleSystemEffect::isPlaying()
