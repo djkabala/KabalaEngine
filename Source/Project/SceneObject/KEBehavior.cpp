@@ -92,8 +92,6 @@ void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
 
 void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
 {
-	setSceneObject(rootSceneObject);
-
 	initialize(rootSceneObject);
 }
 

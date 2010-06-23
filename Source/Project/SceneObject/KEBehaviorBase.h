@@ -65,7 +65,7 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include "Project/SceneObject/KESceneObjectFields.h" // SceneObject type
+#include <OpenSG/OSGFieldContainerFields.h> // SceneObject type
 
 #include "KEBehaviorFields.h"
 
@@ -102,7 +102,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFUnrecSceneObjectPtr SFSceneObjectType;
+    typedef SFParentFieldContainerPtr SFSceneObjectType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -148,7 +148,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFUnrecSceneObjectPtr _sfSceneObject;
+    SFParentFieldContainerPtr _sfSceneObject;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -170,7 +170,17 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                     onCreate                                */
     /*! \{                                                                 */
 
-    void onCreate(const Behavior *source = NULL);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name Parent linking                                               */
+    /*! \{                                                                 */
+
+    virtual bool linkParent  (FieldContainer * const pParent,
+                              UInt16           const childFieldId,
+                              UInt16           const parentFieldId);
+    virtual bool unlinkParent(FieldContainer * const pParent,
+                              UInt16           const parentFieldId);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -179,29 +189,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
 
     GetFieldHandlePtr  getHandleSceneObject     (void) const;
     EditFieldHandlePtr editHandleSceneObject    (void);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-            const SFUnrecSceneObjectPtr *getSFSceneObject     (void) const;
-                  SFUnrecSceneObjectPtr *editSFSceneObject    (void);
-
-
-                  SceneObject * getSceneObject    (void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-            void setSceneObject    (SceneObject * const value);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

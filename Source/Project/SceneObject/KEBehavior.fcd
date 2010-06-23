@@ -27,13 +27,4 @@ The SceneObject.
         passFieldMask="true"
 	>
 	</Field>
-	<Field
-		name="Dependencies"
-		type="std::string"
-		category="data"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
 </FieldContainer>

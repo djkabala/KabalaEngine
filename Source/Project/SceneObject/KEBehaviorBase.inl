@@ -73,22 +73,6 @@ OSG::UInt16 BehaviorBase::getClassGroupId(void)
 /*------------------------------ get -----------------------------------*/
 
 
-//! Get the value of the Behavior::_sfSceneObject field.
-inline
-SceneObject * BehaviorBase::getSceneObject(void) const
-{
-    return _sfSceneObject.getValue();
-}
-
-//! Set the value of the Behavior::_sfSceneObject field.
-inline
-void BehaviorBase::setSceneObject(SceneObject * const value)
-{
-    editSField(SceneObjectFieldMask);
-
-    _sfSceneObject.setValue(value);
-}
-
 
 #ifdef OSG_MT_CPTR_ASPECT
 inline
