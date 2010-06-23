@@ -24,7 +24,6 @@ The SceneObject.
 		fieldHeader="Project/SceneObject/KEBehaviorFields.h"
 		typeHeader="Project/SceneObject/KEBehavior.h"
 		access="public"
-		defaultValue="NULL"
         linkParentField="SceneObject"
 	>
 	</Field>
@@ -38,7 +37,6 @@ The SceneObject.
 		fieldHeader="Project/Effect/KEEffectFields.h"
 		typeHeader="Project/Effect/KEEffect.h"
 		access="public"
-		defaultValue="NULL"
         linkParentField="ParentSceneObject"
 	>
 	</Field>

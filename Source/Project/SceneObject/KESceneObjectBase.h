@@ -66,8 +66,9 @@
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
 #include "Project/SceneObject/KEBehaviorFields.h" // Behaviors type
+#include "Project/Effect/KEEffectFields.h" // AttachedEffects type
 #include <OpenSG/OSGNodeFields.h>       // Node type
-#include "Project/Scene/KESceneFields.h"      // Scene type
+#include "Project/Scene/KEScene.h"      // Scene type
 
 #include "KESceneObjectFields.h"
 
@@ -96,13 +97,16 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     enum
     {
         BehaviorsFieldId = Inherited::NextFieldId,
-        NodeFieldId = BehaviorsFieldId + 1,
+        AttachedEffectsFieldId = BehaviorsFieldId + 1,
+        NodeFieldId = AttachedEffectsFieldId + 1,
         SceneFieldId = NodeFieldId + 1,
         NextFieldId = SceneFieldId + 1
     };
 
     static const OSG::BitVector BehaviorsFieldMask =
         (TypeTraits<BitVector>::One << BehaviorsFieldId);
+    static const OSG::BitVector AttachedEffectsFieldMask =
+        (TypeTraits<BitVector>::One << AttachedEffectsFieldId);
     static const OSG::BitVector NodeFieldMask =
         (TypeTraits<BitVector>::One << NodeFieldId);
     static const OSG::BitVector SceneFieldMask =
@@ -110,7 +114,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef MFUnrecBehaviorPtr MFBehaviorsType;
+    typedef MFUnrecChildBehaviorPtr MFBehaviorsType;
+    typedef MFUnrecChildEffectPtr MFAttachedEffectsType;
     typedef SFUnrecNodePtr    SFNodeType;
     typedef SFUnrecScenePtr   SFSceneType;
 
@@ -137,11 +142,19 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
+            const MFUnrecChildBehaviorPtr *getMFBehaviors      (void) const;
+                  MFUnrecChildBehaviorPtr *editMFBehaviors      (void);
+            const MFUnrecChildEffectPtr *getMFAttachedEffects(void) const;
+                  MFUnrecChildEffectPtr *editMFAttachedEffects(void);
             const SFUnrecNodePtr      *getSFNode           (void) const;
                   SFUnrecNodePtr      *editSFNode           (void);
             const SFUnrecScenePtr     *getSFScene          (void) const;
                   SFUnrecScenePtr     *editSFScene          (void);
 
+
+                  Behavior * getBehaviors      (const UInt32 index) const;
+
+                  Effect * getAttachedEffects(const UInt32 index) const;
 
                   Node * getNode           (void) const;
 
@@ -164,6 +177,18 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*---------------------------------------------------------------------*/
     /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
+
+    void pushToBehaviors           (Behavior * const value   );
+    void assignBehaviors          (const MFUnrecChildBehaviorPtr &value);
+    void removeFromBehaviors (UInt32               uiIndex );
+    void removeObjFromBehaviors(Behavior * const value   );
+    void clearBehaviors             (void                         );
+
+    void pushToAttachedEffects           (Effect * const value   );
+    void assignAttachedEffects          (const MFUnrecChildEffectPtr &value);
+    void removeFromAttachedEffects (UInt32               uiIndex );
+    void removeObjFromAttachedEffects(Effect * const value   );
+    void clearAttachedEffects            (void                         );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -218,7 +243,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    MFUnrecBehaviorPtr _mfBehaviors;
+    MFUnrecChildBehaviorPtr _mfBehaviors;
+    MFUnrecChildEffectPtr _mfAttachedEffects;
     SFUnrecNodePtr    _sfNode;
     SFUnrecScenePtr   _sfScene;
 
@@ -246,43 +272,25 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
+    /*! \name Child linking                                                */
+    /*! \{                                                                 */
+
+    virtual bool unlinkChild(FieldContainer * const pChild,
+                             UInt16           const childFieldId);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
     GetFieldHandlePtr  getHandleBehaviors       (void) const;
     EditFieldHandlePtr editHandleBehaviors      (void);
+    GetFieldHandlePtr  getHandleAttachedEffects (void) const;
+    EditFieldHandlePtr editHandleAttachedEffects(void);
     GetFieldHandlePtr  getHandleNode            (void) const;
     EditFieldHandlePtr editHandleNode           (void);
     GetFieldHandlePtr  getHandleScene           (void) const;
     EditFieldHandlePtr editHandleScene          (void);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-            const MFUnrecBehaviorPtr  *getMFBehaviors       (void) const;
-                  MFUnrecBehaviorPtr  *editMFBehaviors      (void);
-
-
-                  Behavior * getBehaviors      (const UInt32 index) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
-
-    void pushToBehaviors           (Behavior * const value   );
-    void assignBehaviors           (const MFUnrecBehaviorPtr &value);
-    void removeFromBehaviors (UInt32                uiIndex );
-    void removeObjFromBehaviors(Behavior * const value   );
-    void clearBehaviors             (void                          );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
