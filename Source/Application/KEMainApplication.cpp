@@ -146,6 +146,27 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
 
     TheSettings.put<UInt32>("basic.recent_projects.max", 8, overwriteIfDefined);
 
+    
+
+    TheSettings.put<Real32>("basic.default_scene.camera.near_plane", 0.1f, overwriteIfDefined);
+    TheSettings.put<Real32>("basic.default_scene.camera.far_plane", 5000.0f, overwriteIfDefined);
+    TheSettings.put<Real32>("basic.default_scene.camera.fov", 60.0f, overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.camera.position", Pnt3f(0.0f,0.0f, 9.0f), overwriteIfDefined);
+    
+    TheSettings.put<bool>("basic.default_scene.torus.draw", true, overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.torus.position", Pnt3f(0.0f,0.0f, 0.0f), overwriteIfDefined);
+    
+    TheSettings.put<bool>("basic.default_scene.box.draw", true, overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.box.position", Pnt3f(5.0f,0.0f, 0.0f), overwriteIfDefined);
+    
+    TheSettings.put<bool>("basic.default_scene.cone.draw", true, overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.cone.position", Pnt3f(-5.0f,0.0f, 0.0f), overwriteIfDefined);
+    
+    //TheSettings.put<bool>("basic.default_scene.point_light.draw", true, overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.point_light.position", Pnt3f(0.0f,5.0f, 5.0f), overwriteIfDefined);
+    
+    TheSettings.put<Color3r>("basic.default_scene.background.color", Color3r(0.3f,0.3f,0.3f), overwriteIfDefined);
+
     //Logging
     TheSettings.put<UInt8>    ("logging.type",            LOG_FILE, overwriteIfDefined);
     TheSettings.put<UInt8>    ("logging.level",           LOG_NOTICE, overwriteIfDefined);
@@ -159,6 +180,10 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<bool>   ("player.debugger.block_scene_input",           true, overwriteIfDefined);
 
     TheSettings.put<UInt32>("player.debugger.lua.console.max_history", 50, overwriteIfDefined);
+
+    TheSettings.put<Real32>("player.debugger.camera.near_plane", 0.1f, overwriteIfDefined);
+    TheSettings.put<Real32>("player.debugger.camera.far_plane", 5000.0f, overwriteIfDefined);
+    TheSettings.put<Real32>("player.debugger.camera.fov", 60.0f, overwriteIfDefined);
 
     TheSettings.put<bool>   ("player.debugger.grid.draw",           true, overwriteIfDefined);
     TheSettings.put<Vec2f>  ("player.debugger.grid.dimensions",     Vec2f(100.0f,100.0f), overwriteIfDefined);
@@ -642,7 +667,7 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     //The Default Scene
     //Camera Transformation Node
     Matrix CameraTransformMatrix;
-    CameraTransformMatrix.setTranslate(0.0f,0.0f, 9.0f);
+    CameraTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.camera.position"));
     TransformRefPtr CameraBeaconTransform = Transform::create();
     CameraBeaconTransform->setMatrix(CameraTransformMatrix);
 
@@ -653,53 +678,14 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     //Camera
     PerspectiveCameraRefPtr DefaultSceneCamera = PerspectiveCamera::create();
     setName(DefaultSceneCamera, "Untitled Camera" );
-    DefaultSceneCamera->setFov(60.f);
-    DefaultSceneCamera->setNear(0.1f);
-    DefaultSceneCamera->setFar(5000.0f);
+    DefaultSceneCamera->setFov(getSettings().get<Real32>("basic.default_scene.camera.fov"));
+    DefaultSceneCamera->setNear(getSettings().get<Real32>("basic.default_scene.camera.near_plane"));
+    DefaultSceneCamera->setFar(getSettings().get<Real32>("basic.default_scene.camera.far_plane"));
     DefaultSceneCamera->setBeacon(CameraBeaconNode);
-
-    // Make Torus Node (creates Torus in background of scene)
-    NodeRefPtr TorusGeometryNode = makeTorus(.5, 2, 64, 64);
-    setName(TorusGeometryNode, "Torus" );
-
-    NodeRefPtr TorusTransformNode = Node::create();
-    setName(TorusTransformNode, "Torus Transform" );
-    TorusTransformNode->setCore(Transform::create());
-    TorusTransformNode->addChild(TorusGeometryNode);
-
-    // Make Box Node (creates Box in background of scene)
-    NodeRefPtr BoxGeometryNode = makeBox(3.0f, 3.0f, 3.0f, 8, 8, 8);
-    setName(BoxGeometryNode, "Box" );
-
-    Matrix BoxTransformMatrix;
-    BoxTransformMatrix.setTranslate(5.0f,0.0f, 0.0f);
-
-    TransformRefPtr BoxTransform = Transform::create();
-    BoxTransform->setMatrix(BoxTransformMatrix);
-
-    NodeRefPtr BoxTransformNode = Node::create();
-    setName(BoxTransformNode, "Box Transform" );
-    BoxTransformNode->setCore(BoxTransform);
-    BoxTransformNode->addChild(BoxGeometryNode);
-
-    // Make Cone Node (creates Cone in background of scene)
-    NodeRefPtr ConeGeometryNode = makeCone(3.5, 1.5f, 96, true, true);
-    setName(ConeGeometryNode, "Cone" );
-
-    Matrix ConeTransformMatrix;
-    ConeTransformMatrix.setTranslate(-5.0f,0.0f, 0.0f);
-
-    TransformRefPtr ConeTransform = Transform::create();
-    ConeTransform->setMatrix(ConeTransformMatrix);
-
-    NodeRefPtr ConeTransformNode = Node::create();
-    setName(ConeTransformNode, "Cone Transform" );
-    ConeTransformNode->setCore(ConeTransform);
-    ConeTransformNode->addChild(ConeGeometryNode);
 
     //Light Beacon
     Matrix LightTransformMatrix;
-    LightTransformMatrix.setTranslate(0.0f,5.0f, 5.0f);
+    LightTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.point_light.position"));
     TransformRefPtr LightBeaconTransform = Transform::create();
     LightBeaconTransform->setMatrix(LightTransformMatrix);
 
@@ -715,9 +701,65 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     NodeRefPtr LightNode = Node::create();
     setName(LightNode, "Light " );
     LightNode->setCore(ThePointLight);
-    LightNode->addChild(TorusTransformNode);
-    LightNode->addChild(BoxTransformNode);
-    LightNode->addChild(ConeTransformNode);
+
+    // Make Torus Node (creates Torus in background of scene)
+    if(getSettings().get<bool>("basic.default_scene.torus.draw"))
+    {
+        NodeRefPtr TorusGeometryNode = makeTorus(.5, 2, 64, 64);
+        setName(TorusGeometryNode, "Torus" );
+
+        Matrix TorusTransformMatrix;
+        TorusTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.torus.position"));
+
+        TransformRefPtr TorusTransform = Transform::create();
+        TorusTransform->setMatrix(TorusTransformMatrix);
+
+        NodeRefPtr TorusTransformNode = Node::create();
+        setName(TorusTransformNode, "Torus Transform" );
+        TorusTransformNode->setCore(TorusTransform);
+        TorusTransformNode->addChild(TorusGeometryNode);
+
+        LightNode->addChild(TorusTransformNode);
+    }
+
+    if(getSettings().get<bool>("basic.default_scene.box.draw"))
+    {
+        // Make Box Node (creates Box in background of scene)
+        NodeRefPtr BoxGeometryNode = makeBox(3.0f, 3.0f, 3.0f, 8, 8, 8);
+        setName(BoxGeometryNode, "Box" );
+
+        Matrix BoxTransformMatrix;
+        BoxTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.box.position"));
+
+        TransformRefPtr BoxTransform = Transform::create();
+        BoxTransform->setMatrix(BoxTransformMatrix);
+
+        NodeRefPtr BoxTransformNode = Node::create();
+        setName(BoxTransformNode, "Box Transform" );
+        BoxTransformNode->setCore(BoxTransform);
+        BoxTransformNode->addChild(BoxGeometryNode);
+        LightNode->addChild(BoxTransformNode);
+    }
+
+
+    if(getSettings().get<bool>("basic.default_scene.cone.draw"))
+    {
+        // Make Cone Node (creates Cone in background of scene)
+        NodeRefPtr ConeGeometryNode = makeCone(3.5, 1.5f, 96, true, true);
+        setName(ConeGeometryNode, "Cone" );
+
+        Matrix ConeTransformMatrix;
+        ConeTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.cone.position"));
+
+        TransformRefPtr ConeTransform = Transform::create();
+        ConeTransform->setMatrix(ConeTransformMatrix);
+
+        NodeRefPtr ConeTransformNode = Node::create();
+        setName(ConeTransformNode, "Cone Transform" );
+        ConeTransformNode->setCore(ConeTransform);
+        ConeTransformNode->addChild(ConeGeometryNode);
+        LightNode->addChild(ConeTransformNode);
+    }
 
     //Scene Root Node
     NodeRefPtr DefaultSceneNode = Node::create();
@@ -730,7 +772,7 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     //Background
     SolidBackgroundRefPtr DefaultSceneBackground = SolidBackground::create();
     setName(DefaultSceneBackground, "Untitled Background" );
-    DefaultSceneBackground->setColor(Color3f(0.3f,0.3f,0.3f));
+    DefaultSceneBackground->setColor(getSettings().get<Color3r>("basic.default_scene.background.color"));
 
     //Viewport
     ViewportRefPtr DefaultSceneViewport = Viewport::create();

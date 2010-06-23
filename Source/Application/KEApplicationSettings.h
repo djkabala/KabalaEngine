@@ -189,6 +189,10 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettings
 
    player
          debugger
+                 camera
+                       near_plane
+                       far_plane
+                       fov
                  help_panel
                  heirarchy_panel
                  content_panel
