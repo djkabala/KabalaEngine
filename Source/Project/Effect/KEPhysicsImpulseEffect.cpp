@@ -96,6 +96,8 @@ void PhysicsImpulseEffect::inheritedBegin()
         //The bodies are not re-enabled untill a new collision is detected
         getPhysicsBodies(i)->setEnable(true);
     }
+    
+    finished();
 }
 
 bool PhysicsImpulseEffect::inheritedIsPlaying()
@@ -122,6 +124,7 @@ void PhysicsImpulseEffect::inheritedStop()
 
 void PhysicsImpulseEffect::finished()
 {
+    Inherited::finished();
 }
 
 
