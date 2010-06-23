@@ -307,6 +307,7 @@ void ApplicationPlayer::createDebugInterface(void)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // creation of the Tree
     _HelperPanel = HelperPanel::create();
+    _HelperPanel->setApplicationPlayer(this);
 
     _HelperPanel->setupInfoTabPanel();
     _HelperPanel->setupHistoryList();
