@@ -82,6 +82,7 @@ void SequentialEffectGroup::initEffect()
 
 void SequentialEffectGroup::inheritedBegin()
 {
+    Inherited::inheritedBegin();
     
     activeEffectIndex = UInt32(0);
     

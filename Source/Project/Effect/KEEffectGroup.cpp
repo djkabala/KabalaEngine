@@ -75,14 +75,24 @@ void EffectGroup::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-/*-------------------------------------------------------------------------*\
- -  private                                                                 -
-\*-------------------------------------------------------------------------*/
+void EffectGroup::inheritedBegin()
+{
+    for(UInt32 i(0); i < getMFEffectList()->size(); ++i)
+    {
+        getEffectList(i)->setParentSceneObject(const_cast<SceneObject*>(getParentSceneObject()));
+    }
+}
 
 void EffectGroup::finished()
 {
     Inherited::finished();
 }
+
+/*-------------------------------------------------------------------------*\
+ -  private                                                                 -
+\*-------------------------------------------------------------------------*/
+
+
 
 /*------------------------- Internal Listener Functions --------------------------*/
 EffectGroup::InternalEffectListener::InternalEffectListener(EffectGroup* parent)
@@ -128,12 +138,6 @@ EffectGroup::~EffectGroup(void)
 }
 
 /*----------------------------- class specific ----------------------------*/
-
-void EffectGroup::pushToEffectList(Effect * const value)
-{
-    Inherited::pushToEffectList(value);
-    const_cast<Effect*>(value)->setParentSceneObject(const_cast<SceneObject*>(getParentSceneObject()));
-}
 
 void EffectGroup::changed(ConstFieldMaskArg whichField, 
                             UInt32            origin,

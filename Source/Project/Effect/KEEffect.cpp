@@ -96,20 +96,30 @@ void Effect::begin()
 {
     if(!effectIsInitialized)
     {
-        effectIsInitialized = true;
-        commitChanges();//magic?
-        initEffect();
+        if(getParentSceneObject() != NULL)
+        {
+            effectIsInitialized = true;
+            initEffect();
+        }
+        else
+        {
+            SWARNING << "Effect::begin() :The effect is not associated with a Scene Object yet.";
+        }
     }
 
     if(isPausedFlag)
     {
         SWARNING << "Effect::begin() :The effect is paused. Use unpause() instead of begin()";
     }
-    else
+    else if(effectIsInitialized)
     {
         inheritedBegin();
         producerEffectBegan(EffectEvent::create(EffectUnrecPtr(this), getTimeStamp()));
         isPlayingFlag = true;
+    }
+    else
+    {
+        SWARNING << "Effect::begin() : The effect is not initialized yet.";
     }
 }
 

@@ -144,9 +144,7 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
 
         private:
 
-            AnimationEffect* fx;s
-            
-
+            AnimationEffect* fx;
     };
 
     InternalAnimationListener theInternalAnimationListener;
