@@ -14,18 +14,35 @@
     authors="David Kabala (djkabala@gmail.com)                             "
 >
 The SceneObject.
-	<Field
+    <Field
 		name="Behaviors"
 		type="Behavior"
-		category="pointer"
+        childParentType="FieldContainer"
+		category="childpointer"
 		cardinality="multi"
 		visibility="external"
 		fieldHeader="Project/SceneObject/KEBehaviorFields.h"
 		typeHeader="Project/SceneObject/KEBehavior.h"
-		access="protected"
+		access="public"
+		defaultValue="NULL"
+        linkParentField="SceneObject"
 	>
 	</Field>
-	<Field
+    <Field
+		name="AttachedEffects"
+		type="Effect"
+        childParentType="FieldContainer"
+		category="childpointer"
+		cardinality="multi"
+		visibility="external"
+		fieldHeader="Project/Effect/KEEffectFields.h"
+		typeHeader="Project/Effect/KEEffect.h"
+		access="public"
+		defaultValue="NULL"
+        linkParentField="ParentSceneObject"
+	>
+	</Field>
+    <Field
 		name="Node"
 		type="Node"
 		category="pointer"
@@ -35,12 +52,14 @@ The SceneObject.
 		defaultValue="NULL"
 	>
 	</Field>
-	<Field
+    <Field
 		name="Scene"
 		type="Scene"
 		category="pointer"
 		cardinality="single"
 		visibility="external"
+        fieldHeader="Project/Scene/KEScene.h"
+		typeHeader="Project/Scene/KEScene.h"
 		access="public"
 		defaultValue="NULL"
 	>

@@ -46,6 +46,9 @@
 #include "OSGTypeBase.h"
 #include "OSGFactoryBase.h"
 
+#include "KEBehavior.h"
+#include "KEBehaviorType.h"
+
 #include <map>
 #include <vector>
 
@@ -73,6 +76,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
 {
   public:
 
+    BehaviorTransitPtr createBehavior(Char8* Name);
+
     //-----------------------------------------------------------------------
     //   constants                                                           
     //-----------------------------------------------------------------------
@@ -97,17 +102,15 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
     //   types                                                               
     //-----------------------------------------------------------------------
 
-    typedef std::map   <std::string, UInt32>   TypeNameMap;
+    typedef std::map   <std::string, UInt32>   BehaviorTypeNameMap;
 
-    typedef TypeNameMap::iterator              TypeNameMapIt;
-    typedef TypeNameMap::const_iterator        TypeNameMapConstIt;
+    typedef BehaviorTypeNameMap::iterator              BehaviorNameMapIt;
+    typedef BehaviorTypeNameMap::const_iterator        BehaviorNameMapConstIt;
 
-    typedef std::vector<TypeBase           *>  TypeStore;
+    typedef std::vector<BehaviorType           *>  BehaviorTypeStore;
 
-    typedef TypeStore::iterator                TypeStoreIt;
-    typedef TypeStore::const_iterator          TypeStoreConstIt;
-
-    typedef std::vector<TypeNameMap        *>  TypeMapsStore;
+    typedef BehaviorTypeStore::iterator                BehaviorTypeStoreIt;
+    typedef BehaviorTypeStore::const_iterator          BehaviorTypeStoreConstIt;
 
     //-----------------------------------------------------------------------
     //   friend classes                                                      
@@ -174,8 +177,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
     //   instance variables                                                  
     //-----------------------------------------------------------------------
 
-    TypeMapsStore _vTypeNameMaps;
-    TypeStore     _vTypeStore;
+    BehaviorTypeNameMap _vBehaviorTypeNameMap;
+    BehaviorTypeStore     _vBehaviorTypeStore;
 
     //-----------------------------------------------------------------------
     //   instance functions                                                  
@@ -203,16 +206,15 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
     //   instance functions                                                  
     //-----------------------------------------------------------------------
 
-    UInt32 registerType(TypeBase *pType);
+    UInt32 registerType(BehaviorType *pType);
 
     /*---------------------------------------------------------------------*/
 
-    UInt32    findTypeId(const Char8    *szName,
-                         const UInt32    uiNameSpace = GlobalNamespace);
+    UInt32    findTypeId(const Char8 *szName);
 
     TypeBase *findType  (      UInt32    uiTypeId       );
     TypeBase *findType  (const Char8    *szName,
-                         const UInt32    uiNameSpace = GlobalNamespace);
+						 const UInt32    uiNameSpace = GlobalNamespace);
 
     /*---------------------------------------------------------------------*/
 

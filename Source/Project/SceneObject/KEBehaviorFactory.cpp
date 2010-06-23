@@ -42,6 +42,7 @@
 #include "OSGLog.h"
 #include "OSGTypeBase.h"
 #include "KEBehaviorFactory.h"
+#include "KEBehavior.h"
 
 #include "OSGSingletonHolder.ins"
 
@@ -103,6 +104,18 @@ void BehaviorFactoryBase::writeTypeDot(FILE     *pOut,
  *                           Instance methods                              *
 \***************************************************************************/
 
+BehaviorTransitPtr BehaviorFactoryBase::createBehavior(Char8* Name)
+{
+	BehaviorTransitPtr newBehavior = OSG::Behavior::create();
+	UInt32 NameSpace;
+
+	TypeBase* BehaviorTypeBase = findType(Name, NameSpace);
+
+	newBehavior->TheBehaviorType = dynamic_cast<BehaviorType*>(BehaviorTypeBase);
+
+	return newBehavior;
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                -
 \*-------------------------------------------------------------------------*/
@@ -115,26 +128,20 @@ void BehaviorFactoryBase::writeTypeDot(FILE     *pOut,
 
 BehaviorFactoryBase::BehaviorFactoryBase(void) :
      Inherited    ("EventProducerFactory"),
-    _vTypeNameMaps(             ),
-    _vTypeStore   (             )
+    _vBehaviorTypeStore   (             )
 {
-    _vTypeStore.reserve  (512 );
-    _vTypeStore.push_back(NULL);
-
-    _vTypeNameMaps.push_back(new TypeNameMap);
+    _vBehaviorTypeStore.reserve  (512 );
+    _vBehaviorTypeStore.push_back(NULL);
 
     FactoryController::the()->registerFactory(this);
 }
 
 BehaviorFactoryBase::BehaviorFactoryBase(const Char8 *szName) :
      Inherited    (szName),
-    _vTypeNameMaps(      ),
-    _vTypeStore   (      )
+    _vBehaviorTypeStore   (      )
 {
-    _vTypeStore.reserve  (512 );
-    _vTypeStore.push_back(NULL);
-
-    _vTypeNameMaps.push_back(new TypeNameMap);
+    _vBehaviorTypeStore.reserve  (512 );
+    _vBehaviorTypeStore.push_back(NULL);
 
     FactoryController::the()->registerFactory(this);
 }
@@ -145,8 +152,8 @@ BehaviorFactoryBase::~BehaviorFactoryBase(void)
 
 bool BehaviorFactoryBase::initialize(void)
 {
-    TypeStoreIt typeIt  = _vTypeStore.begin();
-    TypeStoreIt typeEnd = _vTypeStore.end  ();
+    BehaviorTypeStoreIt typeIt  = _vBehaviorTypeStore.begin();
+    BehaviorTypeStoreIt typeEnd = _vBehaviorTypeStore.end  ();
 
     while(typeIt != typeEnd)
     {
@@ -166,12 +173,6 @@ bool BehaviorFactoryBase::initializeFactoryPost(void)
 
 bool BehaviorFactoryBase::terminate(void)
 {
-    for(UInt32 i = 0; i < _vTypeNameMaps.size(); ++i)
-    {
-        delete _vTypeNameMaps[i];
-    }
-
-    _vTypeNameMaps.clear();
 
     return true;
 }
@@ -185,7 +186,7 @@ bool BehaviorFactoryBase::onLoadInitialize(void)
  -  public                                                                 -
 \*-------------------------------------------------------------------------*/
 
-UInt32 BehaviorFactoryBase::registerType(TypeBase *pType)
+UInt32 BehaviorFactoryBase::registerType(BehaviorType *pType)
 {
     UInt32 returnValue = 0;
 
@@ -196,22 +197,21 @@ UInt32 BehaviorFactoryBase::registerType(TypeBase *pType)
         return returnValue;
     }
 
-    if(pType->getName().empty() == true) 
+    if(pType->getName().empty() == true)
     {
         SWARNING << "DataElementType without name" << endLog;
 
         return returnValue;
     }
 
-    UInt32 uiTypeId = findTypeId(pType->getCName    (), 
-                                 pType->getNameSpace());
+    UInt32 uiTypeId = findTypeId(pType->getCName    ());
 
     if(uiTypeId != 0)
     {
         if(pType != findType(uiTypeId))
         {
             SWARNING << "ERROR: Can't add a second "
-                     << "type with the name " << pType->getCName() 
+                     << "type with the name " << pType->getCName()
                      << "(" << pType << ")"
                      << endLog;
         }
@@ -230,19 +230,9 @@ UInt32 BehaviorFactoryBase::registerType(TypeBase *pType)
         return returnValue;
     }
 
-    returnValue = _vTypeStore.size();
+    returnValue = _vBehaviorTypeStore.size();
 
-    _vTypeStore.push_back(pType);
-
-    while(_vTypeNameMaps.size() <= pType->getNameSpace())
-    {
-        _vTypeNameMaps.push_back(new TypeNameMap);
-
-        PINFO << "Added namespace : " << _vTypeNameMaps.size() << endLog;
-    }
-
-    (*(_vTypeNameMaps[pType->getNameSpace()]))
-        [pType->getName()] = returnValue;
+    _vBehaviorTypeStore.push_back(pType);
 
 
     FDEBUG(("Registered type %s | %d (%p)\n", pType->getCName(), returnValue,
@@ -251,32 +241,24 @@ UInt32 BehaviorFactoryBase::registerType(TypeBase *pType)
     return returnValue;
 }
 
-UInt32 BehaviorFactoryBase::findTypeId(const Char8 *szName,
-                                   const UInt32 uiNameSpace)
+UInt32 BehaviorFactoryBase::findTypeId(const Char8 *szName)
 {
-    TypeNameMapConstIt typeIt;
+    BehaviorNameMapConstIt typeIt;
     UInt32             uiTypeId = 0;
 
     if(szName == NULL)
         return uiTypeId;
 
-    if(_vTypeNameMaps.size() <= uiNameSpace)
-        return uiTypeId;
-
-    TypeNameMap *pMap = _vTypeNameMaps[uiNameSpace];
-
-    typeIt   = pMap->find(std::string(szName));
-
-    uiTypeId = (typeIt == pMap->end()) ? 0 : (*typeIt).second;
+    uiTypeId = _vBehaviorTypeNameMap[szName];
 
     return uiTypeId;
 }
 
 TypeBase *BehaviorFactoryBase::findType(UInt32 uiTypeId)
 {
-    if(uiTypeId < _vTypeStore.size())
+    if(uiTypeId < _vBehaviorTypeStore.size())
     {
-        return _vTypeStore[uiTypeId];
+        return _vBehaviorTypeStore[uiTypeId];
     }
     else
     {
@@ -287,14 +269,14 @@ TypeBase *BehaviorFactoryBase::findType(UInt32 uiTypeId)
 TypeBase *BehaviorFactoryBase::findType(const Char8    *szName,
                                     const UInt32    uiNameSpace)
 {
-    UInt32 uiTypeId = findTypeId(szName, uiNameSpace);
+    UInt32 uiTypeId = findTypeId(szName);
 
     return findType(uiTypeId);
 }
 
 UInt32 BehaviorFactoryBase::getNumTypes(void)
 {
-    return _vTypeStore.size();
+    return _vBehaviorTypeStore.size();
 }
 
 void BehaviorFactoryBase::writeTypeGraph(FILE *pOut)
@@ -315,9 +297,9 @@ void BehaviorFactoryBase::writeTypeGraph(FILE *pOut)
     fprintf(pOut, "    page=\"8.2677,11.69\";\n");
     fprintf(pOut, "    radio=auto;\n");
 
-    for(UInt32 i = 1; i < _vTypeStore.size(); i++)
+    for(UInt32 i = 1; i < _vBehaviorTypeStore.size(); i++)
     {
-        writeTypeDot(pOut, _vTypeStore[i]);
+        writeTypeDot(pOut, _vBehaviorTypeStore[i]);
     }
 
     fprintf(pOut, "}\n");

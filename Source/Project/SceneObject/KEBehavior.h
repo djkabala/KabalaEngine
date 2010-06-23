@@ -158,6 +158,7 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
     friend class FieldContainer;
     friend class BehaviorBase;
+	friend class BehaviorFactoryBase;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const Behavior &source);

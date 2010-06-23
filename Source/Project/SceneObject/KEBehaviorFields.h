@@ -143,6 +143,77 @@ const Char8 *FieldTraits<Behavior *, 0>::getMName<NoRefCountPolicy>(void)
 }
 
 
+/*! \ingroup GrpKabalaEngineFieldTraits
+ */
+template <>
+struct FieldTraits<Behavior *, 1> :
+    public FieldTraitsFCPtrBase<Behavior *, 1>
+{
+  private:
+
+  public:
+    typedef FieldTraits<Behavior *, 1>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+};
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 1>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecChildBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 1>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecChildBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 1>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakChildBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 1>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdChildBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 1>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecChildBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 1>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecChildBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 1>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakChildBehaviorPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Behavior *, 1>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdChildBehaviorPtr"; 
+}
+
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /*! \ingroup GrpKabalaEngineFieldSFields */
 typedef PointerSField<Behavior *,
@@ -170,13 +241,14 @@ typedef PointerMField<Behavior *,
 /*! \ingroup GrpKabalaEngineFieldMFields */
 typedef PointerMField<Behavior *,
                       NoRefCountPolicy        > MFUncountedBehaviorPtr;
+
+
+
 /*! \ingroup GrpKabalaEngineFieldMFields */
 typedef ChildPointerMField<
           Behavior *, 
           UnrecordedRefCountPolicy,
           1             > MFUnrecChildBehaviorPtr;
-
-
 
 
 
@@ -217,6 +289,14 @@ struct MFUncountedBehaviorPtr :
     public PointerMField<Behavior *,
                          NoRefCountPolicy        > {};
 
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecChildBehaviorPtr :
+    public ChildPointerMField<
+        Behavior *, 
+        UnrecordedRefCountPolicy,
+        1             > {};
 
 
 #endif // these are the doxygen hacks

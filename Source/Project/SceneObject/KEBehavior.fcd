@@ -5,26 +5,26 @@
 	parent="AttachmentContainer"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
-	structure="abstract"
+	structure="concrete"
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
 	useLocalIncludes="false"
 	libnamespace="KE"
-        authors="David Kabala (djkabala@gmail.com)                             "
+    childFields="multi"
+    authors="David Kabala (djkabala@gmail.com)                             "
 >
 The SceneObject.
-	<Field
+    <Field
 		name="SceneObject"
-		type="SceneObject"
-		category="pointer"
+		type="FieldContainer"
+		category="parentpointer"
 		cardinality="single"
 		visibility="external"
-		fieldHeader="Project/SceneObject/KESceneObjectFields.h"
-		typeHeader="Project/SceneObject/KESceneObject.h"
-		access="protected"
+		access="none"
 		defaultValue="NULL"
+        doRefCount="false"
+        passFieldMask="true"
 	>
 	</Field>
-	
 </FieldContainer>
