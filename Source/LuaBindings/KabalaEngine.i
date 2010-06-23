@@ -40,6 +40,7 @@ namespace OSG {
     class Scene;
     class Project;
     class Effect;
+    class SceneObject;
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -165,6 +166,43 @@ namespace OSG {
         Project(void);
         Project(const Project &source);
         virtual ~Project(void); 
+    };
+    
+    /******************************************************/
+    /*                    SceneObjectRefPtr               */
+    /******************************************************/
+    class SceneObjectRefPtr : public AttachmentContainerRefPtr
+    {
+      public:
+         SceneObjectRefPtr(void);
+         SceneObjectRefPtr(const SceneObjectRefPtr               &source);
+         /*SceneObjectRefPtr(const NullFieldContainerRefPtr &source);*/
+        
+        ~SceneObjectRefPtr(void); 
+        SceneObject *operator->(void);
+        
+    };
+    %extend SceneObjectRefPtr
+    {
+        static SceneObjectRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::SceneObject>(oIn);
+        }
+    };
+    
+    /******************************************************/
+    /*                     SceneObject                    */
+    /******************************************************/
+    class SceneObject
+    {
+      public:
+    
+        OSG::EffectRefPtr getEffect(std::string name);
+    
+      protected:
+        Scene(void);
+        Scene(const Scene &source);
+        virtual ~Scene(void); 
     };
     
     /******************************************************/
