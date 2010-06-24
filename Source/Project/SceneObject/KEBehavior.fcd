@@ -5,7 +5,7 @@
 	parent="AttachmentContainer"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
-	structure="abstract"
+	structure="concrete"
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"

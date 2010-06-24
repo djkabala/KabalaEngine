@@ -65,9 +65,6 @@ OSG_USING_NAMESPACE
 void BehaviorType::registerType()
 {
     BehaviorFactory::the()->registerType(this);
-
-    //_uiGroupId = EventProducerFactory::the()->registerGroup(
-        //!szGroupName.empty() ? szGroupName : _szName);
 }
 
 /*-------------------------------------------------------------------------*/
@@ -100,7 +97,7 @@ BehaviorType::BehaviorType(const BehaviorType &obj) :
     _pParent          (obj._pParent          ),
 
     _szParentName     (obj._szParentName     ),
-	
+
 	_bDependencies	  (obj._bDependencies	 ),
 
 	_bName			  (obj._bName			 )

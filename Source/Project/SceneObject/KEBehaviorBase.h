@@ -135,6 +135,33 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
 
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                   Construction                               */
+    /*! \{                                                                 */
+
+    static  BehaviorTransitPtr  create          (void);
+    static  Behavior           *createEmpty     (void);
+
+    static  BehaviorTransitPtr  createLocal     (
+                                               BitVector bFlags = FCLocal::All);
+
+    static  Behavior            *createEmptyLocal(
+                                              BitVector bFlags = FCLocal::All);
+
+    static  BehaviorTransitPtr  createDependent  (BitVector bFlags);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Copy                                   */
+    /*! \{                                                                 */
+
+    virtual FieldContainerTransitPtr shallowCopy     (void) const;
+    virtual FieldContainerTransitPtr shallowCopyLocal(
+                                       BitVector bFlags = FCLocal::All) const;
+    virtual FieldContainerTransitPtr shallowCopyDependent(
+                                                      BitVector bFlags) const;
+
+    /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
   protected:
@@ -218,6 +245,11 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*---------------------------------------------------------------------*/
     /*! \name                     Aspect Create                            */
     /*! \{                                                                 */
+
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual FieldContainer *createAspectCopy(
+                                    const FieldContainer *pRefAspect) const;
+#endif
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

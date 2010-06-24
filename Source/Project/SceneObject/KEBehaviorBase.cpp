@@ -1,6 +1,4 @@
-/*---------------------------------------------------------------------------*\
- *                             Kabala Engine                                 *
- *                                                                           *
+                                                      *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
  *   authors:  David Kabala (djkabala@gmail.com)                             *
@@ -381,4 +379,4 @@ void BehaviorBase::resolveLinks(void)
 }
 
 
-OSG_END_NAMESPACE
+OSG_END_NAMESPAC
