@@ -13,6 +13,9 @@
 #include "KELuaBindings.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
+#include "Project/SceneObject/KEBehaviorFactory.h"
+#include "Project/SceneObject/KEBehavior.h"
+#include "Project/SceneObject/KEBehaviorType.h"
 
 //#include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGSound.h>
@@ -92,7 +95,7 @@ namespace OSG {
     };
 
     /******************************************************/
-    /*                  ProjectRefPtr                        */
+    /*                  ProjectRefPtr                     */
     /******************************************************/
     class ProjectRefPtr : public AttachmentContainerRefPtr
     {
@@ -161,75 +164,68 @@ namespace OSG {
     };
     
     /******************************************************/
-    /*                  EffectRefPtr                        */
+    /*                   BehaviorType                     */
     /******************************************************/
-    class EffectRefPtr : public AttachmentContainerRefPtr
+    class BehaviorType : public AttachmentContainer
     {
-      public:
-         EffectRefPtr(void);
-         EffectRefPtr(const EffectRefPtr               &source);
-         /*ProjectRefPtr(const NullFieldContainerRefPtr &source);*/
+		public:
+		
+			UInt32 findEventID(std::string eventName);
+			
+			BehaviorType(const std::string &szName,
+                 const std::string &szParentName = "",
+				 std::vector<std::string> bEvents = std::vector<std::string>(),
+				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
+			     BoostPath& FilePath = BoostPath());
 
+			BehaviorType(const BehaviorType &source);
+			
+			std::string getName();
+			const Char8* getChar8Name();
+			
+		protected:
+			void registerType();
+    };
+    
+    /******************************************************/
+    /*                 BehaviorFactory                    */
+    /******************************************************/
+    class BehaviorFactoryBase : public AttachmentContainer
+    {
+		public:
+		
+			UInt32 registerType(BehaviorType *pType);
+			UInt32    findTypeId(const Char8 *szName);
 
-        ~EffectRefPtr(void); 
-        Effect *operator->(void);
-        
-    };
-    %extend EffectRefPtr
-    {
-        static EffectRefPtr dcast(const FieldContainerRefPtr oIn)
-        {
-            return OSG::dynamic_pointer_cast<OSG::Project>(oIn);
-        }
+			BehaviorType *findType  (      UInt32    uiTypeId       );
+			BehaviorType *findType  (const Char8    *szName         );
+			OSG::BehaviorTransitPtr createBehavior(std::string Name);
+			
+		protected:
     };
     
     /******************************************************/
-    /*                    Effect                         */
+    /*                   SceneObject                      */
     /******************************************************/
-    class Project : public AttachmentContainer
+    class SceneObject : public AttachmentContainer
     {
-      public:
-    
-        void start(void);
-    
-        void reset(void);
-    
-        void stop(void);
-    
-        void setActiveScene(SceneRefPtr TheScene);
-        SceneRefPtr getActiveScene(void) const;
-    
-        void setActiveNode(NodeRefPtr TheNode);
-        
-        void addActiveAnimation(AnimationRefPtr TheAnimation);
-        void removeActiveAnimation(AnimationRefPtr TheAnimation);
-        void addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
-        void removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
-    
-        //void save(const BoostPath& ProjectFile);
-    
-        //static ProjectRefPtr load(const BoostPath& ProjectFile);
-    
-        //static ProjectRefPtr create(const BoostPath& ProjectFile);
-    
-        //void save(void);
-    
-        //void attachNames(void);
-    
-        WindowEventProducerRefPtr getEventProducer(void) const;
-    
-        void pauseActiveUpdates(void);
-        void unpauseActiveUpdates(void);
-        void togglePauseActiveUpdates(void);
-    
-        SceneRefPtr getLastActiveScene(void) const;
-      protected:
-        Project(void);
-        Project(const Animation &source);
-        virtual ~Project(void); 
+		public:
+			const Scene* getParentScene () const;
+			Scene* getParentScene ();
+
+			OSG::BehaviorUnrecPtr getBehaviors (UInt32 index);
+
     };
     
-    
-    
+    /******************************************************/
+    /*						Behavior                      */
+    /******************************************************/
+    class Behavior : public AttachmentContainer
+    {
+		public:
+    		BehaviorType * getBehaviorType(void);
+
+			bool isInitialized();
+	};
 }
 

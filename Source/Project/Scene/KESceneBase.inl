@@ -280,6 +280,13 @@ void SceneBase::setGenericMethodIDs(const UInt32 value)
     _sfGenericMethodIDs.setValue(value);
 }
 
+//! Get the value of the \a index element the Scene::_mfSceneObjects field.
+inline
+SceneObject * SceneBase::getSceneObjects(const UInt32 index) const
+{
+    return _mfSceneObjects[index];
+}
+
 //! Get the value of the \a index element the Scene::_mfViewports field.
 inline
 Viewport * SceneBase::getViewports(const UInt32 index) const
@@ -374,6 +381,12 @@ void SceneBase::execSync (      SceneBase *pFrom,
                                   const UInt32             uiSyncInfo)
 {
     Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
+
+    if(FieldBits::NoField != (SceneObjectsFieldMask & whichField))
+        _mfSceneObjects.syncWith(pFrom->_mfSceneObjects,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
 
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
         _sfInternalParentProject.syncWith(pFrom->_sfInternalParentProject);

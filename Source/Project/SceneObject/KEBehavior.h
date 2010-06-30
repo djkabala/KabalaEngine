@@ -51,10 +51,13 @@
 #include "KEBehaviorBase.h"
 
 #include <Project/Scene/KESceneFields.h>
-#include <Project/SceneObject/KESceneObject.h>
+#include <Project/SceneObject/KESceneObjectFields.h>
 #include <OpenSG/OSGGenericEvent.h>
 #include <OpenSG/OSGEvent.h>
 #include <OpenSG/OSGEventListener.h>
+#include <OpenSG/OSGEventProducerType.h>
+#include <OpenSG/OSGEventProducer.h>
+#include <OpenSG/OSGEventConnection.h>
 #include "KEBehaviorType.h"
 
 OSG_BEGIN_NAMESPACE
@@ -78,13 +81,11 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
 	void addedToSceneObject(SceneObjectUnrecPtr rootSceneObject);
 
+	BehaviorType * getBehaviorType(void);
 
-	bool initialized;
 	bool isInitialized();
 
-	BehaviorType getBehaviorType(void);
-
-	BehaviorType *TheBehaviorType;
+	void checkListenerAttachment();
 
 
     /*---------------------------------------------------------------------*/
@@ -103,6 +104,9 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
+	
+    virtual ~Behavior(void);
+
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
@@ -111,8 +115,10 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
 
 	void initialize(SceneObjectUnrecPtr rootSceneObject);
-	void setupDependency(BehaviorUnrecPtr behavior);
-	void setupDependant(BehaviorUnrecPtr behavior);
+
+	void attachListeners (EventProducerPtr eventProducer);
+
+	BehaviorType* TheBehaviorType;
 
     // Variables should all be in BehaviorBase.
 
@@ -122,7 +128,7 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 			
 			DepBehaviorListener(BehaviorUnrecPtr TheBehavior);
 
-			virtual void eventProduced(const EventUnrecPtr e);
+			virtual void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
 
 		protected :
 			BehaviorRecPtr _Behavior;
@@ -142,7 +148,6 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~Behavior(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -156,9 +161,11 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
   private:
 
+	bool initialized;
     friend class FieldContainer;
     friend class BehaviorBase;
 	friend class BehaviorFactoryBase;
+	friend class BehaviorType;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const Behavior &source);

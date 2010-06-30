@@ -55,6 +55,7 @@
 
 #include "KESceneObject.h"
 #include "KEBehavior.h"
+#include "Project/Scene/KEScene.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -88,6 +89,27 @@ BehaviorUnrecPtr SceneObject::getBehaviors (UInt32 index)
 	}
 
 	return _mfBehaviors[index];
+}
+
+const Scene* SceneObject::getParentScene () const
+{
+	return dynamic_cast<const Scene*>(_sfParentScene.getValue());
+}
+
+Scene* SceneObject::getParentScene ()
+{
+	return dynamic_cast<Scene*>(_sfParentScene.getValue());
+}
+
+void SceneObject::checkBehaviorInitialization()
+{
+	for(UInt32 i = 0;_mfBehaviors.size() > i; i++)
+	{
+		if(!getBehaviors(i)->isInitialized())
+		{
+			getBehaviors(i)->checkListenerAttachment();
+		}
+	}
 }
 
 /***************************************************************************\
@@ -145,7 +167,7 @@ void SceneObject::changed(ConstFieldMaskArg whichField,
 {
     Inherited::changed(whichField, origin, details);
 
-	if(whichField & SceneFieldMask)
+	if(whichField & ParentSceneFieldMask)
 	{
 		InitializeAll();
 	}

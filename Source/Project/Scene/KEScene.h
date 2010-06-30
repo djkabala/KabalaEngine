@@ -69,6 +69,7 @@
 #include <OpenSG/OSGKeyListener.h>
 #include <OpenSG/OSGWindowListener.h>
 #include <OpenSG/OSGGenericEvent.h>
+#include "Project/SceneObject/KESceneObject.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -118,8 +119,12 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
 	bool   isGenericMethodDefined(      UInt32       Id        ) const;
 	bool   isGenericMethodDefined(const std::string& MethodName) const;
 	UInt32 getGenericMethodId    (const std::string& MethodName) const;
+	void   addSceneObject        (		SceneObject* so		   );
+	void   removeSceneObject     (		SceneObject* so		   );
 
 	void produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e);
+
+	void checkBehaviorInitialization();
 
     /*=========================  PROTECTED  ===============================*/
 

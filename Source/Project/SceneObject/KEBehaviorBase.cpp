@@ -167,7 +167,7 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     ">\n"
     "The SceneObject.\n"
     "    <Field\n"
-    "\t\tname=\"SceneObject\"\n"
+    "           name=\"SceneObject\"\n"
     "\t\ttype=\"FieldContainer\"\n"
     "\t\tcategory=\"parentpointer\"\n"
     "\t\tcardinality=\"single\"\n"

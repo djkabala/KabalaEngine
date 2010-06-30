@@ -1518,90 +1518,96 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 #define SWIGTYPE_p_OSG__AttachmentContainer swig_types[6]
 #define SWIGTYPE_p_OSG__AttachmentContainerRefPtr swig_types[7]
 #define SWIGTYPE_p_OSG__AttachmentRefPtr swig_types[8]
-#define SWIGTYPE_p_OSG__Camera swig_types[9]
-#define SWIGTYPE_p_OSG__CameraRefPtr swig_types[10]
-#define SWIGTYPE_p_OSG__Component swig_types[11]
-#define SWIGTYPE_p_OSG__ComponentRefPtr swig_types[12]
-#define SWIGTYPE_p_OSG__Distribution1D swig_types[13]
-#define SWIGTYPE_p_OSG__Distribution1DRefPtr swig_types[14]
-#define SWIGTYPE_p_OSG__Distribution2D swig_types[15]
-#define SWIGTYPE_p_OSG__Distribution2DRefPtr swig_types[16]
-#define SWIGTYPE_p_OSG__Distribution3D swig_types[17]
-#define SWIGTYPE_p_OSG__Distribution3DRefPtr swig_types[18]
-#define SWIGTYPE_p_OSG__Event swig_types[19]
-#define SWIGTYPE_p_OSG__EventRefPtr swig_types[20]
-#define SWIGTYPE_p_OSG__FieldContainer swig_types[21]
-#define SWIGTYPE_p_OSG__FieldContainerRefPtr swig_types[22]
-#define SWIGTYPE_p_OSG__FieldContainerType swig_types[23]
-#define SWIGTYPE_p_OSG__GenericEvent swig_types[24]
-#define SWIGTYPE_p_OSG__GenericEventRefPtr swig_types[25]
-#define SWIGTYPE_p_OSG__GenericEventUnrecPtr swig_types[26]
-#define SWIGTYPE_p_OSG__Geometry swig_types[27]
-#define SWIGTYPE_p_OSG__GeometryRefPtr swig_types[28]
-#define SWIGTYPE_p_OSG__Image swig_types[29]
-#define SWIGTYPE_p_OSG__ImageRefPtr swig_types[30]
-#define SWIGTYPE_p_OSG__LuaActivity swig_types[31]
-#define SWIGTYPE_p_OSG__LuaActivityRefPtr swig_types[32]
-#define SWIGTYPE_p_OSG__Node swig_types[33]
-#define SWIGTYPE_p_OSG__NodeCore swig_types[34]
-#define SWIGTYPE_p_OSG__NodeCoreRefPtr swig_types[35]
-#define SWIGTYPE_p_OSG__NodeRefPtr swig_types[36]
-#define SWIGTYPE_p_OSG__ParticleSystem swig_types[37]
-#define SWIGTYPE_p_OSG__ParticleSystemRefPtr swig_types[38]
-#define SWIGTYPE_p_OSG__PhysicsBody swig_types[39]
-#define SWIGTYPE_p_OSG__PhysicsBodyRefPtr swig_types[40]
-#define SWIGTYPE_p_OSG__PhysicsHandler swig_types[41]
-#define SWIGTYPE_p_OSG__PhysicsHandlerRefPtr swig_types[42]
-#define SWIGTYPE_p_OSG__PhysicsSpace swig_types[43]
-#define SWIGTYPE_p_OSG__PhysicsSpaceRefPtr swig_types[44]
-#define SWIGTYPE_p_OSG__PhysicsWorld swig_types[45]
-#define SWIGTYPE_p_OSG__PhysicsWorldRefPtr swig_types[46]
-#define SWIGTYPE_p_OSG__Project swig_types[47]
-#define SWIGTYPE_p_OSG__ProjectRefPtr swig_types[48]
-#define SWIGTYPE_p_OSG__Scene swig_types[49]
-#define SWIGTYPE_p_OSG__SceneRefPtr swig_types[50]
-#define SWIGTYPE_p_OSG__Sound swig_types[51]
-#define SWIGTYPE_p_OSG__SoundGroup swig_types[52]
-#define SWIGTYPE_p_OSG__SoundGroupRefPtr swig_types[53]
-#define SWIGTYPE_p_OSG__SoundRefPtr swig_types[54]
-#define SWIGTYPE_p_OSG__TextureObjChunk swig_types[55]
-#define SWIGTYPE_p_OSG__TextureObjChunkRefPtr swig_types[56]
-#define SWIGTYPE_p_OSG__VideoWrapper swig_types[57]
-#define SWIGTYPE_p_OSG__VideoWrapperRefPtr swig_types[58]
-#define SWIGTYPE_p_OSG__Viewport swig_types[59]
-#define SWIGTYPE_p_OSG__ViewportRefPtr swig_types[60]
-#define SWIGTYPE_p_OSG__WindowEventProducer swig_types[61]
-#define SWIGTYPE_p_OSG__WindowEventProducerRefPtr swig_types[62]
-#define SWIGTYPE_p_ParentContainer swig_types[63]
-#define SWIGTYPE_p_PlaneSet swig_types[64]
-#define SWIGTYPE_p_PointType swig_types[65]
-#define SWIGTYPE_p_PointType3f swig_types[66]
-#define SWIGTYPE_p_QuaternionType swig_types[67]
-#define SWIGTYPE_p_SFCoreType swig_types[68]
-#define SWIGTYPE_p_SFParentType swig_types[69]
-#define SWIGTYPE_p_SFTravMaskType swig_types[70]
-#define SWIGTYPE_p_SFVolumeType swig_types[71]
-#define SWIGTYPE_p_TypeObject swig_types[72]
-#define SWIGTYPE_p_ValueType swig_types[73]
-#define SWIGTYPE_p_VectorType swig_types[74]
-#define SWIGTYPE_p_VectorType3f swig_types[75]
-#define SWIGTYPE_p_VolumeType swig_types[76]
-#define SWIGTYPE_p_char swig_types[77]
-#define SWIGTYPE_p_difference_type swig_types[78]
-#define SWIGTYPE_p_double swig_types[79]
-#define SWIGTYPE_p_float swig_types[80]
-#define SWIGTYPE_p_int swig_types[81]
-#define SWIGTYPE_p_key_type swig_types[82]
-#define SWIGTYPE_p_long swig_types[83]
-#define SWIGTYPE_p_long_double swig_types[84]
-#define SWIGTYPE_p_mapped_type swig_types[85]
-#define SWIGTYPE_p_signed_char swig_types[86]
-#define SWIGTYPE_p_size_type swig_types[87]
-#define SWIGTYPE_p_unsigned_char swig_types[88]
-#define SWIGTYPE_p_unsigned_int swig_types[89]
-#define SWIGTYPE_p_unsigned_long swig_types[90]
-static swig_type_info *swig_types[92];
-static swig_module_info swig_module = {swig_types, 91, 0, 0, 0, 0};
+#define SWIGTYPE_p_OSG__Behavior swig_types[9]
+#define SWIGTYPE_p_OSG__BehaviorFactoryBase swig_types[10]
+#define SWIGTYPE_p_OSG__BehaviorTransitPtr swig_types[11]
+#define SWIGTYPE_p_OSG__BehaviorType swig_types[12]
+#define SWIGTYPE_p_OSG__BehaviorUnrecPtr swig_types[13]
+#define SWIGTYPE_p_OSG__Camera swig_types[14]
+#define SWIGTYPE_p_OSG__CameraRefPtr swig_types[15]
+#define SWIGTYPE_p_OSG__Component swig_types[16]
+#define SWIGTYPE_p_OSG__ComponentRefPtr swig_types[17]
+#define SWIGTYPE_p_OSG__Distribution1D swig_types[18]
+#define SWIGTYPE_p_OSG__Distribution1DRefPtr swig_types[19]
+#define SWIGTYPE_p_OSG__Distribution2D swig_types[20]
+#define SWIGTYPE_p_OSG__Distribution2DRefPtr swig_types[21]
+#define SWIGTYPE_p_OSG__Distribution3D swig_types[22]
+#define SWIGTYPE_p_OSG__Distribution3DRefPtr swig_types[23]
+#define SWIGTYPE_p_OSG__Event swig_types[24]
+#define SWIGTYPE_p_OSG__EventRefPtr swig_types[25]
+#define SWIGTYPE_p_OSG__FieldContainer swig_types[26]
+#define SWIGTYPE_p_OSG__FieldContainerRefPtr swig_types[27]
+#define SWIGTYPE_p_OSG__FieldContainerType swig_types[28]
+#define SWIGTYPE_p_OSG__GenericEvent swig_types[29]
+#define SWIGTYPE_p_OSG__GenericEventRefPtr swig_types[30]
+#define SWIGTYPE_p_OSG__GenericEventUnrecPtr swig_types[31]
+#define SWIGTYPE_p_OSG__Geometry swig_types[32]
+#define SWIGTYPE_p_OSG__GeometryRefPtr swig_types[33]
+#define SWIGTYPE_p_OSG__Image swig_types[34]
+#define SWIGTYPE_p_OSG__ImageRefPtr swig_types[35]
+#define SWIGTYPE_p_OSG__LuaActivity swig_types[36]
+#define SWIGTYPE_p_OSG__LuaActivityRefPtr swig_types[37]
+#define SWIGTYPE_p_OSG__Node swig_types[38]
+#define SWIGTYPE_p_OSG__NodeCore swig_types[39]
+#define SWIGTYPE_p_OSG__NodeCoreRefPtr swig_types[40]
+#define SWIGTYPE_p_OSG__NodeRefPtr swig_types[41]
+#define SWIGTYPE_p_OSG__ParticleSystem swig_types[42]
+#define SWIGTYPE_p_OSG__ParticleSystemRefPtr swig_types[43]
+#define SWIGTYPE_p_OSG__PhysicsBody swig_types[44]
+#define SWIGTYPE_p_OSG__PhysicsBodyRefPtr swig_types[45]
+#define SWIGTYPE_p_OSG__PhysicsHandler swig_types[46]
+#define SWIGTYPE_p_OSG__PhysicsHandlerRefPtr swig_types[47]
+#define SWIGTYPE_p_OSG__PhysicsSpace swig_types[48]
+#define SWIGTYPE_p_OSG__PhysicsSpaceRefPtr swig_types[49]
+#define SWIGTYPE_p_OSG__PhysicsWorld swig_types[50]
+#define SWIGTYPE_p_OSG__PhysicsWorldRefPtr swig_types[51]
+#define SWIGTYPE_p_OSG__Project swig_types[52]
+#define SWIGTYPE_p_OSG__ProjectRefPtr swig_types[53]
+#define SWIGTYPE_p_OSG__Scene swig_types[54]
+#define SWIGTYPE_p_OSG__SceneObject swig_types[55]
+#define SWIGTYPE_p_OSG__SceneRefPtr swig_types[56]
+#define SWIGTYPE_p_OSG__Sound swig_types[57]
+#define SWIGTYPE_p_OSG__SoundGroup swig_types[58]
+#define SWIGTYPE_p_OSG__SoundGroupRefPtr swig_types[59]
+#define SWIGTYPE_p_OSG__SoundRefPtr swig_types[60]
+#define SWIGTYPE_p_OSG__TextureObjChunk swig_types[61]
+#define SWIGTYPE_p_OSG__TextureObjChunkRefPtr swig_types[62]
+#define SWIGTYPE_p_OSG__VideoWrapper swig_types[63]
+#define SWIGTYPE_p_OSG__VideoWrapperRefPtr swig_types[64]
+#define SWIGTYPE_p_OSG__Viewport swig_types[65]
+#define SWIGTYPE_p_OSG__ViewportRefPtr swig_types[66]
+#define SWIGTYPE_p_OSG__WindowEventProducer swig_types[67]
+#define SWIGTYPE_p_OSG__WindowEventProducerRefPtr swig_types[68]
+#define SWIGTYPE_p_ParentContainer swig_types[69]
+#define SWIGTYPE_p_PlaneSet swig_types[70]
+#define SWIGTYPE_p_PointType swig_types[71]
+#define SWIGTYPE_p_PointType3f swig_types[72]
+#define SWIGTYPE_p_QuaternionType swig_types[73]
+#define SWIGTYPE_p_SFCoreType swig_types[74]
+#define SWIGTYPE_p_SFParentType swig_types[75]
+#define SWIGTYPE_p_SFTravMaskType swig_types[76]
+#define SWIGTYPE_p_SFVolumeType swig_types[77]
+#define SWIGTYPE_p_TypeObject swig_types[78]
+#define SWIGTYPE_p_ValueType swig_types[79]
+#define SWIGTYPE_p_VectorType swig_types[80]
+#define SWIGTYPE_p_VectorType3f swig_types[81]
+#define SWIGTYPE_p_VolumeType swig_types[82]
+#define SWIGTYPE_p_char swig_types[83]
+#define SWIGTYPE_p_difference_type swig_types[84]
+#define SWIGTYPE_p_double swig_types[85]
+#define SWIGTYPE_p_float swig_types[86]
+#define SWIGTYPE_p_int swig_types[87]
+#define SWIGTYPE_p_key_type swig_types[88]
+#define SWIGTYPE_p_long swig_types[89]
+#define SWIGTYPE_p_long_double swig_types[90]
+#define SWIGTYPE_p_mapped_type swig_types[91]
+#define SWIGTYPE_p_signed_char swig_types[92]
+#define SWIGTYPE_p_size_type swig_types[93]
+#define SWIGTYPE_p_unsigned_char swig_types[94]
+#define SWIGTYPE_p_unsigned_int swig_types[95]
+#define SWIGTYPE_p_unsigned_long swig_types[96]
+static swig_type_info *swig_types[98];
+static swig_module_info swig_module = {swig_types, 97, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1620,34 +1626,6 @@ typedef struct{} LANGUAGE_OBJ;
 
 
 #include <OpenSG/OSGConfig.h>
-//#include <OpenSG/OSGFieldContainerType.h>
-//#include <OpenSG/OSGFieldContainerPtr.h>
-//#include <OpenSG/OSGFieldDescription.h>
-//#include <OpenSG/OSGBaseTypes.h>
-//#include <OpenSG/OSGAttachment.h>
-//#include <OpenSG/OSGAttachmentContainer.h>
-//#include <OpenSG/OSGNameAttachment.h>
-//#include <OpenSG/OSGAttachmentContainerPtr.h>
-//#include <OpenSG/OSGSimpleGeometry.h>
-//#include <OpenSG/OSGGeoFunctions.h>
-//#include <OpenSG/OSGNode.h>
-//#include <OpenSG/OSGNodeCore.h>
-//#include <OpenSG/OSGGeometry.h>
-//#include <OpenSG/OSGViewport.h>
-//#include <OpenSG/OSGCamera.h>
-//#include <OpenSG/OSGImage.h>
-//#include <OpenSG/OSGSysFieldDataType.h>
-//#include <OpenSG/OSGVecFieldDataType.h>
-//#include <OpenSG/OSGMathFieldDataType.h>
-//#include <OpenSG/OSGSFVecTypes.h>
-//#include <OpenSG/OSGSFMathTypes.h>
-//#include <OpenSG/OSGSFSysTypes.h>
-//#include <OpenSG/OSGMFVecTypes.h>
-//#include <OpenSG/OSGMFMathTypes.h>
-//#include <OpenSG/OSGMFSysTypes.h>
-//#include <OpenSG/OSGMFBaseTypes.h>
-//#include <OpenSG/OSGFieldContainerFields.h>
-//#include <OpenSG/OSGFieldContainerUtils.h>
 #include <OpenSG/OSGActivity.h>
 #include <OpenSG/OSGLuaActivity.h>
 //#include <OpenSG/OSGGenericEvent.h>
@@ -1656,6 +1634,9 @@ typedef struct{} LANGUAGE_OBJ;
 #include "KELuaBindings.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
+#include "Project/SceneObject/KEBehaviorFactory.h"
+#include "Project/SceneObject/KEBehavior.h"
+#include "Project/SceneObject/KEBehaviorType.h"
 
 //#include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGSound.h>
@@ -4358,6 +4339,516 @@ static swig_lua_class *swig_OSG_Project_bases[] = {0,0};
 static const char *swig_OSG_Project_base_names[] = {"OSG::AttachmentContainer *",0};
 static swig_lua_class _wrap_class_OSG_Project = { "Project", &SWIGTYPE_p_OSG__Project,0,0, swig_OSG_Project_methods, swig_OSG_Project_attributes, swig_OSG_Project_bases, swig_OSG_Project_base_names };
 
+static int _wrap_BehaviorType_findEventID(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::BehaviorType *arg1 = (OSG::BehaviorType *) 0 ;
+  std::string arg2 ;
+  OSG::UInt32 result;
+  
+  SWIG_check_num_args("findEventID",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("findEventID",1,"OSG::BehaviorType *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("findEventID",2,"std::string");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorType,0))){
+    SWIG_fail_ptr("BehaviorType_findEventID",1,SWIGTYPE_p_OSG__BehaviorType);
+  }
+  
+  (&arg2)->assign(lua_tostring(L,2),lua_strlen(L,2));
+  result = (OSG::UInt32)(arg1)->findEventID(arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_BehaviorType_getName(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::BehaviorType *arg1 = (OSG::BehaviorType *) 0 ;
+  std::string result;
+  
+  SWIG_check_num_args("getName",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getName",1,"OSG::BehaviorType *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorType,0))){
+    SWIG_fail_ptr("BehaviorType_getName",1,SWIGTYPE_p_OSG__BehaviorType);
+  }
+  
+  result = (arg1)->getName();
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_BehaviorType_getChar8Name(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::BehaviorType *arg1 = (OSG::BehaviorType *) 0 ;
+  OSG::Char8 *result = 0 ;
+  
+  SWIG_check_num_args("getChar8Name",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getChar8Name",1,"OSG::BehaviorType *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorType,0))){
+    SWIG_fail_ptr("BehaviorType_getChar8Name",1,SWIGTYPE_p_OSG__BehaviorType);
+  }
+  
+  result = (OSG::Char8 *)(arg1)->getChar8Name();
+  lua_pushstring(L,(const char*)result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_BehaviorType(void *obj) {
+OSG::BehaviorType *arg1 = (OSG::BehaviorType *) obj;
+delete arg1;
+}
+static swig_lua_method swig_OSG_BehaviorType_methods[] = {
+    {"findEventID", _wrap_BehaviorType_findEventID}, 
+    {"getName", _wrap_BehaviorType_getName}, 
+    {"getChar8Name", _wrap_BehaviorType_getChar8Name}, 
+    {0,0}
+};
+static swig_lua_attribute swig_OSG_BehaviorType_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_class *swig_OSG_BehaviorType_bases[] = {0,0};
+static const char *swig_OSG_BehaviorType_base_names[] = {"OSG::AttachmentContainer *",0};
+static swig_lua_class _wrap_class_OSG_BehaviorType = { "BehaviorType", &SWIGTYPE_p_OSG__BehaviorType,0, swig_delete_BehaviorType, swig_OSG_BehaviorType_methods, swig_OSG_BehaviorType_attributes, swig_OSG_BehaviorType_bases, swig_OSG_BehaviorType_base_names };
+
+static int _wrap_BehaviorFactoryBase_registerType(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::BehaviorFactoryBase *arg1 = (OSG::BehaviorFactoryBase *) 0 ;
+  OSG::BehaviorType *arg2 = (OSG::BehaviorType *) 0 ;
+  OSG::UInt32 result;
+  
+  SWIG_check_num_args("registerType",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("registerType",1,"OSG::BehaviorFactoryBase *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("registerType",2,"OSG::BehaviorType *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorFactoryBase,0))){
+    SWIG_fail_ptr("BehaviorFactoryBase_registerType",1,SWIGTYPE_p_OSG__BehaviorFactoryBase);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__BehaviorType,0))){
+    SWIG_fail_ptr("BehaviorFactoryBase_registerType",2,SWIGTYPE_p_OSG__BehaviorType);
+  }
+  
+  result = (OSG::UInt32)(arg1)->registerType(arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_BehaviorFactoryBase_findTypeId(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::BehaviorFactoryBase *arg1 = (OSG::BehaviorFactoryBase *) 0 ;
+  OSG::Char8 *arg2 = (OSG::Char8 *) 0 ;
+  OSG::UInt32 result;
+  
+  SWIG_check_num_args("findTypeId",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("findTypeId",1,"OSG::BehaviorFactoryBase *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("findTypeId",2,"OSG::Char8 const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorFactoryBase,0))){
+    SWIG_fail_ptr("BehaviorFactoryBase_findTypeId",1,SWIGTYPE_p_OSG__BehaviorFactoryBase);
+  }
+  
+  arg2 = (OSG::Char8 *)lua_tostring(L, 2);
+  result = (OSG::UInt32)(arg1)->findTypeId((OSG::Char8 const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_BehaviorFactoryBase_findType__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::BehaviorFactoryBase *arg1 = (OSG::BehaviorFactoryBase *) 0 ;
+  OSG::UInt32 arg2 ;
+  OSG::BehaviorType *result = 0 ;
+  
+  SWIG_check_num_args("findType",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("findType",1,"OSG::BehaviorFactoryBase *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("findType",2,"OSG::UInt32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorFactoryBase,0))){
+    SWIG_fail_ptr("BehaviorFactoryBase_findType",1,SWIGTYPE_p_OSG__BehaviorFactoryBase);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (OSG::UInt32)lua_tonumber(L, 2);
+  result = (OSG::BehaviorType *)(arg1)->findType(arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_BehaviorFactoryBase_findType__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::BehaviorFactoryBase *arg1 = (OSG::BehaviorFactoryBase *) 0 ;
+  OSG::Char8 *arg2 = (OSG::Char8 *) 0 ;
+  OSG::BehaviorType *result = 0 ;
+  
+  SWIG_check_num_args("findType",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("findType",1,"OSG::BehaviorFactoryBase *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("findType",2,"OSG::Char8 const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorFactoryBase,0))){
+    SWIG_fail_ptr("BehaviorFactoryBase_findType",1,SWIGTYPE_p_OSG__BehaviorFactoryBase);
+  }
+  
+  arg2 = (OSG::Char8 *)lua_tostring(L, 2);
+  result = (OSG::BehaviorType *)(arg1)->findType((OSG::Char8 const *)arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_BehaviorFactoryBase_findType(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__BehaviorFactoryBase, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_BehaviorFactoryBase_findType__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__BehaviorFactoryBase, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_BehaviorFactoryBase_findType__SWIG_1(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'BehaviorFactoryBase_findType'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    findType(OSG::BehaviorFactoryBase *,OSG::UInt32)\n"
+    "    findType(OSG::BehaviorFactoryBase *,OSG::Char8 const *)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_BehaviorFactoryBase_createBehavior(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::BehaviorFactoryBase *arg1 = (OSG::BehaviorFactoryBase *) 0 ;
+  std::string arg2 ;
+  OSG::BehaviorTransitPtr result;
+  
+  SWIG_check_num_args("createBehavior",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("createBehavior",1,"OSG::BehaviorFactoryBase *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("createBehavior",2,"std::string");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorFactoryBase,0))){
+    SWIG_fail_ptr("BehaviorFactoryBase_createBehavior",1,SWIGTYPE_p_OSG__BehaviorFactoryBase);
+  }
+  
+  (&arg2)->assign(lua_tostring(L,2),lua_strlen(L,2));
+  result = (arg1)->createBehavior(arg2);
+  {
+    OSG::BehaviorTransitPtr * resultptr = new OSG::BehaviorTransitPtr((const OSG::BehaviorTransitPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorTransitPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_BehaviorFactoryBase(void *obj) {
+OSG::BehaviorFactoryBase *arg1 = (OSG::BehaviorFactoryBase *) obj;
+delete arg1;
+}
+static swig_lua_method swig_OSG_BehaviorFactoryBase_methods[] = {
+    {"registerType", _wrap_BehaviorFactoryBase_registerType}, 
+    {"findTypeId", _wrap_BehaviorFactoryBase_findTypeId}, 
+    {"findType", _wrap_BehaviorFactoryBase_findType}, 
+    {"createBehavior", _wrap_BehaviorFactoryBase_createBehavior}, 
+    {0,0}
+};
+static swig_lua_attribute swig_OSG_BehaviorFactoryBase_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_class *swig_OSG_BehaviorFactoryBase_bases[] = {0,0};
+static const char *swig_OSG_BehaviorFactoryBase_base_names[] = {"OSG::AttachmentContainer *",0};
+static swig_lua_class _wrap_class_OSG_BehaviorFactoryBase = { "BehaviorFactoryBase", &SWIGTYPE_p_OSG__BehaviorFactoryBase,0, swig_delete_BehaviorFactoryBase, swig_OSG_BehaviorFactoryBase_methods, swig_OSG_BehaviorFactoryBase_attributes, swig_OSG_BehaviorFactoryBase_bases, swig_OSG_BehaviorFactoryBase_base_names };
+
+static int _wrap_SceneObject_getParentScene__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::SceneObject *arg1 = (OSG::SceneObject *) 0 ;
+  OSG::Scene *result = 0 ;
+  
+  SWIG_check_num_args("getParentScene",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentScene",1,"OSG::SceneObject const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__SceneObject,0))){
+    SWIG_fail_ptr("SceneObject_getParentScene",1,SWIGTYPE_p_OSG__SceneObject);
+  }
+  
+  result = (OSG::Scene *)((OSG::SceneObject const *)arg1)->getParentScene();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__Scene,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_SceneObject_getParentScene__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::SceneObject *arg1 = (OSG::SceneObject *) 0 ;
+  OSG::Scene *result = 0 ;
+  
+  SWIG_check_num_args("getParentScene",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentScene",1,"OSG::SceneObject *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__SceneObject,0))){
+    SWIG_fail_ptr("SceneObject_getParentScene",1,SWIGTYPE_p_OSG__SceneObject);
+  }
+  
+  result = (OSG::Scene *)(arg1)->getParentScene();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__Scene,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_SceneObject_getParentScene(lua_State* L) {
+  int argc;
+  int argv[2]={
+    1,2
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__SceneObject, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_SceneObject_getParentScene__SWIG_1(L);
+    }
+  }
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__SceneObject, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_SceneObject_getParentScene__SWIG_0(L);
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'SceneObject_getParentScene'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    getParentScene(OSG::SceneObject const *)\n"
+    "    getParentScene(OSG::SceneObject *)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_SceneObject_getBehaviors(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::SceneObject *arg1 = (OSG::SceneObject *) 0 ;
+  OSG::UInt32 arg2 ;
+  OSG::BehaviorUnrecPtr result;
+  
+  SWIG_check_num_args("getBehaviors",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getBehaviors",1,"OSG::SceneObject *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("getBehaviors",2,"OSG::UInt32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__SceneObject,0))){
+    SWIG_fail_ptr("SceneObject_getBehaviors",1,SWIGTYPE_p_OSG__SceneObject);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (OSG::UInt32)lua_tonumber(L, 2);
+  result = (arg1)->getBehaviors(arg2);
+  {
+    OSG::BehaviorUnrecPtr * resultptr = new OSG::BehaviorUnrecPtr((const OSG::BehaviorUnrecPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorUnrecPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_SceneObject(void *obj) {
+OSG::SceneObject *arg1 = (OSG::SceneObject *) obj;
+delete arg1;
+}
+static swig_lua_method swig_OSG_SceneObject_methods[] = {
+    {"getParentScene", _wrap_SceneObject_getParentScene}, 
+    {"getBehaviors", _wrap_SceneObject_getBehaviors}, 
+    {0,0}
+};
+static swig_lua_attribute swig_OSG_SceneObject_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_class *swig_OSG_SceneObject_bases[] = {0,0};
+static const char *swig_OSG_SceneObject_base_names[] = {"OSG::AttachmentContainer *",0};
+static swig_lua_class _wrap_class_OSG_SceneObject = { "SceneObject", &SWIGTYPE_p_OSG__SceneObject,0, swig_delete_SceneObject, swig_OSG_SceneObject_methods, swig_OSG_SceneObject_attributes, swig_OSG_SceneObject_bases, swig_OSG_SceneObject_base_names };
+
+static int _wrap_Behavior_getBehaviorType(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Behavior *arg1 = (OSG::Behavior *) 0 ;
+  OSG::BehaviorType *result = 0 ;
+  
+  SWIG_check_num_args("getBehaviorType",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getBehaviorType",1,"OSG::Behavior *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Behavior,0))){
+    SWIG_fail_ptr("Behavior_getBehaviorType",1,SWIGTYPE_p_OSG__Behavior);
+  }
+  
+  result = (OSG::BehaviorType *)(arg1)->getBehaviorType();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Behavior_isInitialized(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Behavior *arg1 = (OSG::Behavior *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("isInitialized",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInitialized",1,"OSG::Behavior *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Behavior,0))){
+    SWIG_fail_ptr("Behavior_isInitialized",1,SWIGTYPE_p_OSG__Behavior);
+  }
+  
+  result = (bool)(arg1)->isInitialized();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_Behavior(void *obj) {
+OSG::Behavior *arg1 = (OSG::Behavior *) obj;
+delete arg1;
+}
+static swig_lua_method swig_OSG_Behavior_methods[] = {
+    {"getBehaviorType", _wrap_Behavior_getBehaviorType}, 
+    {"isInitialized", _wrap_Behavior_isInitialized}, 
+    {0,0}
+};
+static swig_lua_attribute swig_OSG_Behavior_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_class *swig_OSG_Behavior_bases[] = {0,0};
+static const char *swig_OSG_Behavior_base_names[] = {"OSG::AttachmentContainer *",0};
+static swig_lua_class _wrap_class_OSG_Behavior = { "Behavior", &SWIGTYPE_p_OSG__Behavior,0, swig_delete_Behavior, swig_OSG_Behavior_methods, swig_OSG_Behavior_attributes, swig_OSG_Behavior_bases, swig_OSG_Behavior_base_names };
+
 #ifdef __cplusplus
 }
 #endif
@@ -4381,8 +4872,14 @@ static swig_lua_const_info swig_constants[] = {
 static void *_p_OSG__Distribution1DTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *)  ((OSG::Distribution1D *) x));
 }
+static void *_p_OSG__BehaviorTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::AttachmentContainer *)  ((OSG::Behavior *) x));
+}
 static void *_p_OSG__SoundTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *)  ((OSG::Sound *) x));
+}
+static void *_p_OSG__BehaviorFactoryBaseTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::AttachmentContainer *)  ((OSG::BehaviorFactoryBase *) x));
 }
 static void *_p_OSG__ComponentTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *)  ((OSG::Component *) x));
@@ -4411,6 +4908,9 @@ static void *_p_OSG__ParticleSystemTo_p_OSG__AttachmentContainer(void *x, int *S
 static void *_p_OSG__NodeCoreTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *)  ((OSG::NodeCore *) x));
 }
+static void *_p_OSG__BehaviorTypeTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::AttachmentContainer *)  ((OSG::BehaviorType *) x));
+}
 static void *_p_OSG__GeometryTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *) (OSG::NodeCore *) ((OSG::Geometry *) x));
 }
@@ -4419,6 +4919,9 @@ static void *_p_OSG__LuaActivityTo_p_OSG__AttachmentContainer(void *x, int *SWIG
 }
 static void *_p_OSG__Distribution3DTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *)  ((OSG::Distribution3D *) x));
+}
+static void *_p_OSG__SceneObjectTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::AttachmentContainer *)  ((OSG::SceneObject *) x));
 }
 static void *_p_OSG__ImageTo_p_OSG__AttachmentContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::AttachmentContainer *)  ((OSG::Image *) x));
@@ -4435,8 +4938,14 @@ static void *_p_OSG__PhysicsBodyTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSE
 static void *_p_OSG__Distribution1DTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::Distribution1D *) x));
 }
+static void *_p_OSG__BehaviorTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::Behavior *) x));
+}
 static void *_p_OSG__SoundTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::Sound *) x));
+}
+static void *_p_OSG__BehaviorFactoryBaseTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::BehaviorFactoryBase *) x));
 }
 static void *_p_OSG__NodeTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::Node *) x));
@@ -4480,6 +4989,9 @@ static void *_p_OSG__AttachmentContainerTo_p_OSG__FieldContainer(void *x, int *S
 static void *_p_OSG__PhysicsSpaceTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *)  ((OSG::PhysicsSpace *) x));
 }
+static void *_p_OSG__BehaviorTypeTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::BehaviorType *) x));
+}
 static void *_p_OSG__GeometryTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *)(OSG::NodeCore *) ((OSG::Geometry *) x));
 }
@@ -4488,6 +5000,9 @@ static void *_p_OSG__LuaActivityTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSE
 }
 static void *_p_OSG__Distribution3DTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::Distribution3D *) x));
+}
+static void *_p_OSG__SceneObjectTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::SceneObject *) x));
 }
 static void *_p_OSG__ImageTo_p_OSG__FieldContainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainer *) (OSG::AttachmentContainer *) ((OSG::Image *) x));
@@ -4668,9 +5183,9 @@ static swig_type_info _swigt__p_OSG__SoundGroup = {"_p_OSG__SoundGroup", 0, 0, 0
 static swig_type_info _swigt__p_OSG__Viewport = {"_p_OSG__Viewport", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__ParticleSystem = {"_p_OSG__ParticleSystem", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__NodeCore = {"_p_OSG__NodeCore", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_OSG__Distribution3D = {"_p_OSG__Distribution3D", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__Geometry = {"_p_OSG__Geometry", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__LuaActivity = {"_p_OSG__LuaActivity", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_OSG__Distribution3D = {"_p_OSG__Distribution3D", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__Node = {"_p_OSG__Node", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__VideoWrapper = {"_p_OSG__VideoWrapper", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__Image = {"_p_OSG__Image", 0, 0, 0, 0, 0};
@@ -4691,6 +5206,11 @@ static swig_type_info _swigt__p_OSG__CameraRefPtr = {"_p_OSG__CameraRefPtr", 0, 
 static swig_type_info _swigt__p_OSG__GeometryRefPtr = {"_p_OSG__GeometryRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__NodeCoreRefPtr = {"_p_OSG__NodeCoreRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__AttachmentRefPtr = {"_p_OSG__AttachmentRefPtr", "OSG::AttachmentRefPtr *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OSG__Behavior = {"_p_OSG__Behavior", "OSG::Behavior *", 0, 0, (void*)&_wrap_class_OSG_Behavior, 0};
+static swig_type_info _swigt__p_OSG__BehaviorFactoryBase = {"_p_OSG__BehaviorFactoryBase", "OSG::BehaviorFactoryBase *", 0, 0, (void*)&_wrap_class_OSG_BehaviorFactoryBase, 0};
+static swig_type_info _swigt__p_OSG__BehaviorTransitPtr = {"_p_OSG__BehaviorTransitPtr", "OSG::BehaviorTransitPtr *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OSG__BehaviorType = {"_p_OSG__BehaviorType", "OSG::BehaviorType *", 0, 0, (void*)&_wrap_class_OSG_BehaviorType, 0};
+static swig_type_info _swigt__p_OSG__BehaviorUnrecPtr = {"_p_OSG__BehaviorUnrecPtr", "OSG::BehaviorUnrecPtr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OSG__FieldContainer = {"_p_OSG__FieldContainer", "OSG::FieldContainer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OSG__PhysicsBody = {"_p_OSG__PhysicsBody", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__GenericEvent = {"_p_OSG__GenericEvent", 0, 0, 0, 0, 0};
@@ -4715,6 +5235,7 @@ static swig_type_info _swigt__p_OSG__ParticleSystemRefPtr = {"_p_OSG__ParticleSy
 static swig_type_info _swigt__p_OSG__Project = {"_p_OSG__Project", "OSG::Project *", 0, 0, (void*)&_wrap_class_OSG_Project, 0};
 static swig_type_info _swigt__p_OSG__ProjectRefPtr = {"_p_OSG__ProjectRefPtr", "OSG::ProjectRefPtr *", 0, 0, (void*)&_wrap_class_OSG_ProjectRefPtr, 0};
 static swig_type_info _swigt__p_OSG__Scene = {"_p_OSG__Scene", "OSG::Scene *", 0, 0, (void*)&_wrap_class_OSG_Scene, 0};
+static swig_type_info _swigt__p_OSG__SceneObject = {"_p_OSG__SceneObject", "OSG::SceneObject *", 0, 0, (void*)&_wrap_class_OSG_SceneObject, 0};
 static swig_type_info _swigt__p_OSG__SceneRefPtr = {"_p_OSG__SceneRefPtr", "OSG::SceneRefPtr *", 0, 0, (void*)&_wrap_class_OSG_SceneRefPtr, 0};
 static swig_type_info _swigt__p_OSG__WindowEventProducerRefPtr = {"_p_OSG__WindowEventProducerRefPtr", "OSG::WindowEventProducerRefPtr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ParentContainer = {"_p_ParentContainer", "ParentContainer *", 0, 0, (void*)0, 0};
@@ -4756,6 +5277,11 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OSG__AttachmentContainer,
   &_swigt__p_OSG__AttachmentContainerRefPtr,
   &_swigt__p_OSG__AttachmentRefPtr,
+  &_swigt__p_OSG__Behavior,
+  &_swigt__p_OSG__BehaviorFactoryBase,
+  &_swigt__p_OSG__BehaviorTransitPtr,
+  &_swigt__p_OSG__BehaviorType,
+  &_swigt__p_OSG__BehaviorUnrecPtr,
   &_swigt__p_OSG__Camera,
   &_swigt__p_OSG__CameraRefPtr,
   &_swigt__p_OSG__Component,
@@ -4797,6 +5323,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OSG__Project,
   &_swigt__p_OSG__ProjectRefPtr,
   &_swigt__p_OSG__Scene,
+  &_swigt__p_OSG__SceneObject,
   &_swigt__p_OSG__SceneRefPtr,
   &_swigt__p_OSG__Sound,
   &_swigt__p_OSG__SoundGroup,
@@ -4853,14 +5380,14 @@ static swig_cast_info _swigc__p_OSG__SoundGroup[] = {{&_swigt__p_OSG__SoundGroup
 static swig_cast_info _swigc__p_OSG__Viewport[] = {{&_swigt__p_OSG__Viewport, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__ParticleSystem[] = {{&_swigt__p_OSG__ParticleSystem, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__NodeCore[] = {{&_swigt__p_OSG__NodeCore, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OSG__Distribution3D[] = {{&_swigt__p_OSG__Distribution3D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Geometry[] = {{&_swigt__p_OSG__Geometry, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__LuaActivity[] = {{&_swigt__p_OSG__LuaActivity, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__Distribution3D[] = {{&_swigt__p_OSG__Distribution3D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Node[] = {{&_swigt__p_OSG__Node, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__VideoWrapper[] = {{&_swigt__p_OSG__VideoWrapper, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Image[] = {{&_swigt__p_OSG__Image, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Distribution2D[] = {{&_swigt__p_OSG__Distribution2D, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OSG__AttachmentContainer[] = {  {&_swigt__p_OSG__Distribution1D, _p_OSG__Distribution1DTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Camera, _p_OSG__CameraTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Sound, _p_OSG__SoundTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Component, _p_OSG__ComponentTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Animation, _p_OSG__AnimationTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__SoundGroup, _p_OSG__SoundGroupTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Viewport, _p_OSG__ViewportTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Project, _p_OSG__ProjectTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__ParticleSystem, _p_OSG__ParticleSystemTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__NodeCore, _p_OSG__NodeCoreTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__AttachmentContainer, 0, 0, 0},  {&_swigt__p_OSG__Distribution3D, _p_OSG__Distribution3DTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Geometry, _p_OSG__GeometryTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__LuaActivity, _p_OSG__LuaActivityTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Node, _p_OSG__NodeTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__VideoWrapper, _p_OSG__VideoWrapperTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Image, _p_OSG__ImageTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Distribution2D, _p_OSG__Distribution2DTo_p_OSG__AttachmentContainer, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__AttachmentContainer[] = {  {&_swigt__p_OSG__Distribution1D, _p_OSG__Distribution1DTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Behavior, _p_OSG__BehaviorTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Camera, _p_OSG__CameraTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__BehaviorFactoryBase, _p_OSG__BehaviorFactoryBaseTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Sound, _p_OSG__SoundTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Component, _p_OSG__ComponentTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Animation, _p_OSG__AnimationTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__SoundGroup, _p_OSG__SoundGroupTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Viewport, _p_OSG__ViewportTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Project, _p_OSG__ProjectTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__ParticleSystem, _p_OSG__ParticleSystemTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__NodeCore, _p_OSG__NodeCoreTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__AttachmentContainer, 0, 0, 0},  {&_swigt__p_OSG__BehaviorType, _p_OSG__BehaviorTypeTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Geometry, _p_OSG__GeometryTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__LuaActivity, _p_OSG__LuaActivityTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Distribution3D, _p_OSG__Distribution3DTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__SceneObject, _p_OSG__SceneObjectTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Node, _p_OSG__NodeTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__VideoWrapper, _p_OSG__VideoWrapperTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Image, _p_OSG__ImageTo_p_OSG__AttachmentContainer, 0, 0},  {&_swigt__p_OSG__Distribution2D, _p_OSG__Distribution2DTo_p_OSG__AttachmentContainer, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__SoundGroupRefPtr[] = {{&_swigt__p_OSG__SoundGroupRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__SoundRefPtr[] = {{&_swigt__p_OSG__SoundRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__ComponentRefPtr[] = {{&_swigt__p_OSG__ComponentRefPtr, 0, 0, 0},{0, 0, 0, 0}};
@@ -4877,6 +5404,11 @@ static swig_cast_info _swigc__p_OSG__GeometryRefPtr[] = {{&_swigt__p_OSG__Geomet
 static swig_cast_info _swigc__p_OSG__NodeCoreRefPtr[] = {{&_swigt__p_OSG__NodeCoreRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__AttachmentContainerRefPtr[] = {  {&_swigt__p_OSG__AnimationRefPtr, _p_OSG__AnimationRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__SoundGroupRefPtr, _p_OSG__SoundGroupRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__SoundRefPtr, _p_OSG__SoundRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__ComponentRefPtr, _p_OSG__ComponentRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__WindowEventProducerRefPtr, _p_OSG__WindowEventProducerRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__ViewportRefPtr, _p_OSG__ViewportRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__VideoWrapperRefPtr, _p_OSG__VideoWrapperRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__Distribution1DRefPtr, _p_OSG__Distribution1DRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__Distribution2DRefPtr, _p_OSG__Distribution2DRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__Distribution3DRefPtr, _p_OSG__Distribution3DRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__ProjectRefPtr, _p_OSG__ProjectRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__AttachmentContainerRefPtr, 0, 0, 0},  {&_swigt__p_OSG__WindowEventProducer, _p_OSG__WindowEventProducerTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__ParticleSystemRefPtr, _p_OSG__ParticleSystemRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__LuaActivityRefPtr, _p_OSG__LuaActivityRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__ImageRefPtr, _p_OSG__ImageRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__CameraRefPtr, _p_OSG__CameraRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__NodeRefPtr, _p_OSG__NodeRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__GeometryRefPtr, _p_OSG__GeometryRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__NodeCoreRefPtr, _p_OSG__NodeCoreRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},  {&_swigt__p_OSG__SceneRefPtr, _p_OSG__SceneRefPtrTo_p_OSG__AttachmentContainerRefPtr, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__AttachmentRefPtr[] = {  {&_swigt__p_OSG__AttachmentRefPtr, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__Behavior[] = {  {&_swigt__p_OSG__Behavior, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__BehaviorFactoryBase[] = {  {&_swigt__p_OSG__BehaviorFactoryBase, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__BehaviorTransitPtr[] = {  {&_swigt__p_OSG__BehaviorTransitPtr, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__BehaviorType[] = {  {&_swigt__p_OSG__BehaviorType, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__BehaviorUnrecPtr[] = {  {&_swigt__p_OSG__BehaviorUnrecPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__PhysicsBody[] = {{&_swigt__p_OSG__PhysicsBody, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__GenericEvent[] = {{&_swigt__p_OSG__GenericEvent, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__PhysicsHandler[] = {{&_swigt__p_OSG__PhysicsHandler, 0, 0, 0},{0, 0, 0, 0}};
@@ -4885,7 +5417,7 @@ static swig_cast_info _swigc__p_OSG__PhysicsSpace[] = {{&_swigt__p_OSG__PhysicsS
 static swig_cast_info _swigc__p_OSG__PhysicsWorld[] = {{&_swigt__p_OSG__PhysicsWorld, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Event[] = {{&_swigt__p_OSG__Event, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__TextureObjChunk[] = {{&_swigt__p_OSG__TextureObjChunk, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OSG__FieldContainer[] = {  {&_swigt__p_OSG__PhysicsBody, _p_OSG__PhysicsBodyTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution1D, _p_OSG__Distribution1DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Camera, _p_OSG__CameraTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Sound, _p_OSG__SoundTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Component, _p_OSG__ComponentTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Animation, _p_OSG__AnimationTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__SoundGroup, _p_OSG__SoundGroupTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Viewport, _p_OSG__ViewportTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Project, _p_OSG__ProjectTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__GenericEvent, _p_OSG__GenericEventTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__ParticleSystem, _p_OSG__ParticleSystemTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsHandler, _p_OSG__PhysicsHandlerTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Attachment, _p_OSG__AttachmentTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__NodeCore, _p_OSG__NodeCoreTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__FieldContainer, 0, 0, 0},  {&_swigt__p_OSG__AttachmentContainer, _p_OSG__AttachmentContainerTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsSpace, _p_OSG__PhysicsSpaceTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Geometry, _p_OSG__GeometryTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__LuaActivity, _p_OSG__LuaActivityTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution3D, _p_OSG__Distribution3DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Node, _p_OSG__NodeTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__VideoWrapper, _p_OSG__VideoWrapperTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsWorld, _p_OSG__PhysicsWorldTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Image, _p_OSG__ImageTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution2D, _p_OSG__Distribution2DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Event, _p_OSG__EventTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__TextureObjChunk, _p_OSG__TextureObjChunkTo_p_OSG__FieldContainer, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__FieldContainer[] = {  {&_swigt__p_OSG__PhysicsBody, _p_OSG__PhysicsBodyTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution1D, _p_OSG__Distribution1DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Behavior, _p_OSG__BehaviorTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Camera, _p_OSG__CameraTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__BehaviorFactoryBase, _p_OSG__BehaviorFactoryBaseTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Sound, _p_OSG__SoundTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Component, _p_OSG__ComponentTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Animation, _p_OSG__AnimationTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__SoundGroup, _p_OSG__SoundGroupTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Viewport, _p_OSG__ViewportTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Project, _p_OSG__ProjectTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__GenericEvent, _p_OSG__GenericEventTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsHandler, _p_OSG__PhysicsHandlerTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Attachment, _p_OSG__AttachmentTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__ParticleSystem, _p_OSG__ParticleSystemTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__NodeCore, _p_OSG__NodeCoreTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__FieldContainer, 0, 0, 0},  {&_swigt__p_OSG__AttachmentContainer, _p_OSG__AttachmentContainerTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__BehaviorType, _p_OSG__BehaviorTypeTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsSpace, _p_OSG__PhysicsSpaceTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Geometry, _p_OSG__GeometryTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__LuaActivity, _p_OSG__LuaActivityTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution3D, _p_OSG__Distribution3DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__SceneObject, _p_OSG__SceneObjectTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Node, _p_OSG__NodeTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__VideoWrapper, _p_OSG__VideoWrapperTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__PhysicsWorld, _p_OSG__PhysicsWorldTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Image, _p_OSG__ImageTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Distribution2D, _p_OSG__Distribution2DTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__Event, _p_OSG__EventTo_p_OSG__FieldContainer, 0, 0},  {&_swigt__p_OSG__TextureObjChunk, _p_OSG__TextureObjChunkTo_p_OSG__FieldContainer, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__PhysicsHandlerRefPtr[] = {{&_swigt__p_OSG__PhysicsHandlerRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__PhysicsWorldRefPtr[] = {{&_swigt__p_OSG__PhysicsWorldRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__EventRefPtr[] = {{&_swigt__p_OSG__EventRefPtr, 0, 0, 0},{0, 0, 0, 0}};
@@ -4901,6 +5433,7 @@ static swig_cast_info _swigc__p_OSG__ParticleSystemRefPtr[] = {  {&_swigt__p_OSG
 static swig_cast_info _swigc__p_OSG__Project[] = {  {&_swigt__p_OSG__Project, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__ProjectRefPtr[] = {  {&_swigt__p_OSG__ProjectRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Scene[] = {  {&_swigt__p_OSG__Scene, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__SceneObject[] = {  {&_swigt__p_OSG__SceneObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__SceneRefPtr[] = {  {&_swigt__p_OSG__SceneRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__WindowEventProducerRefPtr[] = {  {&_swigt__p_OSG__WindowEventProducerRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ParentContainer[] = {  {&_swigt__p_ParentContainer, 0, 0, 0},{0, 0, 0, 0}};
@@ -4942,6 +5475,11 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OSG__AttachmentContainer,
   _swigc__p_OSG__AttachmentContainerRefPtr,
   _swigc__p_OSG__AttachmentRefPtr,
+  _swigc__p_OSG__Behavior,
+  _swigc__p_OSG__BehaviorFactoryBase,
+  _swigc__p_OSG__BehaviorTransitPtr,
+  _swigc__p_OSG__BehaviorType,
+  _swigc__p_OSG__BehaviorUnrecPtr,
   _swigc__p_OSG__Camera,
   _swigc__p_OSG__CameraRefPtr,
   _swigc__p_OSG__Component,
@@ -4983,6 +5521,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OSG__Project,
   _swigc__p_OSG__ProjectRefPtr,
   _swigc__p_OSG__Scene,
+  _swigc__p_OSG__SceneObject,
   _swigc__p_OSG__SceneRefPtr,
   _swigc__p_OSG__Sound,
   _swigc__p_OSG__SoundGroup,
@@ -5334,7 +5873,6 @@ void SWIG_init_user(lua_State* L)
   /* exec Lua code if applicable */
   SWIG_Lua_dostring(L,SWIG_LUACODE);
 }
-
 OSG::LuaManager::OpenBoundLuaLibFunctor getKabalaEngineLuaBindingsLibFunctor(void)
 {
     return boost::bind(&luaopen_KabalaEngine, _1);

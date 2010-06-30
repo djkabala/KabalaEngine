@@ -40,6 +40,7 @@
 #endif
 
 #include "KESceneObjectBase.h"
+#include "Project/Scene/KESceneFields.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -58,7 +59,12 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     typedef SceneObjectBase Inherited;
     typedef SceneObject     Self;
 
+	const Scene* getParentScene () const;
+	Scene* getParentScene ();
+
 	BehaviorUnrecPtr getBehaviors (UInt32 index);
+
+	void checkBehaviorInitialization();
 
 
     /*---------------------------------------------------------------------*/
@@ -80,6 +86,9 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
+	
+    virtual ~SceneObject(void);
+
   protected:
 
 	  void InitializeAll();
@@ -99,7 +108,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~SceneObject(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

@@ -42,15 +42,21 @@
 #include "OSGConfig.h"
 #include "KEKabalaEngineDef.h"
 
+#include "Project/Scene/KESceneFields.h"
+
 #include "OSGBaseTypes.h"
 
 #include <map>
 #include <boost/function.hpp>
 #include "OSGTypeBase.h"
 
-OSG_BEGIN_NAMESPACE
+#include "OSGFilePathAttachment.h"
+#include "OSGContainerUtils.h"
+#include <fstream>
+#include <sstream>
 
-class MethodDescription;
+
+OSG_BEGIN_NAMESPACE
 
 /*! \ingroup GrpSystemFieldContainerFuncs
  */
@@ -73,17 +79,31 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
   public :
     typedef TypeBase Inherited;
 
+	std::vector<UInt32>	_bActiveEventIDs;
+	
+	void registerWithScene(Scene* scene);
+
+	UInt32 findEventID(std::string eventName);
+
+	std::string getLuaFunctionName();
+
+	std::string getCode();
+	void setCode(std::string bCode);
+
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    BehaviorType(const std::string                &szName,
-                       const std::string    &szParentName      = "",
-					   std::vector<BehaviorType> bDependencies = std::vector<BehaviorType>());
+    BehaviorType(const std::string &szName,
+                 const std::string &szParentName = "",
+				 std::vector<std::string> bEvents = std::vector<std::string>(),
+				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
+			     BoostPath& FilePath = BoostPath());
 
     BehaviorType(const BehaviorType &source);
 
 	std::string getName();
+	const Char8* getChar8Name();
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -91,6 +111,17 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \{                                                                 */
 
     virtual ~BehaviorType(void); 
+
+	
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name						Has	                                   */
+    /*! \{                                                                 */
+
+	bool hasEvent(std::string e);
+	bool hasEventLink(std::string e);
+	bool hasDependent(BehaviorType* d);
+	bool hasDependency(BehaviorType* d);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -114,9 +145,9 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name                Query Properties                              */
     /*! \{                                                                 */
 
-    bool isInitialized(void                           ) const;
+    bool isInitialized(void) const;
 
-    bool isAbstract   (void                           ) const;
+    bool isAbstract(void) const;
   
 
     /*! \}                                                                 */
@@ -124,8 +155,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name                        Dump                                  */
     /*! \{                                                                 */
 
-    virtual void dump(      UInt32    uiIndent = 0, 
-                      const BitVector bvFlags  = 0) const;
+    virtual void dump(UInt32 uiIndent = 0, const BitVector bvFlags  = 0) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
@@ -136,14 +166,21 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name                      Member                                  */
     /*! \{                                                                 */
 
-    bool                _bInitialized;
+    bool _bInitialized;
+	std::string LuaFunctionName;
+	std::string TheCode;
 
-	std::vector<BehaviorType>	_bDependencies;
-	std::vector<BehaviorType>	_bDependents;
+	std::vector<BehaviorType*>	_bDependencies;
+	std::vector<BehaviorType*>	_bDependents;
+
+	std::vector<std::string>	_bEvents;
+	std::vector<std::string>	_bEventLinks;
 
     BehaviorType *_pParent;
-    std::string                _szParentName;
-	std::string				   _bName;
+    std::string _szParentName;
+	std::string _bName;
+
+	Scene * attachedScene;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -157,8 +194,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name             Intialization / Termination                      */
     /*! \{                                                                 */
 
-    bool initialize      (void);
-    void terminate       (void);
+    bool initialize(void);
+    void terminate(void);
 
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
@@ -167,7 +204,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 
    // typedef TypeBase Inherited;
 
-    friend class BehaviorTypeFactoryBase;
+    friend class BehaviorFactoryBase;
+	friend class Behavior;
 
     /*!\brief prohibit default function (move to 'public' if needed) */
     void operator =(const BehaviorType &source);

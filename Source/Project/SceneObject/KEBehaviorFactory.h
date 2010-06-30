@@ -76,7 +76,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
 {
   public:
 
-    BehaviorTransitPtr createBehavior(Char8* Name);
+    BehaviorTransitPtr createBehavior(std::string Name);
 
     //-----------------------------------------------------------------------
     //   constants                                                           
@@ -184,11 +184,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
     //   instance functions                                                  
     //-----------------------------------------------------------------------
 
-    BehaviorFactoryBase(void);
-    BehaviorFactoryBase(const Char8 *szName);
-
-    virtual ~BehaviorFactoryBase(void); 
-
     virtual bool initialize           (void);
     virtual bool terminate            (void);
 
@@ -197,6 +192,11 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
     virtual bool initializeFactoryPost(void);
 
   public :
+
+	BehaviorFactoryBase(void);
+    BehaviorFactoryBase(const Char8 *szName);
+
+    virtual ~BehaviorFactoryBase(void); 
 
     //-----------------------------------------------------------------------
     //   class functions                                                     
@@ -212,9 +212,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public FactoryBase
 
     UInt32    findTypeId(const Char8 *szName);
 
-    TypeBase *findType  (      UInt32    uiTypeId       );
-    TypeBase *findType  (const Char8    *szName,
-						 const UInt32    uiNameSpace = GlobalNamespace);
+    BehaviorType *findType  (      UInt32    uiTypeId       );
+    BehaviorType *findType  (const Char8    *szName         );
 
     /*---------------------------------------------------------------------*/
 

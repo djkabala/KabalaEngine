@@ -56,6 +56,25 @@ std::string BehaviorType::getName(void)
 	return _bName;
 }
 
+inline
+std::string BehaviorType::getLuaFunctionName()
+{
+	return LuaFunctionName;
+}
+inline
+std::string BehaviorType::getCode()
+{
+	return TheCode;
+}
+
+/*-------------------------------------------------------------------------*/
+/*                                Set                                      */
+
+inline
+void BehaviorType::setCode(std::string bCode)
+{
+	TheCode = bCode;
+}
 
 /*-------------------------------------------------------------------------*/
 /*                                 Is                                      */

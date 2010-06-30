@@ -53,7 +53,13 @@
 
 #include <OpenSG/OSGConfig.h>
 
+#include "Project/Scene/KEScene.h"
+
 #include "KEBehavior.h"
+#include "KEBehaviorType.h"
+#include "KEBehaviorFactory.h"
+#include <OpenSG/OSGEvent.h>
+#include <OpenSG/OSGEventListener.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -87,7 +93,8 @@ void Behavior::initMethod(InitPhase ePhase)
 
 void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
 {
-	UInt32 GenericMethodID = rootSceneObject->getScene()->registerNewGenericMethod(TheBehaviorType->getName()+"GenericMethod");
+	TheBehaviorType->registerWithScene(rootSceneObject->getParentScene());
+	attachListeners(rootSceneObject->getParentScene()->editEventProducer());
 }
 
 void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
@@ -95,21 +102,44 @@ void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
 	initialize(rootSceneObject);
 }
 
-void Behavior::setupDependency(BehaviorUnrecPtr behavior)
-{
-}
-
-void Behavior::setupDependant(BehaviorUnrecPtr behavior)
-{
-}
-
 void Behavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
 {
 }
 
-void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e)
+void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e, UInt32 ID)
 {
-	_Behavior->depBehaviorProducedMethod(e, e->getTypeId());
+	_Behavior->depBehaviorProducedMethod(e, ID);
+}
+
+void Behavior::checkListenerAttachment()
+{
+	attachListeners(dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene()->editEventProducer());
+}
+
+void Behavior::attachListeners (EventProducerPtr eventProducer)
+{
+	initialized = true;
+
+	for(UInt32 i = 0; TheBehaviorType->_bDependencies.size(); i++)
+	{
+		if(TheBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
+		{
+			for(UInt32 c = 0; TheBehaviorType->_bEventLinks.size(); c++)
+			{
+				for(UInt32 d = 0; TheBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
+				{
+					if(TheBehaviorType->_bDependencies[i]->hasEvent(TheBehaviorType->_bEventLinks[c]))
+					{
+						eventProducer->attachEventListener(&_DepBehaviorListener,TheBehaviorType->_bDependencies[i]->findEventID(TheBehaviorType->_bEventLinks[c]));
+					}
+				}
+			}
+		}
+		else
+		{
+			initialized = false;
+		}
+	}
 }
 
 /*-------------------------------------------------------------------------*\
