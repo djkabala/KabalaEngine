@@ -784,6 +784,7 @@ SceneRefPtr MainApplication::createDefaultScene(void)
 
 
     SceneRefPtr TheDefaultScene = Scene::create();
+    setName(TheDefaultScene, "Untitled Scene" );
     TheDefaultScene->pushToBackgrounds(DefaultSceneBackground);
     TheDefaultScene->setInitialBackground(DefaultSceneBackground);
 
