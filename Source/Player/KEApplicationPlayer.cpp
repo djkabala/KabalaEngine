@@ -1479,7 +1479,7 @@ void ApplicationPlayer::updateFromSettings(void)
         }
         Color4f bbColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.volume_box.color"));
         GeoVec4fPropertyRefPtr bbColors =
-            dynamic_cast<GeoVec4fProperty*>(_HighlightVolumeBoxGeo->getColors());
+            static_cast<GeoVec4fProperty*>(_HighlightVolumeBoxGeo->getColors());
         for(UInt32 i(0) ; i<bbColors->size() ; ++i)
         {
             bbColors->setValue(bbColor,i);
@@ -1498,7 +1498,7 @@ void ApplicationPlayer::updateFromSettings(void)
         Color4f xAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.x_axis_color"));
         Color4f yAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.y_axis_color"));
         Color4f zAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.z_axis_color"));
-        GeoVec4fPropertyRefPtr axisColors = dynamic_cast<GeoVec4fProperty*>(_HighlightAxisGeo->getColors());
+        GeoVec4fPropertyRefPtr axisColors = static_cast<GeoVec4fProperty*>(_HighlightAxisGeo->getColors());
         axisColors->setValue(xAxisColor,0);
         axisColors->setValue(xAxisColor,1);
         axisColors->setValue(yAxisColor,2);
@@ -1715,7 +1715,7 @@ void ApplicationPlayer::updateHighlightNode(void)
         }*/
 
         GeoPnt3fPropertyUnrecPtr temphighlightPoints =
-            dynamic_cast<GeoPnt3fProperty*>(_HighlightVolumeBoxGeo->getPositions());
+            static_cast<GeoPnt3fProperty*>(_HighlightVolumeBoxGeo->getPositions());
 
         //Update Bounding Box
         temphighlightPoints->setValue(Pnt3f(min[0], min[1], min[2]), 0);
@@ -1728,7 +1728,7 @@ void ApplicationPlayer::updateHighlightNode(void)
         temphighlightPoints->setValue(Pnt3f(max[0], max[1], max[2]), 7);
         
         temphighlightPoints =
-            dynamic_cast<GeoPnt3fProperty*>(_HighlightAxisGeo->getPositions());
+            static_cast<GeoPnt3fProperty*>(_HighlightAxisGeo->getPositions());
 
         //Update Local Coordinate Axis
         Real32 AxisScaling(Sides.maxValue() * MainApplication::the()->getSettings().get<Real32>("player.debugger.selected_node.axis.relative_length"));

@@ -70,7 +70,7 @@ bool ApplicationSettings::writeXML(const BoostPath& FilePath)
         boost::property_tree::xml_parser::write_xml(FilePath.string(), 
                                                     _PropertyTree, 
                                                     std::locale(), 
-                                                    boost::property_tree::xml_parser::xml_writer_make_settings<typename boost::property_tree::ptree::key_type::value_type>(' ', 4));
+                                                    boost::property_tree::xml_parser::xml_writer_make_settings<boost::property_tree::ptree::key_type::value_type>(' ', 4));
     }
     catch(std::exception& ex)
     {
