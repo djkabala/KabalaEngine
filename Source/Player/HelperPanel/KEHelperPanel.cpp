@@ -87,6 +87,7 @@ void HelperPanel::setupLuaTab()
     // Create a _CodeTextArea
     _CodeTextArea = OSG::TextArea::create();
     _CodeTextArea->setText("");
+    setName(_CodeTextArea,"__KABALA_ENGINE_PLAYER_CODE_TEXT_AREA");
 
     _LuaConsoleScrollPanel = ScrollPanel::create();
     _LuaConsoleScrollPanel->setPreferredSize(Vec2f(300,1200));
@@ -155,6 +156,7 @@ void HelperPanel::setupErrorTab()
     _ErrorTextArea = OSG::TextArea::create();
     _ErrorTextArea->setText("Error List");
     _ErrorTextArea->setEditable(false);
+    setName(_ErrorTextArea,"__KABALA_ENGINE_PLAYER_ERROR_TEXT_AREA");
 
     _TabPanel2Content = ScrollPanel::create();
     _TabPanel2Content->setPreferredSize(Vec2f(200,1200));
@@ -183,6 +185,8 @@ void HelperPanel::createLoggingTab()
     //Text Area
     _LoggingArea = OSG::TextArea::create();
     _LoggingArea->setEditable(false);
+    _LoggingArea->setText("Logging Area\n");
+    setName(_LoggingArea,"__KABALA_ENGINE_PLAYER_LOGGING_TEXT_AREA");
 
     //Scroll Panel
     _LoggingScrollPanel = OSG::ScrollPanel::create();
@@ -196,7 +200,7 @@ void HelperPanel::createLoggingTab()
 
     LoggingContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _LoggingScrollPanel, 5, SpringLayoutConstraints::NORTH_EDGE, _LoggingContent);  
     LoggingContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, _LoggingContent); 
-    LoggingContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::WEST_EDGE, _LoggingContent);
+    LoggingContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::EAST_EDGE, _LoggingContent);
     LoggingContentLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _LoggingScrollPanel, 5, SpringLayoutConstraints::WEST_EDGE, _LoggingContent);  
 
     _LoggingContent->setLayout(LoggingContentLayout);
@@ -207,97 +211,31 @@ void HelperPanel::setupPropertiesTab()
 {
     _TabPanel4Content = OSG::Panel::create();
 
-    _TabPanel4ContentLayout = OSG::GridLayout::create();
+    SpringLayoutRefPtr TabPanel4ContentLayout = OSG::SpringLayout::create();
 
-    _TabPanel4ContentLayout->setRows(9);
-    _TabPanel4ContentLayout->setColumns(2);
-    _TabPanel4ContentLayout->setHorizontalGap(2);
-    _TabPanel4ContentLayout->setVerticalGap(2);
+    _NodeEditor = FieldContainerEditorFactory::the()->createDefaultEditor(_TabPanel4Content, _ApplicationPlayer->getCommandManager());
+    ScrollPanelRefPtr NodeEditorScrollPanel = ScrollPanel::create();
+    NodeEditorScrollPanel->setPreferredSize(Vec2f(450,400));
+    NodeEditorScrollPanel->setViewComponent(_NodeEditor);
+
+    _CoreEditor = FieldContainerEditorFactory::the()->createDefaultEditor(_TabPanel4Content, _ApplicationPlayer->getCommandManager());
+    ScrollPanelRefPtr CoreEditorScrollPanel = ScrollPanel::create();
+    CoreEditorScrollPanel->setPreferredSize(Vec2f(450,400));
+    CoreEditorScrollPanel->setViewComponent(_CoreEditor);
 
 
-    _NodeNameLabel = Label::create();
-    _NodeNameLabel->setText("Name");
-    _NodeNameLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeNameValueLabel = Label::create();
-    _NodeNameValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-
-    _NodeCoreTypeLabel = Label::create();
-    _NodeCoreTypeLabel->setText("Core Type");
-    _NodeCoreTypeLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeCoreTypeValueLabel = Label::create();
-    _NodeCoreTypeValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-
-    _NodeMinLabel = Label::create();
-    _NodeMinLabel->setText("Min");
-    _NodeMinLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeMinValueLabel = Label::create();
-    _NodeMinValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-
-    _NodeMaxLabel = Label::create();
-    _NodeMaxLabel->setText("Max");
-    _NodeMaxLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeMaxValueLabel = Label::create();
-    _NodeMaxValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-
-    _NodeCenterLabel = Label::create();
-    _NodeCenterLabel->setText("Center");
-    _NodeCenterLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeCenterValueLabel = Label::create();
-    _NodeCenterValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-
-    _NodeTriCountLabel = Label::create();
-    _NodeTriCountLabel->setText("TriCount");
-    _NodeTriCountLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeTriCountValueLabel = Label::create();
-    _NodeTriCountValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-
-    _NodeTravMaskLabel = Label::create();
-    _NodeTravMaskLabel->setText("Traversal Mask");
-    _NodeTravMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeTravMaskValueLabel = Label::create();
-    _NodeTravMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-
-    _NodeOcclusionMaskLabel = Label::create();
-    _NodeOcclusionMaskLabel->setText("Occlusion Mask");
-    _NodeOcclusionMaskLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeOcclusionMaskValueLabel = Label::create();
-    _NodeOcclusionMaskValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
-
-    _NodeActiveLabel = Label::create();
-    _NodeActiveLabel->setText("Active");
-    _NodeActiveLabel->setPreferredSize(Vec2f(100.0f, 20.0f));
-
-    _NodeActiveValueLabel = Label::create();
-    _NodeActiveValueLabel->setPreferredSize(Vec2f(300.0f, 20.0f));
+    TabPanel4ContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, NodeEditorScrollPanel, 5, SpringLayoutConstraints::NORTH_EDGE, _TabPanel4Content);  
+    TabPanel4ContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, NodeEditorScrollPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, _TabPanel4Content); 
+    TabPanel4ContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, NodeEditorScrollPanel, -15, SpringLayoutConstraints::HORIZONTAL_CENTER_EDGE, _TabPanel4Content);
+    
+    TabPanel4ContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, CoreEditorScrollPanel, 5, SpringLayoutConstraints::NORTH_EDGE, _TabPanel4Content);  
+    TabPanel4ContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, CoreEditorScrollPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, _TabPanel4Content); 
+    TabPanel4ContentLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, CoreEditorScrollPanel, 15, SpringLayoutConstraints::HORIZONTAL_CENTER_EDGE, _TabPanel4Content);  
 
     _TabPanel4Content->setPreferredSize(Vec2f(100.0f, 200.0f));
-    _TabPanel4Content->setLayout(_TabPanel4ContentLayout);
-    _TabPanel4Content->pushToChildren(_NodeNameLabel);
-    _TabPanel4Content->pushToChildren(_NodeNameValueLabel);
-    _TabPanel4Content->pushToChildren(_NodeCoreTypeLabel);
-    _TabPanel4Content->pushToChildren(_NodeCoreTypeValueLabel);
-    _TabPanel4Content->pushToChildren(_NodeMinLabel);
-    _TabPanel4Content->pushToChildren(_NodeMinValueLabel);
-    _TabPanel4Content->pushToChildren(_NodeMaxLabel);
-    _TabPanel4Content->pushToChildren(_NodeMaxValueLabel);
-    _TabPanel4Content->pushToChildren(_NodeCenterLabel);
-    _TabPanel4Content->pushToChildren(_NodeCenterValueLabel);
-    _TabPanel4Content->pushToChildren(_NodeTriCountLabel);
-    _TabPanel4Content->pushToChildren(_NodeTriCountValueLabel);
-    _TabPanel4Content->pushToChildren(_NodeTravMaskLabel);
-    _TabPanel4Content->pushToChildren(_NodeTravMaskValueLabel);
-    _TabPanel4Content->pushToChildren(_NodeOcclusionMaskLabel);
-    _TabPanel4Content->pushToChildren(_NodeOcclusionMaskValueLabel);
-    _TabPanel4Content->pushToChildren(_NodeActiveLabel);
-    _TabPanel4Content->pushToChildren(_NodeActiveValueLabel);
+    _TabPanel4Content->setLayout(TabPanel4ContentLayout);
+    _TabPanel4Content->pushToChildren(NodeEditorScrollPanel);
+    _TabPanel4Content->pushToChildren(CoreEditorScrollPanel);
 
 }
 
@@ -399,73 +337,6 @@ void HelperPanel::viewTab(UInt32)
 void HelperPanel::hideTab(UInt32)
 {
 
-}
-
-
-void HelperPanel::setLabelValuesToNull()
-{
-    _NodeNameValueLabel->setText("");
-
-    _NodeCoreTypeValueLabel->setText("");
-
-    _NodeMinValueLabel->setText("");
-
-    _NodeMaxValueLabel->setText("");
-
-    _NodeCenterValueLabel->setText("");
-
-    _NodeTriCountValueLabel->setText("");
-
-    _NodeTravMaskValueLabel->setText("");
-
-    _NodeOcclusionMaskValueLabel->setText("");
-
-    _NodeActiveValueLabel->setText("");
-}
-
-
-void HelperPanel::setLabelValues(NodeRefPtr _SelectedNode)
-{
-    const Char8 *_NodeName = getName(_SelectedNode);
-
-    if(_NodeName == NULL)
-    {
-        _NodeNameValueLabel->setText("Unnamed Node");
-    }
-    else
-    {
-        _NodeNameValueLabel->setText(_NodeName);
-    }
-
-    _NodeCoreTypeValueLabel->setText(_SelectedNode->getCore()->getType().getCName());
-
-
-    BoxVolume _DyVol;
-    _SelectedNode->getWorldVolume(_DyVol);
-    Pnt3f Min,Max,Center;
-    _DyVol.getBounds(Min,Max);
-    _DyVol.getCenter(Center);
-
-    std::string _TempText("");
-
-    _TempText = boost::lexical_cast<std::string>(Min.x()) + ", " +boost::lexical_cast<std::string>(Min.x()) + ", " + boost::lexical_cast<std::string>(Min.x());
-    _NodeMinValueLabel->setText(_TempText);
-
-    _TempText = boost::lexical_cast<std::string>(Max.x()) + ", " +boost::lexical_cast<std::string>(Max.x()) + ", " + boost::lexical_cast<std::string>(Max.x());
-    _NodeMaxValueLabel->setText(_TempText);
-
-    _TempText = boost::lexical_cast<std::string>(Center.x()) + ", " +boost::lexical_cast<std::string>(Center.x()) + ", " + boost::lexical_cast<std::string>(Center.x());
-    _NodeCenterValueLabel->setText(_TempText);
-
-    //GeometryPrimitivesCounter PrimCounter;
-    //PrimCounter(_SelectedNode);
-    //_NodeTriCountValueLabel->setText(boost::lexical_cast<std::string>(PrimCounter.getTriCount()));
-
-    _NodeTravMaskValueLabel->setText(boost::lexical_cast<std::string>(_SelectedNode->getTravMask()));
-
-    //_NodeOcclusionMaskValueLabel->setText(boost::lexical_cast<std::string>(_SelectedNode->getOcclusionMask()));
-
-    //_NodeActiveValueLabel->setText(boost::lexical_cast<std::string>(_SelectedNode->getActive()));
 }
 
 /*-------------------------------------------------------------------------*\
@@ -639,6 +510,26 @@ void HelperPanel::LuaErrorListener::error(const LuaErrorEventUnrecPtr e)
         }
         _HelperPanel->_StackTraceTextArea->clear();
         _HelperPanel->_StackTraceTextArea->write(ss.str());
+    }
+}
+
+void HelperPanel::setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer)
+{
+	_ApplicationPlayer = TheApplicationPlayer;
+}
+
+void HelperPanel::updateSelectedNode(void)
+{
+    NodeUnrecPtr SelNode(_ApplicationPlayer->getSelectedNode());
+    if(SelNode == NULL)
+    {
+        _NodeEditor->dettachFieldContainer();
+        _CoreEditor->dettachFieldContainer();
+    }
+    else
+    {
+        _NodeEditor->attachFieldContainer(SelNode);
+        _CoreEditor->attachFieldContainer(SelNode->getCore());
     }
 }
 

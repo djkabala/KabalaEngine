@@ -58,12 +58,14 @@
 
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
+#include "KEConfig.h"
 
 //#include "OpenSG/OSGBaseTypes.h"
 
+
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include "Project/SceneObject/KESceneObjectFields.h" // SceneObject type
+#include <OpenSG/OSGFieldContainerFields.h> // SceneObject type
 #include <OpenSG/OSGBaseFields.h>       // Dependencies type
 
 #include "KEBehaviorFields.h"
@@ -104,7 +106,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef SFUnrecSceneObjectPtr SFSceneObjectType;
+    typedef SFParentFieldContainerPtr SFSceneObjectType;
     typedef MFString          MFDependenciesType;
 
     /*---------------------------------------------------------------------*/
@@ -146,11 +148,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                Ptr Field Set                                 */
-    /*! \{                                                                 */
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
     /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
 
@@ -180,7 +177,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFUnrecSceneObjectPtr _sfSceneObject;
+    SFParentFieldContainerPtr _sfSceneObject;
     MFString          _mfDependencies;
 
     /*! \}                                                                 */
@@ -203,7 +200,17 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \name                     onCreate                                */
     /*! \{                                                                 */
 
-    void onCreate(const Behavior *source = NULL);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name Parent linking                                               */
+    /*! \{                                                                 */
+
+    virtual bool linkParent  (FieldContainer * const pParent,
+                              UInt16           const childFieldId,
+                              UInt16           const parentFieldId);
+    virtual bool unlinkParent(FieldContainer * const pParent,
+                              UInt16           const parentFieldId);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -214,29 +221,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     EditFieldHandlePtr editHandleSceneObject    (void);
     GetFieldHandlePtr  getHandleDependencies    (void) const;
     EditFieldHandlePtr editHandleDependencies   (void);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-            const SFUnrecSceneObjectPtr *getSFSceneObject     (void) const;
-                  SFUnrecSceneObjectPtr *editSFSceneObject    (void);
-
-
-                  SceneObject * getSceneObject    (void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-            void setSceneObject    (SceneObject * const value);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

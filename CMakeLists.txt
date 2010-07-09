@@ -109,6 +109,7 @@ SET(OSG_COMPONENTS OSGBase
     OSGContribVideo 
     OSGContribPhysics 
     OSGContribParticleSystem
+    OSGContribFieldContainerEditor
     )
 
 IF(UNIX)
@@ -326,6 +327,14 @@ LIST(APPEND HEADERS ${TEMP_HEADERS})
 LIST(APPEND INLINES ${TEMP_INLINES})
 LIST(APPEND SOURCES ${TEMP_SOURCES})
 
+FILE(GLOB TEMP_HEADERS ${CMAKE_SOURCE_DIR}/Source/Project/Effect/[^~]*.h)
+FILE(GLOB TEMP_SOURCES ${CMAKE_SOURCE_DIR}/Source/Project/Effect/[^~]*.cpp)
+FILE(GLOB TEMP_INLINES ${CMAKE_SOURCE_DIR}/Source/Project/Effect/[^~]*.inl)
+
+LIST(APPEND HEADERS ${TEMP_HEADERS})
+LIST(APPEND INLINES ${TEMP_INLINES})
+LIST(APPEND SOURCES ${TEMP_SOURCES})
+
 FILE(GLOB TEMP_HEADERS ${CMAKE_SOURCE_DIR}/Source/Player/Commands/[^~]*.h)
 FILE(GLOB TEMP_SOURCES ${CMAKE_SOURCE_DIR}/Source/Player/Commands/[^~]*.cpp)
 FILE(GLOB TEMP_INLINES ${CMAKE_SOURCE_DIR}/Source/Player/Commands/[^~]*.inl)
@@ -474,10 +483,17 @@ IF(INCLUDE_APP_DATA)
         DESTINATION share/KabalaEngine/Data
         COMPONENT Data
         PATTERN ".svn" EXCLUDE)
+        
     #Installing the Documentation
     INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/Documentation
         DESTINATION share/KabalaEngine/Data
         COMPONENT Documentation
+        PATTERN ".svn" EXCLUDE)
+        
+    #Installing the Scripts
+    INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/Data/Scripts
+        DESTINATION share/KabalaEngine/Data
+        COMPONENT Scirpts
         PATTERN ".svn" EXCLUDE)
 ENDIF(INCLUDE_APP_DATA)
 

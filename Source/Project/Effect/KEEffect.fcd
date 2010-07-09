@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="Effect"
+	parent="AttachmentContainer"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="abstract"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    childFields="multi"
+    authors="Robert Goetz (rdgoetz@iastate.edu)                            "
+>
+The SceneObject.
+    <Field
+		name="ParentSceneObject"
+		type="FieldContainer"
+		category="parentpointer"
+		cardinality="single"
+		visibility="external"
+		access="none"
+		defaultValue="NULL"
+        doRefCount="false"
+        passFieldMask="true"
+	>
+	</Field>
+    <ProducedMethod
+		name="EffectBegan"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="EffectPaused"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="EffectUnpaused"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="EffectFinished"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="EffectStopped"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+</FieldContainer>
