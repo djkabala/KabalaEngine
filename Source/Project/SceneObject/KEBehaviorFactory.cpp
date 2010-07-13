@@ -43,6 +43,7 @@
 #include "OSGTypeBase.h"
 #include "KEBehaviorFactory.h"
 #include "KEBehavior.h"
+#include "KEBehaviorType.h"
 
 #include "OSGSingletonHolder.ins"
 
@@ -104,14 +105,13 @@ void BehaviorFactoryBase::writeTypeDot(FILE     *pOut,
  *                           Instance methods                              *
 \***************************************************************************/
 
-BehaviorTransitPtr BehaviorFactoryBase::createBehavior(Char8* Name)
+BehaviorTransitPtr BehaviorFactoryBase::createBehavior(std::string Name)
 {
 	BehaviorTransitPtr newBehavior = OSG::Behavior::create();
-	UInt32 NameSpace;
 
-	TypeBase* BehaviorTypeBase = findType(Name, NameSpace);
+	BehaviorType* BehaviorTypeBase = findType(static_cast<const Char8*>(Name.c_str()));
 
-	newBehavior->TheBehaviorType = dynamic_cast<BehaviorType*>(BehaviorTypeBase);
+	newBehavior->TheBehaviorType = BehaviorTypeBase;
 
 	return newBehavior;
 }
@@ -173,7 +173,6 @@ bool BehaviorFactoryBase::initializeFactoryPost(void)
 
 bool BehaviorFactoryBase::terminate(void)
 {
-
     return true;
 }
 
@@ -199,26 +198,26 @@ UInt32 BehaviorFactoryBase::registerType(BehaviorType *pType)
 
     if(pType->getName().empty() == true)
     {
-        SWARNING << "DataElementType without name" << endLog;
+        SWARNING << "BehaviorType without name" << endLog;
 
         return returnValue;
     }
 
-    UInt32 uiTypeId = findTypeId(pType->getCName    ());
+    UInt32 uiTypeId = findTypeId(pType->getChar8Name());
 
     if(uiTypeId != 0)
     {
         if(pType != findType(uiTypeId))
         {
             SWARNING << "ERROR: Can't add a second "
-                     << "type with the name " << pType->getCName()
+                     << "type with the name " << pType->getName()
                      << "(" << pType << ")"
                      << endLog;
         }
         else
         {
             SWARNING << "Do not run ctr twice "
-                     << "type with the name " << pType->getCName() 
+                     << "type with the name " << pType->getName() 
                      << "(" << pType << ")"
                      << endLog;
 
@@ -232,10 +231,41 @@ UInt32 BehaviorFactoryBase::registerType(BehaviorType *pType)
 
     returnValue = _vBehaviorTypeStore.size();
 
+	for(UInt32 i = 0; i < returnValue; i++)
+	{
+		for(UInt32 d = 0; d < pType->_bEvents.size(); d++)
+		{
+			if(findType(i)->hasEventLink(pType->_bEvents[d]))
+			{
+				if(!findType(i)->hasDependency(pType))
+				{
+					findType(i)->_bDependencies.push_back(pType);
+				}
+				if(!pType->hasDependent(findType(i)))
+				{
+					pType->_bDependents.push_back(findType(i));
+				}
+			}
+		}
+		for(UInt32 d = 0; d < pType->_bEventLinks.size(); d++)
+		{
+			if(findType(i)->hasEvent(pType->_bEventLinks[d]))
+			{
+				if(!findType(i)->hasDependent(pType))
+				{
+					findType(i)->_bDependents.push_back(pType);
+				}
+				if(!pType->hasDependency(findType(i)))
+				{
+					pType->_bDependencies.push_back(findType(i));
+				}
+			}
+		}
+	}
+
     _vBehaviorTypeStore.push_back(pType);
 
-
-    FDEBUG(("Registered type %s | %d (%p)\n", pType->getCName(), returnValue,
+    FDEBUG(("Registered type %s | %d (%p)\n", pType->getName(), returnValue,
                                               pType)); 
 
     return returnValue;
@@ -254,7 +284,7 @@ UInt32 BehaviorFactoryBase::findTypeId(const Char8 *szName)
     return uiTypeId;
 }
 
-TypeBase *BehaviorFactoryBase::findType(UInt32 uiTypeId)
+BehaviorType *BehaviorFactoryBase::findType(UInt32 uiTypeId)
 {
     if(uiTypeId < _vBehaviorTypeStore.size())
     {
@@ -266,8 +296,7 @@ TypeBase *BehaviorFactoryBase::findType(UInt32 uiTypeId)
     }
 }
 
-TypeBase *BehaviorFactoryBase::findType(const Char8    *szName,
-                                    const UInt32    uiNameSpace)
+BehaviorType *BehaviorFactoryBase::findType(const Char8 *szName)
 {
     UInt32 uiTypeId = findTypeId(szName);
 

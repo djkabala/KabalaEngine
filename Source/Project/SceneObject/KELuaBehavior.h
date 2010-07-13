@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -33,22 +33,21 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KESCENEOBJECT_H_
-#define _KESCENEOBJECT_H_
+#ifndef _KELUABEHAVIOR_H_
+#define _KELUABEHAVIOR_H_
 #ifdef __sgi
 #pragma once
 #endif
 
-#include "KESceneObjectBase.h"
-#include "Project/Scene/KESceneFields.h"
+#include "KELuaBehaviorBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief SceneObject class. See \ref
-           PageKabalaEngineSceneObject for a description.
+/*! \brief LuaBehavior class. See \ref
+           PageKabalaEngineLuaBehavior for a description.
 */
 
-class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
+class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
 {
   protected:
 
@@ -56,17 +55,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
 
   public:
 
-    typedef SceneObjectBase Inherited;
-    typedef SceneObject     Self;
-
-    EffectRefPtr getEffect(std::string name);
-	const Scene* getParentScene () const;
-	Scene* getParentScene ();
-
-	BehaviorUnrecPtr getBehaviors (UInt32 index);
-
-	void checkBehaviorInitialization();
-
+    typedef LuaBehaviorBase Inherited;
+    typedef LuaBehavior     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -84,31 +74,28 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
+	void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
+
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
-	
-    virtual ~SceneObject(void);
-
   protected:
 
-	  void InitializeAll();
-	  void InitializeBehaviors();
-
-    // Variables should all be in SceneObjectBase.
+    // Variables should all be in LuaBehaviorBase.
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    SceneObject(void);
-    SceneObject(const SceneObject &source);
+    LuaBehavior(void);
+    LuaBehavior(const LuaBehavior &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
+    virtual ~LuaBehavior(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -123,21 +110,17 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
   private:
 
     friend class FieldContainer;
-    friend class SceneObjectBase;
+    friend class LuaBehaviorBase;
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const SceneObject &source);
+    void operator =(const LuaBehavior &source);
 };
 
-typedef SceneObject *SceneObjectP;
+typedef LuaBehavior *LuaBehaviorP;
 
 OSG_END_NAMESPACE
 
-#include "Project/SceneObject/KEBehavior.h" // Behaviors Class
-#include <OpenSG/OSGNode.h>             // Node Class
-#include "Project/Effect/KEEffect.h"    // AttachedEffects Class
-#include "Project/Scene/KEScene.h"
-#include "KESceneObjectBase.inl"
-#include "KESceneObject.inl"
+#include "KELuaBehaviorBase.inl"
+#include "KELuaBehavior.inl"
 
-#endif /* _KESCENEOBJECT_H_ */
+#endif /* _KELUABEHAVIOR_H_ */

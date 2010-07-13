@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="LuaBehavior"
+	parent="Behavior"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com), Eric Langkamp              "
+>
+The Lua Behavior.
+   
+</FieldContainer>

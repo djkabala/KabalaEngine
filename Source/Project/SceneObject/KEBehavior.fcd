@@ -16,7 +16,7 @@
 >
 The SceneObject.
     <Field
-		name="SceneObject"
+           name="SceneObject"
 		type="FieldContainer"
 		category="parentpointer"
 		cardinality="single"

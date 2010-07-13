@@ -11,9 +11,22 @@
 	decoratable="false"
 	useLocalIncludes="false"
 	libnamespace="KE"
-    authors="David Kabala (djkabala@gmail.com)                             "
+    childFields="multi"
+    authors="David Kabala (djkabala@gmail.com), Eric Langkamp             "
 >
 The SceneObject.
+	<Field
+           name="ParentScene"
+		type="FieldContainer"
+		category="parentpointer"
+		cardinality="single"
+		visibility="external"
+		access="none"
+		defaultValue="NULL"
+        doRefCount="false"
+        passFieldMask="true"
+	>
+	</Field>
     <Field
 		name="Behaviors"
 		type="Behavior"
@@ -46,18 +59,6 @@ The SceneObject.
 		category="pointer"
 		cardinality="single"
 		visibility="external"
-		access="public"
-		defaultValue="NULL"
-	>
-	</Field>
-    <Field
-		name="Scene"
-		type="Scene"
-		category="pointer"
-		cardinality="single"
-		visibility="external"
-        fieldHeader="Project/Scene/KEScene.h"
-		typeHeader="Project/Scene/KEScene.h"
 		access="public"
 		defaultValue="NULL"
 	>

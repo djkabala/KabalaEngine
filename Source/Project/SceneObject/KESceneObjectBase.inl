@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -89,22 +89,6 @@ void SceneObjectBase::setNode(Node * const value)
     _sfNode.setValue(value);
 }
 
-//! Get the value of the SceneObject::_sfScene field.
-inline
-Scene * SceneObjectBase::getScene(void) const
-{
-    return _sfScene.getValue();
-}
-
-//! Set the value of the SceneObject::_sfScene field.
-inline
-void SceneObjectBase::setScene(Scene * const value)
-{
-    editSField(SceneFieldMask);
-
-    _sfScene.setValue(value);
-}
-
 //! Get the value of the \a index element the SceneObject::_mfBehaviors field.
 inline
 Behavior * SceneObjectBase::getBehaviors(const UInt32 index) const
@@ -130,6 +114,9 @@ void SceneObjectBase::execSync (      SceneObjectBase *pFrom,
 {
     Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
+    if(FieldBits::NoField != (ParentSceneFieldMask & whichField))
+        _sfParentScene.syncWith(pFrom->_sfParentScene);
+
     if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
         _mfBehaviors.syncWith(pFrom->_mfBehaviors,
                                 syncMode,
@@ -144,9 +131,6 @@ void SceneObjectBase::execSync (      SceneObjectBase *pFrom,
 
     if(FieldBits::NoField != (NodeFieldMask & whichField))
         _sfNode.syncWith(pFrom->_sfNode);
-
-    if(FieldBits::NoField != (SceneFieldMask & whichField))
-        _sfScene.syncWith(pFrom->_sfScene);
 }
 #endif
 

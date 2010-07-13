@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -42,7 +42,7 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class Behavior!
+ **     class LuaBehavior!
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
@@ -55,10 +55,9 @@
 
 
 
-#include <OpenSG/OSGFieldContainer.h>   // SceneObject Class
 
-#include "KEBehaviorBase.h"
-#include "KEBehavior.h"
+#include "KELuaBehaviorBase.h"
+#include "KELuaBehavior.h"
 
 #include <boost/bind.hpp>
 
@@ -72,17 +71,13 @@ OSG_BEGIN_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class OSG::Behavior
-    The SceneObject.
+/*! \class OSG::LuaBehavior
+    The Lua Behavior.
  */
 
 /***************************************************************************\
  *                        Field Documentation                              *
 \***************************************************************************/
-
-/*! \var FieldContainer * BehaviorBase::_sfSceneObject
-    
-*/
 
 
 /***************************************************************************\
@@ -90,70 +85,44 @@ OSG_BEGIN_NAMESPACE
 \***************************************************************************/
 
 #if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldTraits<Behavior *>::_type("BehaviorPtr", "AttachmentContainerPtr");
+DataType FieldTraits<LuaBehavior *>::_type("LuaBehaviorPtr", "BehaviorPtr");
 #endif
 
-OSG_FIELDTRAITS_GETTYPE(Behavior *)
+OSG_FIELDTRAITS_GETTYPE(LuaBehavior *)
 
 OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
-                           Behavior *,
+                           LuaBehavior *,
                            0);
 
 OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
-                           Behavior *,
+                           LuaBehavior *,
                            0);
-
-DataType &FieldTraits< Behavior *, 1 >::getType(void)
-{
-    return FieldTraits<Behavior *, 0>::getType();
-}
-
-
-OSG_EXPORT_PTR_MFIELD(ChildPointerMField,
-                      Behavior *,
-                      UnrecordedRefCountPolicy,
-                      1);
-
 
 /***************************************************************************\
  *                         Field Description                               *
 \***************************************************************************/
 
-void BehaviorBase::classDescInserter(TypeObject &oType)
+void LuaBehaviorBase::classDescInserter(TypeObject &oType)
 {
-    FieldDescriptionBase *pDesc = NULL;
-
-
-    pDesc = new SFParentFieldContainerPtr::Description(
-        SFParentFieldContainerPtr::getClassType(),
-        "SceneObject",
-        "",
-        SceneObjectFieldId, SceneObjectFieldMask,
-        false,
-        (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&Behavior::invalidEditField),
-        static_cast     <FieldGetMethodSig >(&Behavior::invalidGetField));
-
-    oType.addInitialDesc(pDesc);
 }
 
 
-BehaviorBase::TypeObject BehaviorBase::_type(
-    BehaviorBase::getClassname(),
+LuaBehaviorBase::TypeObject LuaBehaviorBase::_type(
+    LuaBehaviorBase::getClassname(),
     Inherited::getClassname(),
     "NULL",
     0,
-    reinterpret_cast<PrototypeCreateF>(&BehaviorBase::createEmptyLocal),
-    Behavior::initMethod,
-    Behavior::exitMethod,
-    reinterpret_cast<InitalInsertDescFunc>(&Behavior::classDescInserter),
+    reinterpret_cast<PrototypeCreateF>(&LuaBehaviorBase::createEmptyLocal),
+    LuaBehavior::initMethod,
+    LuaBehavior::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&LuaBehavior::classDescInserter),
     false,
     0,
     "<?xml version=\"1.0\"?>\n"
     "\n"
     "<FieldContainer\n"
-    "\tname=\"Behavior\"\n"
-    "\tparent=\"AttachmentContainer\"\n"
+    "\tname=\"LuaBehavior\"\n"
+    "\tparent=\"Behavior\"\n"
     "\tlibrary=\"KabalaEngine\"\n"
     "\tpointerfieldtypes=\"both\"\n"
     "\tstructure=\"concrete\"\n"
@@ -162,41 +131,29 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     "\tdecoratable=\"false\"\n"
     "\tuseLocalIncludes=\"false\"\n"
     "\tlibnamespace=\"KE\"\n"
-    "    childFields=\"multi\"\n"
-    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com), Eric Langkamp              \"\n"
     ">\n"
-    "The SceneObject.\n"
-    "    <Field\n"
-    "           name=\"SceneObject\"\n"
-    "\t\ttype=\"FieldContainer\"\n"
-    "\t\tcategory=\"parentpointer\"\n"
-    "\t\tcardinality=\"single\"\n"
-    "\t\tvisibility=\"external\"\n"
-    "\t\taccess=\"none\"\n"
-    "\t\tdefaultValue=\"NULL\"\n"
-    "        doRefCount=\"false\"\n"
-    "        passFieldMask=\"true\"\n"
-    "\t>\n"
-    "\t</Field>\n"
+    "The Lua Behavior.\n"
+    "   \n"
     "</FieldContainer>\n",
-    "The SceneObject.\n"
+    "The Lua Behavior.\n"
     );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &BehaviorBase::getType(void)
+FieldContainerType &LuaBehaviorBase::getType(void)
 {
     return _type;
 }
 
-const FieldContainerType &BehaviorBase::getType(void) const
+const FieldContainerType &LuaBehaviorBase::getType(void) const
 {
     return _type;
 }
 
-UInt32 BehaviorBase::getContainerSize(void) const
+UInt32 LuaBehaviorBase::getContainerSize(void) const
 {
-    return sizeof(Behavior);
+    return sizeof(LuaBehavior);
 }
 
 /*------------------------- decorator get ------------------------------*/
@@ -206,96 +163,83 @@ UInt32 BehaviorBase::getContainerSize(void) const
 
 
 
-
 /*------------------------------ access -----------------------------------*/
 
-UInt32 BehaviorBase::getBinSize(ConstFieldMaskArg whichField)
+UInt32 LuaBehaviorBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
-    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
-    {
-        returnValue += _sfSceneObject.getBinSize();
-    }
 
     return returnValue;
 }
 
-void BehaviorBase::copyToBin(BinaryDataHandler &pMem,
+void LuaBehaviorBase::copyToBin(BinaryDataHandler &pMem,
                                   ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
-    {
-        _sfSceneObject.copyToBin(pMem);
-    }
 }
 
-void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
+void LuaBehaviorBase::copyFromBin(BinaryDataHandler &pMem,
                                     ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-    if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
-    {
-        _sfSceneObject.copyFromBin(pMem);
-    }
 }
 
 //! create a new instance of the class
-BehaviorTransitPtr BehaviorBase::createLocal(BitVector bFlags)
+LuaBehaviorTransitPtr LuaBehaviorBase::createLocal(BitVector bFlags)
 {
-    BehaviorTransitPtr fc;
+    LuaBehaviorTransitPtr fc;
 
     if(getClassType().getPrototype() != NULL)
     {
         FieldContainerTransitPtr tmpPtr =
             getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
+        fc = dynamic_pointer_cast<LuaBehavior>(tmpPtr);
     }
 
     return fc;
 }
 
 //! create a new instance of the class, copy the container flags
-BehaviorTransitPtr BehaviorBase::createDependent(BitVector bFlags)
+LuaBehaviorTransitPtr LuaBehaviorBase::createDependent(BitVector bFlags)
 {
-    BehaviorTransitPtr fc;
+    LuaBehaviorTransitPtr fc;
 
     if(getClassType().getPrototype() != NULL)
     {
         FieldContainerTransitPtr tmpPtr =
             getClassType().getPrototype()-> shallowCopyDependent(bFlags);
 
-        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
+        fc = dynamic_pointer_cast<LuaBehavior>(tmpPtr);
     }
 
     return fc;
 }
 
 //! create a new instance of the class
-BehaviorTransitPtr BehaviorBase::create(void)
+LuaBehaviorTransitPtr LuaBehaviorBase::create(void)
 {
-    BehaviorTransitPtr fc;
+    LuaBehaviorTransitPtr fc;
 
     if(getClassType().getPrototype() != NULL)
     {
         FieldContainerTransitPtr tmpPtr =
             getClassType().getPrototype()-> shallowCopy();
 
-        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
+        fc = dynamic_pointer_cast<LuaBehavior>(tmpPtr);
     }
 
     return fc;
 }
 
-Behavior *BehaviorBase::createEmptyLocal(BitVector bFlags)
+LuaBehavior *LuaBehaviorBase::createEmptyLocal(BitVector bFlags)
 {
-    Behavior *returnValue;
+    LuaBehavior *returnValue;
 
-    newPtr<Behavior>(returnValue, bFlags);
+    newPtr<LuaBehavior>(returnValue, bFlags);
 
     returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
 
@@ -303,11 +247,11 @@ Behavior *BehaviorBase::createEmptyLocal(BitVector bFlags)
 }
 
 //! create an empty new instance of the class, do not copy the prototype
-Behavior *BehaviorBase::createEmpty(void)
+LuaBehavior *LuaBehaviorBase::createEmpty(void)
 {
-    Behavior *returnValue;
+    LuaBehavior *returnValue;
 
-    newPtr<Behavior>(returnValue, Thread::getCurrentLocalFlags());
+    newPtr<LuaBehavior>(returnValue, Thread::getCurrentLocalFlags());
 
     returnValue->_pFieldFlags->_bNamespaceMask &=
         ~Thread::getCurrentLocalFlags();
@@ -316,12 +260,12 @@ Behavior *BehaviorBase::createEmpty(void)
 }
 
 
-FieldContainerTransitPtr BehaviorBase::shallowCopyLocal(
+FieldContainerTransitPtr LuaBehaviorBase::shallowCopyLocal(
     BitVector bFlags) const
 {
-    Behavior *tmpPtr;
+    LuaBehavior *tmpPtr;
 
-    newPtr(tmpPtr, dynamic_cast<const Behavior *>(this), bFlags);
+    newPtr(tmpPtr, dynamic_cast<const LuaBehavior *>(this), bFlags);
 
     FieldContainerTransitPtr returnValue(tmpPtr);
 
@@ -330,12 +274,12 @@ FieldContainerTransitPtr BehaviorBase::shallowCopyLocal(
     return returnValue;
 }
 
-FieldContainerTransitPtr BehaviorBase::shallowCopyDependent(
+FieldContainerTransitPtr LuaBehaviorBase::shallowCopyDependent(
     BitVector bFlags) const
 {
-    Behavior *tmpPtr;
+    LuaBehavior *tmpPtr;
 
-    newPtr(tmpPtr, dynamic_cast<const Behavior *>(this), ~bFlags);
+    newPtr(tmpPtr, dynamic_cast<const LuaBehavior *>(this), ~bFlags);
 
     FieldContainerTransitPtr returnValue(tmpPtr);
 
@@ -344,12 +288,12 @@ FieldContainerTransitPtr BehaviorBase::shallowCopyDependent(
     return returnValue;
 }
 
-FieldContainerTransitPtr BehaviorBase::shallowCopy(void) const
+FieldContainerTransitPtr LuaBehaviorBase::shallowCopy(void) const
 {
-    Behavior *tmpPtr;
+    LuaBehavior *tmpPtr;
 
     newPtr(tmpPtr,
-           dynamic_cast<const Behavior *>(this),
+           dynamic_cast<const LuaBehavior *>(this),
            Thread::getCurrentLocalFlags());
 
     tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
@@ -364,122 +308,35 @@ FieldContainerTransitPtr BehaviorBase::shallowCopy(void) const
 
 /*------------------------- constructors ----------------------------------*/
 
-BehaviorBase::BehaviorBase(void) :
-    Inherited(),
-    _sfSceneObject            (NULL)
+LuaBehaviorBase::LuaBehaviorBase(void) :
+    Inherited()
 {
 }
 
-BehaviorBase::BehaviorBase(const BehaviorBase &source) :
-    Inherited(source),
-    _sfSceneObject            (NULL)
+LuaBehaviorBase::LuaBehaviorBase(const LuaBehaviorBase &source) :
+    Inherited(source)
 {
 }
 
 
 /*-------------------------- destructors ----------------------------------*/
 
-BehaviorBase::~BehaviorBase(void)
+LuaBehaviorBase::~LuaBehaviorBase(void)
 {
 }
-/*-------------------------------------------------------------------------*/
-/* Parent linking                                                          */
 
-bool BehaviorBase::linkParent(
-    FieldContainer * const pParent,
-    UInt16           const childFieldId,
-    UInt16           const parentFieldId )
-{
-    if(parentFieldId == SceneObjectFieldId)
-    {
-        FieldContainer * pTypedParent =
-            dynamic_cast< FieldContainer * >(pParent);
-
-        if(pTypedParent != NULL)
-        {
-            FieldContainer *pOldParent =
-                _sfSceneObject.getValue         ();
-
-            UInt16 oldChildFieldId =
-                _sfSceneObject.getParentFieldPos();
-
-            if(pOldParent != NULL)
-            {
-                pOldParent->unlinkChild(this, oldChildFieldId);
-            }
-
-            editSField(SceneObjectFieldMask);
-
-            _sfSceneObject.setValue(static_cast<FieldContainer *>(pParent), childFieldId);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    return Inherited::linkParent(pParent, childFieldId, parentFieldId);
-}
-
-bool BehaviorBase::unlinkParent(
-    FieldContainer * const pParent,
-    UInt16           const parentFieldId)
-{
-    if(parentFieldId == SceneObjectFieldId)
-    {
-        FieldContainer * pTypedParent =
-            dynamic_cast< FieldContainer * >(pParent);
-
-        if(pTypedParent != NULL)
-        {
-            if(_sfSceneObject.getValue() == pParent)
-            {
-                editSField(SceneObjectFieldMask);
-
-                _sfSceneObject.setValue(NULL, 0xFFFF);
-
-                return true;
-            }
-
-            FWARNING(("BehaviorBase::unlinkParent: "
-                      "Child <-> Parent link inconsistent.\n"));
-
-            return false;
-        }
-
-        return false;
-    }
-
-    return Inherited::unlinkParent(pParent, parentFieldId);
-}
-
-
-
-GetFieldHandlePtr BehaviorBase::getHandleSceneObject     (void) const
-{
-    SFParentFieldContainerPtr::GetHandlePtr returnValue;
-
-    return returnValue;
-}
-
-EditFieldHandlePtr BehaviorBase::editHandleSceneObject    (void)
-{
-    EditFieldHandlePtr returnValue;
-
-    return returnValue;
-}
 
 
 #ifdef OSG_MT_CPTR_ASPECT
-void BehaviorBase::execSyncV(      FieldContainer    &oFrom,
+void LuaBehaviorBase::execSyncV(      FieldContainer    &oFrom,
                                         ConstFieldMaskArg  whichField,
                                         AspectOffsetStore &oOffsets,
                                         ConstFieldMaskArg  syncMode,
                                   const UInt32             uiSyncInfo)
 {
-    Behavior *pThis = static_cast<Behavior *>(this);
+    LuaBehavior *pThis = static_cast<LuaBehavior *>(this);
 
-    pThis->execSync(static_cast<Behavior *>(&oFrom),
+    pThis->execSync(static_cast<LuaBehavior *>(&oFrom),
                     whichField,
                     oOffsets,
                     syncMode,
@@ -489,20 +346,20 @@ void BehaviorBase::execSyncV(      FieldContainer    &oFrom,
 
 
 #ifdef OSG_MT_CPTR_ASPECT
-FieldContainer *BehaviorBase::createAspectCopy(
+FieldContainer *LuaBehaviorBase::createAspectCopy(
     const FieldContainer *pRefAspect) const
 {
-    Behavior *returnValue;
+    LuaBehavior *returnValue;
 
     newAspectCopy(returnValue,
-                  dynamic_cast<const Behavior *>(pRefAspect),
-                  dynamic_cast<const Behavior *>(this));
+                  dynamic_cast<const LuaBehavior *>(pRefAspect),
+                  dynamic_cast<const LuaBehavior *>(this));
 
     return returnValue;
 }
 #endif
 
-void BehaviorBase::resolveLinks(void)
+void LuaBehaviorBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
 

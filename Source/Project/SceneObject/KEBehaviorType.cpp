@@ -47,10 +47,17 @@
 
 #include "KEBehaviorType.h"
 #include "KEBehaviorFactory.h"
+#include "Project/Scene/KEScene.h"
 
 #include "OSGMethodDescription.h"
 #include "OSGLog.h"
 #include "OSGTypeBase.h"
+
+#include "OSGFilePathAttachment.h"
+#include "OSGContainerUtils.h"
+#include <fstream>
+#include <sstream>
+
 
 OSG_USING_NAMESPACE
 
@@ -58,22 +65,112 @@ OSG_USING_NAMESPACE
 //  Class
 //---------------------------------------------------------------------------
 
+
+/*-------------------------------------------------------------------------*/
+/*                                Find                                     */
+
+UInt32 BehaviorType::findEventID(std::string eventName)
+{
+	if(_bEvents.empty())
+	{
+		SWARNING << "BehaviorType: " << _bName << " has not been registered. Search for EventID's default returns ZERO!!" << std::endl;
+		return 0;
+	}
+	for(UInt32 i = 0; _bEvents.size() > i; i++)
+	{
+		if(_bEvents[i] == eventName)
+		{
+			return _bActiveEventIDs[i];
+		}
+	}
+
+	SWARNING << "BehaviorType: " << _bName << " has no event by the name of " << eventName << "Search for EventID's default returns ZERO!!" <<std::endl;
+	return 0;
+}
+
+/*-------------------------------------------------------------------------*/
+/*                                Has                                      */
+
+bool BehaviorType::hasEvent(std::string e)
+{
+	for(UInt32 i = 0; i < _bEvents.size(); i++)
+	{
+		if(_bEvents[i].compare(e) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BehaviorType::hasEventLink(std::string e)
+{
+	for(UInt32 i = 0; i < _bEventLinks.size(); i++)
+	{
+		if(_bEventLinks[i].compare(e) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BehaviorType::hasDependent(BehaviorType* d)
+{
+	for(UInt32 i = 0; i < _bDependencies.size(); i++)
+	{
+		if(_bDependencies[i] == d)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BehaviorType::hasDependency(BehaviorType* d)
+{
+	for(UInt32 i = 0; i < _bDependents.size(); i++)
+	{
+		if(_bDependents[i] == d)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 /*-------------------------------------------------------------------------*/
 /*                              Register                                   */
-
 
 void BehaviorType::registerType()
 {
     BehaviorFactory::the()->registerType(this);
 }
 
+void BehaviorType::registerWithScene(Scene* scene)
+{
+	scene = (Scene*)scene;
+	if(scene != attachedScene)
+	{
+		for(UInt32 i = 0; _bEvents.size(); i++)
+		{
+			_bActiveEventIDs[i] = scene->registerNewGenericMethod(_bEvents[i]);
+		}
+		attachedScene = scene;
+	}
+
+	scene->checkBehaviorInitialization();
+}
+
 /*-------------------------------------------------------------------------*/
 /*                            Constructors                                 */
 
 BehaviorType::BehaviorType(const std::string &szName,
-                                   const std::string &szParentName,
-								   std::vector<BehaviorType> bDependencies) :
-     Inherited        (szName.c_str(), 
+						   const std::string &szParentName,
+						   std::vector<std::string> bEvents,
+						   std::vector<std::string> bEventLinks,
+						   BoostPath& FilePath) :
+    Inherited        (szName.c_str(), 
                        szParentName.c_str()     ),
 
     _bInitialized     (false            ),
@@ -82,10 +179,33 @@ BehaviorType::BehaviorType(const std::string &szName,
 
     _szParentName     (szParentName     ),
 
-	_bDependencies	  (bDependencies	),
+	_bEvents		  (bEvents			),
 
-	_bName			  (szName			)
+	_bEventLinks	  (bEventLinks		),
+
+	_bName			  (szName			),
+	
+	attachedScene	  (NULL             )
 {
+	std::ifstream TheFile;
+    TheFile.exceptions(std::fstream::failbit | std::fstream::badbit);
+
+    try
+    {
+        TheFile.open(FilePath.string().c_str());
+        if(TheFile)
+        {
+            std::ostringstream Code;
+            Code << TheFile.rdbuf();
+            TheFile.close();
+
+            setCode(Code.str());
+        }
+    }
+    catch(std::fstream::failure &f)
+    {
+        SWARNING << "BehaviorType::Constructor(): Error reading file" << FilePath.string() << ": " << f.what() << std::endl;
+    }
 }
 
 BehaviorType::BehaviorType(const BehaviorType &obj) :
@@ -100,7 +220,11 @@ BehaviorType::BehaviorType(const BehaviorType &obj) :
 
 	_bDependencies	  (obj._bDependencies	 ),
 
-	_bName			  (obj._bName			 )
+	_bName			  (obj._bName			 ),
+	
+	attachedScene	  (NULL					 ),
+
+	TheCode			  (obj.TheCode           )
 {
 
     _bInitialized = true;
@@ -162,8 +286,10 @@ bool BehaviorType::initialize(void)
 
 void BehaviorType::terminate(void)
 {
-    UInt32 i;
-
     _bInitialized = false;
 }
 
+const Char8* BehaviorType::getChar8Name(void)
+{
+	return static_cast<const Char8*>(_bName.c_str());
+}

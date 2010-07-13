@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -32,15 +32,6 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
 //---------------------------------------------------------------------------
 //  Includes
@@ -53,30 +44,33 @@
 
 #include <OpenSG/OSGConfig.h>
 
-#include "Project/Scene/KEScene.h"
-
-#include "KEBehavior.h"
+#include "KELuaBehavior.h"
 #include "KEBehaviorType.h"
-#include "KEBehaviorFactory.h"
-#include <OpenSG/OSGEvent.h>
-#include <OpenSG/OSGEventListener.h>
+
+#include <OpenSG/OSGLuaManager.h>
+#include <OpenSG/OSG_wrap.h>
+#include <OpenSG/OSGFilePathAttachment.h>
+#include <OpenSG/OSGContainerUtils.h>
+#include <fstream>
+#include <sstream>
+
 
 OSG_BEGIN_NAMESPACE
 
 // Documentation for this class is emitted in the
-// OSGBehaviorBase.cpp file.
-// To modify it, please change the .fcd file (OSGBehavior.fcd) and
+// OSGLuaBehaviorBase.cpp file.
+// To modify it, please change the .fcd file (OSGLuaBehavior.fcd) and
 // regenerate the base file.
 
 /***************************************************************************\
- *                           Class variables                               * 
+ *                           Class variables                               *
 \***************************************************************************/
 
 /***************************************************************************\
- *                           Class methods                                 * 
+ *                           Class methods                                 *
 \***************************************************************************/
 
-void Behavior::initMethod(InitPhase ePhase)
+void LuaBehavior::initMethod(InitPhase ePhase)
 {
     Inherited::initMethod(ePhase);
 
@@ -85,62 +79,44 @@ void Behavior::initMethod(InitPhase ePhase)
     }
 }
 
+void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
+{
 
+	if(!getBehaviorType()->getCode().empty())
+	{
+		//Run my Code
+		LuaManager::the()->runScript(getBehaviorType()->getCode());
+	}
+
+	if(!getBehaviorType()->getLuaFunctionName().empty())
+    {
+		//Get the Lua state
+		lua_State *LuaState(LuaManager::the()->getLuaState());
+
+		//Get the Lua function to be called
+		lua_getglobal(LuaState, getBehaviorType()->getLuaFunctionName().c_str());
+
+		//Push on the arguments
+		push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
+
+		push_FieldContainer_on_lua(LuaState, this);   //Argument 1: the The Behavior it came from
+
+		lua_pushnumber(LuaState,ID);             //Argument 2: the ProducedEvent ID
+
+		//Execute the Function
+		//
+		//                  |------3 arguments to function
+		//                  |
+		//                  |  |---0 arguments returned
+		//                  |  |
+		//                  V  V
+		lua_pcall(LuaState, 3, 0, 0);
+	}
+}
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
-
-void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
-{
-	TheBehaviorType->registerWithScene(rootSceneObject->getParentScene());
-	attachListeners(rootSceneObject->getParentScene()->editEventProducer());
-}
-
-void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
-{
-	initialize(rootSceneObject);
-}
-
-void Behavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
-{
-}
-
-void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e, UInt32 ID)
-{
-	_Behavior->depBehaviorProducedMethod(e, ID);
-}
-
-void Behavior::checkListenerAttachment()
-{
-	attachListeners(dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene()->editEventProducer());
-}
-
-void Behavior::attachListeners (EventProducerPtr eventProducer)
-{
-	initialized = true;
-
-	for(UInt32 i = 0; TheBehaviorType->_bDependencies.size(); i++)
-	{
-		if(TheBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
-		{
-			for(UInt32 c = 0; TheBehaviorType->_bEventLinks.size(); c++)
-			{
-				for(UInt32 d = 0; TheBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
-				{
-					if(TheBehaviorType->_bDependencies[i]->hasEvent(TheBehaviorType->_bEventLinks[c]))
-					{
-						eventProducer->attachEventListener(&_DepBehaviorListener,TheBehaviorType->_bDependencies[i]->findEventID(TheBehaviorType->_bEventLinks[c]));
-					}
-				}
-			}
-		}
-		else
-		{
-			initialized = false;
-		}
-	}
-}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -148,37 +124,33 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 
 /*----------------------- constructors & destructors ----------------------*/
 
-Behavior::Behavior(void) :
-    Inherited(),
-	_DepBehaviorListener(BehaviorUnrecPtr(this)),
-	initialized(false)
+LuaBehavior::LuaBehavior(void) :
+    Inherited()
 {
 }
 
-Behavior::Behavior(const Behavior &source) :
-    Inherited(source),
-	_DepBehaviorListener(BehaviorUnrecPtr(this)),
-	initialized(false)
+LuaBehavior::LuaBehavior(const LuaBehavior &source) :
+    Inherited(source)
 {
 }
 
-Behavior::~Behavior(void)
+LuaBehavior::~LuaBehavior(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void Behavior::changed(ConstFieldMaskArg whichField, 
+void LuaBehavior::changed(ConstFieldMaskArg whichField, 
                             UInt32            origin,
                             BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
 }
 
-void Behavior::dump(      UInt32    ,
+void LuaBehavior::dump(      UInt32    ,
                          const BitVector ) const
 {
-    SLOG << "Dump Behavior NI" << std::endl;
+    SLOG << "Dump LuaBehavior NI" << std::endl;
 }
 
 OSG_END_NAMESPACE

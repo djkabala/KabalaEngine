@@ -69,6 +69,7 @@
 #include <OpenSG/OSGPhysicsHandler.h>
 #include <OpenSG/OSGPhysicsUtils.h>
 #include <OpenSG/OSGGenericEvent.h>
+#include "Project/SceneObject/KESceneObject.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -448,6 +449,7 @@ bool Scene::isGenericMethodDefined(const std::string& MethodName) const
     return Id != 0;
 }
 
+
 UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
 {
     const MethodDescription* desc = _Producer.getProducerType().findMethodDescription(MethodName.c_str());
@@ -471,6 +473,15 @@ void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e)
     {
         SWARNING << "Generic Event ID " << GenericEventId << " Not Found.";
     }
+}
+
+
+void Scene::checkBehaviorInitialization()
+{
+	for(UInt32 i = 0; i < _mfSceneObjects.size(); i++)
+	{
+		getSceneObjects(i)->checkBehaviorInitialization();
+	}
 }
 
 /*-------------------------------------------------------------------------*\

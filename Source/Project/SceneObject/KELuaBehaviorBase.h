@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -42,14 +42,14 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class SceneObject
+ **     class LuaBehavior
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#ifndef _KESCENEOBJECTBASE_H_
-#define _KESCENEOBJECTBASE_H_
+#ifndef _KELUABEHAVIORBASE_H_
+#define _KELUABEHAVIORBASE_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -63,61 +63,33 @@
 //#include "OpenSG/OSGBaseTypes.h"
 
 
-#include <OpenSG/OSGAttachmentContainer.h> // Parent
+#include "KEBehavior.h" // Parent
 
-#include <OpenSG/OSGFieldContainerFields.h> // ParentScene type
-#include "Project/SceneObject/KEBehaviorFields.h" // Behaviors type
-#include "Project/Effect/KEEffectFields.h" // AttachedEffects type
-#include <OpenSG/OSGNodeFields.h>       // Node type
 
-#include "KESceneObjectFields.h"
+#include "KELuaBehaviorFields.h"
 
 OSG_BEGIN_NAMESPACE
 
-class SceneObject;
+class LuaBehavior;
 
-//! \brief SceneObject Base Class.
+//! \brief LuaBehavior Base Class.
 
-class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
+class KE_KABALAENGINE_DLLMAPPING LuaBehaviorBase : public Behavior
 {
   public:
 
-    typedef AttachmentContainer Inherited;
-    typedef AttachmentContainer ParentContainer;
+    typedef Behavior Inherited;
+    typedef Behavior ParentContainer;
 
     typedef Inherited::TypeObject TypeObject;
     typedef TypeObject::InitPhase InitPhase;
 
-    OSG_GEN_INTERNALPTR(SceneObject);
+    OSG_GEN_INTERNALPTR(LuaBehavior);
 
     /*==========================  PUBLIC  =================================*/
 
   public:
 
-    enum
-    {
-        ParentSceneFieldId = Inherited::NextFieldId,
-        BehaviorsFieldId = ParentSceneFieldId + 1,
-        AttachedEffectsFieldId = BehaviorsFieldId + 1,
-        NodeFieldId = AttachedEffectsFieldId + 1,
-        NextFieldId = NodeFieldId + 1
-    };
-
-    static const OSG::BitVector ParentSceneFieldMask =
-        (TypeTraits<BitVector>::One << ParentSceneFieldId);
-    static const OSG::BitVector BehaviorsFieldMask =
-        (TypeTraits<BitVector>::One << BehaviorsFieldId);
-    static const OSG::BitVector AttachedEffectsFieldMask =
-        (TypeTraits<BitVector>::One << AttachedEffectsFieldId);
-    static const OSG::BitVector NodeFieldMask =
-        (TypeTraits<BitVector>::One << NodeFieldId);
-    static const OSG::BitVector NextFieldMask =
-        (TypeTraits<BitVector>::One << NextFieldId);
-        
-    typedef SFParentFieldContainerPtr SFParentSceneType;
-    typedef MFUnrecChildBehaviorPtr MFBehaviorsType;
-    typedef MFUnrecChildEffectPtr MFAttachedEffectsType;
-    typedef SFUnrecNodePtr    SFNodeType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -139,54 +111,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-            const MFUnrecChildBehaviorPtr *getMFBehaviors      (void) const;
-                  MFUnrecChildBehaviorPtr *editMFBehaviors      (void);
-            const MFUnrecChildEffectPtr *getMFAttachedEffects(void) const;
-                  MFUnrecChildEffectPtr *editMFAttachedEffects(void);
-            const SFUnrecNodePtr      *getSFNode           (void) const;
-                  SFUnrecNodePtr      *editSFNode           (void);
-
-
-                  Behavior * getBehaviors      (const UInt32 index) const;
-
-                  Effect * getAttachedEffects(const UInt32 index) const;
-
-                  Node * getNode           (void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-            void setNode           (Node * const value);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr Field Set                                 */
-    /*! \{                                                                 */
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
-
-    void pushToBehaviors           (Behavior * const value   );
-    void assignBehaviors          (const MFUnrecChildBehaviorPtr &value);
-    void removeFromBehaviors (UInt32               uiIndex );
-    void removeObjFromBehaviors(Behavior * const value   );
-    void clearBehaviors             (void                         );
-
-    void pushToAttachedEffects           (Effect * const value   );
-    void assignAttachedEffects          (const MFUnrecChildEffectPtr &value);
-    void removeFromAttachedEffects (UInt32               uiIndex );
-    void removeObjFromAttachedEffects(Effect * const value   );
-    void clearAttachedEffects            (void                         );
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
@@ -202,16 +126,16 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  SceneObjectTransitPtr  create          (void);
-    static  SceneObject           *createEmpty     (void);
+    static  LuaBehaviorTransitPtr  create          (void);
+    static  LuaBehavior           *createEmpty     (void);
 
-    static  SceneObjectTransitPtr  createLocal     (
+    static  LuaBehaviorTransitPtr  createLocal     (
                                                BitVector bFlags = FCLocal::All);
 
-    static  SceneObject            *createEmptyLocal(
+    static  LuaBehavior            *createEmptyLocal(
                                               BitVector bFlags = FCLocal::All);
 
-    static  SceneObjectTransitPtr  createDependent  (BitVector bFlags);
+    static  LuaBehaviorTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -235,68 +159,30 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
-    /*! \name                      Fields                                  */
-    /*! \{                                                                 */
-
-    SFParentFieldContainerPtr _sfParentScene;
-    MFUnrecChildBehaviorPtr _mfBehaviors;
-    MFUnrecChildEffectPtr _mfAttachedEffects;
-    SFUnrecNodePtr    _sfNode;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    SceneObjectBase(void);
-    SceneObjectBase(const SceneObjectBase &source);
+    LuaBehaviorBase(void);
+    LuaBehaviorBase(const LuaBehaviorBase &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~SceneObjectBase(void);
+    virtual ~LuaBehaviorBase(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     onCreate                                */
     /*! \{                                                                 */
 
-    void onCreate(const SceneObject *source = NULL);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name Parent linking                                               */
-    /*! \{                                                                 */
-
-    virtual bool linkParent  (FieldContainer * const pParent,
-                              UInt16           const childFieldId,
-                              UInt16           const parentFieldId);
-    virtual bool unlinkParent(FieldContainer * const pParent,
-                              UInt16           const parentFieldId);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name Child linking                                                */
-    /*! \{                                                                 */
-
-    virtual bool unlinkChild(FieldContainer * const pChild,
-                             UInt16           const childFieldId);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleParentScene     (void) const;
-    EditFieldHandlePtr editHandleParentScene    (void);
-    GetFieldHandlePtr  getHandleBehaviors       (void) const;
-    EditFieldHandlePtr editHandleBehaviors      (void);
-    GetFieldHandlePtr  getHandleAttachedEffects (void) const;
-    EditFieldHandlePtr editHandleAttachedEffects(void);
-    GetFieldHandlePtr  getHandleNode            (void) const;
-    EditFieldHandlePtr editHandleNode           (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -310,7 +196,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
                                  ConstFieldMaskArg  syncMode  ,
                            const UInt32             uiSyncInfo);
 
-            void execSync (      SceneObjectBase *pFrom,
+            void execSync (      LuaBehaviorBase *pFrom,
                                  ConstFieldMaskArg  whichField,
                                  AspectOffsetStore &oOffsets,
                                  ConstFieldMaskArg  syncMode  ,
@@ -350,11 +236,11 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const SceneObjectBase &source);
+    void operator =(const LuaBehaviorBase &source);
 };
 
-typedef SceneObjectBase *SceneObjectBaseP;
+typedef LuaBehaviorBase *LuaBehaviorBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _OSGSCENEOBJECTBASE_H_ */
+#endif /* _OSGLUABEHAVIORBASE_H_ */

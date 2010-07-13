@@ -1,27 +1,24 @@
 /*---------------------------------------------------------------------------*\
- *                                OpenSG                                     *
+ *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *            Copyright (C) 2000-2002,2002 by the OpenSG Forum               *
- *                                                                           *
- *                            www.opensg.org                                 *
- *                                                                           *
- *   contact: dirk@opensg.org, gerrit.voss@vossg.org, jbehr@zgdv.de          *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU Library General Public License as published    *
- * by the Free Software Foundation, version 2.                               *
+ * under the terms of the GNU General Public License as published            *
+ * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
  * WITHOUT ANY WARRANTY; without even the implied warranty of                *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU Library General Public         *
+ * You should have received a copy of the GNU General Public                 *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -36,56 +33,10 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KEBEHAVIORTYPE_INL_
-#define _KEBEHAVIORTYPE_INL_
+//---------------------------------------------------------------------------
+//  Includes
+//---------------------------------------------------------------------------
 
 OSG_BEGIN_NAMESPACE
 
-/*-------------------------------------------------------------------------*/
-/*                                Get                                      */
-
-inline
-BehaviorType *BehaviorType::getParent(void) const
-{
-    return _pParent;
-}
-
-inline
-std::string BehaviorType::getName(void)
-{
-	return _bName;
-}
-
-inline
-std::string BehaviorType::getLuaFunctionName()
-{
-	return LuaFunctionName;
-}
-inline
-std::string BehaviorType::getCode()
-{
-	return TheCode;
-}
-
-/*-------------------------------------------------------------------------*/
-/*                                Set                                      */
-
-inline
-void BehaviorType::setCode(std::string bCode)
-{
-	TheCode = bCode;
-}
-
-/*-------------------------------------------------------------------------*/
-/*                                 Is                                      */
-
-inline
-bool BehaviorType::isInitialized(void) const
-{
-    return _bInitialized;
-}
-
 OSG_END_NAMESPACE
-
-
-#endif /* _KEBEHAVIORTYPE_INL_ */
