@@ -1514,97 +1514,98 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 #define SWIGTYPE_p_MatrixType swig_types[2]
 #define SWIGTYPE_p_OSG__Animation swig_types[3]
 #define SWIGTYPE_p_OSG__AnimationRefPtr swig_types[4]
-#define SWIGTYPE_p_OSG__Attachment swig_types[5]
-#define SWIGTYPE_p_OSG__AttachmentContainer swig_types[6]
-#define SWIGTYPE_p_OSG__AttachmentContainerRefPtr swig_types[7]
-#define SWIGTYPE_p_OSG__AttachmentRefPtr swig_types[8]
-#define SWIGTYPE_p_OSG__Camera swig_types[9]
-#define SWIGTYPE_p_OSG__CameraRefPtr swig_types[10]
-#define SWIGTYPE_p_OSG__Component swig_types[11]
-#define SWIGTYPE_p_OSG__ComponentRefPtr swig_types[12]
-#define SWIGTYPE_p_OSG__Distribution1D swig_types[13]
-#define SWIGTYPE_p_OSG__Distribution1DRefPtr swig_types[14]
-#define SWIGTYPE_p_OSG__Distribution2D swig_types[15]
-#define SWIGTYPE_p_OSG__Distribution2DRefPtr swig_types[16]
-#define SWIGTYPE_p_OSG__Distribution3D swig_types[17]
-#define SWIGTYPE_p_OSG__Distribution3DRefPtr swig_types[18]
-#define SWIGTYPE_p_OSG__Effect swig_types[19]
-#define SWIGTYPE_p_OSG__EffectRefPtr swig_types[20]
-#define SWIGTYPE_p_OSG__Event swig_types[21]
-#define SWIGTYPE_p_OSG__EventRefPtr swig_types[22]
-#define SWIGTYPE_p_OSG__FieldContainer swig_types[23]
-#define SWIGTYPE_p_OSG__FieldContainerRefPtr swig_types[24]
-#define SWIGTYPE_p_OSG__FieldContainerType swig_types[25]
-#define SWIGTYPE_p_OSG__GenericEvent swig_types[26]
-#define SWIGTYPE_p_OSG__GenericEventRefPtr swig_types[27]
-#define SWIGTYPE_p_OSG__Geometry swig_types[28]
-#define SWIGTYPE_p_OSG__GeometryRefPtr swig_types[29]
-#define SWIGTYPE_p_OSG__Image swig_types[30]
-#define SWIGTYPE_p_OSG__ImageRefPtr swig_types[31]
-#define SWIGTYPE_p_OSG__LuaActivity swig_types[32]
-#define SWIGTYPE_p_OSG__LuaActivityRefPtr swig_types[33]
-#define SWIGTYPE_p_OSG__Node swig_types[34]
-#define SWIGTYPE_p_OSG__NodeCore swig_types[35]
-#define SWIGTYPE_p_OSG__NodeCoreRefPtr swig_types[36]
-#define SWIGTYPE_p_OSG__NodeRefPtr swig_types[37]
-#define SWIGTYPE_p_OSG__ParticleSystem swig_types[38]
-#define SWIGTYPE_p_OSG__ParticleSystemRefPtr swig_types[39]
-#define SWIGTYPE_p_OSG__PhysicsBody swig_types[40]
-#define SWIGTYPE_p_OSG__PhysicsBodyRefPtr swig_types[41]
-#define SWIGTYPE_p_OSG__PhysicsHandler swig_types[42]
-#define SWIGTYPE_p_OSG__PhysicsHandlerRefPtr swig_types[43]
-#define SWIGTYPE_p_OSG__PhysicsSpace swig_types[44]
-#define SWIGTYPE_p_OSG__PhysicsSpaceRefPtr swig_types[45]
-#define SWIGTYPE_p_OSG__PhysicsWorld swig_types[46]
-#define SWIGTYPE_p_OSG__PhysicsWorldRefPtr swig_types[47]
-#define SWIGTYPE_p_OSG__Project swig_types[48]
-#define SWIGTYPE_p_OSG__ProjectRefPtr swig_types[49]
-#define SWIGTYPE_p_OSG__Scene swig_types[50]
-#define SWIGTYPE_p_OSG__SceneObject swig_types[51]
-#define SWIGTYPE_p_OSG__SceneObjectRefPtr swig_types[52]
-#define SWIGTYPE_p_OSG__SceneRefPtr swig_types[53]
-#define SWIGTYPE_p_OSG__Sound swig_types[54]
-#define SWIGTYPE_p_OSG__SoundGroup swig_types[55]
-#define SWIGTYPE_p_OSG__SoundGroupRefPtr swig_types[56]
-#define SWIGTYPE_p_OSG__SoundRefPtr swig_types[57]
-#define SWIGTYPE_p_OSG__TextureObjChunk swig_types[58]
-#define SWIGTYPE_p_OSG__TextureObjChunkRefPtr swig_types[59]
-#define SWIGTYPE_p_OSG__VideoWrapper swig_types[60]
-#define SWIGTYPE_p_OSG__VideoWrapperRefPtr swig_types[61]
-#define SWIGTYPE_p_OSG__Viewport swig_types[62]
-#define SWIGTYPE_p_OSG__ViewportRefPtr swig_types[63]
-#define SWIGTYPE_p_OSG__WindowEventProducer swig_types[64]
-#define SWIGTYPE_p_OSG__WindowEventProducerRefPtr swig_types[65]
-#define SWIGTYPE_p_ParentContainer swig_types[66]
-#define SWIGTYPE_p_PlaneSet swig_types[67]
-#define SWIGTYPE_p_PointType swig_types[68]
-#define SWIGTYPE_p_PointType3f swig_types[69]
-#define SWIGTYPE_p_QuaternionType swig_types[70]
-#define SWIGTYPE_p_SFCoreType swig_types[71]
-#define SWIGTYPE_p_SFParentType swig_types[72]
-#define SWIGTYPE_p_SFTravMaskType swig_types[73]
-#define SWIGTYPE_p_SFVolumeType swig_types[74]
-#define SWIGTYPE_p_TypeObject swig_types[75]
-#define SWIGTYPE_p_ValueType swig_types[76]
-#define SWIGTYPE_p_VectorType swig_types[77]
-#define SWIGTYPE_p_VectorType3f swig_types[78]
-#define SWIGTYPE_p_VolumeType swig_types[79]
-#define SWIGTYPE_p_char swig_types[80]
-#define SWIGTYPE_p_difference_type swig_types[81]
-#define SWIGTYPE_p_double swig_types[82]
-#define SWIGTYPE_p_float swig_types[83]
-#define SWIGTYPE_p_int swig_types[84]
-#define SWIGTYPE_p_key_type swig_types[85]
-#define SWIGTYPE_p_long swig_types[86]
-#define SWIGTYPE_p_long_double swig_types[87]
-#define SWIGTYPE_p_mapped_type swig_types[88]
-#define SWIGTYPE_p_signed_char swig_types[89]
-#define SWIGTYPE_p_size_type swig_types[90]
-#define SWIGTYPE_p_unsigned_char swig_types[91]
-#define SWIGTYPE_p_unsigned_int swig_types[92]
-#define SWIGTYPE_p_unsigned_long swig_types[93]
-static swig_type_info *swig_types[95];
-static swig_module_info swig_module = {swig_types, 94, 0, 0, 0, 0};
+#define SWIGTYPE_p_OSG__ApplicationPlayer swig_types[5]
+#define SWIGTYPE_p_OSG__Attachment swig_types[6]
+#define SWIGTYPE_p_OSG__AttachmentContainer swig_types[7]
+#define SWIGTYPE_p_OSG__AttachmentContainerRefPtr swig_types[8]
+#define SWIGTYPE_p_OSG__AttachmentRefPtr swig_types[9]
+#define SWIGTYPE_p_OSG__Camera swig_types[10]
+#define SWIGTYPE_p_OSG__CameraRefPtr swig_types[11]
+#define SWIGTYPE_p_OSG__Component swig_types[12]
+#define SWIGTYPE_p_OSG__ComponentRefPtr swig_types[13]
+#define SWIGTYPE_p_OSG__Distribution1D swig_types[14]
+#define SWIGTYPE_p_OSG__Distribution1DRefPtr swig_types[15]
+#define SWIGTYPE_p_OSG__Distribution2D swig_types[16]
+#define SWIGTYPE_p_OSG__Distribution2DRefPtr swig_types[17]
+#define SWIGTYPE_p_OSG__Distribution3D swig_types[18]
+#define SWIGTYPE_p_OSG__Distribution3DRefPtr swig_types[19]
+#define SWIGTYPE_p_OSG__Effect swig_types[20]
+#define SWIGTYPE_p_OSG__EffectRefPtr swig_types[21]
+#define SWIGTYPE_p_OSG__Event swig_types[22]
+#define SWIGTYPE_p_OSG__EventRefPtr swig_types[23]
+#define SWIGTYPE_p_OSG__FieldContainer swig_types[24]
+#define SWIGTYPE_p_OSG__FieldContainerRefPtr swig_types[25]
+#define SWIGTYPE_p_OSG__FieldContainerType swig_types[26]
+#define SWIGTYPE_p_OSG__GenericEvent swig_types[27]
+#define SWIGTYPE_p_OSG__GenericEventRefPtr swig_types[28]
+#define SWIGTYPE_p_OSG__Geometry swig_types[29]
+#define SWIGTYPE_p_OSG__GeometryRefPtr swig_types[30]
+#define SWIGTYPE_p_OSG__Image swig_types[31]
+#define SWIGTYPE_p_OSG__ImageRefPtr swig_types[32]
+#define SWIGTYPE_p_OSG__LuaActivity swig_types[33]
+#define SWIGTYPE_p_OSG__LuaActivityRefPtr swig_types[34]
+#define SWIGTYPE_p_OSG__Node swig_types[35]
+#define SWIGTYPE_p_OSG__NodeCore swig_types[36]
+#define SWIGTYPE_p_OSG__NodeCoreRefPtr swig_types[37]
+#define SWIGTYPE_p_OSG__NodeRefPtr swig_types[38]
+#define SWIGTYPE_p_OSG__ParticleSystem swig_types[39]
+#define SWIGTYPE_p_OSG__ParticleSystemRefPtr swig_types[40]
+#define SWIGTYPE_p_OSG__PhysicsBody swig_types[41]
+#define SWIGTYPE_p_OSG__PhysicsBodyRefPtr swig_types[42]
+#define SWIGTYPE_p_OSG__PhysicsHandler swig_types[43]
+#define SWIGTYPE_p_OSG__PhysicsHandlerRefPtr swig_types[44]
+#define SWIGTYPE_p_OSG__PhysicsSpace swig_types[45]
+#define SWIGTYPE_p_OSG__PhysicsSpaceRefPtr swig_types[46]
+#define SWIGTYPE_p_OSG__PhysicsWorld swig_types[47]
+#define SWIGTYPE_p_OSG__PhysicsWorldRefPtr swig_types[48]
+#define SWIGTYPE_p_OSG__Project swig_types[49]
+#define SWIGTYPE_p_OSG__ProjectRefPtr swig_types[50]
+#define SWIGTYPE_p_OSG__Scene swig_types[51]
+#define SWIGTYPE_p_OSG__SceneObject swig_types[52]
+#define SWIGTYPE_p_OSG__SceneObjectRefPtr swig_types[53]
+#define SWIGTYPE_p_OSG__SceneRefPtr swig_types[54]
+#define SWIGTYPE_p_OSG__Sound swig_types[55]
+#define SWIGTYPE_p_OSG__SoundGroup swig_types[56]
+#define SWIGTYPE_p_OSG__SoundGroupRefPtr swig_types[57]
+#define SWIGTYPE_p_OSG__SoundRefPtr swig_types[58]
+#define SWIGTYPE_p_OSG__TextureObjChunk swig_types[59]
+#define SWIGTYPE_p_OSG__TextureObjChunkRefPtr swig_types[60]
+#define SWIGTYPE_p_OSG__VideoWrapper swig_types[61]
+#define SWIGTYPE_p_OSG__VideoWrapperRefPtr swig_types[62]
+#define SWIGTYPE_p_OSG__Viewport swig_types[63]
+#define SWIGTYPE_p_OSG__ViewportRefPtr swig_types[64]
+#define SWIGTYPE_p_OSG__WindowEventProducer swig_types[65]
+#define SWIGTYPE_p_OSG__WindowEventProducerRefPtr swig_types[66]
+#define SWIGTYPE_p_ParentContainer swig_types[67]
+#define SWIGTYPE_p_PlaneSet swig_types[68]
+#define SWIGTYPE_p_PointType swig_types[69]
+#define SWIGTYPE_p_PointType3f swig_types[70]
+#define SWIGTYPE_p_QuaternionType swig_types[71]
+#define SWIGTYPE_p_SFCoreType swig_types[72]
+#define SWIGTYPE_p_SFParentType swig_types[73]
+#define SWIGTYPE_p_SFTravMaskType swig_types[74]
+#define SWIGTYPE_p_SFVolumeType swig_types[75]
+#define SWIGTYPE_p_TypeObject swig_types[76]
+#define SWIGTYPE_p_ValueType swig_types[77]
+#define SWIGTYPE_p_VectorType swig_types[78]
+#define SWIGTYPE_p_VectorType3f swig_types[79]
+#define SWIGTYPE_p_VolumeType swig_types[80]
+#define SWIGTYPE_p_char swig_types[81]
+#define SWIGTYPE_p_difference_type swig_types[82]
+#define SWIGTYPE_p_double swig_types[83]
+#define SWIGTYPE_p_float swig_types[84]
+#define SWIGTYPE_p_int swig_types[85]
+#define SWIGTYPE_p_key_type swig_types[86]
+#define SWIGTYPE_p_long swig_types[87]
+#define SWIGTYPE_p_long_double swig_types[88]
+#define SWIGTYPE_p_mapped_type swig_types[89]
+#define SWIGTYPE_p_signed_char swig_types[90]
+#define SWIGTYPE_p_size_type swig_types[91]
+#define SWIGTYPE_p_unsigned_char swig_types[92]
+#define SWIGTYPE_p_unsigned_int swig_types[93]
+#define SWIGTYPE_p_unsigned_long swig_types[94]
+static swig_type_info *swig_types[96];
+static swig_module_info swig_module = {swig_types, 95, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1632,6 +1633,7 @@ typedef struct{} LANGUAGE_OBJ;
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
 #include "Project/Effect/KEEffect.h"
+#include "Player/KEApplicationPlayer.h"
 
 //#include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGSound.h>
@@ -1667,6 +1669,9 @@ SWIGINTERN OSG::SceneObjectRefPtr OSG_SceneObjectRefPtr_dcast(OSG::FieldContaine
         }
 SWIGINTERN OSG::EffectRefPtr OSG_EffectRefPtr_dcast(OSG::FieldContainerRefPtr const oIn){
             return OSG::dynamic_pointer_cast<OSG::Effect>(oIn);
+        }
+SWIGINTERN void OSG_ApplicationPlayer_openEditor(OSG::FieldContainerRefPtr FCToEdit){
+            OSG::dynamic_pointer_cast<OSG::ApplicationPlayer>(OSG::MainApplication::the()->getPlayerMode())->openEditor(FCToEdit);
         }
 #ifdef __cplusplus
 extern "C" {
@@ -5575,6 +5580,41 @@ static swig_lua_class *swig_OSG_Effect_bases[] = {0,0};
 static const char *swig_OSG_Effect_base_names[] = {"OSG::AttachmentContainer *",0};
 static swig_lua_class _wrap_class_OSG_Effect = { "Effect", &SWIGTYPE_p_OSG__Effect,0,0, swig_OSG_Effect_methods, swig_OSG_Effect_attributes, swig_OSG_Effect_bases, swig_OSG_Effect_base_names };
 
+static int _wrap_ApplicationPlayer_openEditor(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::FieldContainerRefPtr arg1 ;
+  OSG::FieldContainerRefPtr *argp1 ;
+  
+  SWIG_check_num_args("OSG_ApplicationPlayer_openEditor",1,1)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("OSG_ApplicationPlayer_openEditor",1,"OSG::FieldContainerRefPtr");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&argp1,SWIGTYPE_p_OSG__FieldContainerRefPtr,0))){
+    SWIG_fail_ptr("ApplicationPlayer_openEditor",1,SWIGTYPE_p_OSG__FieldContainerRefPtr);
+  }
+  arg1 = *argp1;
+  
+  OSG_ApplicationPlayer_openEditor(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static swig_lua_method swig_OSG_ApplicationPlayer_methods[] = {
+    {0,0}
+};
+static swig_lua_attribute swig_OSG_ApplicationPlayer_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_class *swig_OSG_ApplicationPlayer_bases[] = {0};
+static const char *swig_OSG_ApplicationPlayer_base_names[] = {0};
+static swig_lua_class _wrap_class_OSG_ApplicationPlayer = { "ApplicationPlayer", &SWIGTYPE_p_OSG__ApplicationPlayer,0,0, swig_OSG_ApplicationPlayer_methods, swig_OSG_ApplicationPlayer_attributes, swig_OSG_ApplicationPlayer_bases, swig_OSG_ApplicationPlayer_base_names };
+
 #ifdef __cplusplus
 }
 #endif
@@ -5584,6 +5624,7 @@ static const struct luaL_reg swig_commands[] = {
     { "ProjectRefPtr_dcast", _wrap_ProjectRefPtr_dcast},
     { "SceneObjectRefPtr_dcast", _wrap_SceneObjectRefPtr_dcast},
     { "EffectRefPtr_dcast", _wrap_EffectRefPtr_dcast},
+    { "ApplicationPlayer_openEditor", _wrap_ApplicationPlayer_openEditor},
     {0,0}
 };
 
@@ -5895,6 +5936,7 @@ static swig_type_info _swigt__p_Inherited = {"_p_Inherited", "Inherited *", 0, 0
 static swig_type_info _swigt__p_MFChildrenType = {"_p_MFChildrenType", "MFChildrenType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_MatrixType = {"_p_MatrixType", "MatrixType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OSG__AnimationRefPtr = {"_p_OSG__AnimationRefPtr", "OSG::AnimationRefPtr *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OSG__ApplicationPlayer = {"_p_OSG__ApplicationPlayer", "OSG::ApplicationPlayer *", 0, 0, (void*)&_wrap_class_OSG_ApplicationPlayer, 0};
 static swig_type_info _swigt__p_OSG__AttachmentContainer = {"_p_OSG__AttachmentContainer", "OSG::AttachmentContainer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OSG__Distribution1D = {"_p_OSG__Distribution1D", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__Camera = {"_p_OSG__Camera", 0, 0, 0, 0, 0};
@@ -5992,6 +6034,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_MatrixType,
   &_swigt__p_OSG__Animation,
   &_swigt__p_OSG__AnimationRefPtr,
+  &_swigt__p_OSG__ApplicationPlayer,
   &_swigt__p_OSG__Attachment,
   &_swigt__p_OSG__AttachmentContainer,
   &_swigt__p_OSG__AttachmentContainerRefPtr,
@@ -6087,6 +6130,7 @@ static swig_cast_info _swigc__p_Inherited[] = {  {&_swigt__p_Inherited, 0, 0, 0}
 static swig_cast_info _swigc__p_MFChildrenType[] = {  {&_swigt__p_MFChildrenType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MatrixType[] = {  {&_swigt__p_MatrixType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__AnimationRefPtr[] = {  {&_swigt__p_OSG__AnimationRefPtr, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__ApplicationPlayer[] = {  {&_swigt__p_OSG__ApplicationPlayer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Distribution1D[] = {{&_swigt__p_OSG__Distribution1D, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Camera[] = {{&_swigt__p_OSG__Camera, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Sound[] = {{&_swigt__p_OSG__Sound, 0, 0, 0},{0, 0, 0, 0}};
@@ -6184,6 +6228,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_MatrixType,
   _swigc__p_OSG__Animation,
   _swigc__p_OSG__AnimationRefPtr,
+  _swigc__p_OSG__ApplicationPlayer,
   _swigc__p_OSG__Attachment,
   _swigc__p_OSG__AttachmentContainer,
   _swigc__p_OSG__AttachmentContainerRefPtr,

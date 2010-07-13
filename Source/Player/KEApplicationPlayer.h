@@ -195,6 +195,8 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void setDebugView(UInt32 Index);
     void updateHighlightNode(void);
     void updateWireframeNode(void);
+    
+    void openEditor(FieldContainer* FCToEdit);
     /*=========================  PROTECTED  ===============================*/
 
   protected:

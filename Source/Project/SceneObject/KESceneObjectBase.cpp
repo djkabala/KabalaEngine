@@ -1,4 +1,4 @@
----------------*\
+/*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
@@ -214,7 +214,6 @@ SceneObjectBase::TypeObject SceneObjectBase::_type(
     "\t\tfieldHeader=\"Project/SceneObject/KEBehaviorFields.h\"\n"
     "\t\ttypeHeader=\"Project/SceneObject/KEBehavior.h\"\n"
     "\t\taccess=\"public\"\n"
-    "\t\tdefaultValue=\"NULL\"\n"
     "        linkParentField=\"SceneObject\"\n"
     "\t>\n"
     "\t</Field>\n"
@@ -228,7 +227,6 @@ SceneObjectBase::TypeObject SceneObjectBase::_type(
     "\t\tfieldHeader=\"Project/Effect/KEEffectFields.h\"\n"
     "\t\ttypeHeader=\"Project/Effect/KEEffect.h\"\n"
     "\t\taccess=\"public\"\n"
-    "\t\tdefaultValue=\"NULL\"\n"
     "        linkParentField=\"ParentSceneObject\"\n"
     "\t>\n"
     "\t</Field>\n"
@@ -329,6 +327,8 @@ SFUnrecScenePtr     *SceneObjectBase::editSFScene          (void)
 
     return &_sfScene;
 }
+
+
 
 void SceneObjectBase::pushToBehaviors(Behavior * const value)
 {
@@ -582,6 +582,7 @@ SceneObject *SceneObjectBase::createEmpty(void)
     return returnValue;
 }
 
+
 FieldContainerTransitPtr SceneObjectBase::shallowCopyLocal(
     BitVector bFlags) const
 {
@@ -624,6 +625,8 @@ FieldContainerTransitPtr SceneObjectBase::shallowCopy(void) const
 
     return returnValue;
 }
+
+
 
 
 /*------------------------- constructors ----------------------------------*/

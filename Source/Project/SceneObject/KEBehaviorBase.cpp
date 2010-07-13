@@ -1,4 +1,6 @@
-                                                      *
+/*---------------------------------------------------------------------------*\
+ *                             Kabala Engine                                 *
+ *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
  *   authors:  David Kabala (djkabala@gmail.com)                             *
@@ -141,7 +143,7 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     Inherited::getClassname(),
     "NULL",
     0,
-    NULL,
+    reinterpret_cast<PrototypeCreateF>(&BehaviorBase::createEmptyLocal),
     Behavior::initMethod,
     Behavior::exitMethod,
     reinterpret_cast<InitalInsertDescFunc>(&Behavior::classDescInserter),
@@ -154,7 +156,7 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     "\tparent=\"AttachmentContainer\"\n"
     "\tlibrary=\"KabalaEngine\"\n"
     "\tpointerfieldtypes=\"both\"\n"
-    "\tstructure=\"abstract\"\n"
+    "\tstructure=\"concrete\"\n"
     "\tsystemcomponent=\"false\"\n"
     "\tparentsystemcomponent=\"true\"\n"
     "\tdecoratable=\"false\"\n"
@@ -239,6 +241,122 @@ void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyFromBin(pMem);
     }
+}
+
+//! create a new instance of the class
+BehaviorTransitPtr BehaviorBase::createLocal(BitVector bFlags)
+{
+    BehaviorTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
+
+        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class, copy the container flags
+BehaviorTransitPtr BehaviorBase::createDependent(BitVector bFlags)
+{
+    BehaviorTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+BehaviorTransitPtr BehaviorBase::create(void)
+{
+    BehaviorTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
+    }
+
+    return fc;
+}
+
+Behavior *BehaviorBase::createEmptyLocal(BitVector bFlags)
+{
+    Behavior *returnValue;
+
+    newPtr<Behavior>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+Behavior *BehaviorBase::createEmpty(void)
+{
+    Behavior *returnValue;
+
+    newPtr<Behavior>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr BehaviorBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    Behavior *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const Behavior *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr BehaviorBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    Behavior *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const Behavior *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr BehaviorBase::shallowCopy(void) const
+{
+    Behavior *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const Behavior *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
 }
 
 
@@ -370,6 +488,19 @@ void BehaviorBase::execSyncV(      FieldContainer    &oFrom,
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *BehaviorBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    Behavior *returnValue;
+
+    newAspectCopy(returnValue,
+                  dynamic_cast<const Behavior *>(pRefAspect),
+                  dynamic_cast<const Behavior *>(this));
+
+    return returnValue;
+}
+#endif
 
 void BehaviorBase::resolveLinks(void)
 {
@@ -379,4 +510,4 @@ void BehaviorBase::resolveLinks(void)
 }
 
 
-OSG_END_NAMESPAC
+OSG_END_NAMESPACE

@@ -14,6 +14,7 @@
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
 #include "Project/Effect/KEEffect.h"
+#include "Player/KEApplicationPlayer.h"
 
 //#include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGSound.h>
@@ -41,6 +42,7 @@ namespace OSG {
     class Project;
     class Effect;
     class SceneObject;
+    class ApplicationPlayer;
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -200,9 +202,9 @@ namespace OSG {
         OSG::EffectRefPtr getEffect(std::string name);
     
       protected:
-        Scene(void);
-        Scene(const Scene &source);
-        virtual ~Scene(void); 
+        SceneObject(void);
+        SceneObject(const SceneObject &source);
+        virtual ~SceneObject(void); 
     };
     
     /******************************************************/
@@ -241,9 +243,56 @@ namespace OSG {
         void unpause(void);
         void stop(void);
       protected:
-        Project(void);
-        Project(const Animation &source);
-        virtual ~Project(void); 
+        Effect(void);
+        Effect(const Effect &source);
+        virtual ~Effect(void); 
     };
+    
+    /******************************************************/
+    /*                     ApplicationPlayer                          */
+    /******************************************************/
+    class ApplicationPlayer
+    {
+      public:
+    
+      protected:
+        ApplicationPlayer(void);
+        ApplicationPlayer(const ApplicationPlayer &source);
+        virtual ~ApplicationPlayer(void); 
+    };
+    %extend ApplicationPlayer
+    {
+        //void openEditor(FieldContainerRefPtr FCToEdit)
+        //{
+        //    self->openEditor(FCToEdit);
+        //}
+        static void openEditor(FieldContainerRefPtr FCToEdit)
+        {
+            OSG::dynamic_pointer_cast<OSG::ApplicationPlayer>(OSG::MainApplication::the()->getPlayerMode())->openEditor(FCToEdit);
+        }
+    };
+    
+    /******************************************************/
+    /*                    ApplicationPlayerRefPtr                        */
+    /******************************************************/
+    // class ApplicationPlayerRefPtr : public AttachmentContainerRefPtr
+    //{
+    //  public:
+    //     ApplicationPlayerRefPtr(void);
+    //     ApplicationPlayerRefPtr(const ApplicationPlayerRefPtr               &source);
+    //     /*ApplicationPlayerRefPtr(const NullFieldContainerRefPtr &source);*/
+
+
+     //   ~ApplicationPlayerRefPtr(void); 
+    //    ApplicationPlayer *operator->(void);
+    //    
+    //};
+    //%extend ApplicationPlayerRefPtr
+    //{
+    //    static ApplicationPlayerRefPtr dcast(const FieldContainerRefPtr oIn)
+    //    {
+    //        return OSG::dynamic_pointer_cast<OSG::ApplicationPlayer>(oIn);
+    //    }
+    //};
 }
 
