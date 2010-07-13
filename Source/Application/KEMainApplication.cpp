@@ -253,26 +253,6 @@ Int32 MainApplication::run(int argc, char **argv)
         printCommandLineHelp();
         return 1;
     }
-    
-    //Setup the Logging
-    LogLevel KELogLevel(LOG_NOTICE);
-    if(OptionsVariableMap.count("log-level"))
-    {
-        KELogLevel = OptionsVariableMap["log-level"].as<LogLevel>();
-    }
-    LogType KELogType(LOG_FILE);
-    if(OptionsVariableMap.count("log-type"))
-    {
-        KELogType = OptionsVariableMap["log-type"].as<LogType>();
-    }
-    BoostPath KELogFilePath("./KabalaEngine.log");
-    if(KELogType == LOG_FILE && OptionsVariableMap.count("log-file"))
-    {
-        KELogFilePath = BoostPath(OptionsVariableMap["log-file"].as<std::string>());
-    }
-    initializeLogging(KELogType, KELogFilePath);
-    osgLogP->setLogLevel(KELogLevel, true);
-	osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_TIMESTAMP_HEADER), true);
 
     // Set up Settings
     //Check for the settings file
@@ -288,16 +268,37 @@ Int32 MainApplication::run(int argc, char **argv)
     {
         osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
     }
+	else
+    {
+		osgLogP->setLogLevel(OptionsVariableMap["log-level"].as<LogLevel>(), true);
+    }
     if(osgLogP->getLogType() == LOG_FILE &&
-       !OptionsVariableMap.count("log-file") &&
-       !boost::filesystem::equivalent(getSettings().get<BoostPath>("logging.file"),KELogFilePath))
+       !OptionsVariableMap.count("log-file"))
     {
         initializeLogging(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), getSettings().get<BoostPath>("logging.file"));
     }
+	else
+	{
+		LogType KELogType(LOG_FILE);
+		if(OptionsVariableMap.count("log-type"))
+		{
+			KELogType = OptionsVariableMap["log-type"].as<LogType>();
+		}
+		BoostPath KELogFilePath("./KabalaEngine.log");
+		if(KELogType == LOG_FILE && OptionsVariableMap.count("log-file"))
+		{
+			KELogFilePath = BoostPath(OptionsVariableMap["log-file"].as<std::string>());
+		}
+		initializeLogging(KELogType, KELogFilePath);
+	}
     if(!OptionsVariableMap.count("log-type"))
     {
        osgLogP->setLogType(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), true);
-    }
+	}
+	else
+	{
+       osgLogP->setLogType(OptionsVariableMap["log-type"].as<LogType>(), true);
+	}
 	osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
 
     //Initialize OpenSG
@@ -654,8 +655,8 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     PerspectiveCameraRefPtr DefaultSceneCamera = PerspectiveCamera::create();
     setName(DefaultSceneCamera, "Untitled Camera" );
     DefaultSceneCamera->setFov(60.f);
-    DefaultSceneCamera->setNear(10.0f);
-    DefaultSceneCamera->setFar(50000.0f);
+    DefaultSceneCamera->setNear(1.0f);
+    DefaultSceneCamera->setFar(500.0f);
     DefaultSceneCamera->setBeacon(CameraBeaconNode);
 
     // Make Torus Node (creates Torus in background of scene)
