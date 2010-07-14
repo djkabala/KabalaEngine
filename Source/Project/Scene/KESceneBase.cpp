@@ -1049,7 +1049,7 @@ MethodDescription *SceneBase::_methodDesc[] =
 EventProducerType SceneBase::_producerType(
     "SceneProducerType",
     "EventProducerType",
-    NULL,
+    "",
     InitEventProducerFunctor(),
     _methodDesc,
     sizeof(_methodDesc));
