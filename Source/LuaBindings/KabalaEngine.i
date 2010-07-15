@@ -10,6 +10,8 @@
 #include <OpenSG/OSGGenericEvent.h>
 #include <OpenSG/OSGEventProducerType.h>
 #include <boost/bind.hpp>
+#include <boost/algorithm/string.hpp>
+#include <OpenSG/OSGPathType.h>
 #include "KELuaBindings.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
@@ -48,6 +50,9 @@ namespace OSG {
     class Effect;
     class SceneObject;
     class ApplicationPlayer;
+    class Behavior;
+    class BehaviorFactory;
+    class BehaviorType;
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -215,11 +220,12 @@ namespace OSG {
         SceneObject(const SceneObject &source);
         virtual ~SceneObject(void); 
     };
+
     
     /******************************************************/
     /*                   BehaviorType                     */
     /******************************************************/
-    class BehaviorType : public AttachmentContainer
+    class BehaviorType : public TypeBase
     {
 		public:
 		
@@ -229,34 +235,84 @@ namespace OSG {
                  const std::string &szParentName = "",
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
 				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
-			     BoostPath& FilePath = BoostPath());
+			     OSG::BoostPath& FilePath = BoostPath());
 
 			BehaviorType(const BehaviorType &source);
 			
-			std::string getName();
-			const Char8* getChar8Name();
-			
 		protected:
-			void registerType();
     };
-    
-    /******************************************************/
-    /*                 BehaviorFactory                    */
-    /******************************************************/
-    class BehaviorFactoryBase : public AttachmentContainer
+    %extend BehaviorType
     {
-		public:
-		
-			UInt32 registerType(BehaviorType *pType);
-			UInt32    findTypeId(const Char8 *szName);
-
-			BehaviorType *findType  (      UInt32    uiTypeId       );
-			BehaviorType *findType  (const Char8    *szName         );
-			OSG::BehaviorTransitPtr createBehavior(std::string Name);
-			
-		protected:
-    };
+        static BehaviorType create( const std::string &szName,
+                                         const std::string &szParentName = "",
+                                         const std::string &bEvents = "",
+                                         const std::string &bEventLinks = "",
+                                         const std::string &StrFilePath = "")
+        {
+            std::vector< std::string > evtSplitVec = std::vector<std::string>();
+            std::vector< std::string > evtlkSplitVec = std::vector<std::string>();
+            OSG::BoostPath FilePath = OSG::BoostPath();
+            
+            if(!bEvents.empty())
+            {
+                boost::algorithm::split( evtSplitVec, bEvents, boost::algorithm::is_any_of(std::string(";")) );
+            }
+            
+            if(!bEventLinks.empty())
+            {
+                boost::algorithm::split( evtlkSplitVec, bEventLinks, boost::algorithm::is_any_of(std::string(";")) );
+            }
+            
+            if(!StrFilePath.empty())
+            {
+                FilePath = OSG::BoostPath(StrFilePath);
+            }
+            
+            return OSG::BehaviorType(szName,szParentName,evtSplitVec,evtlkSplitVec,FilePath);
+        }
+    }
     
+    /******************************************************/
+    /*                 BehaviorFactory (Base?)            */
+    /******************************************************/
+    class BehaviorFactory
+    {
+		public :
+            static BehaviorFactory *the(void);
+
+		protected:
+            BehaviorFactory(void);
+
+            virtual ~BehaviorFactory(void);
+
+    };
+    %extend BehaviorFactory
+    {
+        UInt32    registerType      (      BehaviorType *pType          )
+        {
+            return OSG::BehaviorFactory::the()->registerType(pType);
+        }
+
+        UInt32    findTypeId        (const Char8    *szName)
+        {
+            return OSG::BehaviorFactory::the()->findTypeId(szName);
+        }
+
+        BehaviorType *findType      (      UInt32    uiTypeId       )
+        {
+            return OSG::BehaviorFactory::the()->findType(uiTypeId);
+        }
+        
+        BehaviorType *findType      (const Char8    *szName)
+        {
+            return OSG::BehaviorFactory::the()->findType(szName);
+        }
+        
+        OSG::BehaviorTransitPtr     createBehavior(std::string Name)
+        {
+            return OSG::BehaviorFactory::the()->createBehavior(Name);
+        }
+    }
     /******************************************************/
     /*						Behavior                      */
     /******************************************************/
@@ -267,6 +323,29 @@ namespace OSG {
 
 			bool isInitialized();
 	};
+    
+    /******************************************************/
+    /*                  BehaviorRefPtr                    */
+    /******************************************************/
+    class BehaviorRefPtr : public AttachmentContainerRefPtr
+    {
+      public:
+         BehaviorRefPtr(void);
+         BehaviorRefPtr(const BehaviorRefPtr               &source);
+         /*SceneRefPtr(const NullFieldContainerRefPtr &source);*/
+
+
+        ~BehaviorRefPtr(void); 
+        Behavior *operator->(void);
+        
+    };
+    %extend BehaviorRefPtr
+    {
+        static BehaviorRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::Behavior>(oIn);
+        }
+    };
     
     /******************************************************/
     /*                   Effect                           */

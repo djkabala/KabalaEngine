@@ -52,6 +52,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGNameAttachment.h>
 
 #include "KESceneObject.h"
 #include "KEBehavior.h"

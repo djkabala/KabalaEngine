@@ -84,7 +84,7 @@ void AnimationEffect::initMethod(InitPhase ePhase)
 
 void AnimationEffect::initEffect()
 {
-    theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
+    theUpdateProducer = getEventProducer(dynamic_cast<FieldContainer *>(const_cast<Scene *>(getParentSceneObject()->getParentScene())));
     theInternalAnimationListener = InternalAnimationListener(this);
 }
 

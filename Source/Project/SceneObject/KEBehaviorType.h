@@ -102,9 +102,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 
     BehaviorType(const BehaviorType &source);
 
-	std::string getName();
-	const Char8* getChar8Name();
-
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructor                                 */
@@ -177,8 +174,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 	std::vector<std::string>	_bEventLinks;
 
     BehaviorType *_pParent;
-    std::string _szParentName;
-	std::string _bName;
 
 	Scene * attachedScene;
 
