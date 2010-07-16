@@ -131,142 +131,142 @@
           //string
           if(FieldContentType == OSG::FieldTraits<std::string>::getType() )
           {
-              lua_pushstring(L,dynamic_cast<const OSG::SFString*>(TheFieldHandle->getField())->getValue().c_str()); SWIG_arg++;
+              lua_pushstring(L,static_cast<const OSG::SFString*>(TheFieldHandle->getField())->getValue().c_str()); SWIG_arg++;
           }
           //UInt8
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt8>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFUInt8*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFUInt8*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //UInt16
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt16>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFUInt16*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFUInt16*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //UInt32
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt32>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFUInt32*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFUInt32*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //UInt64
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt64>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFUInt64*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFUInt64*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //BitVector
           else if(FieldContentType == OSG::FieldTraits<OSG::BitVector, 1>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFBitVector*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFBitVector*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum,1>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFGLenum*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFGLenum*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFInt8*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFInt8*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Int16
           else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFInt16*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFInt16*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Int32
           else if(FieldContentType == OSG::FieldTraits<OSG::Int32>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFInt32*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFInt32*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Int64
           else if(FieldContentType == OSG::FieldTraits<OSG::Int64>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFInt64*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFInt64*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Real16
           else if(FieldContentType == OSG::FieldTraits<OSG::Real16>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFReal16*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFReal16*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Real32
           else if(FieldContentType == OSG::FieldTraits<OSG::Real32>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFReal32*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFReal32*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Fixed32
           else if(FieldContentType == OSG::FieldTraits<OSG::Fixed32>::getType() )
           {
-              lua_pushnumber(L,OSG::Fixed32::toDouble(dynamic_cast<const
+              lua_pushnumber(L,OSG::Fixed32::toDouble(static_cast<const
                              OSG::SFFixed32*>(TheFieldHandle->getField())->getValue())); SWIG_arg++;
           }
           //Time
           else if(FieldContentType == OSG::FieldTraits<OSG::Time, 1>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFTime*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFTime*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Real64
           else if(FieldContentType == OSG::FieldTraits<OSG::Real64>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::SFReal64*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::SFReal64*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Color3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color3f>::getType() )
           {
-              OSG::Color3f * resultptr = new OSG::Color3f((const OSG::Color3f &) dynamic_cast<const OSG::SFColor3f*>(TheFieldHandle->getField())->getValue());
+              OSG::Color3f * resultptr = new OSG::Color3f((const OSG::Color3f &) static_cast<const OSG::SFColor3f*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Color3f,1); SWIG_arg++;
           }
           //Color4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color4f>::getType() )
           {
-              OSG::Color4f * resultptr = new OSG::Color4f((const OSG::Color4f &) dynamic_cast<const OSG::SFColor4f*>(TheFieldHandle->getField())->getValue());
+              OSG::Color4f * resultptr = new OSG::Color4f((const OSG::Color4f &) static_cast<const OSG::SFColor4f*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Color4f,1); SWIG_arg++;
           }
           //Vec2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec2f>::getType() )
           {
-              OSG::Vec2f * resultptr = new OSG::Vec2f((const OSG::Vec2f &) dynamic_cast<const OSG::SFVec2f*>(TheFieldHandle->getField())->getValue());
+              OSG::Vec2f * resultptr = new OSG::Vec2f((const OSG::Vec2f &) static_cast<const OSG::SFVec2f*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Vec2f,1); SWIG_arg++;
           }
           //Vec3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec3f>::getType() )
           {
-              OSG::Vec3f * resultptr = new OSG::Vec3f((const OSG::Vec3f &) dynamic_cast<const OSG::SFVec3f*>(TheFieldHandle->getField())->getValue());
+              OSG::Vec3f * resultptr = new OSG::Vec3f((const OSG::Vec3f &) static_cast<const OSG::SFVec3f*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Vec3f,1); SWIG_arg++;
           }
           //Vec4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec4f>::getType() )
           {
-              OSG::Vec4f * resultptr = new OSG::Vec4f((const OSG::Vec4f &) dynamic_cast<const OSG::SFVec4f*>(TheFieldHandle->getField())->getValue());
+              OSG::Vec4f * resultptr = new OSG::Vec4f((const OSG::Vec4f &) static_cast<const OSG::SFVec4f*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Vec4f,1); SWIG_arg++;
           }
           //Pnt2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt2f>::getType() )
           {
-              OSG::Pnt2f * resultptr = new OSG::Pnt2f((const OSG::Pnt2f &) dynamic_cast<const OSG::SFPnt2f*>(TheFieldHandle->getField())->getValue());
+              OSG::Pnt2f * resultptr = new OSG::Pnt2f((const OSG::Pnt2f &) static_cast<const OSG::SFPnt2f*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Pnt2f,1); SWIG_arg++;
           }
           //Pnt3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt3f>::getType() )
           {
-              OSG::Pnt3f * resultptr = new OSG::Pnt3f((const OSG::Pnt3f &) dynamic_cast<const OSG::SFPnt3f*>(TheFieldHandle->getField())->getValue());
+              OSG::Pnt3f * resultptr = new OSG::Pnt3f((const OSG::Pnt3f &) static_cast<const OSG::SFPnt3f*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Pnt3f,1); SWIG_arg++;
           }
           //Pnt4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt4f>::getType() )
           {
-              OSG::Pnt4f * resultptr = new OSG::Pnt4f((const OSG::Pnt4f &) dynamic_cast<const OSG::SFPnt4f*>(TheFieldHandle->getField())->getValue());
+              OSG::Pnt4f * resultptr = new OSG::Pnt4f((const OSG::Pnt4f &) static_cast<const OSG::SFPnt4f*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Pnt4f,1); SWIG_arg++;
           }
           //Matrix
           else if(FieldContentType == OSG::FieldTraits<OSG::Matrix>::getType() )
           {
-              OSG::Matrix * resultptr = new OSG::Matrix((const OSG::Matrix &) dynamic_cast<const OSG::SFMatrix*>(TheFieldHandle->getField())->getValue());
+              OSG::Matrix * resultptr = new OSG::Matrix((const OSG::Matrix &) static_cast<const OSG::SFMatrix*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Matrix,1); SWIG_arg++;
           }
           //Quaternion
           else if(FieldContentType == OSG::FieldTraits<OSG::Quaternion>::getType() )
           {
-              OSG::Quaternion * resultptr = new OSG::Quaternion((const OSG::Quaternion &) dynamic_cast<const OSG::SFQuaternion*>(TheFieldHandle->getField())->getValue());
+              OSG::Quaternion * resultptr = new OSG::Quaternion((const OSG::Quaternion &) static_cast<const OSG::SFQuaternion*>(TheFieldHandle->getField())->getValue());
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Quaternion,1); SWIG_arg++;
           }
           //FieldContainerRefPtrs
@@ -278,7 +278,7 @@
           //bool
           else if(FieldContentType == OSG::FieldTraits<bool, 2>::getType() )
           {
-              lua_pushboolean(L,dynamic_cast<const OSG::SFBool*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              lua_pushboolean(L,static_cast<const OSG::SFBool*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
           }
           //Volumes
           //otherwize
@@ -318,7 +318,7 @@
               lua_pushfstring(L,"Error in getFieldValue there is no field of name '%s' on type '%s'",arg2,(*arg1)->getTypeName());
               goto fail;
           }
-          if(TheFieldHandle->getCardinality() == OSG::FieldType::MultiField)
+          if(TheFieldHandle->getCardinality() != OSG::FieldType::MultiField)
           {
               lua_pushfstring(L,"Error in getFieldValue field of name '%s' on type '%s' is a single-field, you do not need to supply an index..",arg2,(*arg1)->getTypeName());
               goto fail;
@@ -328,143 +328,143 @@
           //string
           if(FieldContentType == OSG::FieldTraits<std::string>::getType() )
           {
-              lua_pushstring(L,dynamic_cast<const
+              lua_pushstring(L,static_cast<const
                              OSG::MFString*>(TheFieldHandle->getField())->operator[](arg3).c_str()); SWIG_arg++;
           }
           //UInt8
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt8>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFUInt8*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFUInt8*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //UInt16
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt16>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFUInt16*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFUInt16*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //UInt32
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt32>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFUInt32*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFUInt32*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //UInt64
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt64>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFUInt64*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFUInt64*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //BitVector
           else if(FieldContentType == OSG::FieldTraits<OSG::BitVector, 1>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFBitVector*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFBitVector*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFInt8*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFInt8*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Int16
           else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFInt16*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFInt16*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Int32
           else if(FieldContentType == OSG::FieldTraits<OSG::Int32>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFInt32*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFInt32*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Int64
           else if(FieldContentType == OSG::FieldTraits<OSG::Int64>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFInt64*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFInt64*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Real16
           else if(FieldContentType == OSG::FieldTraits<OSG::Real16>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFReal16*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFReal16*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Real32
           else if(FieldContentType == OSG::FieldTraits<OSG::Real32>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFReal32*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFReal32*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Fixed32
           else if(FieldContentType == OSG::FieldTraits<OSG::Fixed32>::getType() )
           {
-              lua_pushnumber(L,OSG::Fixed32::toDouble(dynamic_cast<const
+              lua_pushnumber(L,OSG::Fixed32::toDouble(static_cast<const
                                                       OSG::MFFixed32*>(TheFieldHandle->getField())->operator[](arg3))); SWIG_arg++;
           }
           //Time
           else if(FieldContentType == OSG::FieldTraits<OSG::Time, 1>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFTime*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFTime*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Real64
           else if(FieldContentType == OSG::FieldTraits<OSG::Real64>::getType() )
           {
-              lua_pushnumber(L,dynamic_cast<const OSG::MFReal64*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushnumber(L,static_cast<const OSG::MFReal64*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Color3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color3f>::getType() )
           {
-              OSG::Color3f * resultptr = new OSG::Color3f((const OSG::Color3f &) dynamic_cast<const OSG::MFColor3f*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Color3f * resultptr = new OSG::Color3f((const OSG::Color3f &) static_cast<const OSG::MFColor3f*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Color3f,1); SWIG_arg++;
           }
           //Color4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color4f>::getType() )
           {
-              OSG::Color4f * resultptr = new OSG::Color4f((const OSG::Color4f &) dynamic_cast<const OSG::MFColor4f*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Color4f * resultptr = new OSG::Color4f((const OSG::Color4f &) static_cast<const OSG::MFColor4f*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Color4f,1); SWIG_arg++;
           }
           //Vec2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec2f>::getType() )
           {
-              OSG::Vec2f * resultptr = new OSG::Vec2f((const OSG::Vec2f &) dynamic_cast<const OSG::MFVec2f*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Vec2f * resultptr = new OSG::Vec2f((const OSG::Vec2f &) static_cast<const OSG::MFVec2f*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Vec2f,1); SWIG_arg++;
           }
           //Vec3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec3f>::getType() )
           {
-              OSG::Vec3f * resultptr = new OSG::Vec3f((const OSG::Vec3f &) dynamic_cast<const OSG::MFVec3f*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Vec3f * resultptr = new OSG::Vec3f((const OSG::Vec3f &) static_cast<const OSG::MFVec3f*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Vec3f,1); SWIG_arg++;
           }
           //Vec4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec4f>::getType() )
           {
-              OSG::Vec4f * resultptr = new OSG::Vec4f((const OSG::Vec4f &) dynamic_cast<const OSG::MFVec4f*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Vec4f * resultptr = new OSG::Vec4f((const OSG::Vec4f &) static_cast<const OSG::MFVec4f*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Vec4f,1); SWIG_arg++;
           }
           //Pnt2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt2f>::getType() )
           {
-              OSG::Pnt2f * resultptr = new OSG::Pnt2f((const OSG::Pnt2f &) dynamic_cast<const OSG::MFPnt2f*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Pnt2f * resultptr = new OSG::Pnt2f((const OSG::Pnt2f &) static_cast<const OSG::MFPnt2f*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Pnt2f,1); SWIG_arg++;
           }
           //Pnt3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt3f>::getType() )
           {
-              OSG::Pnt3f * resultptr = new OSG::Pnt3f((const OSG::Pnt3f &) dynamic_cast<const OSG::MFPnt3f*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Pnt3f * resultptr = new OSG::Pnt3f((const OSG::Pnt3f &) static_cast<const OSG::MFPnt3f*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Pnt3f,1); SWIG_arg++;
           }
           //Pnt4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt4f>::getType() )
           {
-              OSG::Pnt4f * resultptr = new OSG::Pnt4f((const OSG::Pnt4f &) dynamic_cast<const OSG::MFPnt4f*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Pnt4f * resultptr = new OSG::Pnt4f((const OSG::Pnt4f &) static_cast<const OSG::MFPnt4f*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Pnt4f,1); SWIG_arg++;
           }
           //Matrix
           else if(FieldContentType == OSG::FieldTraits<OSG::Matrix>::getType() )
           {
-              OSG::Matrix * resultptr = new OSG::Matrix((const OSG::Matrix &) dynamic_cast<const OSG::MFMatrix*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Matrix * resultptr = new OSG::Matrix((const OSG::Matrix &) static_cast<const OSG::MFMatrix*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Matrix,1); SWIG_arg++;
           }
           //Quaternion
           else if(FieldContentType == OSG::FieldTraits<OSG::Quaternion>::getType() )
           {
-              OSG::Quaternion * resultptr = new OSG::Quaternion((const OSG::Quaternion &) dynamic_cast<const OSG::MFQuaternion*>(TheFieldHandle->getField())->operator[](arg3));
+              OSG::Quaternion * resultptr = new OSG::Quaternion((const OSG::Quaternion &) static_cast<const OSG::MFQuaternion*>(TheFieldHandle->getField())->operator[](arg3));
               SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__Quaternion,1); SWIG_arg++;
           }
           //FieldContainerRefPtrs
@@ -476,7 +476,7 @@
           //bool
           else if(FieldContentType == OSG::FieldTraits<bool, 2>::getType() )
           {
-              lua_pushboolean(L,dynamic_cast<const OSG::MFBool*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              lua_pushboolean(L,static_cast<const OSG::MFBool*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
           }
           //Volumes
           //otherwize
@@ -574,7 +574,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"string'");
                   return SWIG_arg;
               }
-              dynamic_cast<OSG::SFString*>(TheFieldHandle->getField())->setValue(static_cast<const OSG::Char8*>(lua_tostring(L, 3)));
+              static_cast<OSG::SFString*>(TheFieldHandle->getField())->setValue(static_cast<const OSG::Char8*>(lua_tostring(L, 3)));
           }
           //UInt8
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt8>::getType() )
@@ -584,7 +584,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"UInt8'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFUInt8*>(TheFieldHandle->getField())->setValue(static_cast<OSG::UInt8>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFUInt8*>(TheFieldHandle->getField())->setValue(static_cast<OSG::UInt8>(lua_tonumber(L, 3)));
           }
           //UInt16
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt16>::getType() )
@@ -594,7 +594,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"UInt16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFUInt16*>(TheFieldHandle->getField())->setValue(static_cast<OSG::UInt16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFUInt16*>(TheFieldHandle->getField())->setValue(static_cast<OSG::UInt16>(lua_tonumber(L, 3)));
           }
           //UInt32
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt32>::getType())
@@ -604,7 +604,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"UInt32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFUInt32*>(TheFieldHandle->getField())->setValue(static_cast<OSG::UInt32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFUInt32*>(TheFieldHandle->getField())->setValue(static_cast<OSG::UInt32>(lua_tonumber(L, 3)));
           }
           //UInt64
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt64>::getType() )
@@ -614,7 +614,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"UInt64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFUInt64*>(TheFieldHandle->getField())->setValue(static_cast<OSG::UInt64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFUInt64*>(TheFieldHandle->getField())->setValue(static_cast<OSG::UInt64>(lua_tonumber(L, 3)));
           }
           //BitVector
           else if(FieldContentType == OSG::FieldTraits<OSG::BitVector, 1>::getType() )
@@ -624,7 +624,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"BitVector'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFBitVector*>(TheFieldHandle->getField())->setValue(static_cast<OSG::BitVector>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFBitVector*>(TheFieldHandle->getField())->setValue(static_cast<OSG::BitVector>(lua_tonumber(L, 3)));
           }
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
@@ -634,7 +634,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"GLenum'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFGLenum*>(TheFieldHandle->getField())->setValue(static_cast<GLenum>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFGLenum*>(TheFieldHandle->getField())->setValue(static_cast<GLenum>(lua_tonumber(L, 3)));
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -644,7 +644,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int8'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFInt8*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int8>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFInt8*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int8>(lua_tonumber(L, 3)));
           }
           //Int16
           else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
@@ -654,7 +654,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFInt16*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFInt16*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int16>(lua_tonumber(L, 3)));
           }
           //Int32
           else if(FieldContentType == OSG::FieldTraits<OSG::Int32>::getType() )
@@ -664,7 +664,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFInt32*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFInt32*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int32>(lua_tonumber(L, 3)));
           }
           //Int64
           else if(FieldContentType == OSG::FieldTraits<OSG::Int64>::getType() )
@@ -674,7 +674,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFInt64*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFInt64*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int64>(lua_tonumber(L, 3)));
           }
           //Real16
           else if(FieldContentType == OSG::FieldTraits<OSG::Real16>::getType() )
@@ -684,7 +684,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Real16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFReal16*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Real16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFReal16*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Real16>(lua_tonumber(L, 3)));
           }
           //Real32
           else if(FieldContentType == OSG::FieldTraits<OSG::Real32>::getType() )
@@ -694,7 +694,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Real32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFReal32*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Real32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFReal32*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Real32>(lua_tonumber(L, 3)));
           }
           //Fixed32
           else if(FieldContentType == OSG::FieldTraits<OSG::Fixed32>::getType() )
@@ -704,7 +704,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Fixed32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFFixed32*>(TheFieldHandle->getField())->setValue(OSG::Fixed32(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFFixed32*>(TheFieldHandle->getField())->setValue(OSG::Fixed32(lua_tonumber(L, 3)));
           }
           //Time
           else if(FieldContentType == OSG::FieldTraits<OSG::Time, 1>::getType() )
@@ -714,7 +714,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Time'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFTime*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Time>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFTime*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Time>(lua_tonumber(L, 3)));
           }
           //Real64
           else if(FieldContentType == OSG::FieldTraits<OSG::Real64>::getType() )
@@ -724,7 +724,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Real64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFReal64*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Real64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::SFReal64*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Real64>(lua_tonumber(L, 3)));
           }
           //Color3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color3f>::getType() )
@@ -735,7 +735,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFColor3f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Color3f const &>(*arg3));
+                  static_cast<OSG::SFColor3f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Color3f const &>(*arg3));
           }
           //Color4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color4f>::getType() )
@@ -746,7 +746,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFColor4f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Color4f const &>(*arg3));
+                  static_cast<OSG::SFColor4f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Color4f const &>(*arg3));
           }
           //Vec2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec2f>::getType() )
@@ -757,7 +757,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFVec2f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Vec2f const &>(*arg3));
+                  static_cast<OSG::SFVec2f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Vec2f const &>(*arg3));
           }
           //Vec3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec3f>::getType() )
@@ -768,7 +768,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFVec3f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Vec3f const &>(*arg3));
+                  static_cast<OSG::SFVec3f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Vec3f const &>(*arg3));
           }
           //Vec4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec4f>::getType() )
@@ -779,7 +779,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFVec4f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Vec4f const &>(*arg3));
+                  static_cast<OSG::SFVec4f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Vec4f const &>(*arg3));
           }
           //Pnt2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt2f>::getType() )
@@ -790,7 +790,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFPnt2f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Pnt2f const &>(*arg3));
+                  static_cast<OSG::SFPnt2f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Pnt2f const &>(*arg3));
           }
           //Pnt3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt3f>::getType() )
@@ -801,7 +801,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFPnt3f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Pnt3f const &>(*arg3));
+                  static_cast<OSG::SFPnt3f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Pnt3f const &>(*arg3));
           }
           //Pnt4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt4f>::getType() )
@@ -812,7 +812,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFPnt4f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Pnt4f const &>(*arg3));
+                  static_cast<OSG::SFPnt4f*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Pnt4f const &>(*arg3));
           }
           //Matrix
           else if(FieldContentType == OSG::FieldTraits<OSG::Matrix>::getType() )
@@ -823,7 +823,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFMatrix*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Matrix const &>(*arg3));
+                  static_cast<OSG::SFMatrix*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Matrix const &>(*arg3));
           }
           //Quaternion
           else if(FieldContentType == OSG::FieldTraits<OSG::Quaternion>::getType() )
@@ -834,7 +834,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::SFQuaternion*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Quaternion const &>(*arg3));
+                  static_cast<OSG::SFQuaternion*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Quaternion const &>(*arg3));
           }
           //FieldContainerRefPtrs
           else if(TheFieldHandle->isPointerField())
@@ -868,7 +868,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"boolean'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::SFBool*>(TheFieldHandle->getField())->setValue(static_cast<bool>(lua_toboolean(L, 3)));
+                  static_cast<OSG::SFBool*>(TheFieldHandle->getField())->setValue(static_cast<bool>(lua_toboolean(L, 3)));
           }
           //Volumes
           //Otherwise
@@ -947,7 +947,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"string'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFString*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<const OSG::Char8*>(lua_tostring(L, 3)));
+                  static_cast<OSG::MFString*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<const OSG::Char8*>(lua_tostring(L, 3)));
           }
           //UInt8
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt8>::getType() )
@@ -957,7 +957,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"UInt8'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::UInt8>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::UInt8>(lua_tonumber(L, 3)));
           }
           //UInt16
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt16>::getType() )
@@ -967,7 +967,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"UInt16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::UInt16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::UInt16>(lua_tonumber(L, 3)));
           }
           //UInt32
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt32>::getType())
@@ -977,7 +977,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"UInt32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::UInt32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::UInt32>(lua_tonumber(L, 3)));
           }
           //UInt64
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt64>::getType() )
@@ -987,7 +987,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"UInt64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::UInt64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::UInt64>(lua_tonumber(L, 3)));
           }
           //BitVector
           else if(FieldContentType == OSG::FieldTraits<OSG::BitVector, 1>::getType() )
@@ -997,7 +997,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"BitVector'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::BitVector>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::BitVector>(lua_tonumber(L, 3)));
           }
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
@@ -1007,7 +1007,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"GLenum'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<GLenum>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<GLenum>(lua_tonumber(L, 3)));
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -1017,7 +1017,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int8'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFInt8*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Int8>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt8*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Int8>(lua_tonumber(L, 3)));
           }
           //Int16
           else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
@@ -1027,7 +1027,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFInt16*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Int16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt16*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Int16>(lua_tonumber(L, 3)));
           }
           //Int32
           else if(FieldContentType == OSG::FieldTraits<OSG::Int32>::getType() )
@@ -1037,7 +1037,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFInt32*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Int32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt32*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Int32>(lua_tonumber(L, 3)));
           }
           //Int64
           else if(FieldContentType == OSG::FieldTraits<OSG::Int64>::getType() )
@@ -1047,7 +1047,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFInt64*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Int64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt64*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Int64>(lua_tonumber(L, 3)));
           }
           //Real16
           else if(FieldContentType == OSG::FieldTraits<OSG::Real16>::getType() )
@@ -1057,7 +1057,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Real16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFReal16*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Real16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal16*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Real16>(lua_tonumber(L, 3)));
           }
           //Real32
           else if(FieldContentType == OSG::FieldTraits<OSG::Real32>::getType() )
@@ -1067,7 +1067,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Real32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFReal32*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Real32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal32*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Real32>(lua_tonumber(L, 3)));
           }
           //Fixed32
           else if(FieldContentType == OSG::FieldTraits<OSG::Fixed32>::getType() )
@@ -1077,7 +1077,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Fixed32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->operator[](arg4) = (OSG::Fixed32(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->operator[](arg4) = (OSG::Fixed32(lua_tonumber(L, 3)));
           }
           //Time
           else if(FieldContentType == OSG::FieldTraits<OSG::Time, 1>::getType() )
@@ -1087,7 +1087,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Time'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFTime*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Time>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFTime*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Time>(lua_tonumber(L, 3)));
           }
           //Real64
           else if(FieldContentType == OSG::FieldTraits<OSG::Real64>::getType() )
@@ -1097,7 +1097,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Real64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFReal64*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Real64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal64*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Real64>(lua_tonumber(L, 3)));
           }
           //Color3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color3f>::getType() )
@@ -1108,7 +1108,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Color3f const &>(*arg3));
+                  static_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Color3f const &>(*arg3));
           }
           //Color4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color4f>::getType() )
@@ -1119,7 +1119,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Color4f const &>(*arg3));
+                  static_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Color4f const &>(*arg3));
           }
           //Vec2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec2f>::getType() )
@@ -1130,7 +1130,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Vec2f const &>(*arg3));
+                  static_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Vec2f const &>(*arg3));
           }
           //Vec3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec3f>::getType() )
@@ -1141,7 +1141,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Vec3f const &>(*arg3));
+                  static_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Vec3f const &>(*arg3));
           }
           //Vec4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec4f>::getType() )
@@ -1152,7 +1152,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Vec4f const &>(*arg3));
+                  static_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Vec4f const &>(*arg3));
           }
           //Pnt2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt2f>::getType() )
@@ -1163,7 +1163,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Pnt2f const &>(*arg3));
+                  static_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Pnt2f const &>(*arg3));
           }
           //Pnt3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt3f>::getType() )
@@ -1174,7 +1174,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Pnt3f const &>(*arg3));
+                  static_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Pnt3f const &>(*arg3));
           }
           //Pnt4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt4f>::getType() )
@@ -1185,7 +1185,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Pnt4f const &>(*arg3));
+                  static_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Pnt4f const &>(*arg3));
           }
           //Matrix
           else if(FieldContentType == OSG::FieldTraits<OSG::Matrix>::getType() )
@@ -1196,7 +1196,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Matrix const &>(*arg3));
+                  static_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Matrix const &>(*arg3));
           }
           //Quaternion
           else if(FieldContentType == OSG::FieldTraits<OSG::Quaternion>::getType() )
@@ -1207,7 +1207,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Quaternion const &>(*arg3));
+                  static_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<OSG::Quaternion const &>(*arg3));
           }
           //FieldContainerRefPtrs
           else if(TheFieldHandle->isPointerField())
@@ -1242,7 +1242,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"boolean'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFBool*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<bool>(lua_toboolean(L, 3)));
+                  static_cast<OSG::MFBool*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<bool>(lua_toboolean(L, 3)));
           }
           //Volumes
           //Otherwise
@@ -1316,7 +1316,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"string'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFString*>(TheFieldHandle->getField())->push_back(static_cast<const OSG::Char8*>(lua_tostring(L, 3)));
+                  static_cast<OSG::MFString*>(TheFieldHandle->getField())->push_back(static_cast<const OSG::Char8*>(lua_tostring(L, 3)));
           }
           //UInt8
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt8>::getType() )
@@ -1326,7 +1326,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"UInt8'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->push_back(static_cast<OSG::UInt8>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->push_back(static_cast<OSG::UInt8>(lua_tonumber(L, 3)));
           }
           //UInt16
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt16>::getType() )
@@ -1336,7 +1336,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"UInt16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->push_back(static_cast<OSG::UInt16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->push_back(static_cast<OSG::UInt16>(lua_tonumber(L, 3)));
           }
           //UInt32
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt32>::getType())
@@ -1346,7 +1346,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"UInt32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->push_back(static_cast<OSG::UInt32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->push_back(static_cast<OSG::UInt32>(lua_tonumber(L, 3)));
           }
           //UInt64
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt64>::getType() )
@@ -1356,7 +1356,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"UInt64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->push_back(static_cast<OSG::UInt64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->push_back(static_cast<OSG::UInt64>(lua_tonumber(L, 3)));
           }
           //BitVector
           else if(FieldContentType == OSG::FieldTraits<OSG::BitVector, 1>::getType() )
@@ -1366,7 +1366,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"BitVector'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->push_back(static_cast<OSG::BitVector>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->push_back(static_cast<OSG::BitVector>(lua_tonumber(L, 3)));
           }
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
@@ -1376,7 +1376,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"GLenum'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->push_back(static_cast<GLenum>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->push_back(static_cast<GLenum>(lua_tonumber(L, 3)));
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -1386,7 +1386,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Int8'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFInt8*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Int8>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt8*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Int8>(lua_tonumber(L, 3)));
           }
           //Int16
           else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
@@ -1396,7 +1396,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Int16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFInt16*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Int16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt16*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Int16>(lua_tonumber(L, 3)));
           }
           //Int32
           else if(FieldContentType == OSG::FieldTraits<OSG::Int32>::getType() )
@@ -1406,7 +1406,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Int32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFInt32*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Int32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt32*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Int32>(lua_tonumber(L, 3)));
           }
           //Int64
           else if(FieldContentType == OSG::FieldTraits<OSG::Int64>::getType() )
@@ -1416,7 +1416,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Int64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFInt64*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Int64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt64*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Int64>(lua_tonumber(L, 3)));
           }
           //Real16
           else if(FieldContentType == OSG::FieldTraits<OSG::Real16>::getType() )
@@ -1426,7 +1426,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Real16'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFReal16*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Real16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal16*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Real16>(lua_tonumber(L, 3)));
           }
           //Real32
           else if(FieldContentType == OSG::FieldTraits<OSG::Real32>::getType() )
@@ -1436,7 +1436,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Real32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFReal32*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Real32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal32*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Real32>(lua_tonumber(L, 3)));
           }
           //Fixed32
           else if(FieldContentType == OSG::FieldTraits<OSG::Fixed32>::getType() )
@@ -1446,7 +1446,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Fixed32'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->push_back(OSG::Fixed32(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->push_back(OSG::Fixed32(lua_tonumber(L, 3)));
           }
           //Time
           else if(FieldContentType == OSG::FieldTraits<OSG::Time, 1>::getType() )
@@ -1456,7 +1456,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Time'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFTime*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Time>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFTime*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Time>(lua_tonumber(L, 3)));
           }
           //Real64
           else if(FieldContentType == OSG::FieldTraits<OSG::Real64>::getType() )
@@ -1466,7 +1466,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"Real64'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFReal64*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Real64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal64*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Real64>(lua_tonumber(L, 3)));
           }
           //Color3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color3f>::getType() )
@@ -1477,7 +1477,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Color3f const &>(*arg3));
+                  static_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Color3f const &>(*arg3));
           }
           //Color4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color4f>::getType() )
@@ -1488,7 +1488,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Color4f const &>(*arg3));
+                  static_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Color4f const &>(*arg3));
           }
           //Vec2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec2f>::getType() )
@@ -1499,7 +1499,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Vec2f const &>(*arg3));
+                  static_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Vec2f const &>(*arg3));
           }
           //Vec3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec3f>::getType() )
@@ -1510,7 +1510,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Vec3f const &>(*arg3));
+                  static_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Vec3f const &>(*arg3));
           }
           //Vec4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec4f>::getType() )
@@ -1521,7 +1521,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Vec4f const &>(*arg3));
+                  static_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Vec4f const &>(*arg3));
           }
           //Pnt2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt2f>::getType() )
@@ -1532,7 +1532,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Pnt2f const &>(*arg3));
+                  static_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Pnt2f const &>(*arg3));
           }
           //Pnt3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt3f>::getType() )
@@ -1543,7 +1543,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Pnt3f const &>(*arg3));
+                  static_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Pnt3f const &>(*arg3));
           }
           //Pnt4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt4f>::getType() )
@@ -1554,7 +1554,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Pnt4f const &>(*arg3));
+                  static_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Pnt4f const &>(*arg3));
           }
           //Matrix
           else if(FieldContentType == OSG::FieldTraits<OSG::Matrix>::getType() )
@@ -1565,7 +1565,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Matrix const &>(*arg3));
+                  static_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Matrix const &>(*arg3));
           }
           //Quaternion
           else if(FieldContentType == OSG::FieldTraits<OSG::Quaternion>::getType() )
@@ -1576,7 +1576,7 @@
                   return SWIG_arg;
               }
               
-                  dynamic_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Quaternion const &>(*arg3));
+                  static_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->push_back(static_cast<OSG::Quaternion const &>(*arg3));
           }
           //FieldContainerRefPtrs
           else if(TheFieldHandle->isPointerField())
@@ -1611,7 +1611,7 @@
                   LUA_BINDING_fail_arg(L,"pushFieldValue",3,"boolean'");
                   return SWIG_arg;
               }
-                  dynamic_cast<OSG::MFBool*>(TheFieldHandle->getField())->push_back(static_cast<bool>(lua_toboolean(L, 3)));
+                  static_cast<OSG::MFBool*>(TheFieldHandle->getField())->push_back(static_cast<bool>(lua_toboolean(L, 3)));
           }
           //Volumes
           //Otherwise
@@ -1702,9 +1702,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"string'");
                   return SWIG_arg;
               }
-              OSG::MFString::iterator InsertItor(dynamic_cast<OSG::MFString*>(TheFieldHandle->getField())->begin());
+              OSG::MFString::iterator InsertItor(static_cast<OSG::MFString*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFString*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<const OSG::Char8*>(lua_tostring(L, 3)));
+                  static_cast<OSG::MFString*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<const OSG::Char8*>(lua_tostring(L, 3)));
           }
           //UInt8
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt8>::getType() )
@@ -1714,9 +1714,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"UInt8'");
                   return SWIG_arg;
               }
-              OSG::MFUInt8::iterator InsertItor(dynamic_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->begin());
+              OSG::MFUInt8::iterator InsertItor(static_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::UInt8>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::UInt8>(lua_tonumber(L, 3)));
           }
           //UInt16
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt16>::getType() )
@@ -1726,9 +1726,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"UInt16'");
                   return SWIG_arg;
               }
-              OSG::MFUInt16::iterator InsertItor(dynamic_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->begin());
+              OSG::MFUInt16::iterator InsertItor(static_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::UInt16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::UInt16>(lua_tonumber(L, 3)));
           }
           //UInt32
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt32>::getType())
@@ -1738,9 +1738,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"UInt32'");
                   return SWIG_arg;
               }
-              OSG::MFUInt32::iterator InsertItor(dynamic_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->begin());
+              OSG::MFUInt32::iterator InsertItor(static_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::UInt32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::UInt32>(lua_tonumber(L, 3)));
           }
           //UInt64
           else if(FieldContentType == OSG::FieldTraits<OSG::UInt64>::getType() )
@@ -1750,9 +1750,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"UInt64'");
                   return SWIG_arg;
               }
-              OSG::MFUInt64::iterator InsertItor(dynamic_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->begin());
+              OSG::MFUInt64::iterator InsertItor(static_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::UInt64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::UInt64>(lua_tonumber(L, 3)));
           }
           //BitVector
           else if(FieldContentType == OSG::FieldTraits<OSG::BitVector, 1>::getType() )
@@ -1762,9 +1762,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"BitVector'");
                   return SWIG_arg;
               }
-              OSG::MFBitVector::iterator InsertItor(dynamic_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->begin());
+              OSG::MFBitVector::iterator InsertItor(static_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::BitVector>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::BitVector>(lua_tonumber(L, 3)));
           }
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
@@ -1774,9 +1774,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"GLenum'");
                   return SWIG_arg;
               }
-              OSG::MFGLenum::iterator InsertItor(dynamic_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->begin());
+              OSG::MFGLenum::iterator InsertItor(static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<GLenum>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<GLenum>(lua_tonumber(L, 3)));
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -1786,9 +1786,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Int8'");
                   return SWIG_arg;
               }
-              OSG::MFInt8::iterator InsertItor(dynamic_cast<OSG::MFInt8*>(TheFieldHandle->getField())->begin());
+              OSG::MFInt8::iterator InsertItor(static_cast<OSG::MFInt8*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFInt8*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Int8>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt8*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Int8>(lua_tonumber(L, 3)));
           }
           //Int16
           else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
@@ -1798,9 +1798,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Int16'");
                   return SWIG_arg;
               }
-              OSG::MFInt16::iterator InsertItor(dynamic_cast<OSG::MFInt16*>(TheFieldHandle->getField())->begin());
+              OSG::MFInt16::iterator InsertItor(static_cast<OSG::MFInt16*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFInt16*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Int16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt16*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Int16>(lua_tonumber(L, 3)));
           }
           //Int32
           else if(FieldContentType == OSG::FieldTraits<OSG::Int32>::getType() )
@@ -1810,9 +1810,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Int32'");
                   return SWIG_arg;
               }
-              OSG::MFInt32::iterator InsertItor(dynamic_cast<OSG::MFInt32*>(TheFieldHandle->getField())->begin());
+              OSG::MFInt32::iterator InsertItor(static_cast<OSG::MFInt32*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFInt32*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Int32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt32*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Int32>(lua_tonumber(L, 3)));
           }
           //Int64
           else if(FieldContentType == OSG::FieldTraits<OSG::Int64>::getType() )
@@ -1822,9 +1822,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Int64'");
                   return SWIG_arg;
               }
-              OSG::MFInt64::iterator InsertItor(dynamic_cast<OSG::MFInt64*>(TheFieldHandle->getField())->begin());
+              OSG::MFInt64::iterator InsertItor(static_cast<OSG::MFInt64*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFInt64*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Int64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFInt64*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Int64>(lua_tonumber(L, 3)));
           }
           //Real16
           else if(FieldContentType == OSG::FieldTraits<OSG::Real16>::getType() )
@@ -1834,9 +1834,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Real16'");
                   return SWIG_arg;
               }
-              OSG::MFReal16::iterator InsertItor(dynamic_cast<OSG::MFReal16*>(TheFieldHandle->getField())->begin());
+              OSG::MFReal16::iterator InsertItor(static_cast<OSG::MFReal16*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFReal16*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Real16>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal16*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Real16>(lua_tonumber(L, 3)));
           }
           //Real32
           else if(FieldContentType == OSG::FieldTraits<OSG::Real32>::getType() )
@@ -1846,9 +1846,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Real32'");
                   return SWIG_arg;
               }
-              OSG::MFReal32::iterator InsertItor(dynamic_cast<OSG::MFReal32*>(TheFieldHandle->getField())->begin());
+              OSG::MFReal32::iterator InsertItor(static_cast<OSG::MFReal32*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFReal32*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Real32>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal32*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Real32>(lua_tonumber(L, 3)));
           }
           //Fixed32
           else if(FieldContentType == OSG::FieldTraits<OSG::Fixed32>::getType() )
@@ -1858,9 +1858,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Fixed32'");
                   return SWIG_arg;
               }
-              OSG::MFFixed32::iterator InsertItor(dynamic_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->begin());
+              OSG::MFFixed32::iterator InsertItor(static_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->insert(InsertItor, OSG::Fixed32(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->insert(InsertItor, OSG::Fixed32(lua_tonumber(L, 3)));
           }
           //Time
           else if(FieldContentType == OSG::FieldTraits<OSG::Time, 1>::getType() )
@@ -1870,9 +1870,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Time'");
                   return SWIG_arg;
               }
-              OSG::MFTime::iterator InsertItor(dynamic_cast<OSG::MFTime*>(TheFieldHandle->getField())->begin());
+              OSG::MFTime::iterator InsertItor(static_cast<OSG::MFTime*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFTime*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Time>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFTime*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Time>(lua_tonumber(L, 3)));
           }
           //Real64
           else if(FieldContentType == OSG::FieldTraits<OSG::Real64>::getType() )
@@ -1882,9 +1882,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"Real64'");
                   return SWIG_arg;
               }
-              OSG::MFReal64::iterator InsertItor(dynamic_cast<OSG::MFReal64*>(TheFieldHandle->getField())->begin());
+              OSG::MFReal64::iterator InsertItor(static_cast<OSG::MFReal64*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFReal64*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Real64>(lua_tonumber(L, 3)));
+                  static_cast<OSG::MFReal64*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Real64>(lua_tonumber(L, 3)));
           }
           //Color3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color3f>::getType() )
@@ -1894,9 +1894,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Color3f);
                   return SWIG_arg;
               }
-              OSG::MFColor3f::iterator InsertItor(dynamic_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->begin());
+              OSG::MFColor3f::iterator InsertItor(static_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Color3f const &>(*arg3));
+                  static_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Color3f const &>(*arg3));
           }
           //Color4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Color4f>::getType() )
@@ -1906,9 +1906,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Color4f);
                   return SWIG_arg;
               }
-              OSG::MFColor4f::iterator InsertItor(dynamic_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->begin());
+              OSG::MFColor4f::iterator InsertItor(static_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Color4f const &>(*arg3));
+                  static_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Color4f const &>(*arg3));
           }
           //Vec2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec2f>::getType() )
@@ -1918,9 +1918,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Vec2f);
                   return SWIG_arg;
               }
-              OSG::MFVec2f::iterator InsertItor(dynamic_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->begin());
+              OSG::MFVec2f::iterator InsertItor(static_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Vec2f const &>(*arg3));
+                  static_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Vec2f const &>(*arg3));
           }
           //Vec3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec3f>::getType() )
@@ -1930,9 +1930,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Vec3f);
                   return SWIG_arg;
               }
-              OSG::MFVec3f::iterator InsertItor(dynamic_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->begin());
+              OSG::MFVec3f::iterator InsertItor(static_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Vec3f const &>(*arg3));
+                  static_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Vec3f const &>(*arg3));
           }
           //Vec4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Vec4f>::getType() )
@@ -1942,9 +1942,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Vec4f);
                   return SWIG_arg;
               }
-              OSG::MFVec4f::iterator InsertItor(dynamic_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->begin());
+              OSG::MFVec4f::iterator InsertItor(static_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Vec4f const &>(*arg3));
+                  static_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Vec4f const &>(*arg3));
           }
           //Pnt2f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt2f>::getType() )
@@ -1954,9 +1954,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Pnt2f);
                   return SWIG_arg;
               }
-              OSG::MFPnt2f::iterator InsertItor(dynamic_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->begin());
+              OSG::MFPnt2f::iterator InsertItor(static_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Pnt2f const &>(*arg3));
+                  static_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Pnt2f const &>(*arg3));
           }
           //Pnt3f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt3f>::getType() )
@@ -1966,9 +1966,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Pnt3f);
                   return SWIG_arg;
               }
-              OSG::MFPnt3f::iterator InsertItor(dynamic_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->begin());
+              OSG::MFPnt3f::iterator InsertItor(static_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Pnt3f const &>(*arg3));
+                  static_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Pnt3f const &>(*arg3));
           }
           //Pnt4f
           else if(FieldContentType == OSG::FieldTraits<OSG::Pnt4f>::getType() )
@@ -1978,9 +1978,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Pnt4f);
                   return SWIG_arg;
               }
-              OSG::MFPnt4f::iterator InsertItor(dynamic_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->begin());
+              OSG::MFPnt4f::iterator InsertItor(static_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Pnt4f const &>(*arg3));
+                  static_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Pnt4f const &>(*arg3));
           }
           //Matrix
           else if(FieldContentType == OSG::FieldTraits<OSG::Matrix>::getType() )
@@ -1990,9 +1990,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Matrix);
                   return SWIG_arg;
               }
-              OSG::MFMatrix::iterator InsertItor(dynamic_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->begin());
+              OSG::MFMatrix::iterator InsertItor(static_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Matrix const &>(*arg3));
+                  static_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Matrix const &>(*arg3));
           }
           //Quaternion
           else if(FieldContentType == OSG::FieldTraits<OSG::Quaternion>::getType() )
@@ -2002,9 +2002,9 @@
                   LUA_BINDING_fail_ptr(L,"insertFieldValue",3,SWIGTYPE_p_OSG__Quaternion);
                   return SWIG_arg;
               }
-              OSG::MFQuaternion::iterator InsertItor(dynamic_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->begin());
+              OSG::MFQuaternion::iterator InsertItor(static_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Quaternion const &>(*arg3));
+                  static_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<OSG::Quaternion const &>(*arg3));
           }
           //FieldContainerRefPtrs
           else if(TheFieldHandle->isPointerField())
@@ -2049,9 +2049,9 @@
                   LUA_BINDING_fail_arg(L,"insertFieldValue",3,"boolean'");
                   return SWIG_arg;
               }
-              OSG::MFBool::iterator InsertItor(dynamic_cast<OSG::MFBool*>(TheFieldHandle->getField())->begin());
+              OSG::MFBool::iterator InsertItor(static_cast<OSG::MFBool*>(TheFieldHandle->getField())->begin());
               InsertItor += arg4;
-                  dynamic_cast<OSG::MFBool*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<bool>(lua_toboolean(L, 3)));
+                  static_cast<OSG::MFBool*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<bool>(lua_toboolean(L, 3)));
           }
           //Volumes
           //Otherwise
@@ -2360,137 +2360,137 @@ namespace OSG {
               //string
               if(FieldContentType == OSG::FieldTraits<std::string>::getType() )
               {
-                  dynamic_cast<OSG::MFString*>(TheFieldHandle->getField())->clear();
+                  static_cast<OSG::MFString*>(TheFieldHandle->getField())->clear();
               }
               //Bool
               else if(FieldContentType == OSG::FieldTraits<bool, 2>::getType() )
               {
-                      dynamic_cast<OSG::MFBool*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFBool*>(TheFieldHandle->getField())->clear();
               }
               //UInt8
               else if(FieldContentType == OSG::FieldTraits<OSG::UInt8>::getType() )
               {
-                      dynamic_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->clear();
               }
               //UInt16
               else if(FieldContentType == OSG::FieldTraits<OSG::UInt16>::getType() )
               {
-                      dynamic_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFUInt16*>(TheFieldHandle->getField())->clear();
               }
               //UInt32
               else if(FieldContentType == OSG::FieldTraits<OSG::UInt32>::getType()) 
               {
-                      dynamic_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->clear();
               }
               //UInt64
               else if(FieldContentType == OSG::FieldTraits<OSG::UInt64>::getType() )
               {
-                      dynamic_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->clear();
               }
               //BitVector
               else if(FieldContentType == OSG::FieldTraits<OSG::BitVector,1>::getType() )
               {
-                      dynamic_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->clear();
               }
               //GLenum
               else if(FieldContentType == OSG::FieldTraits<GLenum,1>::getType() )
               {
-                      dynamic_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->clear();
               }
               //Int8
               else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
               {
-                      dynamic_cast<OSG::MFInt8*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFInt8*>(TheFieldHandle->getField())->clear();
               }
               //Int16
               else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
               {
-                      dynamic_cast<OSG::MFInt16*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFInt16*>(TheFieldHandle->getField())->clear();
               }
               //Int32
               else if(FieldContentType == OSG::FieldTraits<OSG::Int32>::getType() )
               {
-                      dynamic_cast<OSG::MFInt32*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFInt32*>(TheFieldHandle->getField())->clear();
               }
               //Int64
               else if(FieldContentType == OSG::FieldTraits<OSG::Int64>::getType() )
               {
-                      dynamic_cast<OSG::MFInt64*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFInt64*>(TheFieldHandle->getField())->clear();
               }
               //Real16
               else if(FieldContentType == OSG::FieldTraits<OSG::Real16>::getType() )
               {
-                      dynamic_cast<OSG::MFReal16*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFReal16*>(TheFieldHandle->getField())->clear();
               }
               //Real32
               else if(FieldContentType == OSG::FieldTraits<OSG::Real32>::getType() )
               {
-                      dynamic_cast<OSG::MFReal32*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFReal32*>(TheFieldHandle->getField())->clear();
               }
               //Fixed32
               else if(FieldContentType == OSG::FieldTraits<OSG::Fixed32>::getType() )
               {
-                      dynamic_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->clear();
               }
               //Time
               else if(FieldContentType == OSG::FieldTraits<OSG::Time,1>::getType() )
               {
-                      dynamic_cast<OSG::MFTime*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFTime*>(TheFieldHandle->getField())->clear();
               }
               //Real64
               else if(FieldContentType == OSG::FieldTraits<OSG::Real64>::getType() )
               {
-                      dynamic_cast<OSG::MFReal64*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFReal64*>(TheFieldHandle->getField())->clear();
               }
               //Color3f
               else if(FieldContentType == OSG::FieldTraits<OSG::Color3f>::getType() )
               {
-                      dynamic_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->clear();
               }
               //Color4f
               else if(FieldContentType == OSG::FieldTraits<OSG::Color4f>::getType() )
               {
-                      dynamic_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->clear();
               }
               //Vec2f
               else if(FieldContentType == OSG::FieldTraits<OSG::Vec2f>::getType() )
               {
-                      dynamic_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->clear();
               }
               //Vec3f
               else if(FieldContentType == OSG::FieldTraits<OSG::Vec3f>::getType() )
               {
-                      dynamic_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->clear();
               }
               //Vec4f
               else if(FieldContentType == OSG::FieldTraits<OSG::Vec4f>::getType() )
               {
-                      dynamic_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->clear();
               }
               //Pnt2f
               else if(FieldContentType == OSG::FieldTraits<OSG::Pnt2f>::getType() )
               {
-                      dynamic_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->clear();
               }
               //Pnt3f
               else if(FieldContentType == OSG::FieldTraits<OSG::Pnt3f>::getType() )
               {
-                      dynamic_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->clear();
               }
               //Pnt4f
               else if(FieldContentType == OSG::FieldTraits<OSG::Pnt4f>::getType() )
               {
-                      dynamic_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->clear();
               }
               //Matrix
               else if(FieldContentType == OSG::FieldTraits<OSG::Matrix>::getType() )
               {
-                      dynamic_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->clear();
               }
               //Quaternion
               else if(FieldContentType == OSG::FieldTraits<OSG::Quaternion>::getType() )
               {
-                      dynamic_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->clear();
+                      static_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->clear();
               }
               //FieldContainerRefPtrs
               else if(TheFieldHandle->isPointerField())
@@ -2559,127 +2559,127 @@ namespace OSG {
               //string
               if(FieldContentType == OSG::FieldTraits<std::string>::getType() )
               {
-                  dynamic_cast<OSG::MFString*>(TheFieldHandle->getField())->erase(Index);
+                  static_cast<OSG::MFString*>(TheFieldHandle->getField())->erase(Index);
               }
               //UInt8
               else if(FieldContentType == OSG::FieldTraits<OSG::UInt8>::getType() )
               {
-                      dynamic_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFUInt8*>(TheFieldHandle->getField())->erase(Index);
               }
               //UInt32
               else if(FieldContentType == OSG::FieldTraits<OSG::UInt32>::getType()) 
               {
-                      dynamic_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFUInt32*>(TheFieldHandle->getField())->erase(Index);
               }
               //UInt64
               else if(FieldContentType == OSG::FieldTraits<OSG::UInt64>::getType() )
               {
-                      dynamic_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFUInt64*>(TheFieldHandle->getField())->erase(Index);
               }
               //BitVector
               else if(FieldContentType == OSG::FieldTraits<OSG::BitVector, 1>::getType() )
               {
-                      dynamic_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFBitVector*>(TheFieldHandle->getField())->erase(Index);
               }
               //GLenum
               else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
               {
-                      dynamic_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->erase(Index);
               }
               //Int8
               else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
               {
-                      dynamic_cast<OSG::MFInt8*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFInt8*>(TheFieldHandle->getField())->erase(Index);
               }
               //Int16
               else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
               {
-                      dynamic_cast<OSG::MFInt16*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFInt16*>(TheFieldHandle->getField())->erase(Index);
               }
               //Int32
               else if(FieldContentType == OSG::FieldTraits<OSG::Int32>::getType() )
               {
-                      dynamic_cast<OSG::MFInt32*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFInt32*>(TheFieldHandle->getField())->erase(Index);
               }
               //Int64
               else if(FieldContentType == OSG::FieldTraits<OSG::Int64>::getType() )
               {
-                      dynamic_cast<OSG::MFInt64*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFInt64*>(TheFieldHandle->getField())->erase(Index);
               }
               //Real16
               else if(FieldContentType == OSG::FieldTraits<OSG::Real16>::getType() )
               {
-                      dynamic_cast<OSG::MFReal16*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFReal16*>(TheFieldHandle->getField())->erase(Index);
               }
               //Real32
               else if(FieldContentType == OSG::FieldTraits<OSG::Real32>::getType() )
               {
-                      dynamic_cast<OSG::MFReal32*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFReal32*>(TheFieldHandle->getField())->erase(Index);
               }
               //Fixed32
               else if(FieldContentType == OSG::FieldTraits<OSG::Fixed32>::getType() )
               {
-                      dynamic_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFFixed32*>(TheFieldHandle->getField())->erase(Index);
               }
               //Time
               else if(FieldContentType == OSG::FieldTraits<OSG::Time, 1>::getType() )
               {
-                      dynamic_cast<OSG::MFTime*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFTime*>(TheFieldHandle->getField())->erase(Index);
               }
               //Real64
               else if(FieldContentType == OSG::FieldTraits<OSG::Real64>::getType() )
               {
-                      dynamic_cast<OSG::MFReal64*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFReal64*>(TheFieldHandle->getField())->erase(Index);
               }
               //Color3f
               else if(FieldContentType == OSG::FieldTraits<OSG::Color3f>::getType() )
               {
-                      dynamic_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFColor3f*>(TheFieldHandle->getField())->erase(Index);
               }
               //Color4f
               else if(FieldContentType == OSG::FieldTraits<OSG::Color4f>::getType() )
               {
-                      dynamic_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFColor4f*>(TheFieldHandle->getField())->erase(Index);
               }
               //Vec2f
               else if(FieldContentType == OSG::FieldTraits<OSG::Vec2f>::getType() )
               {
-                      dynamic_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFVec2f*>(TheFieldHandle->getField())->erase(Index);
               }
               //Vec3f
               else if(FieldContentType == OSG::FieldTraits<OSG::Vec3f>::getType() )
               {
-                      dynamic_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFVec3f*>(TheFieldHandle->getField())->erase(Index);
               }
               //Vec4f
               else if(FieldContentType == OSG::FieldTraits<OSG::Vec4f>::getType() )
               {
-                      dynamic_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFVec4f*>(TheFieldHandle->getField())->erase(Index);
               }
               //Pnt2f
               else if(FieldContentType == OSG::FieldTraits<OSG::Pnt2f>::getType() )
               {
-                      dynamic_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFPnt2f*>(TheFieldHandle->getField())->erase(Index);
               }
               //Pnt3f
               else if(FieldContentType == OSG::FieldTraits<OSG::Pnt3f>::getType() )
               {
-                      dynamic_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFPnt3f*>(TheFieldHandle->getField())->erase(Index);
               }
               //Pnt4f
               else if(FieldContentType == OSG::FieldTraits<OSG::Pnt4f>::getType() )
               {
-                      dynamic_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFPnt4f*>(TheFieldHandle->getField())->erase(Index);
               }
               //Matrix
               else if(FieldContentType == OSG::FieldTraits<OSG::Matrix>::getType() )
               {
-                      dynamic_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFMatrix*>(TheFieldHandle->getField())->erase(Index);
               }
               //Quaternion
               else if(FieldContentType == OSG::FieldTraits<OSG::Quaternion>::getType() )
               {
-                      dynamic_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFQuaternion*>(TheFieldHandle->getField())->erase(Index);
               }
               //FieldContainerRefPtrs
               else if(TheFieldHandle->isPointerField())
@@ -2705,7 +2705,7 @@ namespace OSG {
               //bool
               else if(FieldContentType == OSG::FieldTraits<bool, 2>::getType() )
               {
-                      dynamic_cast<OSG::MFBool*>(TheFieldHandle->getField())->erase(Index);
+                      static_cast<OSG::MFBool*>(TheFieldHandle->getField())->erase(Index);
               }
               //Volumes
               //Otherwise
@@ -3093,7 +3093,7 @@ namespace OSG {
         bool isAttachment(void) const;
 
 
-        FieldContainer *getPrototype    (void) const;
+        FieldContainerRefPtr getPrototype    (void) const;
         std::string     getFcdXML       (void) const;
         std::string     getDocumentation(void) const;
 

@@ -51,12 +51,6 @@ BehaviorType *BehaviorType::getParent(void) const
 }
 
 inline
-std::string BehaviorType::getName(void)
-{
-	return _bName;
-}
-
-inline
 std::string BehaviorType::getLuaFunctionName()
 {
 	return LuaFunctionName;

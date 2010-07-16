@@ -59,6 +59,9 @@ class KE_KABALAENGINE_DLLMAPPING EffectGroup : public EffectGroupBase
     typedef EffectGroupBase Inherited;
     typedef EffectGroup     Self;
 
+    //overridden
+    void setParentSceneObject(SceneObject* newParent);
+
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
@@ -81,15 +84,8 @@ class KE_KABALAENGINE_DLLMAPPING EffectGroup : public EffectGroupBase
   protected:
 
     virtual void handleEffectFinished() = 0;
-
-    virtual void inheritedBegin    (void) = 0;
-    virtual bool inheritedIsPlaying(void) = 0;
-    virtual bool inheritedIsPaused (void) = 0;
-    virtual void inheritedPause    (void) = 0;
-    virtual void inheritedUnpause  (void) = 0;
-    virtual void inheritedStop     (void) = 0;
-    virtual void initEffect        (void) = 0;
-    virtual void finished                  (void);
+    virtual void inheritedBegin();
+    virtual void finished          (void);
 
     // Variables should all be in EffectGroupBase.
 

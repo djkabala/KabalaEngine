@@ -44,13 +44,13 @@
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KESequentialEffectGroup.h"
+#include "KEPhysicsImpulseEffect.h"
 
 OSG_BEGIN_NAMESPACE
 
 // Documentation for this class is emitted in the
-// OSGSequentialEffectGroupBase.cpp file.
-// To modify it, please change the .fcd file (OSGSequentialEffectGroup.fcd) and
+// OSGPhysicsImpulseEffectBase.cpp file.
+// To modify it, please change the .fcd file (OSGPhysicsImpulseEffect.fcd) and
 // regenerate the base file.
 
 /***************************************************************************\
@@ -61,7 +61,7 @@ OSG_BEGIN_NAMESPACE
  *                           Class methods                                 *
 \***************************************************************************/
 
-void SequentialEffectGroup::initMethod(InitPhase ePhase)
+void PhysicsImpulseEffect::initMethod(InitPhase ePhase)
 {
     Inherited::initMethod(ePhase);
 
@@ -75,68 +75,58 @@ void SequentialEffectGroup::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void SequentialEffectGroup::initEffect()
+void PhysicsImpulseEffect::initEffect()
 {
-    theInternalEffectListener = InternalEffectListener(this);
 }
 
-void SequentialEffectGroup::inheritedBegin()
+void PhysicsImpulseEffect::inheritedBegin()
 {
-    Inherited::inheritedBegin();
+    Pnt3f Location;//get SO's loco
+    Vec3f Impulse;
+    for(UInt32 i(0) ; i<getMFPhysicsBodies()->size() ; ++i)
+    {
+        Vec3f Direction(getPhysicsBodies(i)->getPosition()-Location.subZero());
+
+        Real32 Distance(Direction.length());
+        Direction.normalize();
+
+        getPhysicsBodies(i)->addForce(getPhysicsWorld()->impulseToForce(getPhysicsHandler()->getStepSize(), Direction*Impulse*(1.0f/Distance)));
+        //The bodies need to be enabled because they may be auto-disabled when they
+        //come to rest
+        //The bodies are not re-enabled untill a new collision is detected
+        getPhysicsBodies(i)->setEnable(true);
+    }
     
-    activeEffectIndex = UInt32(0);
-    
-    getEffectList(activeEffectIndex)->addEffectListener(&theInternalEffectListener);
-
-    getEffectList(activeEffectIndex)->begin();//effect begin.
+    finished();
 }
 
-bool SequentialEffectGroup::inheritedIsPlaying()
+bool PhysicsImpulseEffect::inheritedIsPlaying()
 {
-    return getEffectList(activeEffectIndex)->isPlaying();
+    return false;
 }
 
-bool SequentialEffectGroup::inheritedIsPaused()
+bool PhysicsImpulseEffect::inheritedIsPaused()
 {
-    return getEffectList(activeEffectIndex)->isPaused();
+    return false;
 }
 
-void SequentialEffectGroup::inheritedPause()
+void PhysicsImpulseEffect::inheritedPause()
 {
-    getEffectList(activeEffectIndex)->pause();
 }
 
-void SequentialEffectGroup::inheritedUnpause()
+void PhysicsImpulseEffect::inheritedUnpause()
 {
-    getEffectList(activeEffectIndex)->unpause();
 }
 
-void SequentialEffectGroup::inheritedStop()
+void PhysicsImpulseEffect::inheritedStop()
 {
-    getEffectList(activeEffectIndex)->stop();
-    getEffectList(activeEffectIndex)->removeEffectListener(&theInternalEffectListener);
-    activeEffectIndex = getMFEffectList()->size();//put this at the end.
 }
 
-void SequentialEffectGroup::finished()
+void PhysicsImpulseEffect::finished()
 {
     Inherited::finished();
 }
 
-void SequentialEffectGroup::handleEffectFinished()
-{
-    activeEffectIndex++;
-    if(activeEffectIndex < getMFEffectList()->size())
-    {
-        getEffectList(activeEffectIndex-1)->removeEffectListener(&theInternalEffectListener);
-        getEffectList(activeEffectIndex)->addEffectListener(&theInternalEffectListener);
-        getEffectList(activeEffectIndex)->begin();
-    }
-    else
-    {
-        finished();
-    }
-}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
@@ -144,33 +134,33 @@ void SequentialEffectGroup::handleEffectFinished()
 
 /*----------------------- constructors & destructors ----------------------*/
 
-SequentialEffectGroup::SequentialEffectGroup(void) :
+PhysicsImpulseEffect::PhysicsImpulseEffect(void) :
     Inherited()
 {
 }
 
-SequentialEffectGroup::SequentialEffectGroup(const SequentialEffectGroup &source) :
+PhysicsImpulseEffect::PhysicsImpulseEffect(const PhysicsImpulseEffect &source) :
     Inherited(source)
 {
 }
 
-SequentialEffectGroup::~SequentialEffectGroup(void)
+PhysicsImpulseEffect::~PhysicsImpulseEffect(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void SequentialEffectGroup::changed(ConstFieldMaskArg whichField, 
+void PhysicsImpulseEffect::changed(ConstFieldMaskArg whichField, 
                             UInt32            origin,
                             BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
 }
 
-void SequentialEffectGroup::dump(      UInt32    ,
+void PhysicsImpulseEffect::dump(      UInt32    ,
                          const BitVector ) const
 {
-    SLOG << "Dump SequentialEffectGroup NI" << std::endl;
+    SLOG << "Dump PhysicsImpulseEffect NI" << std::endl;
 }
 
 OSG_END_NAMESPACE

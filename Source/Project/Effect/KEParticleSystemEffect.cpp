@@ -77,7 +77,7 @@ void ParticleSystemEffect::initMethod(InitPhase ePhase)
 
 void ParticleSystemEffect::initEffect()
 {
-    theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
+    theUpdateProducer = getEventProducer(dynamic_cast<FieldContainer *>(const_cast<Scene *>(getParentSceneObject()->getParentScene())));
     theInternalParticleSystemListener = InternalParticleSystemListener(this);
     theInternalUpdateListener = InternalUpdateListener(this);
 }

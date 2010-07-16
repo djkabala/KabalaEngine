@@ -81,6 +81,8 @@ void ConcurrentEffectGroup::initEffect()
 
 void ConcurrentEffectGroup::inheritedBegin()
 {
+    Inherited::inheritedBegin();
+
     //for all effects, begin and attach a listener.
     for(UInt32 i(0);i < getMFEffectList()->size(); ++i)
     {

@@ -65,6 +65,7 @@
 #include <OpenSG/OSGSpotLight.h>
 //#include <OpenSG/OSGOcclusionCullingTreeBuilder.h>
 #include <OpenSG/OSGSimpleGeometryExt.h>
+#include <OpenSG/OSGFieldContainerEditorDialog.h>
 //#include <OpenSG/OSGGeometryUtils.h>
 
 // the general scene file loading handler
@@ -307,6 +308,8 @@ void ApplicationPlayer::createDebugInterface(void)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // creation of the Tree
     _HelperPanel = HelperPanel::create();
+    setName(_HelperPanel,"__KABALA_ENGINE_DEBUGGER_HELPER_PANEL");
+    _HelperPanel->setApplicationPlayer(this);
 
     _HelperPanel->setupInfoTabPanel();
     _HelperPanel->setupHistoryList();
@@ -315,10 +318,12 @@ void ApplicationPlayer::createDebugInterface(void)
 
 
     _HierarchyPanel = HierarchyPanel::create();
+    setName(_HierarchyPanel,"__KABALA_ENGINE_DEBUGGER_HIERARCHY_PANEL");
     _HierarchyPanel->setApplicationPlayer(ApplicationPlayerRefPtr(this));
     _HierarchyPanel->createDefaultHierarchyPanel();
 
     _ContentPanel = ContentPanel::create();
+    setName(_ContentPanel,"__KABALA_ENGINE_DEBUGGER_CONTENT_PANEL");
     _ContentPanel->setApplicationPlayer(ApplicationPlayerRefPtr(this));
 
     BorderLayoutConstraintsRefPtr ContentConstraints = OSG::BorderLayoutConstraints::create();
@@ -540,6 +545,7 @@ void ApplicationPlayer::createDebugInterface(void)
 
 
     MainInternalWindow = OSG::InternalWindow::create();
+    setName(MainInternalWindow,"__KABALA_ENGINE_DEBUGGER_MAIN_WINDOW");
     MainInternalWindow->pushToChildren(_DebugWindowSplitPanel);
     MainInternalWindow->setLayout(MainInternalWindowLayout);
     MainInternalWindow->setBackgrounds(NULL);
@@ -563,6 +569,7 @@ void ApplicationPlayer::createDebugInterface(void)
 
     // Create the UI Foreground Object
     DebuggerUIForeground = OSG::UIForeground::create();
+    setName(DebuggerUIForeground,"__KABALA_ENGINE_DEBUGGER_UIFOREGROUND");
 
     DebuggerUIForeground->setDrawingSurface(DebuggerDrawingSurface);
 
@@ -1315,6 +1322,7 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     PassiveBackgroundRefPtr DefaultBackground = PassiveBackground::create();
 
     ViewportRefPtr DebugViewport = Viewport::create();
+    setName(DebugViewport,"__KABALA_ENGINE_DEBUGGER_VIEWPORT");
 
     DebugViewport->setRoot                    (DefaultRootNode);
     DebugViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
@@ -1519,6 +1527,11 @@ void ApplicationPlayer::updateFromSettings(void)
         _WireframeMatMaterialChunk->setEmission(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.mesh.color"));
         _WireframeMatLineChunk->setWidth(MainApplication::the()->getSettings().get<Real32>("player.debugger.selected_node.mesh.line_thickness"));
 
+}
+
+void ApplicationPlayer::openEditor(FieldContainer* FCToEdit)
+{
+    openDefaultFCTreeEditorDialog(FCToEdit, _TheCommandManager, DebuggerDrawingSurface);
 }
 
 /*-------------------------------------------------------------------------*\

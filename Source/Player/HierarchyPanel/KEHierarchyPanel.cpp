@@ -791,15 +791,8 @@ void HierarchyPanel::setApplicationPlayer(ApplicationPlayerRefPtr TheApplication
 void HierarchyPanel::SceneGraphTreeSelectionListener::selectedNodeChanged(void)
 {
     //Update Details Panel
-    if(_SelectedNode == NULL)
-    {
-		_ApplicationPlayer->getHelperPanel()->setLabelValuesToNull();
-    }
-    else
-    {
-		_ApplicationPlayer->getHelperPanel()->setLabelValues(_SelectedNode);
-    }
     _ApplicationPlayer->setSelectedNode(_SelectedNode);
+    _ApplicationPlayer->getHelperPanel()->updateSelectedNode();
 }
 
 void HierarchyPanel::SceneGraphPopupListener::popupMenuCanceled            (const  PopupMenuEventUnrecPtr e)

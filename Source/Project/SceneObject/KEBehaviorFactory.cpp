@@ -203,7 +203,7 @@ UInt32 BehaviorFactoryBase::registerType(BehaviorType *pType)
         return returnValue;
     }
 
-    UInt32 uiTypeId = findTypeId(pType->getChar8Name());
+    UInt32 uiTypeId = findTypeId(pType->getName().c_str());
 
     if(uiTypeId != 0)
     {

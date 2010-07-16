@@ -52,6 +52,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGNameAttachment.h>
 
 #include "KESceneObject.h"
 #include "KEBehavior.h"
@@ -115,6 +116,24 @@ void SceneObject::checkBehaviorInitialization()
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
+
+EffectRefPtr SceneObject::getEffect(std::string name)
+{
+    MFUnrecChildEffectPtr::const_iterator elemIt  =
+        _mfAttachedEffects.begin();
+    MFUnrecChildEffectPtr::const_iterator elemEnd =
+        _mfAttachedEffects.end  ();
+
+    while(elemIt != elemEnd)
+    {
+        if(name.compare(OSG::getName(*elemIt)) == 0)
+        {
+            return *elemIt;
+        }
+
+        ++elemIt;
+    }
+}
 
 void SceneObject::InitializeAll()
 {

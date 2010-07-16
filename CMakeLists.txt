@@ -109,6 +109,7 @@ SET(OSG_COMPONENTS OSGBase
     OSGContribVideo 
     OSGContribPhysics 
     OSGContribParticleSystem
+    OSGContribFieldContainerEditor
     )
 
 IF(UNIX)

@@ -73,7 +73,7 @@ UInt32 BehaviorType::findEventID(std::string eventName)
 {
 	if(_bEvents.empty())
 	{
-		SWARNING << "BehaviorType: " << _bName << " has not been registered. Search for EventID's default returns ZERO!!" << std::endl;
+		SWARNING << "BehaviorType: " << getName() << " has not been registered. Search for EventID's default returns ZERO!!" << std::endl;
 		return 0;
 	}
 	for(UInt32 i = 0; _bEvents.size() > i; i++)
@@ -84,7 +84,7 @@ UInt32 BehaviorType::findEventID(std::string eventName)
 		}
 	}
 
-	SWARNING << "BehaviorType: " << _bName << " has no event by the name of " << eventName << "Search for EventID's default returns ZERO!!" <<std::endl;
+	SWARNING << "BehaviorType: " << getName() << " has no event by the name of " << eventName << "Search for EventID's default returns ZERO!!" <<std::endl;
 	return 0;
 }
 
@@ -149,12 +149,13 @@ void BehaviorType::registerType()
 
 void BehaviorType::registerWithScene(Scene* scene)
 {
-	scene = (Scene*)scene;
+//	scene = (Scene*)scene;
 	if(scene != attachedScene)
 	{
-		for(UInt32 i = 0; _bEvents.size(); i++)
+        _bActiveEventIDs.clear();
+		for(UInt32 i = 0; i < _bEvents.size(); i++)
 		{
-			_bActiveEventIDs[i] = scene->registerNewGenericMethod(_bEvents[i]);
+            _bActiveEventIDs.push_back(scene->registerNewGenericMethod(_bEvents[i]));
 		}
 		attachedScene = scene;
 	}
@@ -177,13 +178,9 @@ BehaviorType::BehaviorType(const std::string &szName,
 
     _pParent          (NULL             ),
 
-    _szParentName     (szParentName     ),
-
 	_bEvents		  (bEvents			),
 
 	_bEventLinks	  (bEventLinks		),
-
-	_bName			  (szName			),
 	
 	attachedScene	  (NULL             )
 {
@@ -216,11 +213,11 @@ BehaviorType::BehaviorType(const BehaviorType &obj) :
 
     _pParent          (obj._pParent          ),
 
-    _szParentName     (obj._szParentName     ),
-
 	_bDependencies	  (obj._bDependencies	 ),
 
-	_bName			  (obj._bName			 ),
+    _bEvents		  (obj._bEvents			),
+
+	_bEventLinks	  (obj._bEventLinks		),
 	
 	attachedScene	  (NULL					 ),
 
@@ -287,9 +284,4 @@ bool BehaviorType::initialize(void)
 void BehaviorType::terminate(void)
 {
     _bInitialized = false;
-}
-
-const Char8* BehaviorType::getChar8Name(void)
-{
-	return static_cast<const Char8*>(_bName.c_str());
 }

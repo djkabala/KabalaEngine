@@ -68,11 +68,13 @@
 #include <OpenSG/OSGFlowLayout.h>
 
 #include <OpenSG/OSGGridLayout.h>
+#include <OpenSG/OSGFieldContainerEditorFactory.h>
 
 #include "Application/KEMainApplication.h"
 
 #include "Player/KEApplicationPlayerFields.h"
 #include "Player/HierarchyPanel/KEHierarchyPanelFields.h"
+#include "Player/KEApplicationPlayerFields.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -187,6 +189,10 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
 	void actionPerformed(const ActionEventUnrecPtr e);
 	void keyTyped2(const KeyEventUnrecPtr e);
 	/////////////////// other function definitions - end///////////////////
+    void setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer);
+
+    void updateSelectedNode(void);
+
     /*=========================  PROTECTED  ===============================*/
 
   protected:
@@ -217,9 +223,10 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
     /*! \}                                                                 */
 
 	SpringLayoutRefPtr _Layout;
-	GridLayoutRefPtr _TabPanel4ContentLayout;
 
 	enum tab{LUA=1,ERR,CONSOLE,PROPERTIES};
+
+    ApplicationPlayerRefPtr _ApplicationPlayer;
 
 	LabelRefPtr					_HistoryLabel;
 	ListSelectionModelPtr		_HistoryListSelectionModel;
@@ -246,25 +253,9 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
 	ScrollPanelRefPtr	_TabPanel3Content;
 	PanelRefPtr		_TabPanel4Content;
 
-	LabelRefPtr _NodeNameLabel;
-	LabelRefPtr _NodeCoreTypeLabel;
-	LabelRefPtr _NodeMinLabel;
-	LabelRefPtr _NodeMaxLabel;
-	LabelRefPtr _NodeCenterLabel;
-	LabelRefPtr _NodeTriCountLabel;
-	LabelRefPtr _NodeTravMaskLabel;
-	LabelRefPtr _NodeOcclusionMaskLabel;
-	LabelRefPtr _NodeActiveLabel;
-
-	LabelRefPtr _NodeNameValueLabel;
-	LabelRefPtr _NodeCoreTypeValueLabel;
-	LabelRefPtr _NodeMinValueLabel;
-	LabelRefPtr _NodeMaxValueLabel;
-	LabelRefPtr _NodeCenterValueLabel;
-	LabelRefPtr _NodeTriCountValueLabel;
-	LabelRefPtr _NodeTravMaskValueLabel;
-	LabelRefPtr _NodeOcclusionMaskValueLabel;
-	LabelRefPtr _NodeActiveValueLabel;
+    //Editor Panel
+    FieldContainerEditorComponentRefPtr _NodeEditor;
+    FieldContainerEditorComponentRefPtr _CoreEditor;
 
     //Logging Panel
 	LabelRefPtr _LoggingContentLabel;
@@ -274,8 +265,6 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
 
 
 	void updateListBox(void);
-	void setLabelValues(NodeRefPtr _SelectedNode);
-	void setLabelValuesToNull();
 
 	friend class ApplicationPlayer;
 	friend class HierarchyPanel;

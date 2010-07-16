@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -33,22 +33,21 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KESCENEOBJECT_H_
-#define _KESCENEOBJECT_H_
+#ifndef _KEPHYSICSIMPULSEEFFECT_H_
+#define _KEPHYSICSIMPULSEEFFECT_H_
 #ifdef __sgi
 #pragma once
 #endif
 
-#include "KESceneObjectBase.h"
-#include "Project/Scene/KESceneFields.h"
+#include "KEPhysicsImpulseEffectBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief SceneObject class. See \ref
-           PageKabalaEngineSceneObject for a description.
+/*! \brief PhysicsImpulseEffect class. See \ref
+           PageKabalaEnginePhysicsImpulseEffect for a description.
 */
 
-class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
+class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffect : public PhysicsImpulseEffectBase
 {
   protected:
 
@@ -56,17 +55,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
 
   public:
 
-    typedef SceneObjectBase Inherited;
-    typedef SceneObject     Self;
-
-    EffectRefPtr getEffect(std::string name);
-	const Scene* getParentScene () const;
-	Scene* getParentScene ();
-
-	BehaviorUnrecPtr getBehaviors (UInt32 index);
-
-	void checkBehaviorInitialization();
-
+    typedef PhysicsImpulseEffectBase Inherited;
+    typedef PhysicsImpulseEffect     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -87,28 +77,32 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
-	
-    virtual ~SceneObject(void);
-
   protected:
 
-	  void InitializeAll();
-	  void InitializeBehaviors();
+    // Variables should all be in PhysicsImpulseEffectBase.
 
-    // Variables should all be in SceneObjectBase.
+    void inheritedBegin    (void);
+    bool inheritedIsPlaying(void);
+    bool inheritedIsPaused (void);
+    void inheritedPause    (void);
+    void inheritedUnpause  (void);
+    void inheritedStop     (void);
+    void initEffect        (void);
+    void finished          (void);
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    SceneObject(void);
-    SceneObject(const SceneObject &source);
+    PhysicsImpulseEffect(void);
+    PhysicsImpulseEffect(const PhysicsImpulseEffect &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
+    virtual ~PhysicsImpulseEffect(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -123,21 +117,21 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
   private:
 
     friend class FieldContainer;
-    friend class SceneObjectBase;
+    friend class PhysicsImpulseEffectBase;
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const SceneObject &source);
+    void operator =(const PhysicsImpulseEffect &source);
 };
 
-typedef SceneObject *SceneObjectP;
+typedef PhysicsImpulseEffect *PhysicsImpulseEffectP;
 
 OSG_END_NAMESPACE
 
-#include "Project/SceneObject/KEBehavior.h" // Behaviors Class
-#include <OpenSG/OSGNode.h>             // Node Class
-#include "Project/Effect/KEEffect.h"    // AttachedEffects Class
-#include "Project/Scene/KEScene.h"
-#include "KESceneObjectBase.inl"
-#include "KESceneObject.inl"
+#include <OpenSG/OSGPhysicsBody.h>      // PhysicsBodies Class
+#include <OpenSG/OSGPhysicsWorld.h>     // PhysicsWorld Class
+#include <OpenSG/OSGPhysicsSpace.h>     // PhysicsSpace Class
+#include <OpenSG/OSGPhysicsWorld.h>     // PhysicsWorld Class
+#include "KEPhysicsImpulseEffectBase.inl"
+#include "KEPhysicsImpulseEffect.inl"
 
-#endif /* _KESCENEOBJECT_H_ */
+#endif /* _KEPHYSICSIMPULSEEFFECT_H_ */
