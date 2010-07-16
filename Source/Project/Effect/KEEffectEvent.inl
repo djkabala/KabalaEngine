@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -38,24 +38,5 @@
 //---------------------------------------------------------------------------
 
 OSG_BEGIN_NAMESPACE
-
-inline
-const SceneObject* Effect::getParentSceneObject(void) const
-{
-    return dynamic_cast<const SceneObject*>(_sfParentSceneObject.getValue());
-}
-
-inline
-void Effect::setParentSceneObject(SceneObject* newParent)
-{
-    _sfParentSceneObject.setValue(newParent,_sfParentSceneObject.getParentFieldPos());
-}
-
-inline
-bool Effect::isEffectListenerAttached(EffectListenerPtr Listener) const
-{
-    return _EffectListeners.find(Listener) != _EffectListeners.end();
-}
-
 
 OSG_END_NAMESPACE

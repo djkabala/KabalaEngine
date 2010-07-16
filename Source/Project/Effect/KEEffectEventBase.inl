@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -42,7 +42,7 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class Effect!
+ **     class EffectEvent!
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
@@ -52,33 +52,20 @@ OSG_BEGIN_NAMESPACE
 
 //! access the type of the class
 inline
-OSG::FieldContainerType &EffectBase::getClassType(void)
+OSG::FieldContainerType &EffectEventBase::getClassType(void)
 {
     return _type;
 }
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 EffectBase::getClassTypeId(void)
+OSG::UInt32 EffectEventBase::getClassTypeId(void)
 {
     return _type.getId();
 }
-//! access the producer type of the class
-inline
-const EventProducerType &EffectBase::getProducerClassType(void)
-{
-    return _producerType;
-}
-
-//! access the producer type id of the class
-inline
-UInt32 EffectBase::getProducerClassTypeId(void)
-{
-    return _producerType.getId();
-}
 
 inline
-OSG::UInt16 EffectBase::getClassGroupId(void)
+OSG::UInt16 EffectEventBase::getClassGroupId(void)
 {
     return _type.getGroupId();
 }
@@ -89,94 +76,23 @@ OSG::UInt16 EffectBase::getClassGroupId(void)
 
 #ifdef OSG_MT_CPTR_ASPECT
 inline
-void EffectBase::execSync (      EffectBase *pFrom,
+void EffectEventBase::execSync (      EffectEventBase *pFrom,
                                         ConstFieldMaskArg  whichField,
                                         AspectOffsetStore &oOffsets,
                                         ConstFieldMaskArg  syncMode,
                                   const UInt32             uiSyncInfo)
 {
     Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
-
-    if(FieldBits::NoField != (ParentSceneObjectFieldMask & whichField))
-        _sfParentSceneObject.syncWith(pFrom->_sfParentSceneObject);
 }
 #endif
 
 
 inline
-const Char8 *EffectBase::getClassname(void)
+const Char8 *EffectEventBase::getClassname(void)
 {
-    return "Effect";
+    return "EffectEvent";
 }
-
-inline
-EventConnection EffectBase::attachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
-{
-    return _Producer.attachActivity(TheActivity, ProducedEventId);
-}
-
-inline
-bool EffectBase::isActivityAttached(ActivityRefPtr TheActivity, UInt32 ProducedEventId) const
-{
-    return _Producer.isActivityAttached(TheActivity, ProducedEventId);
-}
-
-inline
-UInt32 EffectBase::getNumActivitiesAttached(UInt32 ProducedEventId) const
-{
-    return _Producer.getNumActivitiesAttached(ProducedEventId);
-}
-
-inline
-ActivityRefPtr EffectBase::getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const
-{
-    return _Producer.getAttachedActivity(ProducedEventId,ActivityIndex);
-}
-
-inline
-void EffectBase::detachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
-{
-    _Producer.detachActivity(TheActivity, ProducedEventId);
-}
-
-inline
-UInt32 EffectBase::getNumProducedEvents(void) const
-{
-    return _Producer.getNumProducedEvents();
-}
-
-inline
-const MethodDescription *EffectBase::getProducedEventDescription(const std::string &ProducedEventName) const
-{
-    return _Producer.getProducedEventDescription(ProducedEventName);
-}
-
-inline
-const MethodDescription *EffectBase::getProducedEventDescription(UInt32 ProducedEventId) const
-{
-    return _Producer.getProducedEventDescription(ProducedEventId);
-}
-
-inline
-UInt32 EffectBase::getProducedEventId(const std::string &ProducedEventName) const
-{
-    return _Producer.getProducedEventId(ProducedEventName);
-}
-
-inline
-SFEventProducerPtr *EffectBase::editSFEventProducer(void)
-{
-    return &_sfEventProducer;
-}
-
-//! Get the value of the Effect::_sfEventProducer field.
-inline
-EventProducerPtr &EffectBase::editEventProducer(void)
-{
-    return _sfEventProducer.getValue();
-}
-
-OSG_GEN_CONTAINERPTR(Effect);
+OSG_GEN_CONTAINERPTR(EffectEvent);
 
 OSG_END_NAMESPACE
 

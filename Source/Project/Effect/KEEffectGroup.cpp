@@ -43,17 +43,14 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
-#include <OpenSG/OSGContainerUtils.h>
 
-#include "KEAnimationEffect.h"
-#include "Project/SceneObject/KESceneObject.h"
-#include "KEEffectEvent.h"
+#include "KEEffectGroup.h"
 
 OSG_BEGIN_NAMESPACE
 
 // Documentation for this class is emitted in the
-// OSGAnimationEffectBase.cpp file.
-// To modify it, please change the .fcd file (OSGAnimationEffect.fcd) and
+// OSGEffectGroupBase.cpp file.
+// To modify it, please change the .fcd file (OSGEffectGroup.fcd) and
 // regenerate the base file.
 
 /***************************************************************************\
@@ -64,7 +61,7 @@ OSG_BEGIN_NAMESPACE
  *                           Class methods                                 *
 \***************************************************************************/
 
-void AnimationEffect::initMethod(InitPhase ePhase)
+void EffectGroup::initMethod(InitPhase ePhase)
 {
     Inherited::initMethod(ePhase);
 
@@ -82,126 +79,75 @@ void AnimationEffect::initMethod(InitPhase ePhase)
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-void AnimationEffect::initEffect()
+void EffectGroup::finished()
 {
-    theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
-    theInternalAnimationListener = InternalAnimationListener(this);
-}
-
-void AnimationEffect::inheritedBegin()
-{
-    AnimationUnrecPtr anim = getAnimation();
-    if(anim != NULL)
-    { 
-        anim->attachUpdateProducer(theUpdateProducer);
-        anim->start();
-        anim->addAnimationListener(&theInternalAnimationListener);
-    }
-    else
-    {
-          SWARNING << "AnimationEffect::inheritedBegin(): Null Animation. Not set yet?";
-    }
-}
-
-bool AnimationEffect::inheritedIsPlaying()
-{
-    return getAnimation()->isPlaying();
-}
-
-bool AnimationEffect::inheritedIsPaused()
-{
-    return getAnimation()->isPaused();
-}
-
-void AnimationEffect::inheritedPause()
-{
-    getAnimation()->pause(true);
-}
-
-void AnimationEffect::inheritedUnpause()
-{
-    getAnimation()->pause(false);
-}
-
-void AnimationEffect::inheritedStop()
-{
-    getAnimation()->stop();
-}
-
-void AnimationEffect::finished()
-{
-    AnimationUnrecPtr anim = getAnimation();
-    anim->detachUpdateProducer();
-    anim->removeAnimationListener(&theInternalAnimationListener);
     Inherited::finished();
 }
 
-/*----------------------- Internal Listener methods -----------------------*/
-
-AnimationEffect::InternalAnimationListener::InternalAnimationListener(AnimationEffect* parent)
+/*------------------------- Internal Listener Functions --------------------------*/
+EffectGroup::InternalEffectListener::InternalEffectListener(EffectGroup* parent)
 {
     fx = parent;
 }
 
-void AnimationEffect::InternalAnimationListener::animationEnded(const AnimationEventUnrecPtr e)
+void EffectGroup::InternalEffectListener::effectBegan(const EffectEventUnrecPtr e)
 {
-    fx->finished();
 }
 
-void AnimationEffect::InternalAnimationListener::animationStopped(const AnimationEventUnrecPtr e)
+void EffectGroup::InternalEffectListener::effectStopped(const EffectEventUnrecPtr e)
 {
-    fx->finished();
 }
 
-void AnimationEffect::InternalAnimationListener::animationPaused(const AnimationEventUnrecPtr e)
+void EffectGroup::InternalEffectListener::effectPaused(const EffectEventUnrecPtr e)
 {
-
-}
-void AnimationEffect::InternalAnimationListener::animationUnpaused(const AnimationEventUnrecPtr e)
-{
-
 }
 
-void AnimationEffect::InternalAnimationListener::animationStarted(const AnimationEventUnrecPtr e)
+void EffectGroup::InternalEffectListener::effectUnpaused(const EffectEventUnrecPtr e)
 {
-
 }
 
-void AnimationEffect::InternalAnimationListener::animationCycled(const AnimationEventUnrecPtr e)
+void EffectGroup::InternalEffectListener::effectFinished(const EffectEventUnrecPtr e)
 {
-
+    fx->handleEffectFinished();
 }
 
 /*----------------------- constructors & destructors ----------------------*/
 
-AnimationEffect::AnimationEffect(void) :
-    theUpdateProducer(NULL),
+EffectGroup::EffectGroup(void) :
     Inherited()
 {
 }
 
-AnimationEffect::AnimationEffect(const AnimationEffect &source) :
+EffectGroup::EffectGroup(const EffectGroup &source) :
     Inherited(source)
 {
 }
 
-AnimationEffect::~AnimationEffect(void)
+EffectGroup::~EffectGroup(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void AnimationEffect::changed(ConstFieldMaskArg whichField, 
+void EffectGroup::changed(ConstFieldMaskArg whichField, 
                             UInt32            origin,
                             BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
+
+    if((whichField & EffectListFieldMask) || (whichField & ParentSceneObjectFieldMask))
+    {
+        for(UInt32 i(0); i < getMFEffectList()->size(); ++i)
+        {
+            getEffectList(i)->setParentSceneObject(const_cast<SceneObject*>(getParentSceneObject()));
+        }
+    }
 }
 
-void AnimationEffect::dump(      UInt32    ,
+void EffectGroup::dump(      UInt32    ,
                          const BitVector ) const
 {
-    SLOG << "Dump AnimationEffect NI" << std::endl;
+    SLOG << "Dump EffectGroup NI" << std::endl;
 }
 
 OSG_END_NAMESPACE

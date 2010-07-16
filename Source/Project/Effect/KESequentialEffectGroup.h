@@ -33,22 +33,21 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KEANIMATIONEFFECT_H_
-#define _KEANIMATIONEFFECT_H_
+#ifndef _KESEQUENTIALEFFECTGROUP_H_
+#define _KESEQUENTIALEFFECTGROUP_H_
 #ifdef __sgi
 #pragma once
 #endif
 
-#include "KEAnimationEffectBase.h"
-#include <OpenSG/OSGEventProducer.h>
+#include "KESequentialEffectGroupBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief AnimationEffect class. See \ref
-           PageKabalaEngineAnimationEffect for a description.
+/*! \brief SequentialEffectGroup class. See \ref
+           PageKabalaEngineSequentialEffectGroup for a description.
 */
 
-class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
+class KE_KABALAENGINE_DLLMAPPING SequentialEffectGroup : public SequentialEffectGroupBase
 {
   protected:
 
@@ -56,9 +55,9 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
 
   public:
 
-    typedef AnimationEffectBase Inherited;
-    typedef AnimationEffect     Self;
-
+    typedef SequentialEffectGroupBase Inherited;
+    typedef SequentialEffectGroup     Self;
+    
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
@@ -80,8 +79,10 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
 
   protected:
 
-    // Variables should all be in AnimationEffectBase.
+     // Variables should all be in SequentialEffectGroupBase.
 
+    void handleEffectFinished(void);
+    
     void initEffect        (void);
     void inheritedBegin    (void);
     bool inheritedIsPlaying(void);
@@ -91,20 +92,19 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
     void inheritedStop     (void);
     void finished          (void);
 
-
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    AnimationEffect(void);
-    AnimationEffect(const AnimationEffect &source);
+    SequentialEffectGroup(void);
+    SequentialEffectGroup(const SequentialEffectGroup &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~AnimationEffect(void);
+    virtual ~SequentialEffectGroup(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -119,48 +119,19 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
   private:
 
     friend class FieldContainer;
-    friend class AnimationEffectBase;
+    friend class SequentialEffectGroupBase;
 
-    EventProducerPtr theUpdateProducer;
-
-    class InternalAnimationListener : public AnimationListener
-    {
-        public:
-
-            InternalAnimationListener(AnimationEffect* parent);
-            InternalAnimationListener(){};
-            ~InternalAnimationListener(){};
-
-            void animationStarted(const AnimationEventUnrecPtr e);
-
-            void animationStopped(const AnimationEventUnrecPtr e);
-
-            void animationPaused(const AnimationEventUnrecPtr e);
-            void animationUnpaused(const AnimationEventUnrecPtr e);
-
-            void animationEnded(const AnimationEventUnrecPtr e);
-            
-            void animationCycled(const AnimationEventUnrecPtr e);
-
-        private:
-
-            AnimationEffect* fx;
-            
-
-    };
-
-    InternalAnimationListener theInternalAnimationListener;
+    UInt8 activeEffectIndex;
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const AnimationEffect &source);
+    void operator =(const SequentialEffectGroup &source);
 };
 
-typedef AnimationEffect *AnimationEffectP;
+typedef SequentialEffectGroup *SequentialEffectGroupP;
 
 OSG_END_NAMESPACE
 
-#include <OpenSG/OSGAnimation.h>        // TheAnimation Class
-#include "KEAnimationEffectBase.inl"
-#include "KEAnimationEffect.inl"
+#include "KESequentialEffectGroupBase.inl"
+#include "KESequentialEffectGroup.inl"
 
-#endif /* _KEANIMATIONEFFECT_H_ */
+#endif /* _KESEQUENTIALEFFECTGROUP_H_ */

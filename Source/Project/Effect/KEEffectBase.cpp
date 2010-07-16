@@ -62,6 +62,8 @@
 
 #include <boost/bind.hpp>
 
+#include <OpenSG/OSGEvent.h>
+
 #ifdef WIN32 // turn off 'this' : used in base member initializer list warning
 #pragma warning(disable:4355)
 #endif
@@ -79,10 +81,6 @@ OSG_BEGIN_NAMESPACE
 /***************************************************************************\
  *                        Field Documentation                              *
 \***************************************************************************/
-
-/*! \var std::string     EffectBase::_sfName
-    
-*/
 
 /*! \var FieldContainer * EffectBase::_sfParentSceneObject
     
@@ -128,18 +126,6 @@ void EffectBase::classDescInserter(TypeObject &oType)
     FieldDescriptionBase *pDesc = NULL;
 
 
-    pDesc = new SFString::Description(
-        SFString::getClassType(),
-        "Name",
-        "",
-        NameFieldId, NameFieldMask,
-        false,
-        (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&Effect::editHandleName),
-        static_cast<FieldGetMethodSig >(&Effect::getHandleName));
-
-    oType.addInitialDesc(pDesc);
-
     pDesc = new SFParentFieldContainerPtr::Description(
         SFParentFieldContainerPtr::getClassType(),
         "ParentSceneObject",
@@ -149,6 +135,17 @@ void EffectBase::classDescInserter(TypeObject &oType)
         (Field::SFDefaultFlags | Field::FStdAccess),
         static_cast     <FieldEditMethodSig>(&Effect::invalidEditField),
         static_cast     <FieldGetMethodSig >(&Effect::invalidGetField));
+
+    oType.addInitialDesc(pDesc);
+    pDesc = new SFEventProducerPtr::Description(
+        SFEventProducerPtr::getClassType(),
+        "EventProducer",
+        "Event Producer",
+        EventProducerFieldId,EventProducerFieldMask,
+        true,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast     <FieldEditMethodSig>(&Effect::editHandleEventProducer),
+        static_cast     <FieldGetMethodSig >(&Effect::getHandleEventProducer));
 
     oType.addInitialDesc(pDesc);
 }
@@ -182,16 +179,6 @@ EffectBase::TypeObject EffectBase::_type(
     "    authors=\"Robert Goetz (rdgoetz@iastate.edu)                            \"\n"
     ">\n"
     "The SceneObject.\n"
-    "\t<Field\n"
-    "\t\tname=\"Name\"\n"
-    "\t\ttype=\"std::string\"\n"
-    "\t\tcategory=\"data\"\n"
-    "\t\tcardinality=\"single\"\n"
-    "\t\tvisibility=\"external\"\n"
-    "\t\taccess=\"protected\"\n"
-    "\t\tdefaultValue=\"NULL\"\n"
-    "\t>\n"
-    "\t</Field>\n"
     "    <Field\n"
     "\t\tname=\"ParentSceneObject\"\n"
     "\t\ttype=\"FieldContainer\"\n"
@@ -204,9 +191,73 @@ EffectBase::TypeObject EffectBase::_type(
     "        passFieldMask=\"true\"\n"
     "\t>\n"
     "\t</Field>\n"
+    "    <ProducedMethod\n"
+    "\t\tname=\"EffectBegan\"\n"
+    "\t\ttype=\"EffectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"EffectPaused\"\n"
+    "\t\ttype=\"EffectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"EffectUnpaused\"\n"
+    "\t\ttype=\"EffectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"EffectFinished\"\n"
+    "\t\ttype=\"EffectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
+    "\t<ProducedMethod\n"
+    "\t\tname=\"EffectStopped\"\n"
+    "\t\ttype=\"EffectEvent\"\n"
+    "\t>\n"
+    "\t</ProducedMethod>\n"
     "</FieldContainer>\n",
     "The SceneObject.\n"
     );
+
+//! Effect Produced Methods
+
+MethodDescription *EffectBase::_methodDesc[] =
+{
+    new MethodDescription("EffectBegan", 
+                    "",
+                     EffectBeganMethodId, 
+                     SFUnrecEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("EffectPaused", 
+                    "",
+                     EffectPausedMethodId, 
+                     SFUnrecEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("EffectUnpaused", 
+                    "",
+                     EffectUnpausedMethodId, 
+                     SFUnrecEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("EffectFinished", 
+                    "",
+                     EffectFinishedMethodId, 
+                     SFUnrecEventPtr::getClassType(),
+                     FunctorAccessMethod()),
+    new MethodDescription("EffectStopped", 
+                    "",
+                     EffectStoppedMethodId, 
+                     SFUnrecEventPtr::getClassType(),
+                     FunctorAccessMethod())
+};
+
+EventProducerType EffectBase::_producerType(
+    "EffectProducerType",
+    "EventProducerType",
+    "",
+    InitEventProducerFunctor(),
+    _methodDesc,
+    sizeof(_methodDesc));
 
 /*------------------------------ get -----------------------------------*/
 
@@ -220,25 +271,17 @@ const FieldContainerType &EffectBase::getType(void) const
     return _type;
 }
 
+const EventProducerType &EffectBase::getProducerType(void) const
+{
+    return _producerType;
+}
+
 UInt32 EffectBase::getContainerSize(void) const
 {
     return sizeof(Effect);
 }
 
 /*------------------------- decorator get ------------------------------*/
-
-
-SFString *EffectBase::editSFName(void)
-{
-    editSField(NameFieldMask);
-
-    return &_sfName;
-}
-
-const SFString *EffectBase::getSFName(void) const
-{
-    return &_sfName;
-}
 
 
 
@@ -252,13 +295,13 @@ UInt32 EffectBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        returnValue += _sfName.getBinSize();
-    }
     if(FieldBits::NoField != (ParentSceneObjectFieldMask & whichField))
     {
         returnValue += _sfParentSceneObject.getBinSize();
+    }
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        returnValue += _sfEventProducer.getBinSize();
     }
 
     return returnValue;
@@ -269,13 +312,13 @@ void EffectBase::copyToBin(BinaryDataHandler &pMem,
 {
     Inherited::copyToBin(pMem, whichField);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        _sfName.copyToBin(pMem);
-    }
     if(FieldBits::NoField != (ParentSceneObjectFieldMask & whichField))
     {
         _sfParentSceneObject.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        _sfEventProducer.copyToBin(pMem);
     }
 }
 
@@ -284,13 +327,13 @@ void EffectBase::copyFromBin(BinaryDataHandler &pMem,
 {
     Inherited::copyFromBin(pMem, whichField);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-    {
-        _sfName.copyFromBin(pMem);
-    }
     if(FieldBits::NoField != (ParentSceneObjectFieldMask & whichField))
     {
         _sfParentSceneObject.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
+    {
+        _sfEventProducer.copyFromBin(pMem);
     }
 }
 
@@ -300,16 +343,18 @@ void EffectBase::copyFromBin(BinaryDataHandler &pMem,
 /*------------------------- constructors ----------------------------------*/
 
 EffectBase::EffectBase(void) :
+    _Producer(&getProducerType()),
     Inherited(),
-    _sfName                   (std::string("")),
     _sfParentSceneObject      (NULL)
+    ,_sfEventProducer(&_Producer)
 {
 }
 
 EffectBase::EffectBase(const EffectBase &source) :
+    _Producer(&source.getProducerType()),
     Inherited(source),
-    _sfName                   (source._sfName                   ),
     _sfParentSceneObject      (NULL)
+    ,_sfEventProducer(&_Producer)
 {
 }
 
@@ -392,31 +437,6 @@ bool EffectBase::unlinkParent(
 
 
 
-GetFieldHandlePtr EffectBase::getHandleName            (void) const
-{
-    SFString::GetHandlePtr returnValue(
-        new  SFString::GetHandle(
-             &_sfName,
-             this->getType().getFieldDesc(NameFieldId),
-             const_cast<EffectBase *>(this)));
-
-    return returnValue;
-}
-
-EditFieldHandlePtr EffectBase::editHandleName           (void)
-{
-    SFString::EditHandlePtr returnValue(
-        new  SFString::EditHandle(
-             &_sfName,
-             this->getType().getFieldDesc(NameFieldId),
-             this));
-
-
-    editSField(NameFieldMask);
-
-    return returnValue;
-}
-
 GetFieldHandlePtr EffectBase::getHandleParentSceneObject (void) const
 {
     SFParentFieldContainerPtr::GetHandlePtr returnValue;
@@ -427,6 +447,32 @@ GetFieldHandlePtr EffectBase::getHandleParentSceneObject (void) const
 EditFieldHandlePtr EffectBase::editHandleParentSceneObject(void)
 {
     EditFieldHandlePtr returnValue;
+
+    return returnValue;
+}
+
+
+GetFieldHandlePtr EffectBase::getHandleEventProducer        (void) const
+{
+    SFEventProducerPtr::GetHandlePtr returnValue(
+        new  SFEventProducerPtr::GetHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             const_cast<EffectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr EffectBase::editHandleEventProducer       (void)
+{
+    SFEventProducerPtr::EditHandlePtr returnValue(
+        new  SFEventProducerPtr::EditHandle(
+             &_sfEventProducer,
+             this->getType().getFieldDesc(EventProducerFieldId),
+             this));
+
+
+    editSField(EventProducerFieldMask);
 
     return returnValue;
 }

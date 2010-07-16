@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="SequentialEffectGroup"
+	parent="EffectGroup"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="Robert Goetz (rdgoetz@iastate.edu)                            "
+>
+</FieldContainer>

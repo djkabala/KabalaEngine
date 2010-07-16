@@ -231,33 +231,38 @@ UInt32 BehaviorFactoryBase::registerType(BehaviorType *pType)
 
     returnValue = _vBehaviorTypeStore.size();
 
+	_vBehaviorTypeNameMap[pType->getCName()] = returnValue;
+
 	for(UInt32 i = 0; i < returnValue; i++)
 	{
-		for(UInt32 d = 0; d < pType->_bEvents.size(); d++)
+		if(findType(i) != NULL)
 		{
-			if(findType(i)->hasEventLink(pType->_bEvents[d]))
+			for(UInt32 d = 0; d < pType->_bEvents.size(); d++)
 			{
-				if(!findType(i)->hasDependency(pType))
+				if(findType(i)->hasEventLink(pType->_bEvents[d]))
 				{
-					findType(i)->_bDependencies.push_back(pType);
-				}
-				if(!pType->hasDependent(findType(i)))
-				{
-					pType->_bDependents.push_back(findType(i));
+					if(!findType(i)->hasDependency(pType))
+					{
+						findType(i)->_bDependencies.push_back(pType);
+					}
+					if(!pType->hasDependent(findType(i)))
+					{
+						pType->_bDependents.push_back(findType(i));
+					}
 				}
 			}
-		}
-		for(UInt32 d = 0; d < pType->_bEventLinks.size(); d++)
-		{
-			if(findType(i)->hasEvent(pType->_bEventLinks[d]))
+			for(UInt32 d = 0; d < pType->_bEventLinks.size(); d++)
 			{
-				if(!findType(i)->hasDependent(pType))
+				if(findType(i)->hasEvent(pType->_bEventLinks[d]))
 				{
-					findType(i)->_bDependents.push_back(pType);
-				}
-				if(!pType->hasDependency(findType(i)))
-				{
-					pType->_bDependencies.push_back(findType(i));
+					if(!findType(i)->hasDependent(pType))
+					{
+						findType(i)->_bDependents.push_back(pType);
+					}
+					if(!pType->hasDependency(findType(i)))
+					{
+						pType->_bDependencies.push_back(findType(i));
+					}
 				}
 			}
 		}

@@ -7,15 +7,13 @@
 #include <OpenSG/OSGConfig.h>
 #include <OpenSG/OSGActivity.h>
 #include <OpenSG/OSGLuaActivity.h>
-//#include <OpenSG/OSGGenericEvent.h>
-//#include <OpenSG/OSGEventProducerType.h>
+#include <OpenSG/OSGGenericEvent.h>
+#include <OpenSG/OSGEventProducerType.h>
 #include <boost/bind.hpp>
 #include "KELuaBindings.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
-#include "Project/SceneObject/KEBehaviorFactory.h"
-#include "Project/SceneObject/KEBehavior.h"
-#include "Project/SceneObject/KEBehaviorType.h"
+#include "Project/Effect/KEEffect.h"
 
 //#include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGSound.h>
@@ -41,7 +39,7 @@
 namespace OSG {
     class Scene;
     class Project;
-    class GenericEventUnrecPtr;
+    class Effect;
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -69,7 +67,7 @@ namespace OSG {
     /******************************************************/
     /*                     Scene                          */
     /******************************************************/
-    class Scene : public SceneBase
+    class Scene
     {
       public:
     
@@ -86,16 +84,22 @@ namespace OSG {
         bool isGenericMethodDefined(const std::string& MethodName) const;
         UInt32 getGenericMethodId(const std::string& MethodName) const;
     
-        void produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e);
-    
       protected:
         Scene(void);
         Scene(const Scene &source);
         virtual ~Scene(void); 
     };
+    %extend Scene
+    {
+        void produceGenericEvent(UInt32 GenericEventId, GenericEventRefPtr e)
+        {
+            self->produceGenericEvent(GenericEventId, e);
+        }
+    };
+    
 
     /******************************************************/
-    /*                  ProjectRefPtr                     */
+    /*                  ProjectRefPtr                        */
     /******************************************************/
     class ProjectRefPtr : public AttachmentContainerRefPtr
     {
@@ -159,73 +163,49 @@ namespace OSG {
         SceneRefPtr getLastActiveScene(void) const;
       protected:
         Project(void);
-        Project(const Animation &source);
+        Project(const Project &source);
         virtual ~Project(void); 
     };
     
     /******************************************************/
-    /*                   BehaviorType                     */
+    /*                  EffectRefPtr                        */
     /******************************************************/
-    class BehaviorType : public AttachmentContainer
+    class EffectRefPtr : public AttachmentContainerRefPtr
     {
-		public:
-		
-			UInt32 findEventID(std::string eventName);
-			
-			BehaviorType(const std::string &szName,
-                 const std::string &szParentName = "",
-				 std::vector<std::string> bEvents = std::vector<std::string>(),
-				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
-			     BoostPath& FilePath = BoostPath());
+      public:
+         EffectRefPtr(void);
+         EffectRefPtr(const EffectRefPtr               &source);
+         /*ProjectRefPtr(const NullFieldContainerRefPtr &source);*/
 
-			BehaviorType(const BehaviorType &source);
-			
-			std::string getName();
-			const Char8* getChar8Name();
-			
-		protected:
-			void registerType();
+
+        ~EffectRefPtr(void); 
+        Effect *operator->(void);
+        
+    };
+    %extend EffectRefPtr
+    {
+        static EffectRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::Effect>(oIn);
+        }
     };
     
     /******************************************************/
-    /*                 BehaviorFactory                    */
+    /*                    Effect                         */
     /******************************************************/
-    class BehaviorFactoryBase : public AttachmentContainer
+    class Effect : public AttachmentContainer
     {
-		public:
-		
-			UInt32 registerType(BehaviorType *pType);
-			UInt32    findTypeId(const Char8 *szName);
-
-			BehaviorType *findType  (      UInt32    uiTypeId       );
-			BehaviorType *findType  (const Char8    *szName         );
-			OSG::BehaviorTransitPtr createBehavior(std::string Name);
-			
-		protected:
+      public:
+        void begin(void);
+        bool isPlaying(void);
+        bool isPaused(void);
+        void pause(void);
+        void unpause(void);
+        void stop(void);
+      protected:
+        Project(void);
+        Project(const Animation &source);
+        virtual ~Project(void); 
     };
-    
-    /******************************************************/
-    /*                   SceneObject                      */
-    /******************************************************/
-    class SceneObject : public AttachmentContainer
-    {
-		public:
-			const Scene* getParentScene () const;
-			Scene* getParentScene ();
-
-			OSG::BehaviorUnrecPtr getBehaviors (UInt32 index);
-
-    };
-    
-    /******************************************************/
-    /*						Behavior                      */
-    /******************************************************/
-    class Behavior : public AttachmentContainer
-    {
-		public:
-    		BehaviorType * getBehaviorType(void);
-
-			bool isInitialized();
-	};
 }
 

@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -33,22 +33,21 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KEANIMATIONEFFECT_H_
-#define _KEANIMATIONEFFECT_H_
+#ifndef _KEEFFECTEVENT_H_
+#define _KEEFFECTEVENT_H_
 #ifdef __sgi
 #pragma once
 #endif
 
-#include "KEAnimationEffectBase.h"
-#include <OpenSG/OSGEventProducer.h>
+#include "KEEffectEventBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief AnimationEffect class. See \ref
-           PageKabalaEngineAnimationEffect for a description.
+/*! \brief EffectEvent class. See \ref
+           PageKabalaEngineEffectEvent for a description.
 */
 
-class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
+class KE_KABALAENGINE_DLLMAPPING EffectEvent : public EffectEventBase
 {
   protected:
 
@@ -56,8 +55,11 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
 
   public:
 
-    typedef AnimationEffectBase Inherited;
-    typedef AnimationEffect     Self;
+    typedef EffectEventBase Inherited;
+    typedef EffectEvent     Self;
+
+    static EffectEventTransitPtr EffectEvent::create(FieldContainerRefPtr Source,
+                                        Time TimeStamp);
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -80,31 +82,21 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
 
   protected:
 
-    // Variables should all be in AnimationEffectBase.
-
-    void initEffect        (void);
-    void inheritedBegin    (void);
-    bool inheritedIsPlaying(void);
-    bool inheritedIsPaused (void);
-    void inheritedPause    (void);
-    void inheritedUnpause  (void);
-    void inheritedStop     (void);
-    void finished          (void);
-
+    // Variables should all be in EffectEventBase.
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    AnimationEffect(void);
-    AnimationEffect(const AnimationEffect &source);
+    EffectEvent(void);
+    EffectEvent(const EffectEvent &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~AnimationEffect(void);
+    virtual ~EffectEvent(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -119,48 +111,17 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
   private:
 
     friend class FieldContainer;
-    friend class AnimationEffectBase;
-
-    EventProducerPtr theUpdateProducer;
-
-    class InternalAnimationListener : public AnimationListener
-    {
-        public:
-
-            InternalAnimationListener(AnimationEffect* parent);
-            InternalAnimationListener(){};
-            ~InternalAnimationListener(){};
-
-            void animationStarted(const AnimationEventUnrecPtr e);
-
-            void animationStopped(const AnimationEventUnrecPtr e);
-
-            void animationPaused(const AnimationEventUnrecPtr e);
-            void animationUnpaused(const AnimationEventUnrecPtr e);
-
-            void animationEnded(const AnimationEventUnrecPtr e);
-            
-            void animationCycled(const AnimationEventUnrecPtr e);
-
-        private:
-
-            AnimationEffect* fx;
-            
-
-    };
-
-    InternalAnimationListener theInternalAnimationListener;
+    friend class EffectEventBase;
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const AnimationEffect &source);
+    void operator =(const EffectEvent &source);
 };
 
-typedef AnimationEffect *AnimationEffectP;
+typedef EffectEvent *EffectEventP;
 
 OSG_END_NAMESPACE
 
-#include <OpenSG/OSGAnimation.h>        // TheAnimation Class
-#include "KEAnimationEffectBase.inl"
-#include "KEAnimationEffect.inl"
+#include "KEEffectEventBase.inl"
+#include "KEEffectEvent.inl"
 
-#endif /* _KEANIMATIONEFFECT_H_ */
+#endif /* _KEEFFECTEVENT_H_ */

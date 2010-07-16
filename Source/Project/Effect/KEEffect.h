@@ -40,6 +40,8 @@
 #endif
 
 #include "KEEffectBase.h"
+#include "KEEffectEvent.h"
+#include "KEEffectListener.h"
 #include "Project/SceneObject/KESceneObject.h"
 
 OSG_BEGIN_NAMESPACE
@@ -59,18 +61,36 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     typedef EffectBase Inherited;
     typedef Effect     Self;
 
-    virtual void begin() = 0;
-    virtual bool isPlaying() = 0;
-    virtual bool isPaused() = 0;
-    virtual void pause() = 0;
-    virtual void unpause() = 0;
-    virtual void end() = 0;
+    /*Basic interface for an effect. Basically like movie controls. These
+    * keep track of the state of an effect so you can't do wierd things
+    * like pause an effect that hasn't started. Each one calls the inherited
+    * version, so individual effects can control how they implentt these states.
+    */
+
+    //Begin handler for an effect
+    void begin(void);
+    //Test for playing state
+    bool isPlaying(void);
+    //Test for paused state
+    bool isPaused(void);
+    //Pause handler for an effect
+    void pause(void);
+    //Unpause handler for an effect
+    void unpause(void);
+    //Stop handler for an effect
+    void stop(void);
+
+    //Add/Remove listeners
+    EventConnection addEffectListener(EffectListenerPtr Listener);
+    bool isEffectListenerAttached(EffectListenerPtr Listener) const;
+    void removeEffectListener(EffectListenerPtr Listener);
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Get                                     */
     /*! \{                                                                 */
     
     const SceneObject* getParentSceneObject(void) const;
+    void setParentSceneObject(SceneObject* newParent);
 
 
     /*---------------------------------------------------------------------*/
@@ -93,6 +113,47 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     /*=========================  PROTECTED  ===============================*/
 
   protected:
+    
+    bool effectIsInitialized;
+    bool isPlayingFlag;
+    bool isPausedFlag;
+
+    //Since individual effects have different requirements for starting,
+    //they must implement the inherited version of the different handlers.
+    //
+    virtual void inheritedBegin    (void) = 0;
+    virtual bool inheritedIsPlaying(void) = 0;
+    virtual bool inheritedIsPaused (void) = 0;
+    virtual void inheritedPause    (void) = 0;
+    virtual void inheritedUnpause  (void) = 0;
+    virtual void inheritedStop     (void) = 0;
+    virtual void initEffect        (void) = 0;
+
+    //The following four functions are called from within
+    //Play,pause,unpause,and end, as Expected. They are thus
+    //'invisible' to the effect interface.
+    void producerEffectBegan   (const EffectEventUnrecPtr e);
+    void producerEffectPaused  (const EffectEventUnrecPtr e);
+    void producerEffectUnpaused(const EffectEventUnrecPtr e);
+    void producerEffectStopped (const EffectEventUnrecPtr e);
+    //This function is not. Individual effects have different
+    //conditions in which they "naturally terminate".
+    //These conditions are unknown by effect, so it's
+    //on the derived classes to define and call finished.
+    //
+    //derived::finished() should call Inherited::finished();
+    //
+    //Effect::finished()does some cleanup
+    //and calls producerEffectFinished();
+    virtual void finished      (void);
+    void producerEffectFinished(const EffectEventUnrecPtr e);
+
+
+    typedef std::set<EffectListenerPtr> EffectListenerSet;
+    typedef EffectListenerSet::iterator EffectListenerSetItor;
+    typedef EffectListenerSet::const_iterator EffectListenerSetConstItor;
+    EffectListenerSet _EffectListeners;
+
 
     // Variables should all be in EffectBase.
 

@@ -75,47 +75,87 @@ void SoundEffect::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void SoundEffect::begin()
+void SoundEffect::initEffect()
 {
-    getSound()->play();
-    isPausedFlag = false;
+    theInternalSoundListener = InternalSoundListener(this);
 }
 
-bool SoundEffect::isPlaying()
+void SoundEffect::inheritedBegin()
+{
+    SoundUnrecPtr sound = getSound();
+    if(sound != NULL)
+    {
+        sound->addSoundListener(&theInternalSoundListener);
+        sound->play();
+    }
+}
+
+bool SoundEffect::inheritedIsPlaying()
 {
     return getSound()->getNumPlayingChannels() != 0;
 }
 
-bool SoundEffect::isPaused()
+bool SoundEffect::inheritedIsPaused()
 {
     return isPausedFlag;
 }
 
-void SoundEffect::pause()
+void SoundEffect::inheritedPause()
 {
-    isPausedFlag = true;
-    getSound()->setAllChannelPaused(isPausedFlag);
+    getSound()->setAllChannelPaused(true);
 }
 
-void SoundEffect::unpause()
+void SoundEffect::inheritedUnpause()
 {
-    isPausedFlag = false;
-    getSound()->setAllChannelPaused(isPausedFlag);
+    getSound()->setAllChannelPaused(false);
 }
 
-void SoundEffect::end()
+void SoundEffect::inheritedStop()
 {
     getSound()->stopAllChannels();
 }
+
+void SoundEffect::finished()
+{
+    getSound()->removeSoundListener(&theInternalSoundListener);
+    Inherited::finished();
+}
+
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
+SoundEffect::InternalSoundListener::InternalSoundListener(SoundEffect* parent)
+{
+    fx = parent;
+}
+
+void SoundEffect::InternalSoundListener::soundPlayed(const SoundEventUnrecPtr e)
+{
+}
+void SoundEffect::InternalSoundListener::soundPaused(const SoundEventUnrecPtr e)
+{
+}
+void SoundEffect::InternalSoundListener::soundUnpaused(const SoundEventUnrecPtr e)
+{
+}
+void SoundEffect::InternalSoundListener::soundLooped(const SoundEventUnrecPtr e)
+{
+}
+void SoundEffect::InternalSoundListener::soundEnded(const SoundEventUnrecPtr e)
+{
+    fx->finished();
+}
+
+void SoundEffect::InternalSoundListener::soundStopped(const SoundEventUnrecPtr e)
+{
+    fx->finished();
+}
+
 /*----------------------- constructors & destructors ----------------------*/
 
 SoundEffect::SoundEffect(void) :
-    isPausedFlag(false),
     Inherited()
 {
 }

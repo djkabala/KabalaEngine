@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -43,17 +43,14 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
-#include <OpenSG/OSGContainerUtils.h>
 
-#include "KEAnimationEffect.h"
-#include "Project/SceneObject/KESceneObject.h"
 #include "KEEffectEvent.h"
 
 OSG_BEGIN_NAMESPACE
 
 // Documentation for this class is emitted in the
-// OSGAnimationEffectBase.cpp file.
-// To modify it, please change the .fcd file (OSGAnimationEffect.fcd) and
+// OSGEffectEventBase.cpp file.
+// To modify it, please change the .fcd file (OSGEffectEvent.fcd) and
 // regenerate the base file.
 
 /***************************************************************************\
@@ -64,7 +61,7 @@ OSG_BEGIN_NAMESPACE
  *                           Class methods                                 *
 \***************************************************************************/
 
-void AnimationEffect::initMethod(InitPhase ePhase)
+void EffectEvent::initMethod(InitPhase ePhase)
 {
     Inherited::initMethod(ePhase);
 
@@ -78,130 +75,51 @@ void AnimationEffect::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
+EffectEventTransitPtr EffectEvent::create(FieldContainerRefPtr Source,
+                                          Time TimeStamp)
+{
+    EffectEvent* TheEvent(EffectEvent::createEmpty());
+
+    TheEvent->setSource(Source);
+    TheEvent->setTimeStamp(TimeStamp);
+
+    return EffectEventTransitPtr(TheEvent);
+}
+
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-void AnimationEffect::initEffect()
-{
-    theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
-    theInternalAnimationListener = InternalAnimationListener(this);
-}
-
-void AnimationEffect::inheritedBegin()
-{
-    AnimationUnrecPtr anim = getAnimation();
-    if(anim != NULL)
-    { 
-        anim->attachUpdateProducer(theUpdateProducer);
-        anim->start();
-        anim->addAnimationListener(&theInternalAnimationListener);
-    }
-    else
-    {
-          SWARNING << "AnimationEffect::inheritedBegin(): Null Animation. Not set yet?";
-    }
-}
-
-bool AnimationEffect::inheritedIsPlaying()
-{
-    return getAnimation()->isPlaying();
-}
-
-bool AnimationEffect::inheritedIsPaused()
-{
-    return getAnimation()->isPaused();
-}
-
-void AnimationEffect::inheritedPause()
-{
-    getAnimation()->pause(true);
-}
-
-void AnimationEffect::inheritedUnpause()
-{
-    getAnimation()->pause(false);
-}
-
-void AnimationEffect::inheritedStop()
-{
-    getAnimation()->stop();
-}
-
-void AnimationEffect::finished()
-{
-    AnimationUnrecPtr anim = getAnimation();
-    anim->detachUpdateProducer();
-    anim->removeAnimationListener(&theInternalAnimationListener);
-    Inherited::finished();
-}
-
-/*----------------------- Internal Listener methods -----------------------*/
-
-AnimationEffect::InternalAnimationListener::InternalAnimationListener(AnimationEffect* parent)
-{
-    fx = parent;
-}
-
-void AnimationEffect::InternalAnimationListener::animationEnded(const AnimationEventUnrecPtr e)
-{
-    fx->finished();
-}
-
-void AnimationEffect::InternalAnimationListener::animationStopped(const AnimationEventUnrecPtr e)
-{
-    fx->finished();
-}
-
-void AnimationEffect::InternalAnimationListener::animationPaused(const AnimationEventUnrecPtr e)
-{
-
-}
-void AnimationEffect::InternalAnimationListener::animationUnpaused(const AnimationEventUnrecPtr e)
-{
-
-}
-
-void AnimationEffect::InternalAnimationListener::animationStarted(const AnimationEventUnrecPtr e)
-{
-
-}
-
-void AnimationEffect::InternalAnimationListener::animationCycled(const AnimationEventUnrecPtr e)
-{
-
-}
-
 /*----------------------- constructors & destructors ----------------------*/
 
-AnimationEffect::AnimationEffect(void) :
-    theUpdateProducer(NULL),
+EffectEvent::EffectEvent(void) :
     Inherited()
 {
 }
 
-AnimationEffect::AnimationEffect(const AnimationEffect &source) :
+EffectEvent::EffectEvent(const EffectEvent &source) :
     Inherited(source)
 {
 }
 
-AnimationEffect::~AnimationEffect(void)
+EffectEvent::~EffectEvent(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void AnimationEffect::changed(ConstFieldMaskArg whichField, 
+void EffectEvent::changed(ConstFieldMaskArg whichField, 
                             UInt32            origin,
                             BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
 }
 
-void AnimationEffect::dump(      UInt32    ,
+void EffectEvent::dump(      UInt32    ,
                          const BitVector ) const
 {
-    SLOG << "Dump AnimationEffect NI" << std::endl;
+    SLOG << "Dump EffectEvent NI" << std::endl;
 }
 
 OSG_END_NAMESPACE

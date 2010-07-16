@@ -42,14 +42,14 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class ParticleSystemEffect
+ **     class ConcurrentEffectGroup
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#ifndef _KEPARTICLESYSTEMEFFECTBASE_H_
-#define _KEPARTICLESYSTEMEFFECTBASE_H_
+#ifndef _KECONCURRENTEFFECTGROUPBASE_H_
+#define _KECONCURRENTEFFECTGROUPBASE_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -63,72 +63,33 @@
 //#include "OpenSG/OSGBaseTypes.h"
 
 
-#include "KEEffect.h" // Parent
+#include "KEEffectGroup.h" // Parent
 
-#include "OSGParticleSystemFields.h"    // TheSystem type
-#include "OSGParticleGeneratorFields.h" // Generators type
-#include <OpenSG/OSGSysFields.h>        // MaxVolume type
 
-#include "KEParticleSystemEffectFields.h"
+#include "KEConcurrentEffectGroupFields.h"
 
 OSG_BEGIN_NAMESPACE
 
-class ParticleSystemEffect;
+class ConcurrentEffectGroup;
 
-//! \brief ParticleSystemEffect Base Class.
+//! \brief ConcurrentEffectGroup Base Class.
 
-class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffectBase : public Effect
+class KE_KABALAENGINE_DLLMAPPING ConcurrentEffectGroupBase : public EffectGroup
 {
   public:
 
-    typedef Effect Inherited;
-    typedef Effect ParentContainer;
+    typedef EffectGroup Inherited;
+    typedef EffectGroup ParentContainer;
 
     typedef Inherited::TypeObject TypeObject;
     typedef TypeObject::InitPhase InitPhase;
 
-    OSG_GEN_INTERNALPTR(ParticleSystemEffect);
+    OSG_GEN_INTERNALPTR(ConcurrentEffectGroup);
 
     /*==========================  PUBLIC  =================================*/
 
   public:
 
-    enum
-    {
-        TheSystemFieldId = Inherited::NextFieldId,
-        GeneratorsFieldId = TheSystemFieldId + 1,
-        MaxVolumeFieldId = GeneratorsFieldId + 1,
-        MinVolumeFieldId = MaxVolumeFieldId + 1,
-        LifespanFieldId = MinVolumeFieldId + 1,
-        MaxParticlesFieldId = LifespanFieldId + 1,
-        MinParticlesFieldId = MaxParticlesFieldId + 1,
-        NextFieldId = MinParticlesFieldId + 1
-    };
-
-    static const OSG::BitVector TheSystemFieldMask =
-        (TypeTraits<BitVector>::One << TheSystemFieldId);
-    static const OSG::BitVector GeneratorsFieldMask =
-        (TypeTraits<BitVector>::One << GeneratorsFieldId);
-    static const OSG::BitVector MaxVolumeFieldMask =
-        (TypeTraits<BitVector>::One << MaxVolumeFieldId);
-    static const OSG::BitVector MinVolumeFieldMask =
-        (TypeTraits<BitVector>::One << MinVolumeFieldId);
-    static const OSG::BitVector LifespanFieldMask =
-        (TypeTraits<BitVector>::One << LifespanFieldId);
-    static const OSG::BitVector MaxParticlesFieldMask =
-        (TypeTraits<BitVector>::One << MaxParticlesFieldId);
-    static const OSG::BitVector MinParticlesFieldMask =
-        (TypeTraits<BitVector>::One << MinParticlesFieldId);
-    static const OSG::BitVector NextFieldMask =
-        (TypeTraits<BitVector>::One << NextFieldId);
-        
-    typedef SFUnrecParticleSystemPtr SFTheSystemType;
-    typedef MFUnrecParticleGeneratorPtr MFGeneratorsType;
-    typedef SFReal32          SFMaxVolumeType;
-    typedef SFReal32          SFMinVolumeType;
-    typedef SFReal32          SFLifespanType;
-    typedef SFUInt32          SFMaxParticlesType;
-    typedef SFUInt32          SFMinParticlesType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -150,79 +111,6 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffectBase : public Effect
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-            const SFUnrecParticleSystemPtr *getSFTheSystem      (void) const;
-                  SFUnrecParticleSystemPtr *editSFTheSystem      (void);
-            const MFUnrecParticleGeneratorPtr *getMFGenerators     (void) const;
-                  MFUnrecParticleGeneratorPtr *editMFGenerators     (void);
-
-                  SFReal32            *editSFMaxVolume      (void);
-            const SFReal32            *getSFMaxVolume       (void) const;
-
-                  SFReal32            *editSFMinVolume      (void);
-            const SFReal32            *getSFMinVolume       (void) const;
-
-                  SFReal32            *editSFLifespan       (void);
-            const SFReal32            *getSFLifespan        (void) const;
-
-                  SFUInt32            *editSFMaxParticles   (void);
-            const SFUInt32            *getSFMaxParticles    (void) const;
-
-                  SFUInt32            *editSFMinParticles   (void);
-            const SFUInt32            *getSFMinParticles    (void) const;
-
-
-                  ParticleSystem * getTheSystem      (void) const;
-
-                  ParticleGenerator * getGenerators     (const UInt32 index) const;
-
-                  Real32              &editMaxVolume      (void);
-                  Real32               getMaxVolume       (void) const;
-
-                  Real32              &editMinVolume      (void);
-                  Real32               getMinVolume       (void) const;
-
-                  Real32              &editLifespan       (void);
-                  Real32               getLifespan        (void) const;
-
-                  UInt32              &editMaxParticles   (void);
-                  UInt32               getMaxParticles    (void) const;
-
-                  UInt32              &editMinParticles   (void);
-                  UInt32               getMinParticles    (void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-            void setTheSystem      (ParticleSystem * const value);
-            void setMaxVolume      (const Real32 value);
-            void setMinVolume      (const Real32 value);
-            void setLifespan       (const Real32 value);
-            void setMaxParticles   (const UInt32 value);
-            void setMinParticles   (const UInt32 value);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr Field Set                                 */
-    /*! \{                                                                 */
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
-
-    void pushToGenerators           (ParticleGenerator * const value   );
-    void assignGenerators          (const MFUnrecParticleGeneratorPtr &value);
-    void removeFromGenerators (UInt32               uiIndex );
-    void removeObjFromGenerators(ParticleGenerator * const value   );
-    void clearGenerators            (void                         );
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
@@ -238,16 +126,16 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffectBase : public Effect
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  ParticleSystemEffectTransitPtr  create          (void);
-    static  ParticleSystemEffect           *createEmpty     (void);
+    static  ConcurrentEffectGroupTransitPtr  create          (void);
+    static  ConcurrentEffectGroup           *createEmpty     (void);
 
-    static  ParticleSystemEffectTransitPtr  createLocal     (
+    static  ConcurrentEffectGroupTransitPtr  createLocal     (
                                                BitVector bFlags = FCLocal::All);
 
-    static  ParticleSystemEffect            *createEmptyLocal(
+    static  ConcurrentEffectGroup            *createEmptyLocal(
                                               BitVector bFlags = FCLocal::All);
 
-    static  ParticleSystemEffectTransitPtr  createDependent  (BitVector bFlags);
+    static  ConcurrentEffectGroupTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -271,58 +159,30 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffectBase : public Effect
     static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
-    /*! \name                      Fields                                  */
-    /*! \{                                                                 */
-
-    SFUnrecParticleSystemPtr _sfTheSystem;
-    MFUnrecParticleGeneratorPtr _mfGenerators;
-    SFReal32          _sfMaxVolume;
-    SFReal32          _sfMinVolume;
-    SFReal32          _sfLifespan;
-    SFUInt32          _sfMaxParticles;
-    SFUInt32          _sfMinParticles;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    ParticleSystemEffectBase(void);
-    ParticleSystemEffectBase(const ParticleSystemEffectBase &source);
+    ConcurrentEffectGroupBase(void);
+    ConcurrentEffectGroupBase(const ConcurrentEffectGroupBase &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ParticleSystemEffectBase(void);
+    virtual ~ConcurrentEffectGroupBase(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     onCreate                                */
     /*! \{                                                                 */
 
-    void onCreate(const ParticleSystemEffect *source = NULL);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleTheSystem       (void) const;
-    EditFieldHandlePtr editHandleTheSystem      (void);
-    GetFieldHandlePtr  getHandleGenerators      (void) const;
-    EditFieldHandlePtr editHandleGenerators     (void);
-    GetFieldHandlePtr  getHandleMaxVolume       (void) const;
-    EditFieldHandlePtr editHandleMaxVolume      (void);
-    GetFieldHandlePtr  getHandleMinVolume       (void) const;
-    EditFieldHandlePtr editHandleMinVolume      (void);
-    GetFieldHandlePtr  getHandleLifespan        (void) const;
-    EditFieldHandlePtr editHandleLifespan       (void);
-    GetFieldHandlePtr  getHandleMaxParticles    (void) const;
-    EditFieldHandlePtr editHandleMaxParticles   (void);
-    GetFieldHandlePtr  getHandleMinParticles    (void) const;
-    EditFieldHandlePtr editHandleMinParticles   (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -336,7 +196,7 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffectBase : public Effect
                                  ConstFieldMaskArg  syncMode  ,
                            const UInt32             uiSyncInfo);
 
-            void execSync (      ParticleSystemEffectBase *pFrom,
+            void execSync (      ConcurrentEffectGroupBase *pFrom,
                                  ConstFieldMaskArg  whichField,
                                  AspectOffsetStore &oOffsets,
                                  ConstFieldMaskArg  syncMode  ,
@@ -376,11 +236,11 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffectBase : public Effect
     /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const ParticleSystemEffectBase &source);
+    void operator =(const ConcurrentEffectGroupBase &source);
 };
 
-typedef ParticleSystemEffectBase *ParticleSystemEffectBaseP;
+typedef ConcurrentEffectGroupBase *ConcurrentEffectGroupBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _OSGPARTICLESYSTEMEFFECTBASE_H_ */
+#endif /* _OSGCONCURRENTEFFECTGROUPBASE_H_ */

@@ -43,17 +43,14 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
-#include <OpenSG/OSGContainerUtils.h>
 
-#include "KEAnimationEffect.h"
-#include "Project/SceneObject/KESceneObject.h"
-#include "KEEffectEvent.h"
+#include "KEConcurrentEffectGroup.h"
 
 OSG_BEGIN_NAMESPACE
 
 // Documentation for this class is emitted in the
-// OSGAnimationEffectBase.cpp file.
-// To modify it, please change the .fcd file (OSGAnimationEffect.fcd) and
+// OSGConcurrentEffectGroupBase.cpp file.
+// To modify it, please change the .fcd file (OSGConcurrentEffectGroup.fcd) and
 // regenerate the base file.
 
 /***************************************************************************\
@@ -64,7 +61,7 @@ OSG_BEGIN_NAMESPACE
  *                           Class methods                                 *
 \***************************************************************************/
 
-void AnimationEffect::initMethod(InitPhase ePhase)
+void ConcurrentEffectGroup::initMethod(InitPhase ePhase)
 {
     Inherited::initMethod(ePhase);
 
@@ -73,135 +70,124 @@ void AnimationEffect::initMethod(InitPhase ePhase)
     }
 }
 
-
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
+
+void ConcurrentEffectGroup::initEffect()
+{
+    theInternalEffectListener = InternalEffectListener(this);
+}
+
+void ConcurrentEffectGroup::inheritedBegin()
+{
+    //for all effects, begin and attach a listener.
+    for(UInt32 i(0);i < getMFEffectList()->size(); ++i)
+    {
+        getEffectList(i)->addEffectListener(&theInternalEffectListener);
+        getEffectList(i)->begin();
+    }
+
+    activeEffects = getMFEffectList()->size();
+}
+
+bool ConcurrentEffectGroup::inheritedIsPlaying()
+{
+    return isPlayingFlag;
+}
+
+bool ConcurrentEffectGroup::inheritedIsPaused()
+{
+    return isPausedFlag;
+}
+
+void ConcurrentEffectGroup::inheritedPause()
+{
+    //for all effects, pause them if they are playing
+    for(UInt32 i(0);i < getMFEffectList()->size(); ++i)
+    {
+        if(getEffectList(i)->isPlaying())
+        {
+            getEffectList(i)->pause();
+        }
+    }
+}
+
+void ConcurrentEffectGroup::inheritedUnpause()
+{
+    //for all effects, unpause if they are paused
+    for(UInt32 i(0);i < getMFEffectList()->size(); ++i)
+    {
+        if(getEffectList(i)->isPaused())
+        {
+            getEffectList(i)->unpause();
+        }
+    }
+}
+
+void ConcurrentEffectGroup::inheritedStop()
+{
+    //for all effects, stop if they are playing
+    for(UInt32 i(0);i < getMFEffectList()->size(); ++i)
+    {
+        if(getEffectList(i)->isPlaying())
+        {
+            getEffectList(i)->stop();
+        }
+    }
+}
+
+void ConcurrentEffectGroup::finished()
+{
+    for(UInt32 i(0);i < getMFEffectList()->size(); ++i)
+    {
+        getEffectList(i)->removeEffectListener(&theInternalEffectListener);
+    }
+    Inherited::finished();
+}
+
+void ConcurrentEffectGroup::handleEffectFinished()
+{
+    --activeEffects;
+    if(activeEffects == 0)
+    {
+        finished();
+    }
+}
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-void AnimationEffect::initEffect()
-{
-    theUpdateProducer = getEventProducer(getParentSceneObject()->getScene());
-    theInternalAnimationListener = InternalAnimationListener(this);
-}
-
-void AnimationEffect::inheritedBegin()
-{
-    AnimationUnrecPtr anim = getAnimation();
-    if(anim != NULL)
-    { 
-        anim->attachUpdateProducer(theUpdateProducer);
-        anim->start();
-        anim->addAnimationListener(&theInternalAnimationListener);
-    }
-    else
-    {
-          SWARNING << "AnimationEffect::inheritedBegin(): Null Animation. Not set yet?";
-    }
-}
-
-bool AnimationEffect::inheritedIsPlaying()
-{
-    return getAnimation()->isPlaying();
-}
-
-bool AnimationEffect::inheritedIsPaused()
-{
-    return getAnimation()->isPaused();
-}
-
-void AnimationEffect::inheritedPause()
-{
-    getAnimation()->pause(true);
-}
-
-void AnimationEffect::inheritedUnpause()
-{
-    getAnimation()->pause(false);
-}
-
-void AnimationEffect::inheritedStop()
-{
-    getAnimation()->stop();
-}
-
-void AnimationEffect::finished()
-{
-    AnimationUnrecPtr anim = getAnimation();
-    anim->detachUpdateProducer();
-    anim->removeAnimationListener(&theInternalAnimationListener);
-    Inherited::finished();
-}
-
-/*----------------------- Internal Listener methods -----------------------*/
-
-AnimationEffect::InternalAnimationListener::InternalAnimationListener(AnimationEffect* parent)
-{
-    fx = parent;
-}
-
-void AnimationEffect::InternalAnimationListener::animationEnded(const AnimationEventUnrecPtr e)
-{
-    fx->finished();
-}
-
-void AnimationEffect::InternalAnimationListener::animationStopped(const AnimationEventUnrecPtr e)
-{
-    fx->finished();
-}
-
-void AnimationEffect::InternalAnimationListener::animationPaused(const AnimationEventUnrecPtr e)
-{
-
-}
-void AnimationEffect::InternalAnimationListener::animationUnpaused(const AnimationEventUnrecPtr e)
-{
-
-}
-
-void AnimationEffect::InternalAnimationListener::animationStarted(const AnimationEventUnrecPtr e)
-{
-
-}
-
-void AnimationEffect::InternalAnimationListener::animationCycled(const AnimationEventUnrecPtr e)
-{
-
-}
-
 /*----------------------- constructors & destructors ----------------------*/
 
-AnimationEffect::AnimationEffect(void) :
-    theUpdateProducer(NULL),
+ConcurrentEffectGroup::ConcurrentEffectGroup(void) :
     Inherited()
 {
 }
 
-AnimationEffect::AnimationEffect(const AnimationEffect &source) :
+ConcurrentEffectGroup::ConcurrentEffectGroup(const ConcurrentEffectGroup &source) :
     Inherited(source)
 {
 }
 
-AnimationEffect::~AnimationEffect(void)
+ConcurrentEffectGroup::~ConcurrentEffectGroup(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void AnimationEffect::changed(ConstFieldMaskArg whichField, 
+void ConcurrentEffectGroup::changed(ConstFieldMaskArg whichField, 
                             UInt32            origin,
                             BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
 }
 
-void AnimationEffect::dump(      UInt32    ,
+void ConcurrentEffectGroup::dump(      UInt32    ,
                          const BitVector ) const
 {
-    SLOG << "Dump AnimationEffect NI" << std::endl;
+    SLOG << "Dump ConcurrentEffectGroup NI" << std::endl;
 }
 
 OSG_END_NAMESPACE

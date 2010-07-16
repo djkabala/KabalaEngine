@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -41,142 +41,121 @@
  **          Any changes made to this file WILL be lost when it is          **
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
- **     Do not change this file, changes should be done in the derived      **
- **     class Effect!
- **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
-OSG_BEGIN_NAMESPACE
 
-
-//! access the type of the class
-inline
-OSG::FieldContainerType &EffectBase::getClassType(void)
-{
-    return _type;
-}
-
-//! access the numerical type of the class
-inline
-OSG::UInt32 EffectBase::getClassTypeId(void)
-{
-    return _type.getId();
-}
-//! access the producer type of the class
-inline
-const EventProducerType &EffectBase::getProducerClassType(void)
-{
-    return _producerType;
-}
-
-//! access the producer type id of the class
-inline
-UInt32 EffectBase::getProducerClassTypeId(void)
-{
-    return _producerType.getId();
-}
-
-inline
-OSG::UInt16 EffectBase::getClassGroupId(void)
-{
-    return _type.getGroupId();
-}
-
-/*------------------------------ get -----------------------------------*/
-
-
-
-#ifdef OSG_MT_CPTR_ASPECT
-inline
-void EffectBase::execSync (      EffectBase *pFrom,
-                                        ConstFieldMaskArg  whichField,
-                                        AspectOffsetStore &oOffsets,
-                                        ConstFieldMaskArg  syncMode,
-                                  const UInt32             uiSyncInfo)
-{
-    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
-
-    if(FieldBits::NoField != (ParentSceneObjectFieldMask & whichField))
-        _sfParentSceneObject.syncWith(pFrom->_sfParentSceneObject);
-}
+#ifndef _KEEFFECTEVENTFIELDS_H_
+#define _KEEFFECTEVENTFIELDS_H_
+#ifdef __sgi
+#pragma once
 #endif
 
+#include <OpenSG/OSGConfig.h>
+#include "KEKabalaEngineDef.h"
 
-inline
-const Char8 *EffectBase::getClassname(void)
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
+
+OSG_BEGIN_NAMESPACE
+
+class EffectEvent;
+
+OSG_GEN_CONTAINERPTR(EffectEvent);
+
+/*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
+ */
+template <>
+struct FieldTraits<EffectEvent *> :
+    public FieldTraitsFCPtrBase<EffectEvent *>
 {
-    return "Effect";
+  private:
+
+    static DataType             _type;
+
+  public:
+
+    typedef FieldTraits<EffectEvent *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFEffectEventPtr"; }
+};
+
+template<> inline
+const Char8 *FieldTraits<EffectEvent *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecEffectEventPtr"; 
 }
 
-inline
-EventConnection EffectBase::attachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
+template<> inline
+const Char8 *FieldTraits<EffectEvent *, 0>::getSName<UnrecordedRefCountPolicy>(void)
 {
-    return _Producer.attachActivity(TheActivity, ProducedEventId);
+    return "SFUnrecEffectEventPtr"; 
 }
 
-inline
-bool EffectBase::isActivityAttached(ActivityRefPtr TheActivity, UInt32 ProducedEventId) const
+template<> inline
+const Char8 *FieldTraits<EffectEvent *, 0>::getSName<WeakRefCountPolicy>(void)
 {
-    return _Producer.isActivityAttached(TheActivity, ProducedEventId);
+    return "SFWeakEffectEventPtr"; 
 }
 
-inline
-UInt32 EffectBase::getNumActivitiesAttached(UInt32 ProducedEventId) const
+template<> inline
+const Char8 *FieldTraits<EffectEvent *, 0>::getSName<NoRefCountPolicy>(void)
 {
-    return _Producer.getNumActivitiesAttached(ProducedEventId);
+    return "SFUnrefdEffectEventPtr"; 
 }
 
-inline
-ActivityRefPtr EffectBase::getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const
-{
-    return _Producer.getAttachedActivity(ProducedEventId,ActivityIndex);
-}
 
-inline
-void EffectBase::detachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
-{
-    _Producer.detachActivity(TheActivity, ProducedEventId);
-}
 
-inline
-UInt32 EffectBase::getNumProducedEvents(void) const
-{
-    return _Producer.getNumProducedEvents();
-}
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<EffectEvent *,
+                      RecordedRefCountPolicy  > SFRecEffectEventPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<EffectEvent *,
+                      UnrecordedRefCountPolicy> SFUnrecEffectEventPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<EffectEvent *,
+                      WeakRefCountPolicy      > SFWeakEffectEventPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<EffectEvent *,
+                      NoRefCountPolicy        > SFUncountedEffectEventPtr;
 
-inline
-const MethodDescription *EffectBase::getProducedEventDescription(const std::string &ProducedEventName) const
-{
-    return _Producer.getProducedEventDescription(ProducedEventName);
-}
 
-inline
-const MethodDescription *EffectBase::getProducedEventDescription(UInt32 ProducedEventId) const
-{
-    return _Producer.getProducedEventDescription(ProducedEventId);
-}
 
-inline
-UInt32 EffectBase::getProducedEventId(const std::string &ProducedEventName) const
-{
-    return _Producer.getProducedEventId(ProducedEventName);
-}
 
-inline
-SFEventProducerPtr *EffectBase::editSFEventProducer(void)
-{
-    return &_sfEventProducer;
-}
+#else // these are the doxygen hacks
 
-//! Get the value of the Effect::_sfEventProducer field.
-inline
-EventProducerPtr &EffectBase::editEventProducer(void)
-{
-    return _sfEventProducer.getValue();
-}
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecEffectEventPtr : 
+    public PointerSField<EffectEvent *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecEffectEventPtr : 
+    public PointerSField<EffectEvent *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakEffectEventPtr :
+    public PointerSField<EffectEvent *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedEffectEventPtr :
+    public PointerSField<EffectEvent *,
+                         NoRefCountPolicy> {};
 
-OSG_GEN_CONTAINERPTR(Effect);
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 
+#endif /* _KEEFFECTEVENTFIELDS_H_ */

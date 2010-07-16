@@ -27,4 +27,29 @@ The SceneObject.
         passFieldMask="true"
 	>
 	</Field>
+    <ProducedMethod
+		name="EffectBegan"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="EffectPaused"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="EffectUnpaused"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="EffectFinished"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
+	<ProducedMethod
+		name="EffectStopped"
+		type="EffectEvent"
+	>
+	</ProducedMethod>
 </FieldContainer>
