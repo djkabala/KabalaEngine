@@ -53,6 +53,7 @@ namespace OSG {
     class Behavior;
     class BehaviorFactory;
     class BehaviorType;
+    class Behavior;
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -308,7 +309,7 @@ namespace OSG {
             return OSG::BehaviorFactory::the()->findType(szName);
         }
         
-        OSG::BehaviorTransitPtr     createBehavior(std::string Name)
+        OSG::BehaviorRefPtr     createBehavior(std::string Name)
         {
             return OSG::BehaviorFactory::the()->createBehavior(Name);
         }
