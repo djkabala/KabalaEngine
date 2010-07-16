@@ -149,12 +149,13 @@ void BehaviorType::registerType()
 
 void BehaviorType::registerWithScene(Scene* scene)
 {
-	scene = (Scene*)scene;
+//	scene = (Scene*)scene;
 	if(scene != attachedScene)
 	{
-		for(UInt32 i = 0; _bEvents.size(); i++)
+        _bActiveEventIDs.clear();
+		for(UInt32 i = 0; i < _bEvents.size(); i++)
 		{
-			_bActiveEventIDs[i] = scene->registerNewGenericMethod(_bEvents[i]);
+            _bActiveEventIDs.push_back(scene->registerNewGenericMethod(_bEvents[i]));
 		}
 		attachedScene = scene;
 	}

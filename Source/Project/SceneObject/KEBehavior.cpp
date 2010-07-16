@@ -120,13 +120,13 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 {
 	initialized = true;
 
-	for(UInt32 i = 0; TheBehaviorType->_bDependencies.size(); i++)
+	for(UInt32 i = 0; i < TheBehaviorType->_bDependencies.size(); i++)
 	{
 		if(TheBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
 		{
-			for(UInt32 c = 0; TheBehaviorType->_bEventLinks.size(); c++)
+			for(UInt32 c = 0; c < TheBehaviorType->_bEventLinks.size(); c++)
 			{
-				for(UInt32 d = 0; TheBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
+				for(UInt32 d = 0; d < TheBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
 				{
 					if(TheBehaviorType->_bDependencies[i]->hasEvent(TheBehaviorType->_bEventLinks[c]))
 					{
