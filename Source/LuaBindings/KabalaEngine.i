@@ -236,6 +236,7 @@ namespace OSG {
                  const std::string &szParentName = "",
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
 				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
+                 std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
 			     OSG::BoostPath& FilePath = BoostPath());
 
 			BehaviorType(const BehaviorType &source);
@@ -269,7 +270,7 @@ namespace OSG {
                 FilePath = OSG::BoostPath(StrFilePath);
             }
             
-            return OSG::BehaviorType(szName,szParentName,evtSplitVec,evtlkSplitVec,FilePath);
+            return OSG::BehaviorType(szName,szParentName,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
         }
     }
     

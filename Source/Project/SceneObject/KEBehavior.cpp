@@ -142,6 +142,42 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 	}
 }
 
+void Behavior::produceEvent(std::string name)
+{
+    if(!getBehaviorType()->hasEvent(name))
+    {
+        SWARNING << "Behavior::produceEvent: There is no event named " << name << endLog;
+        return;
+    }
+    
+    if(getBehaviorType()->attachedScene == NULL)
+    {
+        SWARNING << "Behavior::produceEvent: The attached scene is null " << endLog;
+        return;
+    }
+    
+    getBehaviorType()->attachedScene->produceGenericEvent(  name,
+                                                            GenericEvent::create(BehaviorRefPtr(this), getTimeStamp()));
+}
+
+void Behavior::produceEvent(UInt32 id)
+{
+    if(!getBehaviorType()->hasEvent(getBehaviorType()->findEventName(id)))
+    {
+        SWARNING << "Behavior::produceEvent: There is no event with id " << id << endLog;
+        return;
+    }
+    
+    if(getBehaviorType()->attachedScene == NULL)
+    {
+        SWARNING << "Behavior::produceEvent: The attached scene is null " << endLog;
+        return;
+    }
+    
+    getBehaviorType()->attachedScene->produceGenericEvent(  id,
+                                                            GenericEvent::create(BehaviorRefPtr(this), getTimeStamp()));
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/

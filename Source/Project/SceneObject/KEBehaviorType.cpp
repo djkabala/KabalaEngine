@@ -88,6 +88,19 @@ UInt32 BehaviorType::findEventID(std::string eventName)
 	return 0;
 }
 
+std::string BehaviorType::findEventName(UInt32 id)
+{
+	if(id > 0 && id < _bActiveEventIDs.size())
+    {
+		return _bEvents[id];
+	}
+    else
+    {
+    	SWARNING << "BehaviorType: " << getName() << " has no event by the id of " << id << "Search for EventID's default returns ZERO!!" <<std::endl;
+	    return NULL;
+    }
+}
+
 /*-------------------------------------------------------------------------*/
 /*                                Has                                      */
 
@@ -166,11 +179,12 @@ void BehaviorType::registerWithScene(Scene* scene)
 /*-------------------------------------------------------------------------*/
 /*                            Constructors                                 */
 
-BehaviorType::BehaviorType(const std::string &szName,
-						   const std::string &szParentName,
-						   std::vector<std::string> bEvents,
-						   std::vector<std::string> bEventLinks,
-						   BoostPath& FilePath) :
+BehaviorType::BehaviorType(  const std::string &szName,
+                             const std::string &szParentName,
+		                     std::vector<std::string> bEvents,
+		                     std::vector<std::string> bEventLinks,
+                             std::vector<std::string> bLuaCallbacks,
+	                         BoostPath& FilePath) :
     Inherited        (szName.c_str(), 
                        szParentName.c_str()     ),
 
@@ -184,6 +198,11 @@ BehaviorType::BehaviorType(const std::string &szName,
 	
 	attachedScene	  (NULL             )
 {
+    for(UInt32 i(0); i < bLuaCallbacks.size(); i++)
+    {
+        luaFunctionNames.push_back(bLuaCallbacks[i]);
+    }
+
 	std::ifstream TheFile;
     TheFile.exceptions(std::fstream::failbit | std::fstream::badbit);
 
@@ -215,11 +234,13 @@ BehaviorType::BehaviorType(const BehaviorType &obj) :
 
 	_bDependencies	  (obj._bDependencies	 ),
 
-    _bEvents		  (obj._bEvents			),
+    _bEvents		  (obj._bEvents			 ),
 
-	_bEventLinks	  (obj._bEventLinks		),
+	_bEventLinks	  (obj._bEventLinks		 ),
 	
 	attachedScene	  (NULL					 ),
+
+    luaFunctionNames  (obj.luaFunctionNames  ),
 
 	TheCode			  (obj.TheCode           )
 {

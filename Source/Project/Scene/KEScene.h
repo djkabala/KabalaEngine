@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Robert Goetz               *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -106,25 +106,27 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
 
     /*! \}                                                                 */
 
-    bool isStarted(void) const;
-    void blockInput(bool block);
-    bool isInputBlocked(void) const;
+    bool        isStarted(void) const;
+    void        blockInput(bool block);
+    bool        isInputBlocked(void) const;
 	
-	UInt32 registerNewGenericMethod(const std::string& MethodName,
+	UInt32      registerNewGenericMethod(const std::string& MethodName,
                                     const std::string& MethodDescriptionText = std::string(""));
 
-	bool unregisterNewGenericMethod(UInt32 Id);
-	bool unregisterNewGenericMethod(const std::string& MethodName);
+	bool        unregisterNewGenericMethod(UInt32 Id);
+	bool        unregisterNewGenericMethod(const std::string& MethodName);
 
-	bool   isGenericMethodDefined(      UInt32       Id        ) const;
-	bool   isGenericMethodDefined(const std::string& MethodName) const;
-	UInt32 getGenericMethodId    (const std::string& MethodName) const;
-	void   addSceneObject        (		SceneObject* so		   );
-	void   removeSceneObject     (		SceneObject* so		   );
+	bool        isGenericMethodDefined(      UInt32       Id        ) const;
+	bool        isGenericMethodDefined(const std::string& MethodName) const;
+	UInt32      getGenericMethodId    (const std::string& MethodName) const;
+    std::string getGenericMethodName  (      UInt32       Id        ) const;
+	void        addSceneObject        (	   	SceneObject* so		    );
+	void        removeSceneObject     (		SceneObject* so		    );
 
-	void produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e);
+	void        produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e);
+    void        produceGenericEvent(std::string GenericEventName, GenericEventUnrecPtr e);
 
-	void checkBehaviorInitialization();
+	void        checkBehaviorInitialization();
 
     /*=========================  PROTECTED  ===============================*/
 
