@@ -107,9 +107,10 @@ void BehaviorFactoryBase::writeTypeDot(FILE     *pOut,
 
 BehaviorTransitPtr BehaviorFactoryBase::createBehavior(std::string Name)
 {
-	BehaviorTransitPtr newBehavior = OSG::Behavior::create();
 
 	BehaviorType* BehaviorTypeBase = findType(static_cast<const Char8*>(Name.c_str()));
+
+	BehaviorTransitPtr newBehavior = OSG::LuaBehavior::create();
 
 	newBehavior->TheBehaviorType = BehaviorTypeBase;
 

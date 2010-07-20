@@ -176,6 +176,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     BehaviorType *_pParent;
 
 	Scene * attachedScene;
+	
+	FieldContainerType * BehaviorFieldContainerType;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

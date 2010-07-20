@@ -73,6 +73,22 @@ OSG::UInt16 BehaviorBase::getClassGroupId(void)
 /*------------------------------ get -----------------------------------*/
 
 
+//! Get the value of the \a index element the Behavior::_mfDependencies field.
+inline
+const std::string &BehaviorBase::getDependencies(const UInt32 index) const
+{
+    return _mfDependencies[index];
+}
+
+inline
+std::string &BehaviorBase::editDependencies(const UInt32 index)
+{
+    editMField(DependenciesFieldMask, _mfDependencies);
+
+    return _mfDependencies[index];
+}
+
+
 
 #ifdef OSG_MT_CPTR_ASPECT
 inline
@@ -86,6 +102,12 @@ void BehaviorBase::execSync (      BehaviorBase *pFrom,
 
     if(FieldBits::NoField != (SceneObjectFieldMask & whichField))
         _sfSceneObject.syncWith(pFrom->_sfSceneObject);
+
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
+        _mfDependencies.syncWith(pFrom->_mfDependencies,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
 }
 #endif
 
