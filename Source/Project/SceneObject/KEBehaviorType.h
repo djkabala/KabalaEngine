@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------*\
- *                                OpenSG                                     *
+ *                        OpenSG ToolBox Toolbox                             *
  *                                                                           *
  *                                                                           *
- *             Copyright (C) 2000-2002 by the OpenSG Forum                   *
  *                                                                           *
- *                            www.opensg.org                                 *
  *                                                                           *
- *   contact: dirk@opensg.org, gerrit.voss@vossg.org, jbehr@zgdv.de          *
+ *                         www.vrac.iastate.edu                              *
+ *                                                                           *
+ *            Authors: David Kabala,Eric Langkamp,Robert Goetz               *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -78,7 +78,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 
   public :
     typedef TypeBase Inherited;
-    typedef std::vector<std::string> LuaFuncNameVec;
 	std::vector<UInt32>	_bActiveEventIDs;
 	
 	void registerWithScene(Scene* scene);
@@ -96,6 +95,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \{                                                                 */
 
     BehaviorType(const std::string &szName,
+                 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
 				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
                  std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
@@ -175,10 +175,10 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 	std::vector<BehaviorType*>	_bDependencies;
 	std::vector<BehaviorType*>	_bDependents;
 
-	std::vector<std::string>	_bEvents;
-	std::vector<std::string>	_bEventLinks;
-
-    LuaFuncNameVec luaFunctionNames;
+    std::vector<std::string>    _bSourceContainers; //("button1",NULL,"Window","Button2",NULL)
+	std::vector<std::string>	_bEvents;           //("press  ","evt1","update","press","evt2")
+	std::vector<std::string>	_bEventLinks;       //("button1",NULL,"Window","Button2",NULL)
+    std::vector<std::string>    luaFunctionNames;   //("button1",NULL,"Window","Button2",NULL)
 
     BehaviorType *_pParent;
 
@@ -203,7 +203,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*==========================  PRIVATE  ================================*/
 
   private:
-
    // typedef TypeBase Inherited;
 
     friend class BehaviorFactoryBase;

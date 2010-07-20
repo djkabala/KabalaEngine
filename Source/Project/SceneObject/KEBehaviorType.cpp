@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------*\
- *                                OpenSG                                     *
+ *                        OpenSG ToolBox Toolbox                             *
  *                                                                           *
  *                                                                           *
- *             Copyright (C) 2000-2002 by the OpenSG Forum                   *
  *                                                                           *
- *                            www.opensg.org                                 *
  *                                                                           *
- *   contact: dirk@opensg.org, gerrit.voss@vossg.org, jbehr@zgdv.de          *
+ *                         www.vrac.iastate.edu                              *
+ *                                                                           *
+ *            Authors: David Kabala,Eric Langkamp,Robert Goetz               *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -179,29 +179,30 @@ void BehaviorType::registerWithScene(Scene* scene)
 /*-------------------------------------------------------------------------*/
 /*                            Constructors                                 */
 
-BehaviorType::BehaviorType(  const std::string &szName,
-		                     std::vector<std::string> bEvents,
-		                     std::vector<std::string> bEventLinks,
-                             std::vector<std::string> bLuaCallbacks,
-	                         BoostPath& FilePath) :
+BehaviorType::BehaviorType( const std::string &szName,
+                            std::vector<std::string> eventSourceNames,
+		                    std::vector<std::string> bEvents,
+		                    std::vector<std::string> bEventLinks,
+                            std::vector<std::string> bLuaCallbacks,
+	                        BoostPath& FilePath) :
     Inherited        (szName.c_str(), 
                       "TypeBase"),
 
     _bInitialized     (false            ),
+
 
     _pParent          (NULL             ),
 
 	_bEvents		  (bEvents			),
 
 	_bEventLinks	  (bEventLinks		),
+
+    luaFunctionNames  (bLuaCallbacks    ),
+
+    _bSourceContainers(eventSourceNames ),
 	
 	attachedScene	  (NULL             )
 {
-    for(UInt32 i(0); i < bLuaCallbacks.size(); i++)
-    {
-        luaFunctionNames.push_back(bLuaCallbacks[i]);
-    }
-    
     if(!FilePath.string().empty())
     {
 	    std::ifstream TheFile;
@@ -248,9 +249,10 @@ BehaviorType::BehaviorType(const BehaviorType &obj) :
 
     luaFunctionNames  (obj.luaFunctionNames  ),
 
+    _bSourceContainers (obj._bSourceContainers      ),
+
 	TheCode			  (obj.TheCode           )
 {
-
     _bInitialized = true;
 }
 
