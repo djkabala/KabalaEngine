@@ -233,7 +233,6 @@ namespace OSG {
 			UInt32 findEventID(std::string eventName);
 			
 			BehaviorType(const std::string &szName,
-                 const std::string &szParentName = "",
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
 				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
                  std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
@@ -246,13 +245,16 @@ namespace OSG {
     %extend BehaviorType
     {
         static BehaviorType create( const std::string &szName,
-                                         const std::string &szParentName = "",
-                                         const std::string &bEvents = "",
-                                         const std::string &bEventLinks = "",
-                                         const std::string &StrFilePath = "")
-        {
+                                    const std::string &bEvents = "",
+                                    const std::string &bEventLinks = "",
+                                    const std::string &luaCallback = "",
+                                    const std::string &StrFilePath = "")
+    {
             std::vector< std::string > evtSplitVec = std::vector<std::string>();
+            std::vector< std::string > fcsrcSplitVec = std::vector<std::string>();
             std::vector< std::string > evtlkSplitVec = std::vector<std::string>();
+            std::vector< std::string > luacSplitVec = std::vector<std::string>();
+            
             OSG::BoostPath FilePath = OSG::BoostPath();
             
             if(!bEvents.empty())
@@ -260,9 +262,55 @@ namespace OSG {
                 boost::algorithm::split( evtSplitVec, bEvents, boost::algorithm::is_any_of(std::string(";")) );
             }
             
-            if(!bEventLinks.empty())
+            if(!luaCallback.empty())
             {
-                boost::algorithm::split( evtlkSplitVec, bEventLinks, boost::algorithm::is_any_of(std::string(";")) );
+                if(!bEventLinks.empty())
+                {
+                    std::vector< std::string > eventArgs = std::vector<std::string>();
+                    std::vector< std::string > eventDefs = std::vector<std::string>();
+                    
+                    boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
+                    for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
+                    {
+                        boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
+                        if(eventDefs.size() == 3)
+                        {
+                            fcsrcSplitVec.push_back(eventDefs[0]);
+                            evtlkSplitVec.push_back(eventDefs[1]);
+                            luacSplitVec.push_back(eventDefs[2]);
+                        }
+                        else
+                        {
+                            SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainer:EventName:Callback|...\'" << OSG::endLog;
+                            return NULL;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(!bEventLinks.empty())
+                {
+                    std::vector< std::string > eventArgs = std::vector<std::string>();
+                    std::vector< std::string > eventDefs = std::vector<std::string>();
+                    
+                    boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
+                    for(OSG::UInt32 i(0); i < eventArgs.length; ++i)
+                    {
+                        boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
+                        if(eventDefs.size() == 2)
+                        {
+                            fcsrcSplitVec.push_back(eventDefs[0]);
+                            evtlkSplitVec.push_back(eventDefs[1]);
+                            luacSplitVec.push_back(luaCallback);
+                        }
+                        else
+                        {
+                            SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName|FieldContainer:EventName|... , with the callback specified as the 5th parameter.\'" << OSG::endLog;
+                            return NULL;
+                        }
+                    }
+                }
             }
             
             if(!StrFilePath.empty())
@@ -270,7 +318,7 @@ namespace OSG {
                 FilePath = OSG::BoostPath(StrFilePath);
             }
             
-            return OSG::BehaviorType(szName,szParentName,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
+            return OSG::BehaviorType(szName,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
         }
     }
     

@@ -96,7 +96,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \{                                                                 */
 
     BehaviorType(const std::string &szName,
-                 const std::string &szParentName = "",
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
 				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
                  std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),

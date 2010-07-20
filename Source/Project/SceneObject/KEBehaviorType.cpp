@@ -180,13 +180,12 @@ void BehaviorType::registerWithScene(Scene* scene)
 /*                            Constructors                                 */
 
 BehaviorType::BehaviorType(  const std::string &szName,
-                             const std::string &szParentName,
 		                     std::vector<std::string> bEvents,
 		                     std::vector<std::string> bEventLinks,
                              std::vector<std::string> bLuaCallbacks,
 	                         BoostPath& FilePath) :
     Inherited        (szName.c_str(), 
-                       szParentName.c_str()     ),
+                      "TypeBase"),
 
     _bInitialized     (false            ),
 
@@ -202,25 +201,32 @@ BehaviorType::BehaviorType(  const std::string &szName,
     {
         luaFunctionNames.push_back(bLuaCallbacks[i]);
     }
-
-	std::ifstream TheFile;
-    TheFile.exceptions(std::fstream::failbit | std::fstream::badbit);
-
-    try
+    
+    if(!FilePath.string().empty())
     {
-        TheFile.open(FilePath.string().c_str());
-        if(TheFile)
-        {
-            std::ostringstream Code;
-            Code << TheFile.rdbuf();
-            TheFile.close();
+	    std::ifstream TheFile;
+        TheFile.exceptions(std::fstream::failbit | std::fstream::badbit);
 
-            setCode(Code.str());
+        try
+        {
+            TheFile.open(FilePath.string().c_str());
+            if(TheFile)
+            {
+                std::ostringstream Code;
+                Code << TheFile.rdbuf();
+                TheFile.close();
+
+                setCode(Code.str());
+            }
+        }
+        catch(std::fstream::failure &f)
+        {
+            SWARNING << "BehaviorType::Constructor(): Error reading file" << FilePath.string() << ": " << f.what() << std::endl;
         }
     }
-    catch(std::fstream::failure &f)
+    else
     {
-        SWARNING << "BehaviorType::Constructor(): Error reading file" << FilePath.string() << ": " << f.what() << std::endl;
+        setCode("");
     }
 }
 
