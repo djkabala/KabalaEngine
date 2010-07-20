@@ -463,6 +463,19 @@ UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
     }
 }
 
+std::string Scene::getGenericMethodName  (      UInt32       Id        ) const
+{
+    const MethodDescription* desc = _Producer.getProducerType().getMethodDescription(Id);
+    if(desc != NULL)
+    {
+        return desc->getName();
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
 void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e)
 {
     if(isGenericMethodDefined(GenericEventId))
@@ -475,6 +488,10 @@ void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e)
     }
 }
 
+void Scene::produceGenericEvent(std::string GenericEventName, GenericEventUnrecPtr e)
+{
+    produceGenericEvent(getGenericMethodId(GenericEventName),e);
+}
 
 void Scene::checkBehaviorInitialization()
 {

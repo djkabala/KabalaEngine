@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------*\
- *                                OpenSG                                     *
+ *                        OpenSG ToolBox Toolbox                             *
  *                                                                           *
  *                                                                           *
- *             Copyright (C) 2000-2002 by the OpenSG Forum                   *
  *                                                                           *
- *                            www.opensg.org                                 *
  *                                                                           *
- *   contact: dirk@opensg.org, gerrit.voss@vossg.org, jbehr@zgdv.de          *
+ *                         www.vrac.iastate.edu                              *
+ *                                                                           *
+ *            Authors: David Kabala,Eric Langkamp,Robert Goetz               *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -88,6 +88,19 @@ UInt32 BehaviorType::findEventID(std::string eventName)
 	return 0;
 }
 
+std::string BehaviorType::findEventName(UInt32 id)
+{
+	if(id > 0 && id < _bActiveEventIDs.size())
+    {
+		return _bEvents[id];
+	}
+    else
+    {
+    	SWARNING << "BehaviorType: " << getName() << " has no event by the id of " << id << "Search for EventID's default returns ZERO!!" <<std::endl;
+	    return NULL;
+    }
+}
+
 /*-------------------------------------------------------------------------*/
 /*                                Has                                      */
 
@@ -166,42 +179,55 @@ void BehaviorType::registerWithScene(Scene* scene)
 /*-------------------------------------------------------------------------*/
 /*                            Constructors                                 */
 
-BehaviorType::BehaviorType(const std::string &szName,
-						   const std::string &szParentName,
-						   std::vector<std::string> bEvents,
-						   std::vector<std::string> bEventLinks,
-						   BoostPath& FilePath) :
+BehaviorType::BehaviorType( const std::string &szName,
+                            std::vector<std::string> eventSourceNames,
+		                    std::vector<std::string> bEvents,
+		                    std::vector<std::string> bEventLinks,
+                            std::vector<std::string> bLuaCallbacks,
+	                        BoostPath& FilePath) :
     Inherited        (szName.c_str(), 
-                       szParentName.c_str()     ),
+                      "TypeBase"),
 
     _bInitialized     (false            ),
+
 
     _pParent          (NULL             ),
 
 	_bEvents		  (bEvents			),
 
 	_bEventLinks	  (bEventLinks		),
+
+    luaFunctionNames  (bLuaCallbacks    ),
+
+    _bSourceContainers(eventSourceNames ),
 	
 	attachedScene	  (NULL             )
 {
-	std::ifstream TheFile;
-    TheFile.exceptions(std::fstream::failbit | std::fstream::badbit);
-
-    try
+    if(!FilePath.string().empty())
     {
-        TheFile.open(FilePath.string().c_str());
-        if(TheFile)
-        {
-            std::ostringstream Code;
-            Code << TheFile.rdbuf();
-            TheFile.close();
+	    std::ifstream TheFile;
+        TheFile.exceptions(std::fstream::failbit | std::fstream::badbit);
 
-            setCode(Code.str());
+        try
+        {
+            TheFile.open(FilePath.string().c_str());
+            if(TheFile)
+            {
+                std::ostringstream Code;
+                Code << TheFile.rdbuf();
+                TheFile.close();
+
+                setCode(Code.str());
+            }
+        }
+        catch(std::fstream::failure &f)
+        {
+            SWARNING << "BehaviorType::Constructor(): Error reading file" << FilePath.string() << ": " << f.what() << std::endl;
         }
     }
-    catch(std::fstream::failure &f)
+    else
     {
-        SWARNING << "BehaviorType::Constructor(): Error reading file" << FilePath.string() << ": " << f.what() << std::endl;
+        setCode("");
     }
 }
 
@@ -215,15 +241,18 @@ BehaviorType::BehaviorType(const BehaviorType &obj) :
 
 	_bDependencies	  (obj._bDependencies	 ),
 
-    _bEvents		  (obj._bEvents			),
+    _bEvents		  (obj._bEvents			 ),
 
-	_bEventLinks	  (obj._bEventLinks		),
+	_bEventLinks	  (obj._bEventLinks		 ),
 	
 	attachedScene	  (NULL					 ),
 
+    luaFunctionNames  (obj.luaFunctionNames  ),
+
+    _bSourceContainers (obj._bSourceContainers      ),
+
 	TheCode			  (obj.TheCode           )
 {
-
     _bInitialized = true;
 }
 

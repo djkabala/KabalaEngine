@@ -87,6 +87,8 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
 	void checkListenerAttachment();
 
+    void produceEvent(std::string name);
+    void produceEvent(UInt32 id);
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */

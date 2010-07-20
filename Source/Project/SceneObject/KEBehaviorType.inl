@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------------------*\
- *                                OpenSG                                     *
+ *                        OpenSG ToolBox Toolbox                             *
  *                                                                           *
  *                                                                           *
- *            Copyright (C) 2000-2002,2002 by the OpenSG Forum               *
  *                                                                           *
- *                            www.opensg.org                                 *
  *                                                                           *
- *   contact: dirk@opensg.org, gerrit.voss@vossg.org, jbehr@zgdv.de          *
+ *                         www.vrac.iastate.edu                              *
+ *                                                                           *
+ *            Authors: David Kabala,Eric Langkamp,Robert Goetz               *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,14 +51,27 @@ BehaviorType *BehaviorType::getParent(void) const
 }
 
 inline
-std::string BehaviorType::getLuaFunctionName()
+std::vector<std::string> BehaviorType::getLuaFunctionNames()
 {
-	return LuaFunctionName;
+	return luaFunctionNames;
 }
+
 inline
 std::string BehaviorType::getCode()
 {
 	return TheCode;
+}
+
+inline
+const std::vector<std::string> BehaviorType::getEvents()
+{
+    return _bEvents;
+}
+
+inline
+const std::vector<std::string> BehaviorType::getEventLinks()
+{
+    return _bEventLinks;
 }
 
 /*-------------------------------------------------------------------------*/

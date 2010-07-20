@@ -54,6 +54,7 @@ namespace OSG {
     class BehaviorFactory;
     class BehaviorType;
     class Behavior;
+    class LuaBehavior;
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -178,7 +179,7 @@ namespace OSG {
       protected:
         Project(void);
         Project(const Project &source);
-        virtual ~Project(void); 
+        virtual ~Project(void);
     };
     
     /******************************************************/
@@ -233,9 +234,10 @@ namespace OSG {
 			UInt32 findEventID(std::string eventName);
 			
 			BehaviorType(const std::string &szName,
-                 const std::string &szParentName = "",
+                 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
 				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
+                 std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
 			     OSG::BoostPath& FilePath = BoostPath());
 
 			BehaviorType(const BehaviorType &source);
@@ -245,13 +247,16 @@ namespace OSG {
     %extend BehaviorType
     {
         static BehaviorType create( const std::string &szName,
-                                         const std::string &szParentName = "",
-                                         const std::string &bEvents = "",
-                                         const std::string &bEventLinks = "",
-                                         const std::string &StrFilePath = "")
-        {
+                                    const std::string &bEvents = "",
+                                    const std::string &bEventLinks = "",
+                                    const std::string &luaCallback = "",
+                                    const std::string &StrFilePath = "")
+    {
             std::vector< std::string > evtSplitVec = std::vector<std::string>();
+            std::vector< std::string > fcsrcSplitVec = std::vector<std::string>();
             std::vector< std::string > evtlkSplitVec = std::vector<std::string>();
+            std::vector< std::string > luacSplitVec = std::vector<std::string>();
+            
             OSG::BoostPath FilePath = OSG::BoostPath();
             
             if(!bEvents.empty())
@@ -259,9 +264,71 @@ namespace OSG {
                 boost::algorithm::split( evtSplitVec, bEvents, boost::algorithm::is_any_of(std::string(";")) );
             }
             
-            if(!bEventLinks.empty())
+            if(luaCallback.empty())
             {
-                boost::algorithm::split( evtlkSplitVec, bEventLinks, boost::algorithm::is_any_of(std::string(";")) );
+                if(!bEventLinks.empty())
+                {
+                    std::vector< std::string > eventArgs = std::vector<std::string>();
+                    std::vector< std::string > eventDefs = std::vector<std::string>();
+                    
+                    boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
+                    for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
+                    {
+                        boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
+                        if(eventDefs.size() == 3)
+                        {
+                            if(eventDefs[0].compare("*") == 0)
+                            {
+                                fcsrcSplitVec.push_back(NULL);
+                            }
+                            else
+                            {
+                                fcsrcSplitVec.push_back(eventDefs[0]);
+                            }
+                            evtlkSplitVec.push_back(eventDefs[1]);
+                            luacSplitVec.push_back(eventDefs[2]);
+                        }
+                        else
+                        {
+                            SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                        "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
+                            return NULL;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(!bEventLinks.empty())
+                {
+                    std::vector< std::string > eventArgs = std::vector<std::string>();
+                    std::vector< std::string > eventDefs = std::vector<std::string>();
+                    
+                    boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
+                    for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
+                    {
+                        boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
+                        if(eventDefs.size() == 2)
+                        {
+                            if(eventDefs[0].compare("*") == 0)
+                            {
+                                fcsrcSplitVec.push_back(NULL);
+                            }
+                            else
+                            {
+                                fcsrcSplitVec.push_back(eventDefs[0]);
+                            }
+                            evtlkSplitVec.push_back(eventDefs[1]);
+                            luacSplitVec.push_back(luaCallback);
+                        }
+                        else
+                        {
+                            SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName|FieldContainerName:EventName|... , with the callback specified as the 5th parameter.\'" <<
+                                        "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
+                            return NULL;
+                        }
+                    }
+                }
             }
             
             if(!StrFilePath.empty())
@@ -269,7 +336,7 @@ namespace OSG {
                 FilePath = OSG::BoostPath(StrFilePath);
             }
             
-            return OSG::BehaviorType(szName,szParentName,evtSplitVec,evtlkSplitVec,FilePath);
+            return OSG::BehaviorType(szName,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
         }
     }
     
@@ -314,6 +381,7 @@ namespace OSG {
             return OSG::BehaviorFactory::the()->createBehavior(Name);
         }
     }
+    
     /******************************************************/
     /*						Behavior                      */
     /******************************************************/
@@ -321,8 +389,13 @@ namespace OSG {
     {
 		public:
     		BehaviorType * getBehaviorType(void);
-
+            void produceEvent(std::string name);
+            void produceEvent(UInt32 id);
 			bool isInitialized();
+        protected:
+            Behavior(void);
+            Behavior(const Behavior &source);
+            virtual ~Behavior(void); 
 	};
     
     /******************************************************/
@@ -333,8 +406,6 @@ namespace OSG {
       public:
          BehaviorRefPtr(void);
          BehaviorRefPtr(const BehaviorRefPtr               &source);
-         /*SceneRefPtr(const NullFieldContainerRefPtr &source);*/
-
 
         ~BehaviorRefPtr(void); 
         Behavior *operator->(void);

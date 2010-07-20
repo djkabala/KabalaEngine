@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
+ *  authors: David Kabala (djkabala@gmail.com), Eric Langkamp, Robert Goetz  *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -81,36 +81,48 @@ void LuaBehavior::initMethod(InitPhase ePhase)
 
 void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
 {
-
 	if(!getBehaviorType()->getCode().empty())
 	{
 		//Run my Code
 		LuaManager::the()->runScript(getBehaviorType()->getCode());
 	}
 
-	if(!getBehaviorType()->getLuaFunctionName().empty())
+    if(!getBehaviorType()->getLuaFunctionNames().empty())
     {
 		//Get the Lua state
 		lua_State *LuaState(LuaManager::the()->getLuaState());
 
-		//Get the Lua function to be called
-		lua_getglobal(LuaState, getBehaviorType()->getLuaFunctionName().c_str());
+        std::string eventName = getEventProducer(e->getSource())->getProducerType().getMethodDescription(ID)->getName();
+        
+        UInt32 i(0);
+        while(i < getBehaviorType()->getEventLinks().size())
+        {
+            if(getBehaviorType()->getEventLinks()[i].compare(eventName))
+            {
+                break;
+            }
+            ++i;
+        }
 
-		//Push on the arguments
-		push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
+	    //Get the Lua function to be called
+        lua_getglobal(LuaState, getBehaviorType()->getLuaFunctionNames()[i].c_str());
 
-		push_FieldContainer_on_lua(LuaState, this);   //Argument 1: the The Behavior it came from
+	    //Push on the arguments
+	    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
 
-		lua_pushnumber(LuaState,ID);             //Argument 2: the ProducedEvent ID
+	    push_FieldContainer_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
 
-		//Execute the Function
-		//
-		//                  |------3 arguments to function
-		//                  |
-		//                  |  |---0 arguments returned
-		//                  |  |
-		//                  V  V
-		lua_pcall(LuaState, 3, 0, 0);
+	    lua_pushnumber(LuaState,ID);             //Argument 3: the ProducedEvent ID
+
+	    //Execute the Function
+	    //
+	    //                  |------3 arguments to function
+	    //                  |
+	    //                  |  |---0 arguments returned
+	    //                  |  |
+	    //                  V  V
+	    lua_pcall(LuaState, 3, 0, 0);
+        
 	}
 }
 
