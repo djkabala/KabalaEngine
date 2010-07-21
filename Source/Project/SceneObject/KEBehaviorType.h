@@ -101,6 +101,12 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
                  std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
 			     BoostPath& FilePath = BoostPath());
 
+    static BehaviorType create(const std::string &szName,
+                               const std::string &bEvents = "",
+                               const std::string &bEventLinks = "",
+                               const std::string &luaCallback = "",
+                               const std::string &StrFilePath = "");
+
     BehaviorType(const BehaviorType &source);
 
     /*! \}                                                                 */
@@ -114,6 +120,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*---------------------------------------------------------------------*/
     /*! \name						Get	                                   */
     /*! \{                                                                 */
+
+    const std::vector<std::string> getSourceContainers();
     const std::vector<std::string> getEvents();
     const std::vector<std::string> getEventLinks();
 

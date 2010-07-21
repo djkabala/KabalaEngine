@@ -45,6 +45,11 @@
 
 #include <algorithm>
 
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/regex.hpp>
+#include <boost/algorithm/string/trim.hpp>
+
 #include "KEBehaviorType.h"
 #include "KEBehaviorFactory.h"
 #include "Project/Scene/KEScene.h"
@@ -65,6 +70,10 @@ OSG_USING_NAMESPACE
 //  Class
 //---------------------------------------------------------------------------
 
+const std::vector<std::string> BehaviorType::getSourceContainers()
+{
+    return _bSourceContainers;
+}
 
 /*-------------------------------------------------------------------------*/
 /*                                Find                                     */
@@ -229,6 +238,133 @@ BehaviorType::BehaviorType( const std::string &szName,
     {
         setCode("");
     }
+}
+
+BehaviorType BehaviorType::create(const std::string &szName,
+                               const std::string &bEvents,
+                               const std::string &bEventLinks,
+                               const std::string &luaCallback,
+                               const std::string &StrFilePath)
+{
+    std::vector< std::string > evtSplitVec = std::vector<std::string>();
+    std::vector< std::string > fcsrcSplitVec = std::vector<std::string>();
+    std::vector< std::string > evtlkSplitVec = std::vector<std::string>();
+    std::vector< std::string > luacSplitVec = std::vector<std::string>();
+    
+    OSG::BoostPath FilePath = OSG::BoostPath();
+    
+    if(!bEvents.empty())
+    {
+        boost::algorithm::split( evtSplitVec, bEvents, boost::algorithm::is_any_of(std::string(";")) );
+    }
+    
+    if(luaCallback.empty())
+    {
+        if(!bEventLinks.empty())
+        {
+            std::vector< std::string > eventArgs = std::vector<std::string>();
+            std::vector< std::string > eventDefs = std::vector<std::string>();
+            
+            std::string toParse;
+
+            boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
+
+            for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
+            {
+                boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
+                
+                toParse = eventDefs[0];
+
+                boost::algorithm::trim(toParse);
+
+                if(toParse.length() > 1 && (toParse[0] == '\"' || toParse[0] == '\'') && (toParse[toParse.length()-1] == '\"' || toParse[toParse.length()-1] == '\''))
+                {
+                    toParse = toParse.substr(1,toParse.length()-2);
+                }
+                else if((toParse[0] != '*'))
+                {
+                    SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                "The name must be encased in quotes." << OSG::endLog;
+                    return NULL;
+                }
+
+                //boost::algorithm::replace_all_regex(toParse, boost::regex("\\([^])"), std::string("$1"));
+
+                if(eventDefs.size() == 3)
+                {
+                    fcsrcSplitVec.push_back(toParse);
+                    toParse = eventDefs[1];
+                    boost::algorithm::trim(toParse);
+                    evtlkSplitVec.push_back(toParse);
+                    toParse = eventDefs[2];
+                    boost::algorithm::trim(toParse);
+                    luacSplitVec.push_back(toParse);
+                }
+                else
+                {
+                    SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
+                    return NULL;
+                }
+            }
+        }
+    }
+    else
+    {
+        if(!bEventLinks.empty())
+        {
+            std::vector< std::string > eventArgs = std::vector<std::string>();
+            std::vector< std::string > eventDefs = std::vector<std::string>();
+            
+            std::string toParse;
+
+            boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
+
+            for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
+            {
+                boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
+                
+                toParse = eventDefs[0];
+
+                boost::algorithm::trim(toParse);
+                
+                if(toParse.length() > 1 && (toParse[0] == '\"' || toParse[0] == '\'') && (toParse[toParse.length()-1] == '\"' || toParse[toParse.length()-1] == '\''))
+                {
+                    toParse = toParse.substr(1,toParse.length()-2);
+                }
+                else if((toParse[0] != '*'))
+                {
+                    SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                "The name must be encased in quotes." << OSG::endLog;
+                    return NULL;
+                }
+
+                //boost::algorithm::replace_all_regex(toParse, boost::regex("\\([^])"), std::string("$1"));
+
+                if(eventDefs.size() == 2)
+                {
+                    fcsrcSplitVec.push_back(toParse);
+                    toParse = eventDefs[1];
+                    boost::algorithm::trim(toParse);
+                    evtlkSplitVec.push_back(toParse);
+                    luacSplitVec.push_back(luaCallback);
+                }
+                else
+                {
+                    SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
+                    return NULL;
+                }
+            }
+        }
+    }
+    
+    if(!StrFilePath.empty())
+    {
+        FilePath = OSG::BoostPath(StrFilePath);
+    }
+    
+    return OSG::BehaviorType(szName,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
 }
 
 BehaviorType::BehaviorType(const BehaviorType &obj) :
