@@ -91,19 +91,20 @@ void Behavior::initMethod(InitPhase ePhase)
 
 void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
 {
-	TheBehaviorType->registerWithScene(rootSceneObject->getParentScene());
+	theBehaviorType->registerWithScene(rootSceneObject->getParentScene());
 
-    for(UInt32 i(0); i < TheBehaviorType->getSourceContainers().size(); ++i)
+    for(UInt32 i(0); i < theBehaviorType->getSourceContainers().size(); ++i)
     {
-        if(TheBehaviorType->getSourceContainers()[i].compare("*")==0)
+        if(theBehaviorType->getSourceContainers()[i].compare("*")==0)
         {
             attachListeners(rootSceneObject->getParentScene()->editEventProducer());
         }
         else
         {
-            EventProducerPtr eventProducer = getEventProducer(getFieldContainer(TheBehaviorType->getSourceContainers()[i]));
+            FieldContainerRefPtr fc = getFieldContainer(theBehaviorType->getSourceContainers()[i]);
+            EventProducerPtr eventProducer = getEventProducer(fc);
 
-            eventProducer->attachEventListener(&_DepBehaviorListener,eventProducer->getProducedEventId(TheBehaviorType->getEventLinks()[i]));
+            eventProducer->attachEventListener(&_DepBehaviorListener,eventProducer->getProducedEventId(theBehaviorType->getEventLinks()[i]));
         }
     }
 }
@@ -115,7 +116,6 @@ void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
 
 void Behavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
 {
-    std::cout << std::endl;
 }
 
 void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e, UInt32 ID)
@@ -132,26 +132,31 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 {
 	initialized = true;
 
-    for(UInt32 i = 0; i < TheBehaviorType->_bDependencies.size(); i++)
-    {
-	    if(TheBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
-	    {
-		    for(UInt32 c = 0; c < TheBehaviorType->_bEventLinks.size(); c++)
-		    {
-			    for(UInt32 d = 0; d < TheBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
-			    {
-				    if(TheBehaviorType->_bDependencies[i]->hasEvent(TheBehaviorType->_bEventLinks[c]))
-				    {
-					    eventProducer->attachEventListener(&_DepBehaviorListener,TheBehaviorType->_bDependencies[i]->findEventID(TheBehaviorType->_bEventLinks[c]));
-				    }
-			    }
-		    }
-	    }
-	    else
-	    {
-		    initialized = false;
-	    }
-    }
+	for(UInt32 i = 0; i < theBehaviorType->_bDependencies.size(); i++)
+	{
+		if(theBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
+		{
+			for(UInt32 c = 0; c < theBehaviorType->_bEventLinks.size(); c++)
+			{
+				for(UInt32 d = 0; d < theBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
+				{
+					if(theBehaviorType->_bDependencies[i]->hasEvent(theBehaviorType->_bEventLinks[c]))
+					{
+						eventProducer->attachEventListener(&_DepBehaviorListener,theBehaviorType->_bDependencies[i]->findEventID(theBehaviorType->_bEventLinks[c]));
+					}
+				}
+			}
+		}
+		else
+		{
+			initialized = false;
+		}
+	}
+}
+
+const SceneObject* Behavior::getParentSceneObject(void) const
+{
+    return dynamic_cast<const SceneObject*>(_sfSceneObject.getValue());
 }
 
 void Behavior::produceEvent(std::string name)

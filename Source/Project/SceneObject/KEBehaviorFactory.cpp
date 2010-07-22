@@ -107,11 +107,11 @@ void BehaviorFactoryBase::writeTypeDot(FILE     *pOut,
 
 BehaviorTransitPtr BehaviorFactoryBase::createBehavior(std::string Name)
 {
-	BehaviorTransitPtr newBehavior = OSG::Behavior::create();
-
 	BehaviorType* BehaviorTypeBase = findType(static_cast<const Char8*>(Name.c_str()));
 
-	newBehavior->TheBehaviorType = BehaviorTypeBase;
+	BehaviorTransitPtr newBehavior = dynamic_pointer_cast<Behavior>(BehaviorTypeBase->getFieldContainerType()->createContainer());
+
+	newBehavior->theBehaviorType = BehaviorTypeBase;
 
 	return newBehavior;
 }

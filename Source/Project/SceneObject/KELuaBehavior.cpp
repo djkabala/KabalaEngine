@@ -91,8 +91,12 @@ void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
     {
 		//Get the Lua state
 		lua_State *LuaState(LuaManager::the()->getLuaState());
-
-        std::string eventName = getEventProducer(e->getSource())->getProducerType().getMethodDescription(ID)->getName();
+        
+        FieldContainerRefPtr src = e->getSource();
+        EventProducerPtr     evt = getEventProducer(src);
+        EventProducerType    typ = evt->getProducerType();
+        MethodDescription*   des = typ.getMethodDescription(ID);
+        std::string eventName = des->getName();
         
         UInt32 i(0);
         while(i < getBehaviorType()->getEventLinks().size())
@@ -121,7 +125,7 @@ void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
 	    //                  |  |---0 arguments returned
 	    //                  |  |
 	    //                  V  V
-	    lua_pcall(LuaState, 3, 0, 0);
+	    LuaManager::the()->checkError(lua_pcall(LuaState, 3, 0, 0));
         
 	}
 }

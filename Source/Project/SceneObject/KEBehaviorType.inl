@@ -43,7 +43,11 @@ OSG_BEGIN_NAMESPACE
 
 /*-------------------------------------------------------------------------*/
 /*                                Get                                      */
-
+inline
+FieldContainerType *BehaviorType::getFieldContainerType()
+{
+	return behaviorFieldContainerType;
+}
 inline
 BehaviorType *BehaviorType::getParent(void) const
 {

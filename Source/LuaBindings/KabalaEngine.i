@@ -233,6 +233,7 @@ namespace OSG {
 			UInt32 findEventID(std::string eventName);
 			
 			BehaviorType(const std::string &szName,
+				 FieldContainerType * bBehaviorFieldContainerType,
                  std::vector<std::string> eventSourceNames = std::vector<std::string>(),
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
 				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
@@ -240,6 +241,7 @@ namespace OSG {
 			     OSG::BoostPath& FilePath = BoostPath());
                  
             static BehaviorType create( const std::string &szName,
+                                        const std::string &type,
                                         const std::string &bEvents = "",
                                         const std::string &bEventLinks = "",
                                         const std::string &luaCallback = "",
@@ -299,6 +301,7 @@ namespace OSG {
     {
 		public:
     		BehaviorType * getBehaviorType(void);
+            const SceneObject* getParentSceneObject(void) const;
             void produceEvent(std::string name);
             void produceEvent(UInt32 id);
 			bool isInitialized();
@@ -374,6 +377,9 @@ namespace OSG {
         void pause(void);
         void unpause(void);
         void stop(void);
+        
+        const SceneObject* getParentSceneObject(void) const;
+        
       protected:
         Effect(void);
         Effect(const Effect &source);

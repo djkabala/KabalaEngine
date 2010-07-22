@@ -78,7 +78,7 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     typedef BehaviorBase Inherited;
     typedef Behavior     Self;
 
-
+    const SceneObject* getParentSceneObject(void) const;
 	void addedToSceneObject(SceneObjectUnrecPtr rootSceneObject);
 
 	BehaviorType * getBehaviorType(void);
@@ -120,7 +120,7 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
 	void attachListeners (EventProducerPtr eventProducer);
 
-	BehaviorType* TheBehaviorType;
+	BehaviorType* theBehaviorType;
 
     // Variables should all be in BehaviorBase.
 

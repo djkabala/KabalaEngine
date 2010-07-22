@@ -60,6 +60,7 @@
 
 #include "OSGFilePathAttachment.h"
 #include "OSGContainerUtils.h"
+#include "OSGFieldContainerFactory.h"
 #include <fstream>
 #include <sstream>
 
@@ -189,6 +190,7 @@ void BehaviorType::registerWithScene(Scene* scene)
 /*                            Constructors                                 */
 
 BehaviorType::BehaviorType( const std::string &szName,
+							FieldContainerType * bBehaviorFieldContainerType,
                             std::vector<std::string> eventSourceNames,
 		                    std::vector<std::string> bEvents,
 		                    std::vector<std::string> bEventLinks,
@@ -199,6 +201,7 @@ BehaviorType::BehaviorType( const std::string &szName,
 
     _bInitialized     (false            ),
 
+	behaviorFieldContainerType	(bBehaviorFieldContainerType),
 
     _pParent          (NULL             ),
 
@@ -241,10 +244,11 @@ BehaviorType::BehaviorType( const std::string &szName,
 }
 
 BehaviorType BehaviorType::create(const std::string &szName,
-                               const std::string &bEvents,
-                               const std::string &bEventLinks,
-                               const std::string &luaCallback,
-                               const std::string &StrFilePath)
+                                  const std::string &type,
+                                  const std::string &bEvents,
+                                  const std::string &bEventLinks,
+                                  const std::string &luaCallback,
+                                  const std::string &StrFilePath)
 {
     std::vector< std::string > evtSplitVec = std::vector<std::string>();
     std::vector< std::string > fcsrcSplitVec = std::vector<std::string>();
@@ -285,7 +289,7 @@ BehaviorType BehaviorType::create(const std::string &szName,
                 {
                     SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
                                 "The name must be encased in quotes." << OSG::endLog;
-                    return NULL;
+                    return OSG::BehaviorType(szName,NULL);
                 }
 
                 //boost::algorithm::replace_all_regex(toParse, boost::regex("\\([^])"), std::string("$1"));
@@ -304,7 +308,7 @@ BehaviorType BehaviorType::create(const std::string &szName,
                 {
                     SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
                                 "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
-                    return NULL;
+                    return OSG::BehaviorType(szName,NULL);
                 }
             }
         }
@@ -336,7 +340,7 @@ BehaviorType BehaviorType::create(const std::string &szName,
                 {
                     SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
                                 "The name must be encased in quotes." << OSG::endLog;
-                    return NULL;
+                    return OSG::BehaviorType(szName,NULL);
                 }
 
                 //boost::algorithm::replace_all_regex(toParse, boost::regex("\\([^])"), std::string("$1"));
@@ -353,7 +357,7 @@ BehaviorType BehaviorType::create(const std::string &szName,
                 {
                     SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
                                 "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
-                    return NULL;
+                    return OSG::BehaviorType(szName,NULL);
                 }
             }
         }
@@ -364,7 +368,15 @@ BehaviorType BehaviorType::create(const std::string &szName,
         FilePath = OSG::BoostPath(StrFilePath);
     }
     
-    return OSG::BehaviorType(szName,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
+    FieldContainerType* theType = FieldContainerFactory::the()->findType(type.c_str());
+
+    if(theType == NULL)
+    {
+        SWARNING << "LUA: KabalaEngine.BehaviorType_create(): The type "<< type <<" could not be found." << OSG::endLog;
+        return OSG::BehaviorType(szName,NULL);
+    }
+
+    return OSG::BehaviorType(szName,theType,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
 }
 
 BehaviorType::BehaviorType(const BehaviorType &obj) :
@@ -374,6 +386,8 @@ BehaviorType::BehaviorType(const BehaviorType &obj) :
     _bInitialized     (false                 ),
 
     _pParent          (obj._pParent          ),
+
+    behaviorFieldContainerType	(obj.behaviorFieldContainerType),
 
 	_bDependencies	  (obj._bDependencies	 ),
 

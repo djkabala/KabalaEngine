@@ -5,7 +5,7 @@
 	parent="AttachmentContainer"
 	library="KabalaEngine"
 	pointerfieldtypes="both"
-	structure="concrete"
+	structure="abstract"
 	systemcomponent="false"
 	parentsystemcomponent="true"
 	decoratable="false"
@@ -16,7 +16,7 @@
 >
 The SceneObject.
     <Field
-           name="SceneObject"
+		name="SceneObject"
 		type="FieldContainer"
 		category="parentpointer"
 		cardinality="single"
@@ -25,6 +25,15 @@ The SceneObject.
 		defaultValue="NULL"
         doRefCount="false"
         passFieldMask="true"
+	>
+	</Field>
+	<Field
+		name="Dependencies"
+		type="std::string"
+		category="data"
+		cardinality="multi"
+		visibility="external"
+		access="public"
 	>
 	</Field>
 </FieldContainer>

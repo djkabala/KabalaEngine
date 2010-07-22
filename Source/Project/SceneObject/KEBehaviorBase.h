@@ -66,6 +66,7 @@
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
 #include <OpenSG/OSGFieldContainerFields.h> // SceneObject type
+#include <OpenSG/OSGBaseFields.h>       // Dependencies type
 
 #include "KEBehaviorFields.h"
 
@@ -94,15 +95,19 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     enum
     {
         SceneObjectFieldId = Inherited::NextFieldId,
-        NextFieldId = SceneObjectFieldId + 1
+        DependenciesFieldId = SceneObjectFieldId + 1,
+        NextFieldId = DependenciesFieldId + 1
     };
 
     static const OSG::BitVector SceneObjectFieldMask =
         (TypeTraits<BitVector>::One << SceneObjectFieldId);
+    static const OSG::BitVector DependenciesFieldMask =
+        (TypeTraits<BitVector>::One << DependenciesFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
     typedef SFParentFieldContainerPtr SFSceneObjectType;
+    typedef MFString          MFDependenciesType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -124,6 +129,30 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
+    /*! \name                    Field Get                                 */
+    /*! \{                                                                 */
+
+
+                  MFString            *editMFDependencies   (void);
+            const MFString            *getMFDependencies    (void) const;
+
+
+                  std::string         &editDependencies   (const UInt32 index);
+            const std::string         &getDependencies    (const UInt32 index) const;
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Set                                 */
+    /*! \{                                                                 */
+
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
@@ -133,33 +162,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     virtual void   copyFromBin(BinaryDataHandler &pMem,
                                ConstFieldMaskArg  whichField);
 
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                   Construction                               */
-    /*! \{                                                                 */
-
-    static  BehaviorTransitPtr  create          (void);
-    static  Behavior           *createEmpty     (void);
-
-    static  BehaviorTransitPtr  createLocal     (
-                                               BitVector bFlags = FCLocal::All);
-
-    static  Behavior            *createEmptyLocal(
-                                              BitVector bFlags = FCLocal::All);
-
-    static  BehaviorTransitPtr  createDependent  (BitVector bFlags);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                       Copy                                   */
-    /*! \{                                                                 */
-
-    virtual FieldContainerTransitPtr shallowCopy     (void) const;
-    virtual FieldContainerTransitPtr shallowCopyLocal(
-                                       BitVector bFlags = FCLocal::All) const;
-    virtual FieldContainerTransitPtr shallowCopyDependent(
-                                                      BitVector bFlags) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
@@ -176,6 +178,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*! \{                                                                 */
 
     SFParentFieldContainerPtr _sfSceneObject;
+    MFString          _mfDependencies;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -216,6 +219,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
 
     GetFieldHandlePtr  getHandleSceneObject     (void) const;
     EditFieldHandlePtr editHandleSceneObject    (void);
+    GetFieldHandlePtr  getHandleDependencies    (void) const;
+    EditFieldHandlePtr editHandleDependencies   (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -245,11 +250,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorBase : public AttachmentContainer
     /*---------------------------------------------------------------------*/
     /*! \name                     Aspect Create                            */
     /*! \{                                                                 */
-
-#ifdef OSG_MT_CPTR_ASPECT
-    virtual FieldContainer *createAspectCopy(
-                                    const FieldContainer *pRefAspect) const;
-#endif
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

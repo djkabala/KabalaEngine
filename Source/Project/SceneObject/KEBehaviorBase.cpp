@@ -84,6 +84,10 @@ OSG_BEGIN_NAMESPACE
     
 */
 
+/*! \var std::string     BehaviorBase::_mfDependencies
+    
+*/
+
 
 /***************************************************************************\
  *                      FieldType/FieldTrait Instantiation                 *
@@ -135,6 +139,18 @@ void BehaviorBase::classDescInserter(TypeObject &oType)
         static_cast     <FieldGetMethodSig >(&Behavior::invalidGetField));
 
     oType.addInitialDesc(pDesc);
+
+    pDesc = new MFString::Description(
+        MFString::getClassType(),
+        "Dependencies",
+        "",
+        DependenciesFieldId, DependenciesFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Behavior::editHandleDependencies),
+        static_cast<FieldGetMethodSig >(&Behavior::getHandleDependencies));
+
+    oType.addInitialDesc(pDesc);
 }
 
 
@@ -143,7 +159,7 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     Inherited::getClassname(),
     "NULL",
     0,
-    reinterpret_cast<PrototypeCreateF>(&BehaviorBase::createEmptyLocal),
+    NULL,
     Behavior::initMethod,
     Behavior::exitMethod,
     reinterpret_cast<InitalInsertDescFunc>(&Behavior::classDescInserter),
@@ -156,7 +172,7 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     "\tparent=\"AttachmentContainer\"\n"
     "\tlibrary=\"KabalaEngine\"\n"
     "\tpointerfieldtypes=\"both\"\n"
-    "\tstructure=\"concrete\"\n"
+    "\tstructure=\"abstract\"\n"
     "\tsystemcomponent=\"false\"\n"
     "\tparentsystemcomponent=\"true\"\n"
     "\tdecoratable=\"false\"\n"
@@ -167,7 +183,7 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     ">\n"
     "The SceneObject.\n"
     "    <Field\n"
-    "           name=\"SceneObject\"\n"
+    "\t\tname=\"SceneObject\"\n"
     "\t\ttype=\"FieldContainer\"\n"
     "\t\tcategory=\"parentpointer\"\n"
     "\t\tcardinality=\"single\"\n"
@@ -176,6 +192,15 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     "\t\tdefaultValue=\"NULL\"\n"
     "        doRefCount=\"false\"\n"
     "        passFieldMask=\"true\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Dependencies\"\n"
+    "\t\ttype=\"std::string\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
     "\t>\n"
     "\t</Field>\n"
     "</FieldContainer>\n",
@@ -203,6 +228,19 @@ UInt32 BehaviorBase::getContainerSize(void) const
 
 
 
+MFString *BehaviorBase::editMFDependencies(void)
+{
+    editMField(DependenciesFieldMask, _mfDependencies);
+
+    return &_mfDependencies;
+}
+
+const MFString *BehaviorBase::getMFDependencies(void) const
+{
+    return &_mfDependencies;
+}
+
+
 
 
 
@@ -217,6 +255,10 @@ UInt32 BehaviorBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfSceneObject.getBinSize();
     }
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
+    {
+        returnValue += _mfDependencies.getBinSize();
+    }
 
     return returnValue;
 }
@@ -230,6 +272,10 @@ void BehaviorBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyToBin(pMem);
     }
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
+    {
+        _mfDependencies.copyToBin(pMem);
+    }
 }
 
 void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
@@ -241,122 +287,10 @@ void BehaviorBase::copyFromBin(BinaryDataHandler &pMem,
     {
         _sfSceneObject.copyFromBin(pMem);
     }
-}
-
-//! create a new instance of the class
-BehaviorTransitPtr BehaviorBase::createLocal(BitVector bFlags)
-{
-    BehaviorTransitPtr fc;
-
-    if(getClassType().getPrototype() != NULL)
+    if(FieldBits::NoField != (DependenciesFieldMask & whichField))
     {
-        FieldContainerTransitPtr tmpPtr =
-            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
-
-        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
+        _mfDependencies.copyFromBin(pMem);
     }
-
-    return fc;
-}
-
-//! create a new instance of the class, copy the container flags
-BehaviorTransitPtr BehaviorBase::createDependent(BitVector bFlags)
-{
-    BehaviorTransitPtr fc;
-
-    if(getClassType().getPrototype() != NULL)
-    {
-        FieldContainerTransitPtr tmpPtr =
-            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
-
-        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
-    }
-
-    return fc;
-}
-
-//! create a new instance of the class
-BehaviorTransitPtr BehaviorBase::create(void)
-{
-    BehaviorTransitPtr fc;
-
-    if(getClassType().getPrototype() != NULL)
-    {
-        FieldContainerTransitPtr tmpPtr =
-            getClassType().getPrototype()-> shallowCopy();
-
-        fc = dynamic_pointer_cast<Behavior>(tmpPtr);
-    }
-
-    return fc;
-}
-
-Behavior *BehaviorBase::createEmptyLocal(BitVector bFlags)
-{
-    Behavior *returnValue;
-
-    newPtr<Behavior>(returnValue, bFlags);
-
-    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
-
-    return returnValue;
-}
-
-//! create an empty new instance of the class, do not copy the prototype
-Behavior *BehaviorBase::createEmpty(void)
-{
-    Behavior *returnValue;
-
-    newPtr<Behavior>(returnValue, Thread::getCurrentLocalFlags());
-
-    returnValue->_pFieldFlags->_bNamespaceMask &=
-        ~Thread::getCurrentLocalFlags();
-
-    return returnValue;
-}
-
-
-FieldContainerTransitPtr BehaviorBase::shallowCopyLocal(
-    BitVector bFlags) const
-{
-    Behavior *tmpPtr;
-
-    newPtr(tmpPtr, dynamic_cast<const Behavior *>(this), bFlags);
-
-    FieldContainerTransitPtr returnValue(tmpPtr);
-
-    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
-
-    return returnValue;
-}
-
-FieldContainerTransitPtr BehaviorBase::shallowCopyDependent(
-    BitVector bFlags) const
-{
-    Behavior *tmpPtr;
-
-    newPtr(tmpPtr, dynamic_cast<const Behavior *>(this), ~bFlags);
-
-    FieldContainerTransitPtr returnValue(tmpPtr);
-
-    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
-
-    return returnValue;
-}
-
-FieldContainerTransitPtr BehaviorBase::shallowCopy(void) const
-{
-    Behavior *tmpPtr;
-
-    newPtr(tmpPtr,
-           dynamic_cast<const Behavior *>(this),
-           Thread::getCurrentLocalFlags());
-
-    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
-
-    FieldContainerTransitPtr returnValue(tmpPtr);
-
-    return returnValue;
 }
 
 
@@ -366,13 +300,15 @@ FieldContainerTransitPtr BehaviorBase::shallowCopy(void) const
 
 BehaviorBase::BehaviorBase(void) :
     Inherited(),
-    _sfSceneObject            (NULL)
+    _sfSceneObject            (NULL),
+    _mfDependencies           ()
 {
 }
 
 BehaviorBase::BehaviorBase(const BehaviorBase &source) :
     Inherited(source),
-    _sfSceneObject            (NULL)
+    _sfSceneObject            (NULL),
+    _mfDependencies           (source._mfDependencies           )
 {
 }
 
@@ -469,6 +405,31 @@ EditFieldHandlePtr BehaviorBase::editHandleSceneObject    (void)
     return returnValue;
 }
 
+GetFieldHandlePtr BehaviorBase::getHandleDependencies    (void) const
+{
+    MFString::GetHandlePtr returnValue(
+        new  MFString::GetHandle(
+             &_mfDependencies,
+             this->getType().getFieldDesc(DependenciesFieldId),
+             const_cast<BehaviorBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr BehaviorBase::editHandleDependencies   (void)
+{
+    MFString::EditHandlePtr returnValue(
+        new  MFString::EditHandle(
+             &_mfDependencies,
+             this->getType().getFieldDesc(DependenciesFieldId),
+             this));
+
+
+    editMField(DependenciesFieldMask, _mfDependencies);
+
+    return returnValue;
+}
+
 
 #ifdef OSG_MT_CPTR_ASPECT
 void BehaviorBase::execSyncV(      FieldContainer    &oFrom,
@@ -488,25 +449,21 @@ void BehaviorBase::execSyncV(      FieldContainer    &oFrom,
 #endif
 
 
-#ifdef OSG_MT_CPTR_ASPECT
-FieldContainer *BehaviorBase::createAspectCopy(
-    const FieldContainer *pRefAspect) const
-{
-    Behavior *returnValue;
-
-    newAspectCopy(returnValue,
-                  dynamic_cast<const Behavior *>(pRefAspect),
-                  dynamic_cast<const Behavior *>(this));
-
-    return returnValue;
-}
-#endif
 
 void BehaviorBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
 
+#ifdef OSG_MT_CPTR_ASPECT
+    AspectOffsetStore oOffsets;
 
+    _pAspectStore->fillOffsetArray(oOffsets, this);
+#endif
+
+#ifdef OSG_MT_CPTR_ASPECT
+    _mfDependencies.terminateShare(Thread::getCurrentAspect(),
+                                      oOffsets);
+#endif
 }
 
 
