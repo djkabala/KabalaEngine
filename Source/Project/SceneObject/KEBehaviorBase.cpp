@@ -159,7 +159,7 @@ BehaviorBase::TypeObject BehaviorBase::_type(
     Inherited::getClassname(),
     "NULL",
     0,
-    "",
+    NULL,
     Behavior::initMethod,
     Behavior::exitMethod,
     reinterpret_cast<InitalInsertDescFunc>(&Behavior::classDescInserter),

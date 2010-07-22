@@ -93,7 +93,7 @@ void Behavior::initMethod(InitPhase ePhase)
 
 void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
 {
-	TheBehaviorType->registerWithScene(rootSceneObject->getParentScene());
+	theBehaviorType->registerWithScene(rootSceneObject->getParentScene());
 	attachListeners(rootSceneObject->getParentScene()->editEventProducer());
 }
 
@@ -120,17 +120,17 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 {
 	initialized = true;
 
-	for(UInt32 i = 0; i < TheBehaviorType->_bDependencies.size(); i++)
+	for(UInt32 i = 0; i < theBehaviorType->_bDependencies.size(); i++)
 	{
-		if(TheBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
+		if(theBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
 		{
-			for(UInt32 c = 0; c < TheBehaviorType->_bEventLinks.size(); c++)
+			for(UInt32 c = 0; c < theBehaviorType->_bEventLinks.size(); c++)
 			{
-				for(UInt32 d = 0; d < TheBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
+				for(UInt32 d = 0; d < theBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
 				{
-					if(TheBehaviorType->_bDependencies[i]->hasEvent(TheBehaviorType->_bEventLinks[c]))
+					if(theBehaviorType->_bDependencies[i]->hasEvent(theBehaviorType->_bEventLinks[c]))
 					{
-						eventProducer->attachEventListener(&_DepBehaviorListener,TheBehaviorType->_bDependencies[i]->findEventID(TheBehaviorType->_bEventLinks[c]));
+						eventProducer->attachEventListener(&_DepBehaviorListener,theBehaviorType->_bDependencies[i]->findEventID(theBehaviorType->_bEventLinks[c]));
 					}
 				}
 			}

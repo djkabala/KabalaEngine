@@ -1509,22 +1509,22 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_BoostPath swig_types[0]
-#define SWIGTYPE_p_Inherited swig_types[1]
-#define SWIGTYPE_p_MFChildrenType swig_types[2]
-#define SWIGTYPE_p_MatrixType swig_types[3]
-#define SWIGTYPE_p_OSG__Animation swig_types[4]
-#define SWIGTYPE_p_OSG__AnimationRefPtr swig_types[5]
-#define SWIGTYPE_p_OSG__ApplicationPlayer swig_types[6]
-#define SWIGTYPE_p_OSG__Attachment swig_types[7]
-#define SWIGTYPE_p_OSG__AttachmentContainer swig_types[8]
-#define SWIGTYPE_p_OSG__AttachmentContainerRefPtr swig_types[9]
-#define SWIGTYPE_p_OSG__AttachmentRefPtr swig_types[10]
-#define SWIGTYPE_p_OSG__Behavior swig_types[11]
-#define SWIGTYPE_p_OSG__BehaviorFactory swig_types[12]
-#define SWIGTYPE_p_OSG__BehaviorRefPtr swig_types[13]
-#define SWIGTYPE_p_OSG__BehaviorType swig_types[14]
-#define SWIGTYPE_p_OSG__BehaviorUnrecPtr swig_types[15]
+#define SWIGTYPE_p_Inherited swig_types[0]
+#define SWIGTYPE_p_MFChildrenType swig_types[1]
+#define SWIGTYPE_p_MatrixType swig_types[2]
+#define SWIGTYPE_p_OSG__Animation swig_types[3]
+#define SWIGTYPE_p_OSG__AnimationRefPtr swig_types[4]
+#define SWIGTYPE_p_OSG__ApplicationPlayer swig_types[5]
+#define SWIGTYPE_p_OSG__Attachment swig_types[6]
+#define SWIGTYPE_p_OSG__AttachmentContainer swig_types[7]
+#define SWIGTYPE_p_OSG__AttachmentContainerRefPtr swig_types[8]
+#define SWIGTYPE_p_OSG__AttachmentRefPtr swig_types[9]
+#define SWIGTYPE_p_OSG__Behavior swig_types[10]
+#define SWIGTYPE_p_OSG__BehaviorFactory swig_types[11]
+#define SWIGTYPE_p_OSG__BehaviorRefPtr swig_types[12]
+#define SWIGTYPE_p_OSG__BehaviorType swig_types[13]
+#define SWIGTYPE_p_OSG__BehaviorUnrecPtr swig_types[14]
+#define SWIGTYPE_p_OSG__BoostPath swig_types[15]
 #define SWIGTYPE_p_OSG__Camera swig_types[16]
 #define SWIGTYPE_p_OSG__CameraRefPtr swig_types[17]
 #define SWIGTYPE_p_OSG__Component swig_types[18]
@@ -1685,93 +1685,6 @@ SWIGINTERN OSG::ProjectRefPtr OSG_ProjectRefPtr_dcast(OSG::FieldContainerRefPtr 
         }
 SWIGINTERN OSG::SceneObjectRefPtr OSG_SceneObjectRefPtr_dcast(OSG::FieldContainerRefPtr const oIn){
             return OSG::dynamic_pointer_cast<OSG::SceneObject>(oIn);
-        }
-SWIGINTERN OSG::BehaviorType OSG_BehaviorType_create__SWIG_0(std::string const &szName,std::string const &bEvents="",std::string const &bEventLinks="",std::string const &luaCallback="",std::string const &StrFilePath=""){
-            std::vector< std::string > evtSplitVec = std::vector<std::string>();
-            std::vector< std::string > fcsrcSplitVec = std::vector<std::string>();
-            std::vector< std::string > evtlkSplitVec = std::vector<std::string>();
-            std::vector< std::string > luacSplitVec = std::vector<std::string>();
-            
-            OSG::BoostPath FilePath = OSG::BoostPath();
-            
-            if(!bEvents.empty())
-            {
-                boost::algorithm::split( evtSplitVec, bEvents, boost::algorithm::is_any_of(std::string(";")) );
-            }
-            
-            if(luaCallback.empty())
-            {
-                if(!bEventLinks.empty())
-                {
-                    std::vector< std::string > eventArgs = std::vector<std::string>();
-                    std::vector< std::string > eventDefs = std::vector<std::string>();
-                    
-                    boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
-                    for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
-                    {
-                        boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
-                        if(eventDefs.size() == 3)
-                        {
-                            if(eventDefs[0].compare("*") == 0)
-                            {
-                                fcsrcSplitVec.push_back(NULL);
-                            }
-                            else
-                            {
-                                fcsrcSplitVec.push_back(eventDefs[0]);
-                            }
-                            evtlkSplitVec.push_back(eventDefs[1]);
-                            luacSplitVec.push_back(eventDefs[2]);
-                        }
-                        else
-                        {
-                            SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
-                                        "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
-                            return NULL;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if(!bEventLinks.empty())
-                {
-                    std::vector< std::string > eventArgs = std::vector<std::string>();
-                    std::vector< std::string > eventDefs = std::vector<std::string>();
-                    
-                    boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
-                    for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
-                    {
-                        boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
-                        if(eventDefs.size() == 2)
-                        {
-                            if(eventDefs[0].compare("*") == 0)
-                            {
-                                fcsrcSplitVec.push_back(NULL);
-                            }
-                            else
-                            {
-                                fcsrcSplitVec.push_back(eventDefs[0]);
-                            }
-                            evtlkSplitVec.push_back(eventDefs[1]);
-                            luacSplitVec.push_back(luaCallback);
-                        }
-                        else
-                        {
-                            SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName|FieldContainerName:EventName|... , with the callback specified as the 5th parameter.\'" <<
-                                        "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
-                            return NULL;
-                        }
-                    }
-                }
-            }
-            
-            if(!StrFilePath.empty())
-            {
-                FilePath = OSG::BoostPath(StrFilePath);
-            }
-            
-            return OSG::BehaviorType(szName,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
         }
 SWIGINTERN OSG::UInt32 OSG_BehaviorFactory_registerType(OSG::BehaviorFactory *self,OSG::BehaviorType *pType){
             return OSG::BehaviorFactory::the()->registerType(pType);
@@ -5540,31 +5453,32 @@ fail:
 static int _wrap_new_BehaviorType__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   std::string *arg1 = 0 ;
-  SwigValueWrapper< std::vector< std::string > > arg2 ;
+  OSG::FieldContainerType *arg2 = (OSG::FieldContainerType *) 0 ;
   SwigValueWrapper< std::vector< std::string > > arg3 ;
   SwigValueWrapper< std::vector< std::string > > arg4 ;
   SwigValueWrapper< std::vector< std::string > > arg5 ;
-  OSG::BoostPath *arg6 = 0 ;
+  SwigValueWrapper< std::vector< std::string > > arg6 ;
+  OSG::BoostPath *arg7 = 0 ;
   std::string temp1 ;
-  std::vector< std::string > *argp2 ;
   std::vector< std::string > *argp3 ;
   std::vector< std::string > *argp4 ;
   std::vector< std::string > *argp5 ;
+  std::vector< std::string > *argp6 ;
   OSG::BehaviorType *result = 0 ;
   
-  SWIG_check_num_args("OSG::BehaviorType",6,6)
+  SWIG_check_num_args("OSG::BehaviorType",7,7)
   if(!lua_isstring(L,1)) SWIG_fail_arg("OSG::BehaviorType",1,"std::string const &");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"std::vector< std::string >");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"OSG::FieldContainerType *");
   if(!lua_isuserdata(L,3)) SWIG_fail_arg("OSG::BehaviorType",3,"std::vector< std::string >");
   if(!lua_isuserdata(L,4)) SWIG_fail_arg("OSG::BehaviorType",4,"std::vector< std::string >");
   if(!lua_isuserdata(L,5)) SWIG_fail_arg("OSG::BehaviorType",5,"std::vector< std::string >");
-  if(!lua_isuserdata(L,6)) SWIG_fail_arg("OSG::BehaviorType",6,"BoostPath &");
+  if(!lua_isuserdata(L,6)) SWIG_fail_arg("OSG::BehaviorType",6,"std::vector< std::string >");
+  if(!lua_isuserdata(L,7)) SWIG_fail_arg("OSG::BehaviorType",7,"OSG::BoostPath &");
   temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_std__vectorT_std__string_t,0))){
-    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_std__vectorT_std__string_t);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__FieldContainerType,0))){
+    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_OSG__FieldContainerType);
   }
-  arg2 = *argp2;
   
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_std__vectorT_std__string_t,0))){
@@ -5585,11 +5499,17 @@ static int _wrap_new_BehaviorType__SWIG_0(lua_State* L) {
   arg5 = *argp5;
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_BoostPath,0))){
-    SWIG_fail_ptr("new_BehaviorType",6,SWIGTYPE_p_BoostPath);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&argp6,SWIGTYPE_p_std__vectorT_std__string_t,0))){
+    SWIG_fail_ptr("new_BehaviorType",6,SWIGTYPE_p_std__vectorT_std__string_t);
+  }
+  arg6 = *argp6;
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_OSG__BoostPath,0))){
+    SWIG_fail_ptr("new_BehaviorType",7,SWIGTYPE_p_OSG__BoostPath);
   }
   
-  result = (OSG::BehaviorType *)new OSG::BehaviorType((std::string const &)*arg1,arg2,arg3,arg4,arg5,*arg6);
+  result = (OSG::BehaviorType *)new OSG::BehaviorType((std::string const &)*arg1,arg2,arg3,arg4,arg5,arg6,*arg7);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++; 
   return SWIG_arg;
   
@@ -5604,12 +5524,75 @@ fail:
 static int _wrap_new_BehaviorType__SWIG_1(lua_State* L) {
   int SWIG_arg = 0;
   std::string *arg1 = 0 ;
-  SwigValueWrapper< std::vector< std::string > > arg2 ;
+  OSG::FieldContainerType *arg2 = (OSG::FieldContainerType *) 0 ;
+  SwigValueWrapper< std::vector< std::string > > arg3 ;
+  SwigValueWrapper< std::vector< std::string > > arg4 ;
+  SwigValueWrapper< std::vector< std::string > > arg5 ;
+  SwigValueWrapper< std::vector< std::string > > arg6 ;
+  std::string temp1 ;
+  std::vector< std::string > *argp3 ;
+  std::vector< std::string > *argp4 ;
+  std::vector< std::string > *argp5 ;
+  std::vector< std::string > *argp6 ;
+  OSG::BehaviorType *result = 0 ;
+  
+  SWIG_check_num_args("OSG::BehaviorType",6,6)
+  if(!lua_isstring(L,1)) SWIG_fail_arg("OSG::BehaviorType",1,"std::string const &");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"OSG::FieldContainerType *");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("OSG::BehaviorType",3,"std::vector< std::string >");
+  if(!lua_isuserdata(L,4)) SWIG_fail_arg("OSG::BehaviorType",4,"std::vector< std::string >");
+  if(!lua_isuserdata(L,5)) SWIG_fail_arg("OSG::BehaviorType",5,"std::vector< std::string >");
+  if(!lua_isuserdata(L,6)) SWIG_fail_arg("OSG::BehaviorType",6,"std::vector< std::string >");
+  temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__FieldContainerType,0))){
+    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_OSG__FieldContainerType);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_std__vectorT_std__string_t,0))){
+    SWIG_fail_ptr("new_BehaviorType",3,SWIGTYPE_p_std__vectorT_std__string_t);
+  }
+  arg3 = *argp3;
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&argp4,SWIGTYPE_p_std__vectorT_std__string_t,0))){
+    SWIG_fail_ptr("new_BehaviorType",4,SWIGTYPE_p_std__vectorT_std__string_t);
+  }
+  arg4 = *argp4;
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&argp5,SWIGTYPE_p_std__vectorT_std__string_t,0))){
+    SWIG_fail_ptr("new_BehaviorType",5,SWIGTYPE_p_std__vectorT_std__string_t);
+  }
+  arg5 = *argp5;
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&argp6,SWIGTYPE_p_std__vectorT_std__string_t,0))){
+    SWIG_fail_ptr("new_BehaviorType",6,SWIGTYPE_p_std__vectorT_std__string_t);
+  }
+  arg6 = *argp6;
+  
+  result = (OSG::BehaviorType *)new OSG::BehaviorType((std::string const &)*arg1,arg2,arg3,arg4,arg5,arg6);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_BehaviorType__SWIG_2(lua_State* L) {
+  int SWIG_arg = 0;
+  std::string *arg1 = 0 ;
+  OSG::FieldContainerType *arg2 = (OSG::FieldContainerType *) 0 ;
   SwigValueWrapper< std::vector< std::string > > arg3 ;
   SwigValueWrapper< std::vector< std::string > > arg4 ;
   SwigValueWrapper< std::vector< std::string > > arg5 ;
   std::string temp1 ;
-  std::vector< std::string > *argp2 ;
   std::vector< std::string > *argp3 ;
   std::vector< std::string > *argp4 ;
   std::vector< std::string > *argp5 ;
@@ -5617,16 +5600,15 @@ static int _wrap_new_BehaviorType__SWIG_1(lua_State* L) {
   
   SWIG_check_num_args("OSG::BehaviorType",5,5)
   if(!lua_isstring(L,1)) SWIG_fail_arg("OSG::BehaviorType",1,"std::string const &");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"std::vector< std::string >");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"OSG::FieldContainerType *");
   if(!lua_isuserdata(L,3)) SWIG_fail_arg("OSG::BehaviorType",3,"std::vector< std::string >");
   if(!lua_isuserdata(L,4)) SWIG_fail_arg("OSG::BehaviorType",4,"std::vector< std::string >");
   if(!lua_isuserdata(L,5)) SWIG_fail_arg("OSG::BehaviorType",5,"std::vector< std::string >");
   temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_std__vectorT_std__string_t,0))){
-    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_std__vectorT_std__string_t);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__FieldContainerType,0))){
+    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_OSG__FieldContainerType);
   }
-  arg2 = *argp2;
   
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_std__vectorT_std__string_t,0))){
@@ -5658,29 +5640,27 @@ fail:
 }
 
 
-static int _wrap_new_BehaviorType__SWIG_2(lua_State* L) {
+static int _wrap_new_BehaviorType__SWIG_3(lua_State* L) {
   int SWIG_arg = 0;
   std::string *arg1 = 0 ;
-  SwigValueWrapper< std::vector< std::string > > arg2 ;
+  OSG::FieldContainerType *arg2 = (OSG::FieldContainerType *) 0 ;
   SwigValueWrapper< std::vector< std::string > > arg3 ;
   SwigValueWrapper< std::vector< std::string > > arg4 ;
   std::string temp1 ;
-  std::vector< std::string > *argp2 ;
   std::vector< std::string > *argp3 ;
   std::vector< std::string > *argp4 ;
   OSG::BehaviorType *result = 0 ;
   
   SWIG_check_num_args("OSG::BehaviorType",4,4)
   if(!lua_isstring(L,1)) SWIG_fail_arg("OSG::BehaviorType",1,"std::string const &");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"std::vector< std::string >");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"OSG::FieldContainerType *");
   if(!lua_isuserdata(L,3)) SWIG_fail_arg("OSG::BehaviorType",3,"std::vector< std::string >");
   if(!lua_isuserdata(L,4)) SWIG_fail_arg("OSG::BehaviorType",4,"std::vector< std::string >");
   temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_std__vectorT_std__string_t,0))){
-    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_std__vectorT_std__string_t);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__FieldContainerType,0))){
+    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_OSG__FieldContainerType);
   }
-  arg2 = *argp2;
   
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_std__vectorT_std__string_t,0))){
@@ -5706,26 +5686,24 @@ fail:
 }
 
 
-static int _wrap_new_BehaviorType__SWIG_3(lua_State* L) {
+static int _wrap_new_BehaviorType__SWIG_4(lua_State* L) {
   int SWIG_arg = 0;
   std::string *arg1 = 0 ;
-  SwigValueWrapper< std::vector< std::string > > arg2 ;
+  OSG::FieldContainerType *arg2 = (OSG::FieldContainerType *) 0 ;
   SwigValueWrapper< std::vector< std::string > > arg3 ;
   std::string temp1 ;
-  std::vector< std::string > *argp2 ;
   std::vector< std::string > *argp3 ;
   OSG::BehaviorType *result = 0 ;
   
   SWIG_check_num_args("OSG::BehaviorType",3,3)
   if(!lua_isstring(L,1)) SWIG_fail_arg("OSG::BehaviorType",1,"std::string const &");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"std::vector< std::string >");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"OSG::FieldContainerType *");
   if(!lua_isuserdata(L,3)) SWIG_fail_arg("OSG::BehaviorType",3,"std::vector< std::string >");
   temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_std__vectorT_std__string_t,0))){
-    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_std__vectorT_std__string_t);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__FieldContainerType,0))){
+    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_OSG__FieldContainerType);
   }
-  arg2 = *argp2;
   
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_std__vectorT_std__string_t,0))){
@@ -5745,46 +5723,23 @@ fail:
 }
 
 
-static int _wrap_new_BehaviorType__SWIG_4(lua_State* L) {
+static int _wrap_new_BehaviorType__SWIG_5(lua_State* L) {
   int SWIG_arg = 0;
   std::string *arg1 = 0 ;
-  SwigValueWrapper< std::vector< std::string > > arg2 ;
+  OSG::FieldContainerType *arg2 = (OSG::FieldContainerType *) 0 ;
   std::string temp1 ;
-  std::vector< std::string > *argp2 ;
   OSG::BehaviorType *result = 0 ;
   
   SWIG_check_num_args("OSG::BehaviorType",2,2)
   if(!lua_isstring(L,1)) SWIG_fail_arg("OSG::BehaviorType",1,"std::string const &");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"std::vector< std::string >");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("OSG::BehaviorType",2,"OSG::FieldContainerType *");
   temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_std__vectorT_std__string_t,0))){
-    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_std__vectorT_std__string_t);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_OSG__FieldContainerType,0))){
+    SWIG_fail_ptr("new_BehaviorType",2,SWIGTYPE_p_OSG__FieldContainerType);
   }
-  arg2 = *argp2;
   
   result = (OSG::BehaviorType *)new OSG::BehaviorType((std::string const &)*arg1,arg2);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_new_BehaviorType__SWIG_5(lua_State* L) {
-  int SWIG_arg = 0;
-  std::string *arg1 = 0 ;
-  std::string temp1 ;
-  OSG::BehaviorType *result = 0 ;
-  
-  SWIG_check_num_args("OSG::BehaviorType",1,1)
-  if(!lua_isstring(L,1)) SWIG_fail_arg("OSG::BehaviorType",1,"std::string const &");
-  temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
-  result = (OSG::BehaviorType *)new OSG::BehaviorType((std::string const &)*arg1);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++; 
   return SWIG_arg;
   
@@ -5822,8 +5777,8 @@ fail:
 
 static int _wrap_new_BehaviorType(lua_State* L) {
   int argc;
-  int argv[7]={
-    1,2,3,4,5,6,7
+  int argv[8]={
+    1,2,3,4,5,6,7,8
   };
   
   argc = lua_gettop(L);
@@ -5841,15 +5796,6 @@ static int _wrap_new_BehaviorType(lua_State* L) {
       return _wrap_new_BehaviorType__SWIG_6(L);
     }
   }
-  if (argc == 1) {
-    int _v;
-    {
-      _v = lua_isstring(L,argv[0]);
-    }
-    if (_v) {
-      return _wrap_new_BehaviorType__SWIG_5(L);
-    }
-  }
   if (argc == 2) {
     int _v;
     {
@@ -5858,14 +5804,14 @@ static int _wrap_new_BehaviorType(lua_State* L) {
     if (_v) {
       {
         void *ptr;
-        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+        if (SWIG_isptrtype(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__FieldContainerType, 0)) {
           _v = 0;
         } else {
           _v = 1;
         }
       }
       if (_v) {
-        return _wrap_new_BehaviorType__SWIG_4(L);
+        return _wrap_new_BehaviorType__SWIG_5(L);
       }
     }
   }
@@ -5877,7 +5823,7 @@ static int _wrap_new_BehaviorType(lua_State* L) {
     if (_v) {
       {
         void *ptr;
-        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+        if (SWIG_isptrtype(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__FieldContainerType, 0)) {
           _v = 0;
         } else {
           _v = 1;
@@ -5893,7 +5839,7 @@ static int _wrap_new_BehaviorType(lua_State* L) {
           }
         }
         if (_v) {
-          return _wrap_new_BehaviorType__SWIG_3(L);
+          return _wrap_new_BehaviorType__SWIG_4(L);
         }
       }
     }
@@ -5906,7 +5852,7 @@ static int _wrap_new_BehaviorType(lua_State* L) {
     if (_v) {
       {
         void *ptr;
-        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+        if (SWIG_isptrtype(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__FieldContainerType, 0)) {
           _v = 0;
         } else {
           _v = 1;
@@ -5931,7 +5877,7 @@ static int _wrap_new_BehaviorType(lua_State* L) {
             }
           }
           if (_v) {
-            return _wrap_new_BehaviorType__SWIG_2(L);
+            return _wrap_new_BehaviorType__SWIG_3(L);
           }
         }
       }
@@ -5945,7 +5891,7 @@ static int _wrap_new_BehaviorType(lua_State* L) {
     if (_v) {
       {
         void *ptr;
-        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+        if (SWIG_isptrtype(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__FieldContainerType, 0)) {
           _v = 0;
         } else {
           _v = 1;
@@ -5979,7 +5925,7 @@ static int _wrap_new_BehaviorType(lua_State* L) {
               }
             }
             if (_v) {
-              return _wrap_new_BehaviorType__SWIG_1(L);
+              return _wrap_new_BehaviorType__SWIG_2(L);
             }
           }
         }
@@ -5994,7 +5940,7 @@ static int _wrap_new_BehaviorType(lua_State* L) {
     if (_v) {
       {
         void *ptr;
-        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+        if (SWIG_isptrtype(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__FieldContainerType, 0)) {
           _v = 0;
         } else {
           _v = 1;
@@ -6030,14 +5976,83 @@ static int _wrap_new_BehaviorType(lua_State* L) {
             if (_v) {
               {
                 void *ptr;
-                if (lua_isuserdata(L,argv[5])==0 || SWIG_ConvertPtr(L,argv[5], (void **) &ptr, SWIGTYPE_p_BoostPath, 0)) {
+                if (lua_isuserdata(L,argv[5])==0 || SWIG_ConvertPtr(L,argv[5], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
                   _v = 0;
                 } else {
                   _v = 1;
                 }
               }
               if (_v) {
-                return _wrap_new_BehaviorType__SWIG_0(L);
+                return _wrap_new_BehaviorType__SWIG_1(L);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 7) {
+    int _v;
+    {
+      _v = lua_isstring(L,argv[0]);
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (SWIG_isptrtype(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_OSG__FieldContainerType, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          {
+            void *ptr;
+            if (lua_isuserdata(L,argv[3])==0 || SWIG_ConvertPtr(L,argv[3], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+              _v = 0;
+            } else {
+              _v = 1;
+            }
+          }
+          if (_v) {
+            {
+              void *ptr;
+              if (lua_isuserdata(L,argv[4])==0 || SWIG_ConvertPtr(L,argv[4], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+                _v = 0;
+              } else {
+                _v = 1;
+              }
+            }
+            if (_v) {
+              {
+                void *ptr;
+                if (lua_isuserdata(L,argv[5])==0 || SWIG_ConvertPtr(L,argv[5], (void **) &ptr, SWIGTYPE_p_std__vectorT_std__string_t, 0)) {
+                  _v = 0;
+                } else {
+                  _v = 1;
+                }
+              }
+              if (_v) {
+                {
+                  void *ptr;
+                  if (lua_isuserdata(L,argv[6])==0 || SWIG_ConvertPtr(L,argv[6], (void **) &ptr, SWIGTYPE_p_OSG__BoostPath, 0)) {
+                    _v = 0;
+                  } else {
+                    _v = 1;
+                  }
+                }
+                if (_v) {
+                  return _wrap_new_BehaviorType__SWIG_0(L);
+                }
               }
             }
           }
@@ -6048,287 +6063,13 @@ static int _wrap_new_BehaviorType(lua_State* L) {
   
   lua_pushstring(L,"Wrong arguments for overloaded function 'new_BehaviorType'\n"
     "  Possible C/C++ prototypes are:\n"
-    "    OSG::BehaviorType(std::string const &,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >,BoostPath &)\n"
-    "    OSG::BehaviorType(std::string const &,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >)\n"
-    "    OSG::BehaviorType(std::string const &,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >)\n"
-    "    OSG::BehaviorType(std::string const &,std::vector< std::string >,std::vector< std::string >)\n"
-    "    OSG::BehaviorType(std::string const &,std::vector< std::string >)\n"
-    "    OSG::BehaviorType(std::string const &)\n"
+    "    OSG::BehaviorType(std::string const &,OSG::FieldContainerType *,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >,OSG::BoostPath &)\n"
+    "    OSG::BehaviorType(std::string const &,OSG::FieldContainerType *,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >)\n"
+    "    OSG::BehaviorType(std::string const &,OSG::FieldContainerType *,std::vector< std::string >,std::vector< std::string >,std::vector< std::string >)\n"
+    "    OSG::BehaviorType(std::string const &,OSG::FieldContainerType *,std::vector< std::string >,std::vector< std::string >)\n"
+    "    OSG::BehaviorType(std::string const &,OSG::FieldContainerType *,std::vector< std::string >)\n"
+    "    OSG::BehaviorType(std::string const &,OSG::FieldContainerType *)\n"
     "    OSG::BehaviorType(OSG::BehaviorType const &)\n");
-  lua_error(L);return 0;
-}
-
-
-static int _wrap_BehaviorType_create__SWIG_0(lua_State* L) {
-  int SWIG_arg = 0;
-  std::string *arg1 = 0 ;
-  std::string *arg2 = 0 ;
-  std::string *arg3 = 0 ;
-  std::string *arg4 = 0 ;
-  std::string *arg5 = 0 ;
-  std::string temp1 ;
-  std::string temp2 ;
-  std::string temp3 ;
-  std::string temp4 ;
-  std::string temp5 ;
-  SwigValueWrapper< OSG::BehaviorType > result;
-  
-  SWIG_check_num_args("OSG_BehaviorType_create__SWIG_0",5,5)
-  if(!lua_isstring(L,1)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",1,"std::string const &");
-  if(!lua_isstring(L,2)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",2,"std::string const &");
-  if(!lua_isstring(L,3)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",3,"std::string const &");
-  if(!lua_isstring(L,4)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",4,"std::string const &");
-  if(!lua_isstring(L,5)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",5,"std::string const &");
-  temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
-  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
-  temp3.assign(lua_tostring(L,3),lua_strlen(L,3)); arg3=&temp3;
-  temp4.assign(lua_tostring(L,4),lua_strlen(L,4)); arg4=&temp4;
-  temp5.assign(lua_tostring(L,5),lua_strlen(L,5)); arg5=&temp5;
-  result = OSG_BehaviorType_create__SWIG_0((std::string const &)*arg1,(std::string const &)*arg2,(std::string const &)*arg3,(std::string const &)*arg4,(std::string const &)*arg5);
-  {
-    OSG::BehaviorType * resultptr = new OSG::BehaviorType((const OSG::BehaviorType &) result);
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_BehaviorType_create__SWIG_1(lua_State* L) {
-  int SWIG_arg = 0;
-  std::string *arg1 = 0 ;
-  std::string *arg2 = 0 ;
-  std::string *arg3 = 0 ;
-  std::string *arg4 = 0 ;
-  std::string temp1 ;
-  std::string temp2 ;
-  std::string temp3 ;
-  std::string temp4 ;
-  SwigValueWrapper< OSG::BehaviorType > result;
-  
-  SWIG_check_num_args("OSG_BehaviorType_create__SWIG_0",4,4)
-  if(!lua_isstring(L,1)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",1,"std::string const &");
-  if(!lua_isstring(L,2)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",2,"std::string const &");
-  if(!lua_isstring(L,3)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",3,"std::string const &");
-  if(!lua_isstring(L,4)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",4,"std::string const &");
-  temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
-  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
-  temp3.assign(lua_tostring(L,3),lua_strlen(L,3)); arg3=&temp3;
-  temp4.assign(lua_tostring(L,4),lua_strlen(L,4)); arg4=&temp4;
-  result = OSG_BehaviorType_create__SWIG_0((std::string const &)*arg1,(std::string const &)*arg2,(std::string const &)*arg3,(std::string const &)*arg4);
-  {
-    OSG::BehaviorType * resultptr = new OSG::BehaviorType((const OSG::BehaviorType &) result);
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_BehaviorType_create__SWIG_2(lua_State* L) {
-  int SWIG_arg = 0;
-  std::string *arg1 = 0 ;
-  std::string *arg2 = 0 ;
-  std::string *arg3 = 0 ;
-  std::string temp1 ;
-  std::string temp2 ;
-  std::string temp3 ;
-  SwigValueWrapper< OSG::BehaviorType > result;
-  
-  SWIG_check_num_args("OSG_BehaviorType_create__SWIG_0",3,3)
-  if(!lua_isstring(L,1)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",1,"std::string const &");
-  if(!lua_isstring(L,2)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",2,"std::string const &");
-  if(!lua_isstring(L,3)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",3,"std::string const &");
-  temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
-  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
-  temp3.assign(lua_tostring(L,3),lua_strlen(L,3)); arg3=&temp3;
-  result = OSG_BehaviorType_create__SWIG_0((std::string const &)*arg1,(std::string const &)*arg2,(std::string const &)*arg3);
-  {
-    OSG::BehaviorType * resultptr = new OSG::BehaviorType((const OSG::BehaviorType &) result);
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_BehaviorType_create__SWIG_3(lua_State* L) {
-  int SWIG_arg = 0;
-  std::string *arg1 = 0 ;
-  std::string *arg2 = 0 ;
-  std::string temp1 ;
-  std::string temp2 ;
-  SwigValueWrapper< OSG::BehaviorType > result;
-  
-  SWIG_check_num_args("OSG_BehaviorType_create__SWIG_0",2,2)
-  if(!lua_isstring(L,1)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",1,"std::string const &");
-  if(!lua_isstring(L,2)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",2,"std::string const &");
-  temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
-  temp2.assign(lua_tostring(L,2),lua_strlen(L,2)); arg2=&temp2;
-  result = OSG_BehaviorType_create__SWIG_0((std::string const &)*arg1,(std::string const &)*arg2);
-  {
-    OSG::BehaviorType * resultptr = new OSG::BehaviorType((const OSG::BehaviorType &) result);
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_BehaviorType_create__SWIG_4(lua_State* L) {
-  int SWIG_arg = 0;
-  std::string *arg1 = 0 ;
-  std::string temp1 ;
-  SwigValueWrapper< OSG::BehaviorType > result;
-  
-  SWIG_check_num_args("OSG_BehaviorType_create__SWIG_0",1,1)
-  if(!lua_isstring(L,1)) SWIG_fail_arg("OSG_BehaviorType_create__SWIG_0",1,"std::string const &");
-  temp1.assign(lua_tostring(L,1),lua_strlen(L,1)); arg1=&temp1;
-  result = OSG_BehaviorType_create__SWIG_0((std::string const &)*arg1);
-  {
-    OSG::BehaviorType * resultptr = new OSG::BehaviorType((const OSG::BehaviorType &) result);
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorType,1); SWIG_arg++;
-  }
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_BehaviorType_create(lua_State* L) {
-  int argc;
-  int argv[6]={
-    1,2,3,4,5,6
-  };
-  
-  argc = lua_gettop(L);
-  if (argc == 1) {
-    int _v;
-    {
-      _v = lua_isstring(L,argv[0]);
-    }
-    if (_v) {
-      return _wrap_BehaviorType_create__SWIG_4(L);
-    }
-  }
-  if (argc == 2) {
-    int _v;
-    {
-      _v = lua_isstring(L,argv[0]);
-    }
-    if (_v) {
-      {
-        _v = lua_isstring(L,argv[1]);
-      }
-      if (_v) {
-        return _wrap_BehaviorType_create__SWIG_3(L);
-      }
-    }
-  }
-  if (argc == 3) {
-    int _v;
-    {
-      _v = lua_isstring(L,argv[0]);
-    }
-    if (_v) {
-      {
-        _v = lua_isstring(L,argv[1]);
-      }
-      if (_v) {
-        {
-          _v = lua_isstring(L,argv[2]);
-        }
-        if (_v) {
-          return _wrap_BehaviorType_create__SWIG_2(L);
-        }
-      }
-    }
-  }
-  if (argc == 4) {
-    int _v;
-    {
-      _v = lua_isstring(L,argv[0]);
-    }
-    if (_v) {
-      {
-        _v = lua_isstring(L,argv[1]);
-      }
-      if (_v) {
-        {
-          _v = lua_isstring(L,argv[2]);
-        }
-        if (_v) {
-          {
-            _v = lua_isstring(L,argv[3]);
-          }
-          if (_v) {
-            return _wrap_BehaviorType_create__SWIG_1(L);
-          }
-        }
-      }
-    }
-  }
-  if (argc == 5) {
-    int _v;
-    {
-      _v = lua_isstring(L,argv[0]);
-    }
-    if (_v) {
-      {
-        _v = lua_isstring(L,argv[1]);
-      }
-      if (_v) {
-        {
-          _v = lua_isstring(L,argv[2]);
-        }
-        if (_v) {
-          {
-            _v = lua_isstring(L,argv[3]);
-          }
-          if (_v) {
-            {
-              _v = lua_isstring(L,argv[4]);
-            }
-            if (_v) {
-              return _wrap_BehaviorType_create__SWIG_0(L);
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  lua_pushstring(L,"Wrong arguments for overloaded function 'BehaviorType_create'\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    create(std::string const &,std::string const &,std::string const &,std::string const &,std::string const &)\n"
-    "    create(std::string const &,std::string const &,std::string const &,std::string const &)\n"
-    "    create(std::string const &,std::string const &,std::string const &)\n"
-    "    create(std::string const &,std::string const &)\n"
-    "    OSG_BehaviorType_create__SWIG_0(std::string const &)\n");
   lua_error(L);return 0;
 }
 
@@ -8679,7 +8420,6 @@ static const struct luaL_reg swig_commands[] = {
     { "SceneRefPtr_dcast", _wrap_SceneRefPtr_dcast},
     { "ProjectRefPtr_dcast", _wrap_ProjectRefPtr_dcast},
     { "SceneObjectRefPtr_dcast", _wrap_SceneObjectRefPtr_dcast},
-    { "BehaviorType_create",_wrap_BehaviorType_create},
     { "BehaviorFactory_the", _wrap_BehaviorFactory_the},
     { "BehaviorRefPtr_dcast", _wrap_BehaviorRefPtr_dcast},
     { "EffectRefPtr_dcast", _wrap_EffectRefPtr_dcast},
@@ -9027,7 +8767,6 @@ static void *_p_OSG__ParticleSystemRefPtrTo_p_OSG__FieldContainerRefPtr(void *x,
 static void *_p_OSG__SceneRefPtrTo_p_OSG__FieldContainerRefPtr(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OSG::FieldContainerRefPtr *) (OSG::AttachmentContainerRefPtr *) ((OSG::SceneRefPtr *) x));
 }
-static swig_type_info _swigt__p_BoostPath = {"_p_BoostPath", "BoostPath *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Inherited = {"_p_Inherited", "Inherited *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_MFChildrenType = {"_p_MFChildrenType", "MFChildrenType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_MatrixType = {"_p_MatrixType", "MatrixType *", 0, 0, (void*)0, 0};
@@ -9071,6 +8810,7 @@ static swig_type_info _swigt__p_OSG__BehaviorFactory = {"_p_OSG__BehaviorFactory
 static swig_type_info _swigt__p_OSG__BehaviorRefPtr = {"_p_OSG__BehaviorRefPtr", "OSG::BehaviorRefPtr *", 0, 0, (void*)&_wrap_class_OSG_BehaviorRefPtr, 0};
 static swig_type_info _swigt__p_OSG__BehaviorType = {"_p_OSG__BehaviorType", "OSG::BehaviorType *", 0, 0, (void*)&_wrap_class_OSG_BehaviorType, 0};
 static swig_type_info _swigt__p_OSG__BehaviorUnrecPtr = {"_p_OSG__BehaviorUnrecPtr", "OSG::BehaviorUnrecPtr *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OSG__BoostPath = {"_p_OSG__BoostPath", "OSG::BoostPath *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OSG__Effect = {"_p_OSG__Effect", "OSG::Effect *", 0, 0, (void*)&_wrap_class_OSG_Effect, 0};
 static swig_type_info _swigt__p_OSG__EffectRefPtr = {"_p_OSG__EffectRefPtr", "OSG::EffectRefPtr *", 0, 0, (void*)&_wrap_class_OSG_EffectRefPtr, 0};
 static swig_type_info _swigt__p_OSG__FieldContainer = {"_p_OSG__FieldContainer", "OSG::FieldContainer *", 0, 0, (void*)0, 0};
@@ -9136,7 +8876,6 @@ static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "OSG::UInt16 
 static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "OSG::UInt64 *|unsigned long *|OSG::BitVector *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_BoostPath,
   &_swigt__p_Inherited,
   &_swigt__p_MFChildrenType,
   &_swigt__p_MatrixType,
@@ -9152,6 +8891,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OSG__BehaviorRefPtr,
   &_swigt__p_OSG__BehaviorType,
   &_swigt__p_OSG__BehaviorUnrecPtr,
+  &_swigt__p_OSG__BoostPath,
   &_swigt__p_OSG__Camera,
   &_swigt__p_OSG__CameraRefPtr,
   &_swigt__p_OSG__Component,
@@ -9245,7 +8985,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_unsigned_long,
 };
 
-static swig_cast_info _swigc__p_BoostPath[] = {  {&_swigt__p_BoostPath, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Inherited[] = {  {&_swigt__p_Inherited, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MFChildrenType[] = {  {&_swigt__p_MFChildrenType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MatrixType[] = {  {&_swigt__p_MatrixType, 0, 0, 0},{0, 0, 0, 0}};
@@ -9289,6 +9028,7 @@ static swig_cast_info _swigc__p_OSG__BehaviorFactory[] = {  {&_swigt__p_OSG__Beh
 static swig_cast_info _swigc__p_OSG__BehaviorRefPtr[] = {  {&_swigt__p_OSG__BehaviorRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__BehaviorType[] = {  {&_swigt__p_OSG__BehaviorType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__BehaviorUnrecPtr[] = {  {&_swigt__p_OSG__BehaviorUnrecPtr, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__BoostPath[] = {  {&_swigt__p_OSG__BoostPath, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Effect[] = {  {&_swigt__p_OSG__Effect, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__EffectRefPtr[] = {  {&_swigt__p_OSG__EffectRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__PhysicsBody[] = {{&_swigt__p_OSG__PhysicsBody, 0, 0, 0},{0, 0, 0, 0}};
@@ -9354,7 +9094,6 @@ static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0,
 static swig_cast_info _swigc__p_unsigned_long[] = {  {&_swigt__p_unsigned_long, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_BoostPath,
   _swigc__p_Inherited,
   _swigc__p_MFChildrenType,
   _swigc__p_MatrixType,
@@ -9370,6 +9109,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OSG__BehaviorRefPtr,
   _swigc__p_OSG__BehaviorType,
   _swigc__p_OSG__BehaviorUnrecPtr,
+  _swigc__p_OSG__BoostPath,
   _swigc__p_OSG__Camera,
   _swigc__p_OSG__CameraRefPtr,
   _swigc__p_OSG__Component,
@@ -9771,7 +9511,6 @@ void SWIG_init_user(lua_State* L)
   /* exec Lua code if applicable */
   SWIG_Lua_dostring(L,SWIG_LUACODE);
 }
-
 
 OSG::LuaManager::OpenBoundLuaLibFunctor getKabalaEngineLuaBindingsLibFunctor(void)
 {

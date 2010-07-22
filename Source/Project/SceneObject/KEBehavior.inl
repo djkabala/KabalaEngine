@@ -61,7 +61,7 @@ bool Behavior::isInitialized()
 inline
 BehaviorType * Behavior::getBehaviorType(void)
 {
-	return TheBehaviorType;
+	return theBehaviorType;
 }
 
 OSG_END_NAMESPACE

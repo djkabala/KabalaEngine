@@ -120,7 +120,7 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
 	void attachListeners (EventProducerPtr eventProducer);
 
-	BehaviorType* TheBehaviorType;
+	BehaviorType* theBehaviorType;
 
     // Variables should all be in BehaviorBase.
 

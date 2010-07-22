@@ -180,6 +180,7 @@ void BehaviorType::registerWithScene(Scene* scene)
 /*                            Constructors                                 */
 
 BehaviorType::BehaviorType( const std::string &szName,
+							FieldContainerType * bBehaviorFieldContainerType,
                             std::vector<std::string> eventSourceNames,
 		                    std::vector<std::string> bEvents,
 		                    std::vector<std::string> bEventLinks,
@@ -190,6 +191,7 @@ BehaviorType::BehaviorType( const std::string &szName,
 
     _bInitialized     (false            ),
 
+	behaviorFieldContainerType	(bBehaviorFieldContainerType),
 
     _pParent          (NULL             ),
 
