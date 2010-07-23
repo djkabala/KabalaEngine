@@ -84,8 +84,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 	UInt32 findEventID(std::string eventName);
     std::string findEventName(UInt32 id);
 
-	std::string getCode();
-	void setCode(std::string bCode);
 
 	FieldContainerType * getFieldContainerType();
 
@@ -93,22 +91,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    BehaviorType(const std::string &szName,
-				 FieldContainerType * bBehaviorFieldContainerType,
-                 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
-				 std::vector<std::string> bEvents = std::vector<std::string>(),
-				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
-                 std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
-			     BoostPath& FilePath = BoostPath());
 
-    static BehaviorType create(const std::string &szName,
-                               const std::string &type,
-                               const std::string &bEvents = "",
-                               const std::string &bEventLinks = "",
-                               const std::string &luaCallback = "",
-                               const std::string &StrFilePath = "");
-
-    BehaviorType(const BehaviorType &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -125,8 +108,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     const std::vector<std::string>      getSourceContainers();
     const std::vector<std::string>      getEvents();
     const std::vector<std::string>      getEventLinks();
-    const std::vector<std::string>      getLuaFunctionNames();
-    const std::string                   getLuaFunctionMap(UInt64 uId);
     const std::vector<BehaviorType*>	getDependencies();
     const Scene*                        getAttachedScene();
 
@@ -178,6 +159,14 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 
   protected:
 
+	  BehaviorType(const std::string &szName,
+			 FieldContainerType * bBehaviorFieldContainerType,
+			 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
+			 std::vector<std::string> bEvents = std::vector<std::string>(),
+			 std::vector<std::string> bEventLinks = std::vector<std::string>());
+
+      BehaviorType(const BehaviorType &source);
+
     /*---------------------------------------------------------------------*/
     /*! \name                      Member                                  */
     /*! \{                                                                 */
@@ -185,8 +174,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     bool _bInitialized;
 	std::string TheCode;
 
-    std::vector<UInt32>	_bActiveEventIDs;
-
+    std::vector<UInt32>         _bActiveEventIDs;
 	std::vector<BehaviorType*>	_bDependencies;
 	std::vector<BehaviorType*>	_bDependents;
 

@@ -21,6 +21,7 @@
 #include "Project/SceneObject/KEBehaviorFactory.h"
 #include "Project/SceneObject/KEBehavior.h"
 #include "Project/SceneObject/KEBehaviorType.h"
+#include "Project/SceneObject/KELuaBehaviorType.h"
 
 //#include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGSound.h>
@@ -226,13 +227,13 @@ namespace OSG {
     /******************************************************/
     /*                   BehaviorType                     */
     /******************************************************/
-    class BehaviorType : public TypeBase
+    class LuaBehaviorType : public BehaviorType
     {
 		public:
 		
 			UInt32 findEventID(std::string eventName);
 			
-			BehaviorType(const std::string &szName,
+			LuaBehaviorType(const std::string &szName,
 				 FieldContainerType * bBehaviorFieldContainerType,
                  std::vector<std::string> eventSourceNames = std::vector<std::string>(),
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
@@ -240,14 +241,14 @@ namespace OSG {
                  std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
 			     OSG::BoostPath& FilePath = BoostPath());
                  
-            static BehaviorType create( const std::string &szName,
+            static LuaBehaviorType create( const std::string &szName,
                                         const std::string &type,
                                         const std::string &bEvents = "",
                                         const std::string &bEventLinks = "",
                                         const std::string &luaCallback = "",
                                         const std::string &StrFilePath = "");
 
-			BehaviorType(const BehaviorType &source);
+			LuaBehaviorType(const LuaBehaviorType &source);
 			
 		protected:
     };

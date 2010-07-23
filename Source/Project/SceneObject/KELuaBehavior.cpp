@@ -45,7 +45,7 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KELuaBehavior.h"
-#include "KEBehaviorType.h"
+#include "KELuaBehaviorType.h"
 
 #include <OpenSG/OSGLuaManager.h>
 #include <OpenSG/OSG_wrap.h>
@@ -161,7 +161,7 @@ void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 producedEven
 	    //                  |  |---0 arguments returned
 	    //                  |  |
 	    //                  V  V
-	    LuaManager::the()->checkError(lua_pcall(LuaState, 3, 0, 0));
+	    lua_pcall(LuaState, 3, 0, 0);
         
 	}
 }
