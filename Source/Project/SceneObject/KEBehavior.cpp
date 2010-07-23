@@ -89,26 +89,6 @@ void Behavior::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void Behavior::initialize(SceneObjectUnrecPtr rootSceneObject)
-{
-	theBehaviorType->registerWithScene(rootSceneObject->getParentScene());
-
-    for(UInt32 i(0); i < theBehaviorType->getSourceContainers().size(); ++i)
-    {
-        if(theBehaviorType->getSourceContainers()[i].compare("*")==0)
-        {
-            attachListeners(rootSceneObject->getParentScene()->editEventProducer());
-        }
-        else
-        {
-            FieldContainerRefPtr fc = getFieldContainer(theBehaviorType->getSourceContainers()[i]);
-            EventProducerPtr eventProducer = getEventProducer(fc);
-
-            eventProducer->attachEventListener(&_DepBehaviorListener,eventProducer->getProducedEventId(theBehaviorType->getEventLinks()[i]));
-        }
-    }
-}
-
 void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
 {
 	initialize(rootSceneObject);

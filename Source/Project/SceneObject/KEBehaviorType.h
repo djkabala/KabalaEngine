@@ -78,14 +78,11 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 
   public :
     typedef TypeBase Inherited;
-	std::vector<UInt32>	_bActiveEventIDs;
 	
 	void registerWithScene(Scene* scene);
 
 	UInt32 findEventID(std::string eventName);
     std::string findEventName(UInt32 id);
-
-    std::vector<std::string> BehaviorType::getLuaFunctionNames();
 
 	std::string getCode();
 	void setCode(std::string bCode);
@@ -125,9 +122,13 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name						Get	                                   */
     /*! \{                                                                 */
 
-    const std::vector<std::string> getSourceContainers();
-    const std::vector<std::string> getEvents();
-    const std::vector<std::string> getEventLinks();
+    const std::vector<std::string>      getSourceContainers();
+    const std::vector<std::string>      getEvents();
+    const std::vector<std::string>      getEventLinks();
+    const std::vector<std::string>      getLuaFunctionNames();
+    const std::string                   getLuaFunctionMap(UInt64 uId);
+    const std::vector<BehaviorType*>	getDependencies();
+    const Scene*                        getAttachedScene();
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -183,6 +184,8 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 
     bool _bInitialized;
 	std::string TheCode;
+
+    std::vector<UInt32>	_bActiveEventIDs;
 
 	std::vector<BehaviorType*>	_bDependencies;
 	std::vector<BehaviorType*>	_bDependents;

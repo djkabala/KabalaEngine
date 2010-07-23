@@ -58,6 +58,9 @@
 #include "OSGLog.h"
 #include "OSGTypeBase.h"
 
+#include <OpenSG/OSGLuaManager.h>
+#include <OpenSG/OSG_wrap.h>
+
 #include "OSGFilePathAttachment.h"
 #include "OSGContainerUtils.h"
 #include "OSGFieldContainerFactory.h"
@@ -74,6 +77,12 @@ OSG_USING_NAMESPACE
 const std::vector<std::string> BehaviorType::getSourceContainers()
 {
     return _bSourceContainers;
+}
+
+
+const std::vector<BehaviorType*> BehaviorType::getDependencies()
+{
+    return _bDependencies;
 }
 
 /*-------------------------------------------------------------------------*/
@@ -228,8 +237,7 @@ BehaviorType::BehaviorType( const std::string &szName,
                 std::ostringstream Code;
                 Code << TheFile.rdbuf();
                 TheFile.close();
-
-                setCode(Code.str());
+                LuaManager::the()->runScript(Code.str());
             }
         }
         catch(std::fstream::failure &f)
@@ -237,9 +245,10 @@ BehaviorType::BehaviorType( const std::string &szName,
             SWARNING << "BehaviorType::Constructor(): Error reading file" << FilePath.string() << ": " << f.what() << std::endl;
         }
     }
-    else
+
+    if(!(eventSourceNames.size() == bEventLinks.size() && bEventLinks.size() == bLuaCallbacks.size()))
     {
-        setCode("");
+        SWARNING << "BehaviorType::Constructor(): There is not a one to one correspondance between the events, thier sources, and callbacks." << std::endl;
     }
 }
 
@@ -376,7 +385,7 @@ BehaviorType BehaviorType::create(const std::string &szName,
         return OSG::BehaviorType(szName,NULL);
     }
 
-    return OSG::BehaviorType(szName,theType,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
+    return OSG::BehaviorType(szName,theType,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,luacSplitVec,FilePath);
 }
 
 BehaviorType::BehaviorType(const BehaviorType &obj) :
@@ -399,7 +408,7 @@ BehaviorType::BehaviorType(const BehaviorType &obj) :
 
     luaFunctionNames  (obj.luaFunctionNames  ),
 
-    _bSourceContainers (obj._bSourceContainers      ),
+    _bSourceContainers (obj._bSourceContainers),
 
 	TheCode			  (obj.TheCode           )
 {

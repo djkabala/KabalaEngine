@@ -55,7 +55,7 @@ BehaviorType *BehaviorType::getParent(void) const
 }
 
 inline
-std::vector<std::string> BehaviorType::getLuaFunctionNames()
+const std::vector<std::string> BehaviorType::getLuaFunctionNames()
 {
 	return luaFunctionNames;
 }
@@ -76,6 +76,12 @@ inline
 const std::vector<std::string> BehaviorType::getEventLinks()
 {
     return _bEventLinks;
+}
+
+inline
+const const Scene* BehaviorType::getAttachedScene()
+{
+    return attachedScene;
 }
 
 /*-------------------------------------------------------------------------*/

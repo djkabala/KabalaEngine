@@ -116,11 +116,12 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 	
 	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
 
-	void initialize(SceneObjectUnrecPtr rootSceneObject);
+	virtual void initialize(SceneObjectUnrecPtr rootSceneObject) = 0;
 
 	void attachListeners (EventProducerPtr eventProducer);
 
 	BehaviorType* theBehaviorType;
+    bool initialized;
 
     // Variables should all be in BehaviorBase.
 
@@ -158,12 +159,12 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
     static void initMethod(InitPhase ePhase);
 
-    /*! \}                                                                 */
+    /*! \} 
+    */
     /*==========================  PRIVATE  ================================*/
 
   private:
 
-	bool initialized;
     friend class FieldContainer;
     friend class BehaviorBase;
 	friend class BehaviorFactoryBase;
