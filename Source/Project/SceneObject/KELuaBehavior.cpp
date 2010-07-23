@@ -45,7 +45,7 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KELuaBehavior.h"
-#include "KEBehaviorType.h"
+#include "KELuaBehaviorType.h"
 
 #include <OpenSG/OSGLuaManager.h>
 #include <OpenSG/OSG_wrap.h>
@@ -81,13 +81,7 @@ void LuaBehavior::initMethod(InitPhase ePhase)
 
 void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
 {
-	if(!getBehaviorType()->getCode().empty())
-	{
-		//Run my Code
-		LuaManager::the()->runScript(getBehaviorType()->getCode());
-	}
-
-    if(!getBehaviorType()->getLuaFunctionNames().empty())
+    if(!dynamic_cast<LuaBehaviorType*>(getBehaviorType())->getLuaFunctionNames().empty())
     {
 		//Get the Lua state
 		lua_State *LuaState(LuaManager::the()->getLuaState());
@@ -109,7 +103,7 @@ void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
         }
 
 	    //Get the Lua function to be called
-        lua_getglobal(LuaState, getBehaviorType()->getLuaFunctionNames()[i].c_str());
+        lua_getglobal(LuaState, dynamic_cast<LuaBehaviorType*>(getBehaviorType())->getLuaFunctionNames()[i].c_str());
 
 	    //Push on the arguments
 	    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
@@ -125,7 +119,7 @@ void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
 	    //                  |  |---0 arguments returned
 	    //                  |  |
 	    //                  V  V
-	    LuaManager::the()->checkError(lua_pcall(LuaState, 3, 0, 0));
+	    lua_pcall(LuaState, 3, 0, 0);
         
 	}
 }

@@ -54,17 +54,6 @@ BehaviorType *BehaviorType::getParent(void) const
     return _pParent;
 }
 
-inline
-std::vector<std::string> BehaviorType::getLuaFunctionNames()
-{
-	return luaFunctionNames;
-}
-
-inline
-std::string BehaviorType::getCode()
-{
-	return TheCode;
-}
 
 inline
 const std::vector<std::string> BehaviorType::getEvents()
@@ -81,11 +70,6 @@ const std::vector<std::string> BehaviorType::getEventLinks()
 /*-------------------------------------------------------------------------*/
 /*                                Set                                      */
 
-inline
-void BehaviorType::setCode(std::string bCode)
-{
-	TheCode = bCode;
-}
 
 /*-------------------------------------------------------------------------*/
 /*                                 Is                                      */
