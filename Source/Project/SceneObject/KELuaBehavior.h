@@ -74,14 +74,16 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
     virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
-	void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
-
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
   protected:
 
     // Variables should all be in LuaBehaviorBase.
+
+	void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
+
+    void initialize(SceneObjectUnrecPtr rootSceneObject);
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
@@ -111,6 +113,8 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
 
     friend class FieldContainer;
     friend class LuaBehaviorBase;
+
+    std::map<UInt64,std::string> luaFunctionsMap;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const LuaBehavior &source);

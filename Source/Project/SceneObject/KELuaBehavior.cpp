@@ -79,44 +79,80 @@ void LuaBehavior::initMethod(InitPhase ePhase)
     }
 }
 
-void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
+void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
 {
-	if(!getBehaviorType()->getCode().empty())
-	{
-		//Run my Code
-		LuaManager::the()->runScript(getBehaviorType()->getCode());
-	}
+	theBehaviorType->registerWithScene(rootSceneObject->getParentScene());
+
+    for(UInt32 i(0); i < theBehaviorType->getSourceContainers().size(); ++i)
+    {
+        if(theBehaviorType->getSourceContainers()[i].compare("*")==0)
+        {
+            UInt64 uId = rootSceneObject->getParentScene()->getId();
+            uId <<= 32;
+            const MethodDescription* desc = getEventProducer(rootSceneObject->getParentScene())->getProducerType().findMethodDescription(theBehaviorType->getEventLinks()[i]);
+            if(desc != NULL)
+            {
+                uId |=  desc->getMethodId();
+                luaFunctionsMap[uId] = theBehaviorType->getLuaFunctionNames()[i];
+            }
+            else
+            {
+                SWARNING << "LuaBehavior could not find event " << theBehaviorType->getEventLinks()[i] << endLog;
+            }
+
+            attachListeners(rootSceneObject->getParentScene()->editEventProducer());
+        }
+        else
+        {
+            FieldContainerRefPtr fc = getFieldContainer(theBehaviorType->getSourceContainers()[i]);
+            EventProducerPtr eventProducer = getEventProducer(fc);
+
+            UInt64 uId = fc->getId();
+
+            uId <<= 32;
+            const MethodDescription* desc = getEventProducer(fc)->getProducerType().findMethodDescription(theBehaviorType->getEventLinks()[i]);
+            if(desc != NULL)
+            {
+                uId |=  desc->getMethodId();
+                luaFunctionsMap[uId] = theBehaviorType->getLuaFunctionNames()[i];
+            }
+            else
+            {
+                SWARNING << "LuaBehavior could not find event " << theBehaviorType->getEventLinks()[i] << endLog;
+            }
+            
+            eventProducer->attachEventListener(&_DepBehaviorListener,eventProducer->getProducedEventId(theBehaviorType->getEventLinks()[i]));
+        }
+    }
+}
+
+
+void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 producedEventID)
+{
 
     if(!getBehaviorType()->getLuaFunctionNames().empty())
     {
 		//Get the Lua state
 		lua_State *LuaState(LuaManager::the()->getLuaState());
         
-        FieldContainerRefPtr src = e->getSource();
-        EventProducerPtr     evt = getEventProducer(src);
-        EventProducerType    typ = evt->getProducerType();
-        MethodDescription*   des = typ.getMethodDescription(ID);
-        std::string eventName = des->getName();
-        
-        UInt32 i(0);
-        while(i < getBehaviorType()->getEventLinks().size())
-        {
-            if(getBehaviorType()->getEventLinks()[i].compare(eventName))
-            {
-                break;
-            }
-            ++i;
-        }
+        //std::map<UInt64, std::string> LuaFuncMap;
+        //dont forget the << add!
+        //LuaFuncMap[e->getSource()->getId()][producedEventID];
+
+        UInt64 uId = e->getSource()->getId();
+        uId <<= 32;
+        uId |= producedEventID;
+        std::string funcName = getBehaviorType()->getLuaFunctionMap(uId);
 
 	    //Get the Lua function to be called
-        lua_getglobal(LuaState, getBehaviorType()->getLuaFunctionNames()[i].c_str());
+        lua_getglobal(LuaState, funcName.c_str());
 
 	    //Push on the arguments
 	    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
 
 	    push_FieldContainer_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
 
-	    lua_pushnumber(LuaState,ID);             //Argument 3: the ProducedEvent ID
+	    lua_pushnumber(LuaState,producedEventID);             //Argument 3: the ProducedEvent ID
 
 	    //Execute the Function
 	    //
