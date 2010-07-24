@@ -20,6 +20,7 @@
 
 #include "Project/SceneObject/KEBehaviorFactory.h"
 #include "Project/SceneObject/KEBehavior.h"
+#include "Project/SceneObject/KELuaBehavior.h"
 #include "Project/SceneObject/KEBehaviorType.h"
 #include "Project/SceneObject/KELuaBehaviorType.h"
 
@@ -48,13 +49,16 @@ namespace OSG {
     class Scene;
     class Project;
     class Effect;
+    class EffectRefPtr;
     class SceneObject;
     class ApplicationPlayer;
     class Behavior;
     class BehaviorFactory;
     class BehaviorType;
+    class LuaBehaviorType;
     class Behavior;
     class LuaBehavior;
+    
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -211,7 +215,7 @@ namespace OSG {
     {
       public:
     
-        OSG::EffectRefPtr getEffect(std::string name);
+        Effect* getEffect(std::string name);
         const Scene* getParentScene () const;
         Scene* getParentScene ();
 
@@ -227,31 +231,49 @@ namespace OSG {
     /******************************************************/
     /*                   BehaviorType                     */
     /******************************************************/
-    class LuaBehaviorType : public BehaviorType
+    class BehaviorType : public TypeBase
     {
 		public:
 		
 			UInt32 findEventID(std::string eventName);
 			
-			LuaBehaviorType(const std::string &szName,
+		protected:
+            BehaviorType(   const std::string &szName,
+                            FieldContainerType * bBehaviorFieldContainerType,
+                            std::vector<std::string> eventSourceNames = std::vector<std::string>(),
+                            std::vector<std::string> bEvents = std::vector<std::string>(),
+                            std::vector<std::string> bEventLinks = std::vector<std::string>());
+                 
+
+			BehaviorType(const BehaviorType &source);
+    };
+    
+    /******************************************************/
+    /*				LuaBehaviorType                      */
+    /******************************************************/
+    class LuaBehaviorType : public BehaviorType
+    {
+		public:
+            std::vector<std::string> getLuaFunctionNames();
+
+            static LuaBehaviorType create(const std::string &szName,
+                               const std::string &type,
+                               const std::string &bEvents = "",
+                               const std::string &bEventLinks = "",
+                               const std::string &luaCallback = "",
+                               const std::string &StrFilePath = "");
+
+        protected:
+            LuaBehaviorType(const std::string &szName,
 				 FieldContainerType * bBehaviorFieldContainerType,
                  std::vector<std::string> eventSourceNames = std::vector<std::string>(),
 				 std::vector<std::string> bEvents = std::vector<std::string>(),
 				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
                  std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
-			     OSG::BoostPath& FilePath = BoostPath());
-                 
-            static LuaBehaviorType create( const std::string &szName,
-                                        const std::string &type,
-                                        const std::string &bEvents = "",
-                                        const std::string &bEventLinks = "",
-                                        const std::string &luaCallback = "",
-                                        const std::string &StrFilePath = "");
-
-			LuaBehaviorType(const LuaBehaviorType &source);
-			
-		protected:
-    };
+			     BoostPath& FilePath = BoostPath());
+            LuaBehaviorType(const LuaBehaviorType &source);
+            virtual ~LuaBehaviorType(void); 
+	};
     
     /******************************************************/
     /*                 BehaviorFactory (Base?)            */
@@ -333,38 +355,40 @@ namespace OSG {
         }
     };
     
-    // /******************************************************/
-    // /*					LuaBehavior                      */
-    // /******************************************************/
-    // class LuaBehavior : public Behavior
-    // {
-		// public:
-        // protected:
-            // LuaBehavior(void);
-            // LuaBehavior(const LuaBehavior &source);
-            // virtual ~LuaBehavior(void); 
-	// };
+    /******************************************************/
+    /*					 LuaBehavior                      */
+    /******************************************************/
+    class LuaBehavior : public Behavior
+    {
+		public:
+    		LuaBehaviorType * getLuaBehaviorType(void);
+            
+        protected:
+            LuaBehavior(void);
+            LuaBehavior(const LuaBehavior &source);
+            virtual ~LuaBehavior(void); 
+	};
     
-    // /******************************************************/
-    // /*                  LuaBehavior                    */
-    // /******************************************************/
-    // class LuaBehaviorRefPtr : public BehaviorRefPtr
-    // {
-      // public:
-         // LuaBehaviorRefPtr(void);
-         // LuaBehaviorRefPtr(const LuaBehaviorRefPtr               &source);
+    /******************************************************/
+    /*                 LuaBehaviorRefPtr                  */
+    /******************************************************/
+    class LuaBehaviorRefPtr : public BehaviorRefPtr
+    {
+      public:
+         LuaBehaviorRefPtr(void);
+         LuaBehaviorRefPtr(const LuaBehaviorRefPtr               &source);
 
-        // ~LuaBehaviorRefPtr(void); 
-        // LuaBehavior *operator->(void);
+        ~LuaBehaviorRefPtr(void); 
+        LuaBehavior *operator->(void);
         
-    // };
-    // %extend LuaBehaviorRefPtr
-    // {
-        // static LuaBehaviorRefPtr dcast(const FieldContainerRefPtr oIn)
-        // {
-            // return OSG::dynamic_pointer_cast<OSG::LuaBehavior>(oIn);
-        // }
-    // };
+    };
+    %extend LuaBehaviorRefPtr
+    {
+        static LuaBehaviorRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::LuaBehavior>(oIn);
+        }
+    };
     
     /******************************************************/
     /*                   Effect                           */
