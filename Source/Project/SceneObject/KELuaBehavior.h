@@ -40,6 +40,7 @@
 #endif
 
 #include "KELuaBehaviorBase.h"
+#include "KELuaBehaviorType.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -57,6 +58,8 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
 
     typedef LuaBehaviorBase Inherited;
     typedef LuaBehavior     Self;
+
+    LuaBehaviorType* const getLuaBehaviorType(void) const;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -82,6 +85,7 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
     // Variables should all be in LuaBehaviorBase.
 
 	void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
+    void depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 ID);
 
     void initialize(SceneObjectUnrecPtr rootSceneObject);
 

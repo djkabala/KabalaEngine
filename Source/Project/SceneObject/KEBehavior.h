@@ -114,7 +114,8 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
   protected:
 	
-	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
+	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID) = 0;
+    virtual void depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 ID) = 0;
 
 	virtual void initialize(SceneObjectUnrecPtr rootSceneObject) = 0;
 
@@ -137,7 +138,20 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 			BehaviorRecPtr _Behavior;
 	};
 
-	DepBehaviorListener		_DepBehaviorListener;
+    class DepFieldContainerListener : public EventListener
+	{
+		public:
+			
+			DepFieldContainerListener(BehaviorUnrecPtr TheBehavior);
+
+			virtual void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
+
+		protected :
+			BehaviorRecPtr _Behavior;
+	};
+
+	DepBehaviorListener		    _DepBehaviorListener;
+    DepFieldContainerListener	_DepFieldContainerListener;
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */

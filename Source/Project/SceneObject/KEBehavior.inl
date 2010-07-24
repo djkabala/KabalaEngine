@@ -53,6 +53,11 @@ Behavior::DepBehaviorListener::DepBehaviorListener(BehaviorUnrecPtr TheBehavior)
 }
 
 inline
+Behavior::DepFieldContainerListener::DepFieldContainerListener(BehaviorUnrecPtr TheBehavior) : _Behavior(TheBehavior)
+{
+}
+
+inline
 bool Behavior::isInitialized()
 {
 	return Behavior::initialized;

@@ -94,8 +94,9 @@ void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
 	initialize(rootSceneObject);
 }
 
-void Behavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID)
+void Behavior::DepFieldContainerListener::eventProduced(const EventUnrecPtr e, UInt32 ID)
 {
+	_Behavior->depFieldContainerProducedMethod(e, ID);
 }
 
 void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e, UInt32 ID)
@@ -184,6 +185,7 @@ void Behavior::produceEvent(UInt32 id)
 Behavior::Behavior(void) :
     Inherited(),
 	_DepBehaviorListener(BehaviorUnrecPtr(this)),
+    _DepFieldContainerListener(BehaviorUnrecPtr(this)),
 	initialized(false)
 {
 }
@@ -191,6 +193,7 @@ Behavior::Behavior(void) :
 Behavior::Behavior(const Behavior &source) :
     Inherited(source),
 	_DepBehaviorListener(BehaviorUnrecPtr(this)),
+    _DepFieldContainerListener(BehaviorUnrecPtr(this)),
 	initialized(false)
 {
 }
