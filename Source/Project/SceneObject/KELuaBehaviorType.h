@@ -80,11 +80,7 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehaviorType : public BehaviorType
 
 	typedef BehaviorType Inherited;
 
-	void registerWithScene(Scene* scene);
-
     std::vector<std::string> getLuaFunctionNames();
-
-	FieldContainerType * getFieldContainerType();
 
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */

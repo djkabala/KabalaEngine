@@ -261,7 +261,7 @@ LuaBehaviorType LuaBehaviorType::create(const std::string &szName,
         return OSG::LuaBehaviorType(szName,NULL);
     }
 
-    return OSG::LuaBehaviorType(szName,theType,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,evtlkSplitVec,FilePath);
+    return OSG::LuaBehaviorType(szName,theType,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,luacSplitVec,FilePath);
 }
 
 LuaBehaviorType::LuaBehaviorType(const LuaBehaviorType &obj) :
