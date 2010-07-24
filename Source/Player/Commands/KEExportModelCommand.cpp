@@ -46,6 +46,9 @@
 #include <OpenSG/OSGFCFileHandler.h>
 #include <OpenSG/OSGWindowEventProducer.h>
 
+#include <boost/filesystem/convenience.hpp>
+#include <boost/algorithm/string.hpp>
+
 OSG_USING_NAMESPACE
 
 /***************************************************************************\
@@ -108,10 +111,34 @@ void ExportModelCommand::execute(void)
         BoostPath(".."),
         true);
 
+    //Get the extionsion of the file
+
+
     if(_ExportNode != NULL)
     {
-        //Try saving the file using the SceneFileHandler
-        SceneFileHandler::the()->write(_ExportNode, FileToSave.string().c_str());
+        std::string extension(boost::filesystem::extension(FileToSave));
+        boost::algorithm::trim_if(extension,boost::is_any_of("."));
+        //Is the extension handled by the SceneFileHandler
+        if(SceneFileHandler::the()->getFileType(extension.c_str()) != NULL &&
+           SceneFileHandler::the()->getFileType(extension.c_str())->getFlags() & SceneFileType::OSG_WRITE_SUPPORTED)
+        {
+            SLOG << "Exporting " << FileToSave.string() << std::endl;
+            //Try saving the file using the SceneFileHandler
+            SceneFileHandler::the()->write(_ExportNode, FileToSave.string().c_str());
+        }
+        //Is the extension handled by the FCFileHandler
+        else if(FCFileHandler::the()->getFileType(extension.c_str(),FCFileType::OSG_WRITE_SUPPORTED) != NULL)
+        {
+            SLOG << "Exporting " << FileToSave.string() << std::endl;
+            //Try saving the file using the FCFileHandler
+            FCFileType::FCPtrStore store;
+            store.insert(_ExportNode);
+            FCFileHandler::the()->write(_ExportNode, FileToSave);
+        }
+        else
+        {
+            SWARNING << "No Exporter found for files with extension " << extension << std::endl;
+        }
     }
 }
 

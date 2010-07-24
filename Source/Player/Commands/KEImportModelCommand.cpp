@@ -117,7 +117,18 @@ void ImportModelCommand::execute(void)
         //Try loading the file using the XML file handler
         if(_NewNode == NULL)
         {
-            _NewNode = dynamic_pointer_cast<Node>(FCFileHandler::the()->read(FilesToOpen[0], Node::getClassType()));
+            FCFileType::FCPtrStore NewContainers;
+            NewContainers = FCFileHandler::the()->read(FilesToOpen[0]);
+
+            FCFileType::FCPtrStore::iterator Itor;
+            for(Itor = NewContainers.begin() ; Itor != NewContainers.end() ; ++Itor)
+            {
+                if( (*Itor)->getType() == (Node::getClassType()) && 
+                    (dynamic_pointer_cast<Node>(*Itor)->getParent() == NULL))
+                {
+                    _NewNode = (dynamic_pointer_cast<Node>(*Itor));
+                }
+            }
         }
     }
 
