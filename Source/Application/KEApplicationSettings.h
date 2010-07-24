@@ -212,6 +212,28 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettings
 };
 
 template<> 
+struct ApplicationSettings::settings_translator<std::string>
+{
+public:
+    typedef settings_translator<std::string> type;
+    typedef std::string            internal_type;
+    typedef bool                      external_type;
+
+    // Custom extractor - converts data from string to T
+    boost::optional<std::string> get_value(const std::string &str_value) const
+    {
+        return boost::optional<std::string>(str_value);
+    }
+
+
+    // Custom inserter - converts data from T to string
+    std::string put_value(const std::string &value) const
+    {
+        return value;
+    }
+};
+
+template<> 
 struct ApplicationSettings::settings_translator<bool>
 {
 public:
