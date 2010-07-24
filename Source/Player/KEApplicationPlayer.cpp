@@ -67,6 +67,8 @@
 #include <OpenSG/OSGSimpleGeometryExt.h>
 #include <OpenSG/OSGFieldContainerEditorDialog.h>
 //#include <OpenSG/OSGGeometryUtils.h>
+#include <OpenSG/OSGFCPtrFieldEditor.h>
+#include <OpenSG/OSGFCPtrEditorRootedStore.h>
 
 // the general scene file loading handler
 #include <OpenSG/OSGSceneFileHandler.h>
@@ -110,6 +112,8 @@ void ApplicationPlayer::initMethod(InitPhase ePhase)
 
     if(ePhase == TypeObject::SystemPost)
     {
+        //Set the FCPtrFieldEditor to use the FCPtrEditorRootedStore by default
+        FCPtrFieldEditor::setDefaultFindFCStorePrototype(FCPtrEditorRootedStore::create());
     }
 }
 
@@ -272,33 +276,33 @@ void ApplicationPlayer::createDebugInterface(void)
 
     _SceneSubItem->setText("Scenes");
 
-    _FlyNavigatorItem->setText("FlyNavigator ");
+    _FlyNavigatorItem->setText("FlyNavigator");
     _FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_N);
     _FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_N);
 
-    _TrackballNavigatorItem->setText("TrackballNavigator ");
+    _TrackballNavigatorItem->setText("TrackballNavigator");
     _TrackballNavigatorItem->setAcceleratorKey(KeyEvent::KEY_T);
     _TrackballNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _TrackballNavigatorItem->setMnemonicKey(KeyEvent::KEY_T);
 
-    _BasicItem->setText("Basic ");
+    _BasicItem->setText("Basic");
     _BasicItem->setAcceleratorKey(KeyEvent::KEY_B);
     _BasicItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _BasicItem->setMnemonicKey(KeyEvent::KEY_B);
 
-    _RenderItem->setText("Render ");
+    _RenderItem->setText("Render");
     _RenderItem->setAcceleratorKey(KeyEvent::KEY_R);
     _RenderItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _RenderItem->setMnemonicKey(KeyEvent::KEY_R);
 
-    _PhysicsItem->setText("Physics ");
+    _PhysicsItem->setText("Physics");
     _PhysicsItem->setMnemonicKey(KeyEvent::KEY_Y);
 
-    _ParticleSystemItem->setText("ParticleSystem ");
+    _ParticleSystemItem->setText("ParticleSystem");
     _ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_Z);
 
-    _AnimationItem->setText("Animation ");
+    _AnimationItem->setText("Animation");
     _AnimationItem->setMnemonicKey(KeyEvent::KEY_A);
 
     _PauseActiveUpdatesItem->setText("Pause Active Updates");
@@ -694,6 +698,15 @@ void ApplicationPlayer::attachDebugInterface(void)
             }
         }
 
+    }
+
+    //Root the FCPtr
+    FCPtrEditorStorePtr FCEditorStore = FCPtrFieldEditor::getDefaultFindFCStorePrototype();
+    if(boost::dynamic_pointer_cast<FCPtrEditorRootedStore>(FCEditorStore))
+    {
+        FCPtrEditorRootedStore::FieldContianerVector Roots;
+        Roots.push_back(MainApplication::the()->getProject());
+        boost::dynamic_pointer_cast<FCPtrEditorRootedStore>(FCEditorStore)->setRoots(Roots);
     }
 
     updateHighlightNode();

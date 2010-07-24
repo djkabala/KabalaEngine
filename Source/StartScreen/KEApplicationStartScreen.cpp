@@ -82,6 +82,7 @@
 #include <OpenSG/OSGKeyframeSequences.h>
 
 #include <boost/filesystem/operations.hpp>
+#include "KEVersion.h"
 
 OSG_BEGIN_NAMESPACE
 

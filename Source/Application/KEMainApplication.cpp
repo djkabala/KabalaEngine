@@ -82,6 +82,7 @@
 
 //Kabala Engine Lua Bindings
 #include "LuaBindings/KELuaBindings.h"
+#include "KEVersion.h"
 
 OSG_USING_NAMESPACE
 

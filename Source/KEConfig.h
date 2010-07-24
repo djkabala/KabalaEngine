@@ -44,11 +44,6 @@
 #include <OpenSG/OSGBaseTypes.h>
 #include <string>
 
-/*-------------------------------------------------------------------------*/
-/*                                Versioning                               */
-
-#include <KEVersion.h>
-
 #define BOOST_SMART_PTR_HPP
 
 #endif /* _KECONFIG_H_ */
