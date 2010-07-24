@@ -33,147 +33,22 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-//---------------------------------------------------------------------------
-//  Includes
-//---------------------------------------------------------------------------
-
 OSG_BEGIN_NAMESPACE
 
 inline
-ApplicationPlayer::PlayerKeyListener::PlayerKeyListener(ApplicationPlayerRefPtr TheApplicationPlayer) :
-        _ApplicationPlayer(TheApplicationPlayer)
+LoadProjectCommand::LoadProjectCommand(void) : Inherited()
 {
 }
 
 inline
-ApplicationPlayer::BasicListener::BasicListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
+LoadProjectCommand::LoadProjectCommand(const LoadProjectCommand& source) : Inherited(source)
 {
-}
-
-inline
-ApplicationPlayer::BasicListener::~BasicListener()
-{
-}
-
-inline
-ApplicationPlayer::GotoSceneItemListener::GotoSceneItemListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
-{
-}
-
-inline
-ApplicationPlayer::GotoSceneItemListener::~GotoSceneItemListener()
-{
-}
-
-inline
-ApplicationPlayer::ProjectListener::ProjectListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
-{
-}
-
-inline
-ApplicationPlayer::ProjectListener::~ProjectListener()
-{
-}
-
-inline
-bool ApplicationPlayer::isDebugging(void) const
-{
-    return _IsDebugActive;
 }
 
 inline 
-CommandManagerPtr ApplicationPlayer::getCommandManager(void)
+const CommandType &LoadProjectCommand::getClassType(void)
 {
-	return _TheCommandManager;
-}
-
-inline
-void ApplicationPlayer::setClonedNodeInCopyClipboard(NodeRefPtr node)
-{
-	_ClonedNodeInCopyClipboard = node;
-}
-
-inline
-NodeRefPtr ApplicationPlayer::getClonedNodeInCopyClipboard(void)
-{
-	return _ClonedNodeInCopyClipboard;
-}
-
-inline 
-UndoManagerPtr ApplicationPlayer::getUndoManager(void)
-{
-	return _TheUndoManager;
-}
-
-inline 
-NodeRefPtr ApplicationPlayer::getHighlightNode(void)
-{
-	return _HighlightNode;
-}
-
-inline 
-void ApplicationPlayer::setHighlightNode(NodeRefPtr selectedNode)
-{
-	_HighlightNode = selectedNode;
-}
-
-inline 
-ViewportRefPtr ApplicationPlayer::getDebugViewport(void)
-{
-	return _DebugViewport;
-}
-
-inline 
-void ApplicationPlayer::setDebugViewport(ViewportRefPtr viewport)
-{
-	_DebugViewport = viewport;
-}
-
-inline 
-HelperPanelRefPtr ApplicationPlayer::getHelperPanel(void)
-{
-	return _HelperPanel;
-}
-
-inline 
-void ApplicationPlayer::setHelperPanel(HelperPanelRefPtr helperPanel)
-{
-	_HelperPanel = helperPanel;
-}
-
-inline 
-NodeRefPtr ApplicationPlayer::getSelectedNode(void)
-{
-	return _SelectedNode;
-}
-
-inline 
-void ApplicationPlayer::setSelectedNode(NodeRefPtr selectedNode)
-{
-    if(_SelectedNode != selectedNode)
-    {
-        _SelectedNode = selectedNode;
-        updateHighlightNode();
-        updateWireframeNode();
-    }
-}
-
-inline 
-ContentPanelRefPtr ApplicationPlayer::getContentPanel(void)
-{
-	return _ContentPanel;
-}
-
-inline 
-void ApplicationPlayer::setContentPanel(ContentPanelRefPtr contentPanel)
-{
-	_ContentPanel = contentPanel;
-}
-
-inline 
-Navigator& ApplicationPlayer::getDebugSceneNavigator(void)
-{
-    return _DebugSceneNavigator;
+	return _Type;
 }
 
 OSG_END_NAMESPACE

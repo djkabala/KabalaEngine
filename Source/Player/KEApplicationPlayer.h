@@ -168,6 +168,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     virtual void reset(void);
     virtual void gotoScene(SceneRefPtr TheScene);
     void enableDebug(bool EnableDebug);
+    bool isDebugging(void) const;
 
 	CommandManagerPtr getCommandManager(void);
 	void setCurrentAction(UInt32 action);
@@ -368,11 +369,16 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     PanelRefPtr			_Toolbar;
 
+    ButtonRefPtr	_EditProjectButton;
+
     ButtonRefPtr	_OpenFileButton;
     ButtonRefPtr	_SaveFileButton;
     ButtonRefPtr	_CloseFileButton;
 
 
+    MenuItemRefPtr _LoadProjectItem ;				
+    MenuItemRefPtr _SaveProjectItem ;				
+    MenuItemRefPtr _SaveProjectAsItem;
     MenuItemRefPtr _ResetItem ;				
     MenuItemRefPtr _ForceQuitItem ;			
 

@@ -85,6 +85,9 @@
 #include "Player/Commands/KEUndoCommandOfPlayer.h"
 #include "Player/Commands/KERedoCommandOfPlayer.h"
 
+#include "Player/Commands/KELoadProjectCommand.h"
+#include "Player/Commands/KESaveProjectCommand.h"
+
 
 OSG_BEGIN_NAMESPACE
 
@@ -182,6 +185,10 @@ void ApplicationPlayer::createDebugInterface(void)
 
     /*************************************************** Menu creation *******************************************************************/
     // the menu items
+    _LoadProjectItem = MenuItem::create();				
+    _SaveProjectItem = MenuItem::create();				
+    _SaveProjectAsItem = MenuItem::create();				
+
     _ResetItem = MenuItem::create();				
     _ForceQuitItem = MenuItem::create();			
 
@@ -209,6 +216,21 @@ void ApplicationPlayer::createDebugInterface(void)
 
 
     // setting the fields of the menu items
+    _LoadProjectItem->setText("Open Project ...");
+    _LoadProjectItem->setAcceleratorKey(KeyEvent::KEY_O);
+    _LoadProjectItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
+    _LoadProjectItem->setMnemonicKey(KeyEvent::KEY_O);
+
+    _SaveProjectItem->setText("Save Project");
+    _SaveProjectItem->setAcceleratorKey(KeyEvent::KEY_S);
+    _SaveProjectItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
+    _SaveProjectItem->setMnemonicKey(KeyEvent::KEY_S);
+
+    _SaveProjectAsItem->setText("Save Project As ...");
+    _SaveProjectAsItem->setAcceleratorKey(KeyEvent::KEY_S);
+    _SaveProjectAsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
+    _SaveProjectAsItem->setMnemonicKey(KeyEvent::KEY_S);
+
     _ResetItem->setText("Reset");
     _ResetItem->setAcceleratorKey(KeyEvent::KEY_E);
     _ResetItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
@@ -333,18 +355,18 @@ void ApplicationPlayer::createDebugInterface(void)
     _ContentPanel->setConstraints(ContentConstraints);
     _ContentPanel->init();
 
-    _OpenFileButton = Button::create();
+    _EditProjectButton = Button::create();
+    _EditProjectButton->setText("Edit Project");
+    _EditProjectButton->addActionListener(&_BasicListener);
 
+    _OpenFileButton = Button::create();
     _OpenFileButton->setText("Open File");
     //_OpenFileButton->setPreferredSize(Vec2f(100,50));
-
     _OpenFileButton->addActionListener(&_BasicListener);
 
     _SaveFileButton = Button::create();
-
     _SaveFileButton->setText("Save File");
     //_SaveFileButton->setPreferredSize(Vec2f(100,50));
-
     _SaveFileButton->addActionListener(&_BasicListener);
 
     /*_CloseFileButton = Button::create();
@@ -371,6 +393,7 @@ void ApplicationPlayer::createDebugInterface(void)
     ToolbarLayout->setOrientation(FlowLayout::HORIZONTAL_ORIENTATION);
     ToolbarLayout->setMajorAxisAlignment(1.0);
 
+    _Toolbar->pushToChildren(_EditProjectButton);
     _Toolbar->pushToChildren(_OpenFileButton);
     _Toolbar->pushToChildren(_SaveFileButton);
     _Toolbar->pushToChildren(_ModeComboBox);
@@ -379,6 +402,10 @@ void ApplicationPlayer::createDebugInterface(void)
 
     // creation of menus and addition of menu items to them
     _ProjectMenu = Menu::create();
+    _ProjectMenu->addItem(_LoadProjectItem);
+    _ProjectMenu->addItem(_SaveProjectItem);
+    _ProjectMenu->addItem(_SaveProjectAsItem);
+    _ProjectMenu->addSeparator();
     _ProjectMenu->addItem(_ResetItem);
     _ProjectMenu->addSeparator();
     _ProjectMenu->addItem(_ForceQuitItem);
@@ -434,6 +461,9 @@ void ApplicationPlayer::createDebugInterface(void)
     _ToggleMenu->setMnemonicKey(KeyEvent::KEY_G);
 
     // adding actionlisteners to each of the menuitems
+    _LoadProjectItem->addActionListener(&_BasicListener);
+    _SaveProjectItem->addActionListener(&_BasicListener);
+    _SaveProjectAsItem->addActionListener(&_BasicListener);
     _ResetItem->addActionListener(&_BasicListener);
     _ForceQuitItem->addActionListener(&_BasicListener);
 
@@ -762,6 +792,21 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
         MainApplication::the()->getProject()->reset();
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
     }
+    else if(e->getSource() == _LoadProjectItem)
+    {
+        CommandPtr LoadProjectItemCommand = LoadProjectCommand::create();
+        getCommandManager()->executeCommand(LoadProjectItemCommand);
+    }
+    else if(e->getSource() == _SaveProjectItem)
+    {
+        CommandPtr SaveProjectItemCommand = SaveProjectCommand::create(false);
+        getCommandManager()->executeCommand(SaveProjectItemCommand);
+    }
+    else if(e->getSource() == _SaveProjectAsItem)
+    {
+        CommandPtr SaveProjectItemCommand = SaveProjectCommand::create(true);
+        getCommandManager()->executeCommand(SaveProjectItemCommand);
+    }
     else if(e->getSource() == _ForceQuitItem)
     {
         MainApplication::the()->exit();
@@ -886,6 +931,10 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
         int index = _ModeComboBox->getSelectedIndex();
         _HierarchyPanel->setView(index);
         _ContentPanel->setView(index);
+    }
+    else if(e->getSource() == _EditProjectButton)
+    {
+        openEditor(MainApplication::the()->getProject());
     }
     else if(e->getSource() == _OpenFileButton)
     {
