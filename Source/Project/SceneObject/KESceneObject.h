@@ -59,7 +59,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     typedef SceneObjectBase Inherited;
     typedef SceneObject     Self;
 
-    EffectRefPtr getEffect(std::string name);
+    Effect* getEffect(std::string name);
 	const Scene* getParentScene () const;
 	Scene* getParentScene ();
 

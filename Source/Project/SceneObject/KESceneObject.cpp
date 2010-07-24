@@ -117,7 +117,7 @@ void SceneObject::checkBehaviorInitialization()
  *                           Instance methods                              *
 \***************************************************************************/
 
-EffectRefPtr SceneObject::getEffect(std::string name)
+Effect* SceneObject::getEffect(std::string name)
 {
     MFUnrecChildEffectPtr::const_iterator elemIt  =
         _mfAttachedEffects.begin();
