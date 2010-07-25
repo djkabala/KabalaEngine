@@ -233,57 +233,57 @@ namespace OSG {
     /******************************************************/
     class BehaviorType : public TypeBase
     {
-		public:
-		
-			UInt32 findEventID(std::string eventName);
-			
-		protected:
-            BehaviorType(   const std::string &szName,
-                            FieldContainerType * bBehaviorFieldContainerType,
-                            std::vector<std::string> eventSourceNames = std::vector<std::string>(),
-                            std::vector<std::string> bEvents = std::vector<std::string>(),
-                            std::vector<std::string> bEventLinks = std::vector<std::string>());
-                 
+        public:
 
-			BehaviorType(const BehaviorType &source);
+            UInt32 findEventID(std::string eventName);
+
+        protected:
+            BehaviorType(   const std::string &szName,
+                    FieldContainerType * bBehaviorFieldContainerType,
+                    std::vector<std::string> eventSourceNames = std::vector<std::string>(),
+                    std::vector<std::string> bEvents = std::vector<std::string>(),
+                    std::vector<std::string> bEventLinks = std::vector<std::string>());
+
+
+            BehaviorType(const BehaviorType &source);
     };
-    
+
     /******************************************************/
     /*				LuaBehaviorType                      */
     /******************************************************/
     class LuaBehaviorType : public BehaviorType
     {
-		public:
+        public:
             std::vector<std::string> getLuaFunctionNames();
 
             static LuaBehaviorType create(const std::string &szName,
-                               const std::string &type,
-                               const std::string &bEvents = "",
-                               const std::string &bEventLinks = "",
-                               const std::string &luaCallback = "",
-                               const std::string &StrFilePath = "");
+                    const std::string &type,
+                    const std::string &bEvents = "",
+                    const std::string &bEventLinks = "",
+                    const std::string &luaCallback = "",
+                    const std::string &StrFilePath = "");
 
         protected:
             LuaBehaviorType(const std::string &szName,
-				 FieldContainerType * bBehaviorFieldContainerType,
-                 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
-				 std::vector<std::string> bEvents = std::vector<std::string>(),
-				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
-                 std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
-			     BoostPath& FilePath = BoostPath());
+                    FieldContainerType * bBehaviorFieldContainerType,
+                    std::vector<std::string> eventSourceNames = std::vector<std::string>(),
+                    std::vector<std::string> bEvents = std::vector<std::string>(),
+                    std::vector<std::string> bEventLinks = std::vector<std::string>(),
+                    std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
+                    BoostPath& FilePath = BoostPath());
             LuaBehaviorType(const LuaBehaviorType &source);
             virtual ~LuaBehaviorType(void); 
-	};
+    };
     
     /******************************************************/
     /*                 BehaviorFactory (Base?)            */
     /******************************************************/
     class BehaviorFactory
     {
-		public :
+        public :
             static BehaviorFactory *the(void);
 
-		protected:
+        protected:
             BehaviorFactory(void);
 
             virtual ~BehaviorFactory(void);
@@ -305,12 +305,12 @@ namespace OSG {
         {
             return OSG::BehaviorFactory::the()->findType(uiTypeId);
         }
-        
+
         BehaviorType *findType      (const Char8    *szName)
         {
             return OSG::BehaviorFactory::the()->findType(szName);
         }
-        
+
         OSG::BehaviorRefPtr     createBehavior(std::string Name)
         {
             return OSG::BehaviorFactory::the()->createBehavior(Name);
@@ -322,17 +322,17 @@ namespace OSG {
     /******************************************************/
     class Behavior : public AttachmentContainer
     {
-		public:
-    		BehaviorType * getBehaviorType(void);
+        public:
+            BehaviorType * getBehaviorType(void);
             const SceneObject* getParentSceneObject(void) const;
             void produceEvent(std::string name);
             void produceEvent(UInt32 id);
-			bool isInitialized();
+            bool isInitialized();
         protected:
             Behavior(void);
             Behavior(const Behavior &source);
             virtual ~Behavior(void); 
-	};
+    };
     
     /******************************************************/
     /*                  BehaviorRefPtr                    */
@@ -360,14 +360,14 @@ namespace OSG {
     /******************************************************/
     class LuaBehavior : public Behavior
     {
-		public:
-    		LuaBehaviorType * getLuaBehaviorType(void);
-            
+        public:
+            LuaBehaviorType * getLuaBehaviorType(void);
+
         protected:
             LuaBehavior(void);
             LuaBehavior(const LuaBehavior &source);
             virtual ~LuaBehavior(void); 
-	};
+    };
     
     /******************************************************/
     /*                 LuaBehaviorRefPtr                  */

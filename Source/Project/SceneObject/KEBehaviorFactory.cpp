@@ -36,16 +36,16 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#include "OSGEventProducerFactory.h"
-
-#include "OSGFactoryController.h"
-#include "OSGLog.h"
-#include "OSGTypeBase.h"
 #include "KEBehaviorFactory.h"
+#include <OpenSG/OSGEventProducerFactory.h>
+
+#include <OpenSG/OSGFactoryController.h>
+#include <OpenSG/OSGLog.h>
+#include <OpenSG/OSGTypeBase.h>
 #include "KEBehavior.h"
 #include "KEBehaviorType.h"
 
-#include "OSGSingletonHolder.ins"
+#include <OpenSG/OSGSingletonHolder.ins>
 
 #include <algorithm>
 #include <functional>

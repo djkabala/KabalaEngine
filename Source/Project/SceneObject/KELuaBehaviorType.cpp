@@ -39,7 +39,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "OSGConfig.h"
+#include "KELuaBehaviorType.h"
 
 #include <iostream>
 
@@ -49,18 +49,15 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/regex.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/filesystem/operations.hpp>
 
-#include "KELuaBehaviorType.h"
 #include "KEBehaviorFactory.h"
 #include "Project/Scene/KEScene.h"
-#include "OSGTypeBase.h"
 
-#include "OSGMethodDescription.h"
-#include "OSGLog.h"
+#include <OpenSG/OSGMethodDescription.h>
+#include <OpenSG/OSGLog.h>
 
-#include "OSGFilePathAttachment.h"
-#include "OSGContainerUtils.h"
-#include "OSGFieldContainerFactory.h"
+#include <OpenSG/OSGFieldContainerFactory.h>
 #include <fstream>
 #include <sstream>
 
@@ -95,7 +92,7 @@ LuaBehaviorType::LuaBehaviorType( const std::string &szName,
 		                    std::vector<std::string> bEvents,
 		                    std::vector<std::string> bEventLinks,
                             std::vector<std::string> bLuaCallbacks,
-	                        BoostPath& FilePath) :
+	                        BoostPath FilePath) :
     Inherited        (szName,
 					  bBehaviorFieldContainerType,
                       eventSourceNames,
@@ -106,41 +103,34 @@ LuaBehaviorType::LuaBehaviorType( const std::string &szName,
 {
     if(!FilePath.string().empty())
     {
-	    std::ifstream TheFile;
-        TheFile.exceptions(std::fstream::failbit | std::fstream::badbit);
-
-        try
+        if(!boost::filesystem::exists(FilePath))
         {
-            TheFile.open(FilePath.string().c_str());
-            if(TheFile)
-            {
-                std::ostringstream Code;
-                Code << TheFile.rdbuf();
-                TheFile.close();
-
-				LuaManager::the()->runScript(Code.str());
-            }
+            SWARNING << "Cannot load script for LuaBehaviorType, because file: "
+                << FilePath.string() << " does not exist." << std::endl;
         }
-        catch(std::fstream::failure &f)
+        else if(!boost::filesystem::is_regular_file(FilePath))
         {
-            SWARNING << "BehaviorType::Constructor(): Error reading file" << FilePath.string() << ": " << f.what() << std::endl;
+            SWARNING << "Cannot load script for LuaBehaviorType, because file: "
+                << FilePath.string() << " is not a regular file." << std::endl;
+        }
+        else
+        {
+            LuaManager::the()->runScript(FilePath);
         }
     }
 }
 
 LuaBehaviorType LuaBehaviorType::create(const std::string &szName,
-                                  const std::string &type,
-                                  const std::string &bEvents,
-                                  const std::string &bEventLinks,
-                                  const std::string &luaCallback,
-                                  const std::string &StrFilePath)
+                                        const std::string &type,
+                                        const std::string &bEvents,
+                                        const std::string &bEventLinks,
+                                        const std::string &luaCallback,
+                                        const std::string &StrFilePath)
 {
-    std::vector< std::string > evtSplitVec = std::vector<std::string>();
-    std::vector< std::string > fcsrcSplitVec = std::vector<std::string>();
-    std::vector< std::string > evtlkSplitVec = std::vector<std::string>();
-    std::vector< std::string > luacSplitVec = std::vector<std::string>();
-    
-    OSG::BoostPath FilePath = OSG::BoostPath();
+    std::vector< std::string > evtSplitVec;
+    std::vector< std::string > fcsrcSplitVec;
+    std::vector< std::string > evtlkSplitVec;
+    std::vector< std::string > luacSplitVec;
     
     if(!bEvents.empty())
     {
@@ -151,16 +141,18 @@ LuaBehaviorType LuaBehaviorType::create(const std::string &szName,
     {
         if(!bEventLinks.empty())
         {
-            std::vector< std::string > eventArgs = std::vector<std::string>();
-            std::vector< std::string > eventDefs = std::vector<std::string>();
+            std::vector< std::string > eventArgs;
+            std::vector< std::string > eventDefs;
             
             std::string toParse;
 
-            boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
+            boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of("|") );
 
-            for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
+            for(std::vector< std::string >::const_iterator StrVecItor(eventArgs.begin()) ;
+                StrVecItor != eventArgs.end() ;
+                ++StrVecItor)
             {
-                boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
+                boost::algorithm::split( eventDefs, (*StrVecItor), boost::algorithm::is_any_of(":"));
                 
                 toParse = eventDefs[0];
 
@@ -172,9 +164,9 @@ LuaBehaviorType LuaBehaviorType::create(const std::string &szName,
                 }
                 else if((toParse[0] != '*'))
                 {
-                    SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
-                                "The name must be encased in quotes." << OSG::endLog;
-                    return OSG::LuaBehaviorType(szName,NULL);
+                    SWARNING << "Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                "The name must be encased in quotes." << endLog;
+                    return LuaBehaviorType(szName,NULL);
                 }
 
                 //boost::algorithm::replace_all_regex(toParse, boost::regex("\\([^])"), std::string("$1"));
@@ -191,9 +183,9 @@ LuaBehaviorType LuaBehaviorType::create(const std::string &szName,
                 }
                 else
                 {
-                    SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
-                                "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
-                    return OSG::LuaBehaviorType(szName,NULL);
+                    SWARNING << "Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << endLog;
+                    return LuaBehaviorType(szName,NULL);
                 }
             }
         }
@@ -202,16 +194,18 @@ LuaBehaviorType LuaBehaviorType::create(const std::string &szName,
     {
         if(!bEventLinks.empty())
         {
-            std::vector< std::string > eventArgs = std::vector<std::string>();
-            std::vector< std::string > eventDefs = std::vector<std::string>();
+            std::vector< std::string > eventArgs;
+            std::vector< std::string > eventDefs;
             
             std::string toParse;
 
-            boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of(std::string("|")) );
+            boost::algorithm::split( eventArgs, bEventLinks, boost::algorithm::is_any_of("|") );
 
-            for(OSG::UInt32 i(0); i < eventArgs.size(); ++i)
+            for(std::vector< std::string >::const_iterator StrVecItor(eventArgs.begin()) ;
+                StrVecItor != eventArgs.end() ;
+                ++StrVecItor)
             {
-                boost::algorithm::split( eventDefs, eventArgs[i], boost::algorithm::is_any_of(std::string(":")));
+                boost::algorithm::split( eventDefs, (*StrVecItor), boost::algorithm::is_any_of(":"));
                 
                 toParse = eventDefs[0];
 
@@ -223,9 +217,9 @@ LuaBehaviorType LuaBehaviorType::create(const std::string &szName,
                 }
                 else if((toParse[0] != '*'))
                 {
-                    SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
-                                "The name must be encased in quotes." << OSG::endLog;
-                    return OSG::LuaBehaviorType(szName,NULL);
+                    SWARNING << "Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                "The name must be encased in quotes." << endLog;
+                    return LuaBehaviorType(szName,NULL);
                 }
 
                 //boost::algorithm::replace_all_regex(toParse, boost::regex("\\([^])"), std::string("$1"));
@@ -240,35 +234,28 @@ LuaBehaviorType LuaBehaviorType::create(const std::string &szName,
                 }
                 else
                 {
-                    SWARNING << "LUA: KabalaEngine.BehaviorType_create(): Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
-                                "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << OSG::endLog;
-                    return OSG::LuaBehaviorType(szName,NULL);
+                    SWARNING << "Malformed linking string. Should be \'FieldContainerName:EventName:Callback|FieldContainerName:EventName:Callback|...\'" <<
+                                "Use wilcards (*) in place of FieldContainerName to specify that this behavior is to listen to any behaviors that can provide that event." << endLog;
+                    return LuaBehaviorType(szName,NULL);
                 }
             }
         }
-    }
-    
-    if(!StrFilePath.empty())
-    {
-        FilePath = OSG::BoostPath(StrFilePath);
     }
     
     FieldContainerType* theType = FieldContainerFactory::the()->findType(type.c_str());
 
     if(theType == NULL)
     {
-        SWARNING << "LUA: KabalaEngine.BehaviorType_create(): The type "<< type <<" could not be found." << OSG::endLog;
-        return OSG::LuaBehaviorType(szName,NULL);
+        SWARNING << "LUA: KabalaEngine.BehaviorType_create(): The type "<< type <<" could not be found." << endLog;
+        return LuaBehaviorType(szName,NULL);
     }
 
-    return OSG::LuaBehaviorType(szName,theType,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,luacSplitVec,FilePath);
+    return LuaBehaviorType(szName,theType,fcsrcSplitVec,evtSplitVec,evtlkSplitVec,luacSplitVec,BoostPath(StrFilePath));
 }
 
 LuaBehaviorType::LuaBehaviorType(const LuaBehaviorType &obj) :
-
-     Inherited        (obj),
-
-		 luaFunctionNames  (obj.luaFunctionNames    )
+    Inherited        (obj),
+    luaFunctionNames  (obj.luaFunctionNames    )
 {
 }
 

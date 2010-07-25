@@ -63,8 +63,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
 	const Scene* getParentScene () const;
 	Scene* getParentScene ();
 
-	BehaviorUnrecPtr getBehaviors (UInt32 index);
-
 	void checkBehaviorInitialization();
 
 

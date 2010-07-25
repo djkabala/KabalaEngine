@@ -39,22 +39,11 @@
 #ifndef _KELUABEHAVIORTYPE_H_
 #define _KELUABEHAVIORTYPE_H_
 
-#include "OSGConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include "Project/Scene/KESceneFields.h"
-
-#include "OSGBaseTypes.h"
-
-#include <map>
-#include <boost/function.hpp>
 #include "KEBehaviorType.h"
-
-#include "OSGFilePathAttachment.h"
-#include "OSGContainerUtils.h"
-#include <fstream>
-#include <sstream>
-
+#include <OpenSG/OSGPathType.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -70,7 +59,6 @@ OSG_BEGIN_NAMESPACE
 
 /*! \ingroup GrpSystemFieldContainer
  */
-typedef boost::function<void ( void )> InitEventProducerFunctor;
 
 class KE_KABALAENGINE_DLLMAPPING LuaBehaviorType : public BehaviorType
 {
@@ -87,19 +75,19 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehaviorType : public BehaviorType
     /*! \{                                                                 */
 
     LuaBehaviorType(const std::string &szName,
-				 FieldContainerType * bBehaviorFieldContainerType,
-                 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
-				 std::vector<std::string> bEvents = std::vector<std::string>(),
-				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
-                 std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
-			     BoostPath& FilePath = BoostPath());
+                    FieldContainerType * bBehaviorFieldContainerType,
+                    std::vector<std::string> eventSourceNames = std::vector<std::string>(),
+                    std::vector<std::string> bEvents = std::vector<std::string>(),
+                    std::vector<std::string> bEventLinks = std::vector<std::string>(),
+                    std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
+                    BoostPath FilePath = BoostPath());
 
     static LuaBehaviorType create(const std::string &szName,
-                               const std::string &type,
-                               const std::string &bEvents = "",
-                               const std::string &bEventLinks = "",
-                               const std::string &luaCallback = "",
-                               const std::string &StrFilePath = "");
+                                  const std::string &type,
+                                  const std::string &bEvents = "",
+                                  const std::string &bEventLinks = "",
+                                  const std::string &luaCallback = "",
+                                  const std::string &StrFilePath = "");
 
     LuaBehaviorType(const LuaBehaviorType &source);
 
@@ -160,7 +148,7 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehaviorType : public BehaviorType
     /*! \name                      Member                                  */
     /*! \{                                                                 */
 
-    std::vector<std::string>    luaFunctionNames;   //("button1",NULL,"Window","Button2",NULL)
+    std::vector<std::string>    luaFunctionNames;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

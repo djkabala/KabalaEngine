@@ -10348,3 +10348,4 @@ void push_Behavior_on_lua(lua_State* L, OSG::BehaviorRefPtr value)
     OSG::BehaviorRefPtr * resultptr = new OSG::BehaviorRefPtr((const OSG::BehaviorRefPtr &) value);
     SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorRefPtr,1);
 }
+

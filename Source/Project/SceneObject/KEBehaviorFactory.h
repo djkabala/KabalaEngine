@@ -39,12 +39,11 @@
 #ifndef _KEBEHAVIORFACTORYIMPL_H_
 #define _KEBEHAVIORFACTORYIMPL_H_
 
-#include "OSGConfig.h"
 #include "KEKabalaEngineDef.h"
 
-#include "OSGSingletonHolder.h"
-#include "OSGTypeBase.h"
-#include "OSGFactoryBase.h"
+#include <OpenSG/OSGSingletonHolder.h>
+#include <OpenSG/OSGTypeBase.h>
+#include <OpenSG/OSGFactoryBase.h>
 
 #include "KEBehavior.h"
 #include "KEBehaviorType.h"

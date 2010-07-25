@@ -81,16 +81,6 @@ void SceneObject::initMethod(InitPhase ePhase)
     {
     }
 }
-BehaviorUnrecPtr SceneObject::getBehaviors (UInt32 index)
-{
-	if(index >= getMFBehaviors()->size())
-	{
-		SWARNING << "Scene Object attempted to access a index of MFBehaviors that doesn't exist. Returning last index of MFBehaviors!" << std::endl;
-		index = getMFBehaviors()->size() - 1;
-	}
-
-	return _mfBehaviors[index];
-}
 
 const Scene* SceneObject::getParentScene () const
 {

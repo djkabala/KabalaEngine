@@ -156,7 +156,7 @@ void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 producedEven
 	    //Push on the arguments
 	    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
 
-	    push_Behavior_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
+		push_Behavior_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
 
 	    lua_pushnumber(LuaState,producedEventID);             //Argument 3: the ProducedEvent ID
 
@@ -196,7 +196,7 @@ void LuaBehavior::depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 produc
 	    //Push on the arguments
 	    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
 
-	    push_Behavior_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
+		push_Behavior_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
 
 	    lua_pushnumber(LuaState,producedEventID);             //Argument 3: the ProducedEvent ID
 

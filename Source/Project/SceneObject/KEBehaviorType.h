@@ -39,19 +39,19 @@
 #ifndef _KEBEHAVIORTYPE_H_
 #define _KEBEHAVIORTYPE_H_
 
-#include "OSGConfig.h"
+#include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
 #include "Project/Scene/KESceneFields.h"
 
-#include "OSGBaseTypes.h"
+#include <OpenSG/OSGBaseTypes.h>
 
 #include <map>
 #include <boost/function.hpp>
-#include "OSGTypeBase.h"
+#include <OpenSG/OSGTypeBase.h>
 
-#include "OSGFilePathAttachment.h"
-#include "OSGContainerUtils.h"
+#include <OpenSG/OSGFilePathAttachment.h>
+#include <OpenSG/OSGContainerUtils.h>
 #include <fstream>
 #include <sstream>
 
@@ -70,7 +70,6 @@ OSG_BEGIN_NAMESPACE
 
 /*! \ingroup GrpSystemFieldContainer
  */
-typedef boost::function<void ( void )> InitEventProducerFunctor;
 
 class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 {
@@ -178,10 +177,10 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 	std::vector<BehaviorType*>	_bDependencies;
 	std::vector<BehaviorType*>	_bDependents;
 
-    std::vector<std::string>    _bSourceContainers; //("button1",NULL,"Window","Button2",NULL)
-	std::vector<std::string>	_bEvents;           //("press  ","evt1","update","press","evt2")
-	std::vector<std::string>	_bEventLinks;       //("button1",NULL,"Window","Button2",NULL)
-    std::vector<std::string>    luaFunctionNames;   //("button1",NULL,"Window","Button2",NULL)
+    std::vector<std::string>    _bSourceContainers;
+	std::vector<std::string>	_bEvents;
+	std::vector<std::string>	_bEventLinks;
+    std::vector<std::string>    luaFunctionNames;  
 
     BehaviorType *_pParent;
 

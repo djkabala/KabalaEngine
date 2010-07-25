@@ -56,7 +56,6 @@
 #include "Project/Scene/KEScene.h"
 
 #include "KEBehavior.h"
-#include "KEBehaviorType.h"
 #include "KEBehaviorFactory.h"
 #include <OpenSG/OSGEvent.h>
 #include <OpenSG/OSGEventListener.h>
