@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -42,7 +42,7 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class BehaviorType!
+ **     class PhysicsImpulseEffect!
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
@@ -52,97 +52,86 @@ OSG_BEGIN_NAMESPACE
 
 //! access the type of the class
 inline
-OSG::FieldContainerType &BehaviorTypeBase::getClassType(void)
+OSG::FieldContainerType &PhysicsImpulseEffectBase::getClassType(void)
 {
     return _type;
 }
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 BehaviorTypeBase::getClassTypeId(void)
+OSG::UInt32 PhysicsImpulseEffectBase::getClassTypeId(void)
 {
     return _type.getId();
 }
 
 inline
-OSG::UInt16 BehaviorTypeBase::getClassGroupId(void)
+OSG::UInt16 PhysicsImpulseEffectBase::getClassGroupId(void)
 {
     return _type.getGroupId();
 }
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the value of the BehaviorType::_sfName field.
 
+//! Get the value of the PhysicsImpulseEffect::_sfPhysicsWorld field.
 inline
-std::string &BehaviorTypeBase::editName(void)
+PhysicsWorld * PhysicsImpulseEffectBase::getPhysicsWorld(void) const
 {
-    editSField(NameFieldMask);
-
-    return _sfName.getValue();
+    return _sfPhysicsWorld.getValue();
 }
 
-//! Get the value of the BehaviorType::_sfName field.
+//! Set the value of the PhysicsImpulseEffect::_sfPhysicsWorld field.
 inline
-const std::string &BehaviorTypeBase::getName(void) const
+void PhysicsImpulseEffectBase::setPhysicsWorld(PhysicsWorld * const value)
 {
-    return _sfName.getValue();
+    editSField(PhysicsWorldFieldMask);
+
+    _sfPhysicsWorld.setValue(value);
 }
 
-//! Set the value of the BehaviorType::_sfName field.
+//! Get the value of the PhysicsImpulseEffect::_sfPhysicsSpace field.
 inline
-void BehaviorTypeBase::setName(const std::string &value)
+PhysicsSpace * PhysicsImpulseEffectBase::getPhysicsSpace(void) const
 {
-    editSField(NameFieldMask);
-
-    _sfName.setValue(value);
-}
-//! Get the value of the BehaviorType::_sfID field.
-
-inline
-UInt32 &BehaviorTypeBase::editID(void)
-{
-    editSField(IDFieldMask);
-
-    return _sfID.getValue();
+    return _sfPhysicsSpace.getValue();
 }
 
-//! Get the value of the BehaviorType::_sfID field.
+//! Set the value of the PhysicsImpulseEffect::_sfPhysicsSpace field.
 inline
-      UInt32  BehaviorTypeBase::getID(void) const
+void PhysicsImpulseEffectBase::setPhysicsSpace(PhysicsSpace * const value)
 {
-    return _sfID.getValue();
+    editSField(PhysicsSpaceFieldMask);
+
+    _sfPhysicsSpace.setValue(value);
 }
 
-//! Set the value of the BehaviorType::_sfID field.
+//! Get the value of the PhysicsImpulseEffect::_sfPhysicsHandler field.
 inline
-void BehaviorTypeBase::setID(const UInt32 value)
+PhysicsHandler * PhysicsImpulseEffectBase::getPhysicsHandler(void) const
 {
-    editSField(IDFieldMask);
-
-    _sfID.setValue(value);
+    return _sfPhysicsHandler.getValue();
 }
 
-//! Get the value of the \a index element the BehaviorType::_mfDescription field.
+//! Set the value of the PhysicsImpulseEffect::_sfPhysicsHandler field.
 inline
-const std::string &BehaviorTypeBase::getDescription(const UInt32 index) const
+void PhysicsImpulseEffectBase::setPhysicsHandler(PhysicsHandler * const value)
 {
-    return _mfDescription[index];
+    editSField(PhysicsHandlerFieldMask);
+
+    _sfPhysicsHandler.setValue(value);
 }
 
+//! Get the value of the \a index element the PhysicsImpulseEffect::_mfPhysicsBodies field.
 inline
-std::string &BehaviorTypeBase::editDescription(const UInt32 index)
+PhysicsBody * PhysicsImpulseEffectBase::getPhysicsBodies(const UInt32 index) const
 {
-    editMField(DescriptionFieldMask, _mfDescription);
-
-    return _mfDescription[index];
+    return _mfPhysicsBodies[index];
 }
-
 
 
 #ifdef OSG_MT_CPTR_ASPECT
 inline
-void BehaviorTypeBase::execSync (      BehaviorTypeBase *pFrom,
+void PhysicsImpulseEffectBase::execSync (      PhysicsImpulseEffectBase *pFrom,
                                         ConstFieldMaskArg  whichField,
                                         AspectOffsetStore &oOffsets,
                                         ConstFieldMaskArg  syncMode,
@@ -150,27 +139,30 @@ void BehaviorTypeBase::execSync (      BehaviorTypeBase *pFrom,
 {
     Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
 
-    if(FieldBits::NoField != (NameFieldMask & whichField))
-        _sfName.syncWith(pFrom->_sfName);
-
-    if(FieldBits::NoField != (DescriptionFieldMask & whichField))
-        _mfDescription.syncWith(pFrom->_mfDescription,
+    if(FieldBits::NoField != (PhysicsBodiesFieldMask & whichField))
+        _mfPhysicsBodies.syncWith(pFrom->_mfPhysicsBodies,
                                 syncMode,
                                 uiSyncInfo,
                                 oOffsets);
 
-    if(FieldBits::NoField != (IDFieldMask & whichField))
-        _sfID.syncWith(pFrom->_sfID);
+    if(FieldBits::NoField != (PhysicsWorldFieldMask & whichField))
+        _sfPhysicsWorld.syncWith(pFrom->_sfPhysicsWorld);
+
+    if(FieldBits::NoField != (PhysicsSpaceFieldMask & whichField))
+        _sfPhysicsSpace.syncWith(pFrom->_sfPhysicsSpace);
+
+    if(FieldBits::NoField != (PhysicsHandlerFieldMask & whichField))
+        _sfPhysicsHandler.syncWith(pFrom->_sfPhysicsHandler);
 }
 #endif
 
 
 inline
-const Char8 *BehaviorTypeBase::getClassname(void)
+const Char8 *PhysicsImpulseEffectBase::getClassname(void)
 {
-    return "BehaviorType";
+    return "PhysicsImpulseEffect";
 }
-OSG_GEN_CONTAINERPTR(BehaviorType);
+OSG_GEN_CONTAINERPTR(PhysicsImpulseEffect);
 
 OSG_END_NAMESPACE
 

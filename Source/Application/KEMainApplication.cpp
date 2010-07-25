@@ -700,6 +700,7 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     //Camera
     PerspectiveCameraRefPtr DefaultSceneCamera = PerspectiveCamera::create();
     setName(DefaultSceneCamera, "Untitled Camera" );
+
     DefaultSceneCamera->setFov(getSettings().get<Real32>("basic.default_scene.camera.fov"));
     DefaultSceneCamera->setNear(getSettings().get<Real32>("basic.default_scene.camera.near_plane"));
     DefaultSceneCamera->setFar(getSettings().get<Real32>("basic.default_scene.camera.far_plane"));

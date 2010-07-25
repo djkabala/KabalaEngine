@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -32,41 +32,23 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
-#ifndef _KEBEHAVIOR_H_
-#define _KEBEHAVIOR_H_
+#ifndef _KELUABEHAVIOR_H_
+#define _KELUABEHAVIOR_H_
 #ifdef __sgi
 #pragma once
 #endif
 
-#include "KEBehaviorBase.h"
-
-#include <Project/Scene/KESceneFields.h>
-#include <Project/SceneObject/KESceneObjectFields.h>
-#include <OpenSG/OSGGenericEvent.h>
-#include <OpenSG/OSGEvent.h>
-#include <OpenSG/OSGEventListener.h>
-#include <OpenSG/OSGEventProducerType.h>
-#include <OpenSG/OSGEventProducer.h>
-#include <OpenSG/OSGEventConnection.h>
-#include "KEBehaviorType.h"
+#include "KELuaBehaviorBase.h"
+#include "KELuaBehaviorType.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief Behavior class. See \ref
-           PageKabalaEngineBehavior for a description.
+/*! \brief LuaBehavior class. See \ref
+           PageKabalaEngineLuaBehavior for a description.
 */
 
-class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
+class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
 {
   protected:
 
@@ -74,21 +56,10 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
   public:
 
+    typedef LuaBehaviorBase Inherited;
+    typedef LuaBehavior     Self;
 
-    typedef BehaviorBase Inherited;
-    typedef Behavior     Self;
-
-    const SceneObject* getParentSceneObject(void) const;
-	void addedToSceneObject(SceneObjectUnrecPtr rootSceneObject);
-
-	BehaviorType * getBehaviorType(void);
-
-	bool isInitialized();
-
-	void checkListenerAttachment();
-
-    void produceEvent(std::string name);
-    void produceEvent(UInt32 id);
+    LuaBehaviorType* const getLuaBehaviorType(void) const;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -106,65 +77,31 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
-	
-    virtual ~Behavior(void);
-
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
   protected:
-	
-	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID) = 0;
-    virtual void depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 ID) = 0;
 
-	virtual void initialize(SceneObjectUnrecPtr rootSceneObject) = 0;
+    // Variables should all be in LuaBehaviorBase.
 
-	void attachListeners (EventProducerPtr eventProducer);
+	void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
+    void depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 ID);
 
-	BehaviorType* theBehaviorType;
-    bool initialized;
-
-    // Variables should all be in BehaviorBase.
-
-    class DepBehaviorListener : public EventListener
-	{
-		public:
-			
-			DepBehaviorListener(BehaviorUnrecPtr TheBehavior);
-
-			virtual void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
-
-		protected :
-			BehaviorRecPtr _Behavior;
-	};
-
-    class DepFieldContainerListener : public EventListener
-	{
-		public:
-			
-			DepFieldContainerListener(BehaviorUnrecPtr TheBehavior);
-
-			virtual void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
-
-		protected :
-			BehaviorRecPtr _Behavior;
-	};
-
-	DepBehaviorListener		    _DepBehaviorListener;
-    DepFieldContainerListener	_DepFieldContainerListener;
+    void initialize(SceneObjectUnrecPtr rootSceneObject);
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    Behavior(void);
-    Behavior(const Behavior &source);
+    LuaBehavior(void);
+    LuaBehavior(const LuaBehavior &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
+    virtual ~LuaBehavior(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -173,28 +110,25 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
     static void initMethod(InitPhase ePhase);
 
-    /*! \} 
-    */
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
 
   private:
 
     friend class FieldContainer;
-    friend class BehaviorBase;
-	friend class BehaviorFactoryBase;
-	friend class BehaviorType;
+    friend class LuaBehaviorBase;
+
+    std::map<UInt64,std::string> luaFunctionsMap;
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const Behavior &source);
+    void operator =(const LuaBehavior &source);
 };
 
-typedef Behavior *BehaviorP;
+typedef LuaBehavior *LuaBehaviorP;
 
 OSG_END_NAMESPACE
 
-#include "Project/SceneObject/KESceneObject.h"
+#include "KELuaBehaviorBase.inl"
+#include "KELuaBehavior.inl"
 
-#include "KEBehaviorBase.inl"
-#include "KEBehavior.inl"
-
-#endif /* _KEBEHAVIOR_H_ */
+#endif /* _KELUABEHAVIOR_H_ */

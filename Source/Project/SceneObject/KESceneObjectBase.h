@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -65,10 +65,10 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
+#include <OpenSG/OSGFieldContainerFields.h> // ParentScene type
 #include "Project/SceneObject/KEBehaviorFields.h" // Behaviors type
 #include "Project/Effect/KEEffectFields.h" // AttachedEffects type
 #include <OpenSG/OSGNodeFields.h>       // Node type
-#include "Project/Scene/KEScene.h"      // Scene type
 
 #include "KESceneObjectFields.h"
 
@@ -96,28 +96,28 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
 
     enum
     {
-        BehaviorsFieldId = Inherited::NextFieldId,
+        ParentSceneFieldId = Inherited::NextFieldId,
+        BehaviorsFieldId = ParentSceneFieldId + 1,
         AttachedEffectsFieldId = BehaviorsFieldId + 1,
         NodeFieldId = AttachedEffectsFieldId + 1,
-        SceneFieldId = NodeFieldId + 1,
-        NextFieldId = SceneFieldId + 1
+        NextFieldId = NodeFieldId + 1
     };
 
+    static const OSG::BitVector ParentSceneFieldMask =
+        (TypeTraits<BitVector>::One << ParentSceneFieldId);
     static const OSG::BitVector BehaviorsFieldMask =
         (TypeTraits<BitVector>::One << BehaviorsFieldId);
     static const OSG::BitVector AttachedEffectsFieldMask =
         (TypeTraits<BitVector>::One << AttachedEffectsFieldId);
     static const OSG::BitVector NodeFieldMask =
         (TypeTraits<BitVector>::One << NodeFieldId);
-    static const OSG::BitVector SceneFieldMask =
-        (TypeTraits<BitVector>::One << SceneFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
+    typedef SFParentFieldContainerPtr SFParentSceneType;
     typedef MFUnrecChildBehaviorPtr MFBehaviorsType;
     typedef MFUnrecChildEffectPtr MFAttachedEffectsType;
     typedef SFUnrecNodePtr    SFNodeType;
-    typedef SFUnrecScenePtr   SFSceneType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -148,8 +148,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
                   MFUnrecChildEffectPtr *editMFAttachedEffects(void);
             const SFUnrecNodePtr      *getSFNode           (void) const;
                   SFUnrecNodePtr      *editSFNode           (void);
-            const SFUnrecScenePtr     *getSFScene          (void) const;
-                  SFUnrecScenePtr     *editSFScene          (void);
 
 
                   Behavior * getBehaviors      (const UInt32 index) const;
@@ -158,15 +156,12 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
 
                   Node * getNode           (void) const;
 
-                  Scene * getScene          (void) const;
-
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
             void setNode           (Node * const value);
-            void setScene          (Scene * const value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -243,10 +238,10 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
+    SFParentFieldContainerPtr _sfParentScene;
     MFUnrecChildBehaviorPtr _mfBehaviors;
     MFUnrecChildEffectPtr _mfAttachedEffects;
     SFUnrecNodePtr    _sfNode;
-    SFUnrecScenePtr   _sfScene;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -272,6 +267,17 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
+    /*! \name Parent linking                                               */
+    /*! \{                                                                 */
+
+    virtual bool linkParent  (FieldContainer * const pParent,
+                              UInt16           const childFieldId,
+                              UInt16           const parentFieldId);
+    virtual bool unlinkParent(FieldContainer * const pParent,
+                              UInt16           const parentFieldId);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
     /*! \name Child linking                                                */
     /*! \{                                                                 */
 
@@ -283,14 +289,14 @@ class KE_KABALAENGINE_DLLMAPPING SceneObjectBase : public AttachmentContainer
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
+    GetFieldHandlePtr  getHandleParentScene     (void) const;
+    EditFieldHandlePtr editHandleParentScene    (void);
     GetFieldHandlePtr  getHandleBehaviors       (void) const;
     EditFieldHandlePtr editHandleBehaviors      (void);
     GetFieldHandlePtr  getHandleAttachedEffects (void) const;
     EditFieldHandlePtr editHandleAttachedEffects(void);
     GetFieldHandlePtr  getHandleNode            (void) const;
     EditFieldHandlePtr editHandleNode           (void);
-    GetFieldHandlePtr  getHandleScene           (void) const;
-    EditFieldHandlePtr editHandleScene          (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -351,4 +357,4 @@ typedef SceneObjectBase *SceneObjectBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KESCENEOBJECTBASE_H_ */
+#endif /* _OSGSCENEOBJECTBASE_H_ */

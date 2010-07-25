@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -42,7 +42,7 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class SceneObject!
+ **     class LuaBehavior!
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
@@ -52,20 +52,20 @@ OSG_BEGIN_NAMESPACE
 
 //! access the type of the class
 inline
-OSG::FieldContainerType &SceneObjectBase::getClassType(void)
+OSG::FieldContainerType &LuaBehaviorBase::getClassType(void)
 {
     return _type;
 }
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 SceneObjectBase::getClassTypeId(void)
+OSG::UInt32 LuaBehaviorBase::getClassTypeId(void)
 {
     return _type.getId();
 }
 
 inline
-OSG::UInt16 SceneObjectBase::getClassGroupId(void)
+OSG::UInt16 LuaBehaviorBase::getClassGroupId(void)
 {
     return _type.getGroupId();
 }
@@ -73,74 +73,26 @@ OSG::UInt16 SceneObjectBase::getClassGroupId(void)
 /*------------------------------ get -----------------------------------*/
 
 
-//! Get the value of the SceneObject::_sfNode field.
-inline
-Node * SceneObjectBase::getNode(void) const
-{
-    return _sfNode.getValue();
-}
-
-//! Set the value of the SceneObject::_sfNode field.
-inline
-void SceneObjectBase::setNode(Node * const value)
-{
-    editSField(NodeFieldMask);
-
-    _sfNode.setValue(value);
-}
-
-//! Get the value of the \a index element the SceneObject::_mfBehaviors field.
-inline
-Behavior * SceneObjectBase::getBehaviors(const UInt32 index) const
-{
-    return _mfBehaviors[index];
-}
-
-//! Get the value of the \a index element the SceneObject::_mfAttachedEffects field.
-inline
-Effect * SceneObjectBase::getAttachedEffects(const UInt32 index) const
-{
-    return _mfAttachedEffects[index];
-}
-
 
 #ifdef OSG_MT_CPTR_ASPECT
 inline
-void SceneObjectBase::execSync (      SceneObjectBase *pFrom,
+void LuaBehaviorBase::execSync (      LuaBehaviorBase *pFrom,
                                         ConstFieldMaskArg  whichField,
                                         AspectOffsetStore &oOffsets,
                                         ConstFieldMaskArg  syncMode,
                                   const UInt32             uiSyncInfo)
 {
     Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
-
-    if(FieldBits::NoField != (ParentSceneFieldMask & whichField))
-        _sfParentScene.syncWith(pFrom->_sfParentScene);
-
-    if(FieldBits::NoField != (BehaviorsFieldMask & whichField))
-        _mfBehaviors.syncWith(pFrom->_mfBehaviors,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (AttachedEffectsFieldMask & whichField))
-        _mfAttachedEffects.syncWith(pFrom->_mfAttachedEffects,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (NodeFieldMask & whichField))
-        _sfNode.syncWith(pFrom->_sfNode);
 }
 #endif
 
 
 inline
-const Char8 *SceneObjectBase::getClassname(void)
+const Char8 *LuaBehaviorBase::getClassname(void)
 {
-    return "SceneObject";
+    return "LuaBehavior";
 }
-OSG_GEN_CONTAINERPTR(SceneObject);
+OSG_GEN_CONTAINERPTR(LuaBehavior);
 
 OSG_END_NAMESPACE
 

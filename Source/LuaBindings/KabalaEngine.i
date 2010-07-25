@@ -10,11 +10,19 @@
 #include <OpenSG/OSGGenericEvent.h>
 #include <OpenSG/OSGEventProducerType.h>
 #include <boost/bind.hpp>
+#include <OpenSG/OSGPathType.h>
 #include "KELuaBindings.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
+
 #include "Project/Effect/KEEffect.h"
 #include "Player/KEApplicationPlayer.h"
+
+#include "Project/SceneObject/KEBehaviorFactory.h"
+#include "Project/SceneObject/KEBehavior.h"
+#include "Project/SceneObject/KELuaBehavior.h"
+#include "Project/SceneObject/KEBehaviorType.h"
+#include "Project/SceneObject/KELuaBehaviorType.h"
 
 //#include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGSound.h>
@@ -41,7 +49,16 @@ namespace OSG {
     class Scene;
     class Project;
     class Effect;
+    class EffectRefPtr;
+    class SceneObject;
     class ApplicationPlayer;
+    class Behavior;
+    class BehaviorFactory;
+    class BehaviorType;
+    class LuaBehaviorType;
+    class Behavior;
+    class LuaBehavior;
+    
     
     /******************************************************/
     /*                    SceneRefPtr                        */
@@ -101,7 +118,7 @@ namespace OSG {
     
 
     /******************************************************/
-    /*                  ProjectRefPtr                        */
+    /*                  ProjectRefPtr                     */
     /******************************************************/
     class ProjectRefPtr : public AttachmentContainerRefPtr
     {
@@ -166,34 +183,215 @@ namespace OSG {
       protected:
         Project(void);
         Project(const Project &source);
-        virtual ~Project(void); 
+        virtual ~Project(void);
     };
     
     /******************************************************/
-    /*                  EffectRefPtr                        */
+    /*                    SceneObjectRefPtr               */
     /******************************************************/
-    class EffectRefPtr : public AttachmentContainerRefPtr
+    class SceneObjectRefPtr : public AttachmentContainerRefPtr
     {
       public:
-         EffectRefPtr(void);
-         EffectRefPtr(const EffectRefPtr               &source);
-         /*ProjectRefPtr(const NullFieldContainerRefPtr &source);*/
-
-
-        ~EffectRefPtr(void); 
-        Effect *operator->(void);
+         SceneObjectRefPtr(void);
+         SceneObjectRefPtr(const SceneObjectRefPtr               &source);
+         /*SceneObjectRefPtr(const NullFieldContainerRefPtr &source);*/
+        
+        ~SceneObjectRefPtr(void); 
+        SceneObject *operator->(void);
         
     };
-    %extend EffectRefPtr
+    %extend SceneObjectRefPtr
     {
-        static EffectRefPtr dcast(const FieldContainerRefPtr oIn)
+        static SceneObjectRefPtr dcast(const FieldContainerRefPtr oIn)
         {
-            return OSG::dynamic_pointer_cast<OSG::Effect>(oIn);
+            return OSG::dynamic_pointer_cast<OSG::SceneObject>(oIn);
         }
     };
     
     /******************************************************/
-    /*                    Effect                         */
+    /*                     SceneObject                    */
+    /******************************************************/
+    class SceneObject : public AttachmentContainer
+    {
+      public:
+    
+        Effect* getEffect(std::string name);
+        const Scene* getParentScene () const;
+        Scene* getParentScene ();
+
+        OSG::BehaviorUnrecPtr getBehaviors (UInt32 index);
+    
+      protected:
+        SceneObject(void);
+        SceneObject(const SceneObject &source);
+        virtual ~SceneObject(void); 
+    };
+
+    
+    /******************************************************/
+    /*                   BehaviorType                     */
+    /******************************************************/
+    class BehaviorType : public TypeBase
+    {
+		public:
+		
+			UInt32 findEventID(std::string eventName);
+			
+		protected:
+            BehaviorType(   const std::string &szName,
+                            FieldContainerType * bBehaviorFieldContainerType,
+                            std::vector<std::string> eventSourceNames = std::vector<std::string>(),
+                            std::vector<std::string> bEvents = std::vector<std::string>(),
+                            std::vector<std::string> bEventLinks = std::vector<std::string>());
+                 
+
+			BehaviorType(const BehaviorType &source);
+    };
+    
+    /******************************************************/
+    /*				LuaBehaviorType                      */
+    /******************************************************/
+    class LuaBehaviorType : public BehaviorType
+    {
+		public:
+            std::vector<std::string> getLuaFunctionNames();
+
+            static LuaBehaviorType create(const std::string &szName,
+                               const std::string &type,
+                               const std::string &bEvents = "",
+                               const std::string &bEventLinks = "",
+                               const std::string &luaCallback = "",
+                               const std::string &StrFilePath = "");
+
+        protected:
+            LuaBehaviorType(const std::string &szName,
+				 FieldContainerType * bBehaviorFieldContainerType,
+                 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
+				 std::vector<std::string> bEvents = std::vector<std::string>(),
+				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
+                 std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
+			     BoostPath& FilePath = BoostPath());
+            LuaBehaviorType(const LuaBehaviorType &source);
+            virtual ~LuaBehaviorType(void); 
+	};
+    
+    /******************************************************/
+    /*                 BehaviorFactory (Base?)            */
+    /******************************************************/
+    class BehaviorFactory
+    {
+		public :
+            static BehaviorFactory *the(void);
+
+		protected:
+            BehaviorFactory(void);
+
+            virtual ~BehaviorFactory(void);
+
+    };
+    %extend BehaviorFactory
+    {
+        UInt32    registerType      (      BehaviorType *pType          )
+        {
+            return OSG::BehaviorFactory::the()->registerType(pType);
+        }
+
+        UInt32    findTypeId        (const Char8    *szName)
+        {
+            return OSG::BehaviorFactory::the()->findTypeId(szName);
+        }
+
+        BehaviorType *findType      (      UInt32    uiTypeId       )
+        {
+            return OSG::BehaviorFactory::the()->findType(uiTypeId);
+        }
+        
+        BehaviorType *findType      (const Char8    *szName)
+        {
+            return OSG::BehaviorFactory::the()->findType(szName);
+        }
+        
+        OSG::BehaviorRefPtr     createBehavior(std::string Name)
+        {
+            return OSG::BehaviorFactory::the()->createBehavior(Name);
+        }
+    }
+    
+    /******************************************************/
+    /*						Behavior                      */
+    /******************************************************/
+    class Behavior : public AttachmentContainer
+    {
+		public:
+    		BehaviorType * getBehaviorType(void);
+            const SceneObject* getParentSceneObject(void) const;
+            void produceEvent(std::string name);
+            void produceEvent(UInt32 id);
+			bool isInitialized();
+        protected:
+            Behavior(void);
+            Behavior(const Behavior &source);
+            virtual ~Behavior(void); 
+	};
+    
+    /******************************************************/
+    /*                  BehaviorRefPtr                    */
+    /******************************************************/
+    class BehaviorRefPtr : public AttachmentContainerRefPtr
+    {
+      public:
+         BehaviorRefPtr(void);
+         BehaviorRefPtr(const BehaviorRefPtr               &source);
+
+        ~BehaviorRefPtr(void); 
+        Behavior *operator->(void);
+        
+    };
+    %extend BehaviorRefPtr
+    {
+        static BehaviorRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::Behavior>(oIn);
+        }
+    };
+    
+    /******************************************************/
+    /*					 LuaBehavior                      */
+    /******************************************************/
+    class LuaBehavior : public Behavior
+    {
+		public:
+    		LuaBehaviorType * getLuaBehaviorType(void);
+            
+        protected:
+            LuaBehavior(void);
+            LuaBehavior(const LuaBehavior &source);
+            virtual ~LuaBehavior(void); 
+	};
+    
+    /******************************************************/
+    /*                 LuaBehaviorRefPtr                  */
+    /******************************************************/
+    class LuaBehaviorRefPtr : public BehaviorRefPtr
+    {
+      public:
+         LuaBehaviorRefPtr(void);
+         LuaBehaviorRefPtr(const LuaBehaviorRefPtr               &source);
+
+        ~LuaBehaviorRefPtr(void); 
+        LuaBehavior *operator->(void);
+        
+    };
+    %extend LuaBehaviorRefPtr
+    {
+        static LuaBehaviorRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::LuaBehavior>(oIn);
+        }
+    };
+    
+    /******************************************************/
+    /*                   Effect                           */
     /******************************************************/
     class Effect : public AttachmentContainer
     {
@@ -204,10 +402,35 @@ namespace OSG {
         void pause(void);
         void unpause(void);
         void stop(void);
+        
+        const SceneObject* getParentSceneObject(void) const;
+        
       protected:
-        Project(void);
-        Project(const Animation &source);
-        virtual ~Project(void); 
+        Effect(void);
+        Effect(const Effect &source);
+        virtual ~Effect(void); 
+    };
+    
+    /******************************************************/
+    /*                    EffectRefPtr               */
+    /******************************************************/
+    class EffectRefPtr : public AttachmentContainerRefPtr
+    {
+      public:
+         EffectRefPtr(void);
+         EffectRefPtr(const EffectRefPtr               &source);
+         /*EffectRefPtr(const NullFieldContainerRefPtr &source);*/
+        
+        ~EffectRefPtr(void); 
+        Effect *operator->(void);
+        
+    };
+    %extend EffectRefPtr
+    {
+        static EffectRefPtr dcast(const FieldContainerRefPtr oIn)
+        {
+            return OSG::dynamic_pointer_cast<OSG::Effect>(oIn);
+        }
     };
     
     /******************************************************/
@@ -257,4 +480,3 @@ namespace OSG {
     //    }
     //};
 }
-

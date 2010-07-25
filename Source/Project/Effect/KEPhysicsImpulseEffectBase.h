@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -42,14 +42,14 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class BehaviorFactory
+ **     class PhysicsImpulseEffect
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#ifndef _KEBEHAVIORFACTORYBASE_H_
-#define _KEBEHAVIORFACTORYBASE_H_
+#ifndef _KEPHYSICSIMPULSEEFFECTBASE_H_
+#define _KEPHYSICSIMPULSEEFFECTBASE_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -58,32 +58,37 @@
 
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
+#include "KEConfig.h"
 
 //#include "OpenSG/OSGBaseTypes.h"
 
-#include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include "Project/SceneObject/KEBehaviorTypeFields.h" // BehaviorTypes type
+#include "KEEffect.h" // Parent
 
-#include "KEBehaviorFactoryFields.h"
+#include <OpenSG/OSGPhysicsBodyFields.h> // PhysicsBodies type
+#include <OpenSG/OSGPhysicsWorldFields.h> // PhysicsWorld type
+#include <OpenSG/OSGPhysicsSpaceFields.h> // PhysicsSpace type
+#include <OpenSG/OSGPhysicsHandlerFields.h> // PhysicsHandler type
+
+#include "KEPhysicsImpulseEffectFields.h"
 
 OSG_BEGIN_NAMESPACE
 
-class BehaviorFactory;
+class PhysicsImpulseEffect;
 
-//! \brief BehaviorFactory Base Class.
+//! \brief PhysicsImpulseEffect Base Class.
 
-class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public AttachmentContainer
+class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffectBase : public Effect
 {
   public:
 
-    typedef AttachmentContainer Inherited;
-    typedef AttachmentContainer ParentContainer;
+    typedef Effect Inherited;
+    typedef Effect ParentContainer;
 
     typedef Inherited::TypeObject TypeObject;
     typedef TypeObject::InitPhase InitPhase;
 
-    OSG_GEN_INTERNALPTR(BehaviorFactory);
+    OSG_GEN_INTERNALPTR(PhysicsImpulseEffect);
 
     /*==========================  PUBLIC  =================================*/
 
@@ -91,16 +96,28 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public AttachmentContaine
 
     enum
     {
-        BehaviorTypesFieldId = Inherited::NextFieldId,
-        NextFieldId = BehaviorTypesFieldId + 1
+        PhysicsBodiesFieldId = Inherited::NextFieldId,
+        PhysicsWorldFieldId = PhysicsBodiesFieldId + 1,
+        PhysicsSpaceFieldId = PhysicsWorldFieldId + 1,
+        PhysicsHandlerFieldId = PhysicsSpaceFieldId + 1,
+        NextFieldId = PhysicsHandlerFieldId + 1
     };
 
-    static const OSG::BitVector BehaviorTypesFieldMask =
-        (TypeTraits<BitVector>::One << BehaviorTypesFieldId);
+    static const OSG::BitVector PhysicsBodiesFieldMask =
+        (TypeTraits<BitVector>::One << PhysicsBodiesFieldId);
+    static const OSG::BitVector PhysicsWorldFieldMask =
+        (TypeTraits<BitVector>::One << PhysicsWorldFieldId);
+    static const OSG::BitVector PhysicsSpaceFieldMask =
+        (TypeTraits<BitVector>::One << PhysicsSpaceFieldId);
+    static const OSG::BitVector PhysicsHandlerFieldMask =
+        (TypeTraits<BitVector>::One << PhysicsHandlerFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
-    typedef MFUnrecBehaviorTypePtr MFBehaviorTypesType;
+    typedef MFUnrecPhysicsBodyPtr MFPhysicsBodiesType;
+    typedef SFUnrecPhysicsWorldPtr SFPhysicsWorldType;
+    typedef SFUnrecPhysicsSpacePtr SFPhysicsSpaceType;
+    typedef SFUnrecPhysicsHandlerPtr SFPhysicsHandlerType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -125,17 +142,32 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public AttachmentContaine
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-            const MFUnrecBehaviorTypePtr *getMFBehaviorTypes  (void) const;
-                  MFUnrecBehaviorTypePtr *editMFBehaviorTypes  (void);
+            const MFUnrecPhysicsBodyPtr *getMFPhysicsBodies  (void) const;
+                  MFUnrecPhysicsBodyPtr *editMFPhysicsBodies  (void);
+            const SFUnrecPhysicsWorldPtr *getSFPhysicsWorld   (void) const;
+                  SFUnrecPhysicsWorldPtr *editSFPhysicsWorld   (void);
+            const SFUnrecPhysicsSpacePtr *getSFPhysicsSpace   (void) const;
+                  SFUnrecPhysicsSpacePtr *editSFPhysicsSpace   (void);
+            const SFUnrecPhysicsHandlerPtr *getSFPhysicsHandler (void) const;
+                  SFUnrecPhysicsHandlerPtr *editSFPhysicsHandler (void);
 
 
-                  BehaviorType * getBehaviorTypes  (const UInt32 index) const;
+                  PhysicsBody * getPhysicsBodies  (const UInt32 index) const;
+
+                  PhysicsWorld * getPhysicsWorld   (void) const;
+
+                  PhysicsSpace * getPhysicsSpace   (void) const;
+
+                  PhysicsHandler * getPhysicsHandler (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
+            void setPhysicsWorld   (PhysicsWorld * const value);
+            void setPhysicsSpace   (PhysicsSpace * const value);
+            void setPhysicsHandler (PhysicsHandler * const value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -147,11 +179,11 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public AttachmentContaine
     /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
 
-    void pushToBehaviorTypes           (BehaviorType * const value   );
-    void assignBehaviorTypes          (const MFUnrecBehaviorTypePtr &value);
-    void removeFromBehaviorTypes (UInt32               uiIndex );
-    void removeObjFromBehaviorTypes(BehaviorType * const value   );
-    void clearBehaviorTypes            (void                         );
+    void pushToPhysicsBodies           (PhysicsBody * const value   );
+    void assignPhysicsBodies          (const MFUnrecPhysicsBodyPtr &value);
+    void removeFromPhysicsBodies (UInt32               uiIndex );
+    void removeObjFromPhysicsBodies(PhysicsBody * const value   );
+    void clearPhysicsBodies            (void                         );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -170,16 +202,16 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public AttachmentContaine
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  BehaviorFactoryTransitPtr  create          (void);
-    static  BehaviorFactory           *createEmpty     (void);
+    static  PhysicsImpulseEffectTransitPtr  create          (void);
+    static  PhysicsImpulseEffect           *createEmpty     (void);
 
-    static  BehaviorFactoryTransitPtr  createLocal     (
+    static  PhysicsImpulseEffectTransitPtr  createLocal     (
                                                BitVector bFlags = FCLocal::All);
 
-    static  BehaviorFactory            *createEmptyLocal(
+    static  PhysicsImpulseEffect            *createEmptyLocal(
                                               BitVector bFlags = FCLocal::All);
 
-    static  BehaviorFactoryTransitPtr  createDependent  (BitVector bFlags);
+    static  PhysicsImpulseEffectTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -206,37 +238,46 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public AttachmentContaine
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    MFUnrecBehaviorTypePtr _mfBehaviorTypes;
+    MFUnrecPhysicsBodyPtr _mfPhysicsBodies;
+    SFUnrecPhysicsWorldPtr _sfPhysicsWorld;
+    SFUnrecPhysicsSpacePtr _sfPhysicsSpace;
+    SFUnrecPhysicsHandlerPtr _sfPhysicsHandler;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    BehaviorFactoryBase(void);
-    BehaviorFactoryBase(const BehaviorFactoryBase &source);
+    PhysicsImpulseEffectBase(void);
+    PhysicsImpulseEffectBase(const PhysicsImpulseEffectBase &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~BehaviorFactoryBase(void);
+    virtual ~PhysicsImpulseEffectBase(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                     onCreate                                */
     /*! \{                                                                 */
 
-    void onCreate(const BehaviorFactory *source = NULL);
+    void onCreate(const PhysicsImpulseEffect *source = NULL);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleBehaviorTypes   (void) const;
-    EditFieldHandlePtr editHandleBehaviorTypes  (void);
+    GetFieldHandlePtr  getHandlePhysicsBodies   (void) const;
+    EditFieldHandlePtr editHandlePhysicsBodies  (void);
+    GetFieldHandlePtr  getHandlePhysicsWorld    (void) const;
+    EditFieldHandlePtr editHandlePhysicsWorld   (void);
+    GetFieldHandlePtr  getHandlePhysicsSpace    (void) const;
+    EditFieldHandlePtr editHandlePhysicsSpace   (void);
+    GetFieldHandlePtr  getHandlePhysicsHandler  (void) const;
+    EditFieldHandlePtr editHandlePhysicsHandler (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -250,7 +291,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public AttachmentContaine
                                  ConstFieldMaskArg  syncMode  ,
                            const UInt32             uiSyncInfo);
 
-            void execSync (      BehaviorFactoryBase *pFrom,
+            void execSync (      PhysicsImpulseEffectBase *pFrom,
                                  ConstFieldMaskArg  whichField,
                                  AspectOffsetStore &oOffsets,
                                  ConstFieldMaskArg  syncMode  ,
@@ -290,11 +331,11 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorFactoryBase : public AttachmentContaine
     /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const BehaviorFactoryBase &source);
+    void operator =(const PhysicsImpulseEffectBase &source);
 };
 
-typedef BehaviorFactoryBase *BehaviorFactoryBaseP;
+typedef PhysicsImpulseEffectBase *PhysicsImpulseEffectBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEBEHAVIORFACTORYBASE_H_ */
+#endif /* _OSGPHYSICSIMPULSEEFFECTBASE_H_ */

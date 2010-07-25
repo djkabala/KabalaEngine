@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -45,8 +45,8 @@
 \*****************************************************************************/
 
 
-#ifndef _KEBEHAVIORTYPEFIELDS_H_
-#define _KEBEHAVIORTYPEFIELDS_H_
+#ifndef _KEPHYSICSIMPULSEEFFECTFIELDS_H_
+#define _KEPHYSICSIMPULSEEFFECTFIELDS_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -61,16 +61,16 @@
 
 OSG_BEGIN_NAMESPACE
 
-class BehaviorType;
+class PhysicsImpulseEffect;
 
-OSG_GEN_CONTAINERPTR(BehaviorType);
+OSG_GEN_CONTAINERPTR(PhysicsImpulseEffect);
 
 /*! \ingroup GrpKabalaEngineFieldTraits
     \ingroup GrpLibOSGKabalaEngine
  */
 template <>
-struct FieldTraits<BehaviorType *> :
-    public FieldTraitsFCPtrBase<BehaviorType *>
+struct FieldTraits<PhysicsImpulseEffect *> :
+    public FieldTraitsFCPtrBase<PhysicsImpulseEffect *>
 {
   private:
 
@@ -78,7 +78,7 @@ struct FieldTraits<BehaviorType *> :
 
   public:
 
-    typedef FieldTraits<BehaviorType *>  Self;
+    typedef FieldTraits<PhysicsImpulseEffect *>  Self;
 
     enum                        { Convertible = NotConvertible };
 
@@ -87,89 +87,89 @@ struct FieldTraits<BehaviorType *> :
     template<typename RefCountPolicy> inline
     static const Char8    *getSName     (void);
 
-//    static const char *getSName(void) { return "SFBehaviorTypePtr"; }
+//    static const char *getSName(void) { return "SFPhysicsImpulseEffectPtr"; }
     template<typename RefCountPolicy> inline
     static const Char8    *getMName     (void);
 
-//    static const char *getMName(void) { return "MFBehaviorTypePtr"; }
+//    static const char *getMName(void) { return "MFPhysicsImpulseEffectPtr"; }
 };
 
 template<> inline
-const Char8 *FieldTraits<BehaviorType *, 0>::getSName<RecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<PhysicsImpulseEffect *, 0>::getSName<RecordedRefCountPolicy>(void)
 {
-    return "SFRecBehaviorTypePtr"; 
+    return "SFRecPhysicsImpulseEffectPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorType *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<PhysicsImpulseEffect *, 0>::getSName<UnrecordedRefCountPolicy>(void)
 {
-    return "SFUnrecBehaviorTypePtr"; 
+    return "SFUnrecPhysicsImpulseEffectPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorType *, 0>::getSName<WeakRefCountPolicy>(void)
+const Char8 *FieldTraits<PhysicsImpulseEffect *, 0>::getSName<WeakRefCountPolicy>(void)
 {
-    return "SFWeakBehaviorTypePtr"; 
+    return "SFWeakPhysicsImpulseEffectPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorType *, 0>::getSName<NoRefCountPolicy>(void)
+const Char8 *FieldTraits<PhysicsImpulseEffect *, 0>::getSName<NoRefCountPolicy>(void)
 {
-    return "SFUnrefdBehaviorTypePtr"; 
+    return "SFUnrefdPhysicsImpulseEffectPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorType *, 0>::getMName<RecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<PhysicsImpulseEffect *, 0>::getMName<RecordedRefCountPolicy>(void)
 {
-    return "MFRecBehaviorTypePtr"; 
+    return "MFRecPhysicsImpulseEffectPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorType *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<PhysicsImpulseEffect *, 0>::getMName<UnrecordedRefCountPolicy>(void)
 {
-    return "MFUnrecBehaviorTypePtr"; 
+    return "MFUnrecPhysicsImpulseEffectPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorType *, 0>::getMName<WeakRefCountPolicy>(void)
+const Char8 *FieldTraits<PhysicsImpulseEffect *, 0>::getMName<WeakRefCountPolicy>(void)
 {
-    return "MFWeakBehaviorTypePtr"; 
+    return "MFWeakPhysicsImpulseEffectPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorType *, 0>::getMName<NoRefCountPolicy>(void)
+const Char8 *FieldTraits<PhysicsImpulseEffect *, 0>::getMName<NoRefCountPolicy>(void)
 {
-    return "MFUnrefdBehaviorTypePtr"; 
+    return "MFUnrefdPhysicsImpulseEffectPtr"; 
 }
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<BehaviorType *,
-                      RecordedRefCountPolicy  > SFRecBehaviorTypePtr;
+typedef PointerSField<PhysicsImpulseEffect *,
+                      RecordedRefCountPolicy  > SFRecPhysicsImpulseEffectPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<BehaviorType *,
-                      UnrecordedRefCountPolicy> SFUnrecBehaviorTypePtr;
+typedef PointerSField<PhysicsImpulseEffect *,
+                      UnrecordedRefCountPolicy> SFUnrecPhysicsImpulseEffectPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<BehaviorType *,
-                      WeakRefCountPolicy      > SFWeakBehaviorTypePtr;
+typedef PointerSField<PhysicsImpulseEffect *,
+                      WeakRefCountPolicy      > SFWeakPhysicsImpulseEffectPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<BehaviorType *,
-                      NoRefCountPolicy        > SFUncountedBehaviorTypePtr;
+typedef PointerSField<PhysicsImpulseEffect *,
+                      NoRefCountPolicy        > SFUncountedPhysicsImpulseEffectPtr;
 
 
 /*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<BehaviorType *,
-                      RecordedRefCountPolicy  > MFRecBehaviorTypePtr;
+typedef PointerMField<PhysicsImpulseEffect *,
+                      RecordedRefCountPolicy  > MFRecPhysicsImpulseEffectPtr;
 /*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<BehaviorType *,
-                      UnrecordedRefCountPolicy> MFUnrecBehaviorTypePtr;
+typedef PointerMField<PhysicsImpulseEffect *,
+                      UnrecordedRefCountPolicy> MFUnrecPhysicsImpulseEffectPtr;
 /*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<BehaviorType *,
-                      WeakRefCountPolicy      > MFWeakBehaviorTypePtr;
+typedef PointerMField<PhysicsImpulseEffect *,
+                      WeakRefCountPolicy      > MFWeakPhysicsImpulseEffectPtr;
 /*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<BehaviorType *,
-                      NoRefCountPolicy        > MFUncountedBehaviorTypePtr;
+typedef PointerMField<PhysicsImpulseEffect *,
+                      NoRefCountPolicy        > MFUncountedPhysicsImpulseEffectPtr;
 
 
 
@@ -177,38 +177,38 @@ typedef PointerMField<BehaviorType *,
 #else // these are the doxygen hacks
 
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFRecBehaviorTypePtr : 
-    public PointerSField<BehaviorType *,
+struct SFRecPhysicsImpulseEffectPtr : 
+    public PointerSField<PhysicsImpulseEffect *,
                          RecordedRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFUnrecBehaviorTypePtr : 
-    public PointerSField<BehaviorType *,
+struct SFUnrecPhysicsImpulseEffectPtr : 
+    public PointerSField<PhysicsImpulseEffect *,
                          UnrecordedRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFWeakBehaviorTypePtr :
-    public PointerSField<BehaviorType *,
+struct SFWeakPhysicsImpulseEffectPtr :
+    public PointerSField<PhysicsImpulseEffect *,
                          WeakRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFUncountedBehaviorTypePtr :
-    public PointerSField<BehaviorType *,
+struct SFUncountedPhysicsImpulseEffectPtr :
+    public PointerSField<PhysicsImpulseEffect *,
                          NoRefCountPolicy> {};
 
 
 /*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFRecBehaviorTypePtr :
-    public PointerMField<BehaviorType *,
+struct MFRecPhysicsImpulseEffectPtr :
+    public PointerMField<PhysicsImpulseEffect *,
                          RecordedRefCountPolicy  > {};
 /*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFUnrecBehaviorTypePtr :
-    public PointerMField<BehaviorType *,
+struct MFUnrecPhysicsImpulseEffectPtr :
+    public PointerMField<PhysicsImpulseEffect *,
                          UnrecordedRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFWeakBehaviorTypePtr :
-    public PointerMField<BehaviorType *,
+struct MFWeakPhysicsImpulseEffectPtr :
+    public PointerMField<PhysicsImpulseEffect *,
                          WeakRefCountPolicy      > {};
 /*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFUncountedBehaviorTypePtr :
-    public PointerMField<BehaviorType *,
+struct MFUncountedPhysicsImpulseEffectPtr :
+    public PointerMField<PhysicsImpulseEffect *,
                          NoRefCountPolicy        > {};
 
 
@@ -217,4 +217,4 @@ struct MFUncountedBehaviorTypePtr :
 
 OSG_END_NAMESPACE
 
-#endif /* _KEBEHAVIORTYPEFIELDS_H_ */
+#endif /* _KEPHYSICSIMPULSEEFFECTFIELDS_H_ */

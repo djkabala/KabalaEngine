@@ -55,6 +55,7 @@
 
 
 
+#include "Project/SceneObject/KESceneObject.h" // SceneObjects Class
 #include "Project/KEProjectFields.h"    // InternalParentProject Class
 #include <OpenSG/OSGViewport.h>         // Viewports Class
 #include <OpenSG/OSGBackground.h>       // Backgrounds Class
@@ -92,6 +93,10 @@ OSG_BEGIN_NAMESPACE
 /***************************************************************************\
  *                        Field Documentation                              *
 \***************************************************************************/
+
+/*! \var SceneObject *   SceneBase::_mfSceneObjects
+    
+*/
 
 /*! \var Project *       SceneBase::_sfInternalParentProject
     
@@ -212,6 +217,18 @@ void SceneBase::classDescInserter(TypeObject &oType)
 {
     FieldDescriptionBase *pDesc = NULL;
 
+
+    pDesc = new MFUnrecChildSceneObjectPtr::Description(
+        MFUnrecChildSceneObjectPtr::getClassType(),
+        "SceneObjects",
+        "",
+        SceneObjectsFieldId, SceneObjectsFieldMask,
+        false,
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleSceneObjects),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleSceneObjects));
+
+    oType.addInitialDesc(pDesc);
 
     pDesc = new SFUnrecProjectPtr::Description(
         SFUnrecProjectPtr::getClassType(),
@@ -529,6 +546,19 @@ SceneBase::TypeObject SceneBase::_type(
     "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
     ">\n"
     "The Scene.\n"
+    "    <Field\n"
+    "\t\tname=\"SceneObjects\"\n"
+    "\t\ttype=\"SceneObject\"\n"
+    "        childParentType=\"FieldContainer\"\n"
+    "\t\tcategory=\"childpointer\"\n"
+    "\t\tcardinality=\"multi\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/SceneObject/KESceneObjectFields.h\"\n"
+    "\t\ttypeHeader=\"Project/SceneObject/KESceneObject.h\"\n"
+    "\t\taccess=\"public\"\n"
+    "        linkParentField=\"ParentScene\"\n"
+    "\t>\n"
+    "\t</Field>\n"
     "\t<Field\n"
     "\t\tname=\"InternalParentProject\"\n"
     "\t\ttype=\"Project\"\n"
@@ -1049,6 +1079,19 @@ UInt32 SceneBase::getContainerSize(void) const
 /*------------------------- decorator get ------------------------------*/
 
 
+//! Get the Scene::_mfSceneObjects field.
+const MFUnrecChildSceneObjectPtr *SceneBase::getMFSceneObjects(void) const
+{
+    return &_mfSceneObjects;
+}
+
+MFUnrecChildSceneObjectPtr *SceneBase::editMFSceneObjects   (void)
+{
+    editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+    return &_mfSceneObjects;
+}
+
 //! Get the Scene::_sfInternalParentProject field.
 const SFUnrecProjectPtr *SceneBase::getSFInternalParentProject(void) const
 {
@@ -1349,6 +1392,59 @@ const SFUInt32 *SceneBase::getSFGenericMethodIDs(void) const
 
 
 
+
+void SceneBase::pushToSceneObjects(SceneObject * const value)
+{
+    editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+    _mfSceneObjects.push_back(value);
+}
+
+void SceneBase::assignSceneObjects(const MFUnrecChildSceneObjectPtr &value)
+{
+    MFUnrecChildSceneObjectPtr::const_iterator elemIt  =
+        value.begin();
+    MFUnrecChildSceneObjectPtr::const_iterator elemEnd =
+        value.end  ();
+
+    static_cast<Scene *>(this)->clearSceneObjects();
+
+    while(elemIt != elemEnd)
+    {
+        this->pushToSceneObjects(*elemIt);
+
+        ++elemIt;
+    }
+}
+
+void SceneBase::removeFromSceneObjects(UInt32 uiIndex)
+{
+    if(uiIndex < _mfSceneObjects.size())
+    {
+        editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+        _mfSceneObjects.erase(uiIndex);
+    }
+}
+
+void SceneBase::removeObjFromSceneObjects(SceneObject * const value)
+{
+    Int32 iElemIdx = _mfSceneObjects.findIndex(value);
+
+    if(iElemIdx != -1)
+    {
+        editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+        _mfSceneObjects.erase(iElemIdx);
+    }
+}
+void SceneBase::clearSceneObjects(void)
+{
+    editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+
+    _mfSceneObjects.clear();
+}
 
 void SceneBase::pushToViewports(Viewport * const value)
 {
@@ -1994,6 +2090,10 @@ UInt32 SceneBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
+    if(FieldBits::NoField != (SceneObjectsFieldMask & whichField))
+    {
+        returnValue += _mfSceneObjects.getBinSize();
+    }
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
         returnValue += _sfInternalParentProject.getBinSize();
@@ -2099,6 +2199,10 @@ void SceneBase::copyToBin(BinaryDataHandler &pMem,
 {
     Inherited::copyToBin(pMem, whichField);
 
+    if(FieldBits::NoField != (SceneObjectsFieldMask & whichField))
+    {
+        _mfSceneObjects.copyToBin(pMem);
+    }
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
         _sfInternalParentProject.copyToBin(pMem);
@@ -2202,6 +2306,10 @@ void SceneBase::copyFromBin(BinaryDataHandler &pMem,
 {
     Inherited::copyFromBin(pMem, whichField);
 
+    if(FieldBits::NoField != (SceneObjectsFieldMask & whichField))
+    {
+        _mfSceneObjects.copyFromBin(pMem);
+    }
     if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
     {
         _sfInternalParentProject.copyFromBin(pMem);
@@ -2424,6 +2532,9 @@ FieldContainerTransitPtr SceneBase::shallowCopy(void) const
 SceneBase::SceneBase(void) :
     _Producer(&getProducerType()),
     Inherited(),
+    _mfSceneObjects           (this,
+                          SceneObjectsFieldId,
+                          SceneObject::ParentSceneFieldId),
     _sfInternalParentProject  (NULL),
     _mfViewports              (),
     _mfBackgrounds            (),
@@ -2454,6 +2565,9 @@ SceneBase::SceneBase(void) :
 SceneBase::SceneBase(const SceneBase &source) :
     _Producer(&source.getProducerType()),
     Inherited(source),
+    _mfSceneObjects           (this,
+                          SceneObjectsFieldId,
+                          SceneObject::ParentSceneFieldId),
     _sfInternalParentProject  (NULL),
     _mfViewports              (),
     _mfBackgrounds            (),
@@ -2488,6 +2602,44 @@ SceneBase::~SceneBase(void)
 {
 }
 
+/*-------------------------------------------------------------------------*/
+/* Child linking                                                           */
+
+bool SceneBase::unlinkChild(
+    FieldContainer * const pChild,
+    UInt16           const childFieldId)
+{
+    if(childFieldId == SceneObjectsFieldId)
+    {
+        SceneObject * pTypedChild =
+            dynamic_cast<SceneObject *>(pChild);
+
+        if(pTypedChild != NULL)
+        {
+            Int32 iChildIdx = _mfSceneObjects.findIndex(pTypedChild);
+
+            if(iChildIdx != -1)
+            {
+                editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+                _mfSceneObjects.erase(iChildIdx);
+
+                return true;
+            }
+
+            FWARNING(("SceneBase::unlinkParent: Child <-> "
+                      "Parent link inconsistent.\n"));
+
+            return false;
+        }
+
+        return false;
+    }
+
+
+    return Inherited::unlinkChild(pChild, childFieldId);
+}
+
 void SceneBase::onCreate(const Scene *source)
 {
     Inherited::onCreate(source);
@@ -2495,6 +2647,18 @@ void SceneBase::onCreate(const Scene *source)
     if(source != NULL)
     {
         Scene *pThis = static_cast<Scene *>(this);
+
+        MFUnrecChildSceneObjectPtr::const_iterator SceneObjectsIt  =
+            source->_mfSceneObjects.begin();
+        MFUnrecChildSceneObjectPtr::const_iterator SceneObjectsEnd =
+            source->_mfSceneObjects.end  ();
+
+        while(SceneObjectsIt != SceneObjectsEnd)
+        {
+            pThis->pushToSceneObjects(*SceneObjectsIt);
+
+            ++SceneObjectsIt;
+        }
 
         pThis->setInternalParentProject(source->getInternalParentProject());
 
@@ -2658,6 +2822,43 @@ void SceneBase::onCreate(const Scene *source)
 
         pThis->setPhysicsWorld(source->getPhysicsWorld());
     }
+}
+
+GetFieldHandlePtr SceneBase::getHandleSceneObjects    (void) const
+{
+    MFUnrecChildSceneObjectPtr::GetHandlePtr returnValue(
+        new  MFUnrecChildSceneObjectPtr::GetHandle(
+             &_mfSceneObjects,
+             this->getType().getFieldDesc(SceneObjectsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleSceneObjects   (void)
+{
+    MFUnrecChildSceneObjectPtr::EditHandlePtr returnValue(
+        new  MFUnrecChildSceneObjectPtr::EditHandle(
+             &_mfSceneObjects,
+             this->getType().getFieldDesc(SceneObjectsFieldId),
+             this));
+
+    returnValue->setAddMethod(
+        boost::bind(&Scene::pushToSceneObjects,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveMethod(
+        boost::bind(&Scene::removeFromSceneObjects,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setRemoveObjMethod(
+        boost::bind(&Scene::removeObjFromSceneObjects,
+                    static_cast<Scene *>(this), _1));
+    returnValue->setClearMethod(
+        boost::bind(&Scene::clearSceneObjects,
+                    static_cast<Scene *>(this)));
+
+    editMField(SceneObjectsFieldMask, _mfSceneObjects);
+
+    return returnValue;
 }
 
 GetFieldHandlePtr SceneBase::getHandleInternalParentProject (void) const
@@ -3468,6 +3669,8 @@ FieldContainer *SceneBase::createAspectCopy(
 void SceneBase::resolveLinks(void)
 {
     Inherited::resolveLinks();
+
+    static_cast<Scene *>(this)->clearSceneObjects();
 
     static_cast<Scene *>(this)->setInternalParentProject(NULL);
 

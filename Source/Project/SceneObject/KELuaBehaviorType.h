@@ -36,8 +36,8 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KEBEHAVIORTYPE_H_
-#define _KEBEHAVIORTYPE_H_
+#ifndef _KELUABEHAVIORTYPE_H_
+#define _KELUABEHAVIORTYPE_H_
 
 #include "OSGConfig.h"
 #include "KEKabalaEngineDef.h"
@@ -48,7 +48,7 @@
 
 #include <map>
 #include <boost/function.hpp>
-#include "OSGTypeBase.h"
+#include "KEBehaviorType.h"
 
 #include "OSGFilePathAttachment.h"
 #include "OSGContainerUtils.h"
@@ -72,60 +72,60 @@ OSG_BEGIN_NAMESPACE
  */
 typedef boost::function<void ( void )> InitEventProducerFunctor;
 
-class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
+class KE_KABALAENGINE_DLLMAPPING LuaBehaviorType : public BehaviorType
 {
     /*==========================  PUBLIC  =================================*/
 
   public :
-    typedef TypeBase Inherited;
-	
-	void registerWithScene(Scene* scene);
 
-	UInt32 findEventID(std::string eventName);
-    std::string findEventName(UInt32 id);
+	typedef BehaviorType Inherited;
 
-
-	FieldContainerType * getFieldContainerType();
+    std::vector<std::string> getLuaFunctionNames();
 
     /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
+    LuaBehaviorType(const std::string &szName,
+				 FieldContainerType * bBehaviorFieldContainerType,
+                 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
+				 std::vector<std::string> bEvents = std::vector<std::string>(),
+				 std::vector<std::string> bEventLinks = std::vector<std::string>(),
+                 std::vector<std::string> bLuaCallbacks = std::vector<std::string>(),
+			     BoostPath& FilePath = BoostPath());
 
+    static LuaBehaviorType create(const std::string &szName,
+                               const std::string &type,
+                               const std::string &bEvents = "",
+                               const std::string &bEventLinks = "",
+                               const std::string &luaCallback = "",
+                               const std::string &StrFilePath = "");
+
+    LuaBehaviorType(const LuaBehaviorType &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructor                                 */
     /*! \{                                                                 */
 
-    virtual ~BehaviorType(void); 
+    virtual ~LuaBehaviorType(void); 
 
 	/*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name						Get	                                   */
     /*! \{                                                                 */
 
-    const std::vector<std::string>      getSourceContainers();
-    const std::vector<std::string>      getEvents();
-    const std::vector<std::string>      getEventLinks();
-    const std::vector<BehaviorType*>	getDependencies();
-    const Scene*                        getAttachedScene();
-
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name						Has	                                   */
     /*! \{                                                                 */
-	bool hasEvent(std::string e);
-	bool hasEventLink(std::string e);
-	bool hasDependent(BehaviorType* d);
-	bool hasDependency(BehaviorType* d);
+
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                  Type Information                            */
     /*! \{                                                                 */
 
-    BehaviorType *getParent (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -142,9 +142,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     /*! \name                Query Properties                              */
     /*! \{                                                                 */
 
-    bool isInitialized(void) const;
-
-    bool isAbstract(void) const;
   
 
     /*! \}                                                                 */
@@ -159,50 +156,23 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 
   protected:
 
-	  BehaviorType(const std::string &szName,
-			 FieldContainerType * bBehaviorFieldContainerType,
-			 std::vector<std::string> eventSourceNames = std::vector<std::string>(),
-			 std::vector<std::string> bEvents = std::vector<std::string>(),
-			 std::vector<std::string> bEventLinks = std::vector<std::string>());
-
-      BehaviorType(const BehaviorType &source);
-
     /*---------------------------------------------------------------------*/
     /*! \name                      Member                                  */
     /*! \{                                                                 */
 
-    bool _bInitialized;
-	std::string TheCode;
-
-    std::vector<UInt32>         _bActiveEventIDs;
-	std::vector<BehaviorType*>	_bDependencies;
-	std::vector<BehaviorType*>	_bDependents;
-
-    std::vector<std::string>    _bSourceContainers; //("button1",NULL,"Window","Button2",NULL)
-	std::vector<std::string>	_bEvents;           //("press  ","evt1","update","press","evt2")
-	std::vector<std::string>	_bEventLinks;       //("button1",NULL,"Window","Button2",NULL)
     std::vector<std::string>    luaFunctionNames;   //("button1",NULL,"Window","Button2",NULL)
-
-    BehaviorType *_pParent;
-
-	Scene * attachedScene;
-	
-	FieldContainerType * behaviorFieldContainerType;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Register                                  */
     /*! \{                                                                 */
 
-    void registerType();
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name             Intialization / Termination                      */
     /*! \{                                                                 */
 
-    bool initialize(void);
-    void terminate(void);
 
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
@@ -214,11 +184,11 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
 	friend class Behavior;
 
     /*!\brief prohibit default function (move to 'public' if needed) */
-    void operator =(const BehaviorType &source);
+    void operator =(const LuaBehaviorType &source);
 };
 
 OSG_END_NAMESPACE
 
-#include "KEBehaviorType.inl"
+#include "KELuaBehaviorType.inl"
 
-#endif /* _KEBEHAVIORTYPE_H_ */
+#endif /* _KELUABEHAVIORTYPE_H_ */

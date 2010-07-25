@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -42,14 +42,14 @@
  **           regenerated, which can become necessary at any time.          **
  **                                                                         **
  **     Do not change this file, changes should be done in the derived      **
- **     class BehaviorType
+ **     class LuaBehavior
  **                                                                         **
  *****************************************************************************
 \*****************************************************************************/
 
 
-#ifndef _KEBEHAVIORTYPEBASE_H_
-#define _KEBEHAVIORTYPEBASE_H_
+#ifndef _KELUABEHAVIORBASE_H_
+#define _KELUABEHAVIORBASE_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -58,58 +58,38 @@
 
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
+#include "KEConfig.h"
 
 //#include "OpenSG/OSGBaseTypes.h"
 
-#include <OpenSG/OSGAttachmentContainer.h> // Parent
 
-#include <OpenSG/OSGBaseFields.h>       // Name type
-#include <OpenSG/OSGSysFields.h>        // ID type
+#include "KEBehavior.h" // Parent
 
-#include "KEBehaviorTypeFields.h"
+
+#include "KELuaBehaviorFields.h"
 
 OSG_BEGIN_NAMESPACE
 
-class BehaviorType;
+class LuaBehavior;
 
-//! \brief BehaviorType Base Class.
+//! \brief LuaBehavior Base Class.
 
-class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
+class KE_KABALAENGINE_DLLMAPPING LuaBehaviorBase : public Behavior
 {
   public:
 
-    typedef AttachmentContainer Inherited;
-    typedef AttachmentContainer ParentContainer;
+    typedef Behavior Inherited;
+    typedef Behavior ParentContainer;
 
     typedef Inherited::TypeObject TypeObject;
     typedef TypeObject::InitPhase InitPhase;
 
-    OSG_GEN_INTERNALPTR(BehaviorType);
+    OSG_GEN_INTERNALPTR(LuaBehavior);
 
     /*==========================  PUBLIC  =================================*/
 
   public:
 
-    enum
-    {
-        NameFieldId = Inherited::NextFieldId,
-        DescriptionFieldId = NameFieldId + 1,
-        IDFieldId = DescriptionFieldId + 1,
-        NextFieldId = IDFieldId + 1
-    };
-
-    static const OSG::BitVector NameFieldMask =
-        (TypeTraits<BitVector>::One << NameFieldId);
-    static const OSG::BitVector DescriptionFieldMask =
-        (TypeTraits<BitVector>::One << DescriptionFieldId);
-    static const OSG::BitVector IDFieldMask =
-        (TypeTraits<BitVector>::One << IDFieldId);
-    static const OSG::BitVector NextFieldMask =
-        (TypeTraits<BitVector>::One << NextFieldId);
-        
-    typedef SFString          SFNameType;
-    typedef MFString          MFDescriptionType;
-    typedef SFUInt32          SFIDType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -131,37 +111,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-
-                  MFString            *editMFDescription    (void);
-            const MFString            *getMFDescription     (void) const;
-
-                  SFUInt32            *editSFID             (void);
-            const SFUInt32            *getSFID              (void) const;
-
-
-                  std::string         &editDescription    (const UInt32 index);
-            const std::string         &getDescription     (const UInt32 index) const;
-
-                  UInt32              &editID             (void);
-                  UInt32               getID              (void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-            void setID             (const UInt32 value);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
@@ -177,16 +126,16 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  BehaviorTypeTransitPtr  create          (void);
-    static  BehaviorType           *createEmpty     (void);
+    static  LuaBehaviorTransitPtr  create          (void);
+    static  LuaBehavior           *createEmpty     (void);
 
-    static  BehaviorTypeTransitPtr  createLocal     (
+    static  LuaBehaviorTransitPtr  createLocal     (
                                                BitVector bFlags = FCLocal::All);
 
-    static  BehaviorType            *createEmptyLocal(
+    static  LuaBehavior            *createEmptyLocal(
                                               BitVector bFlags = FCLocal::All);
 
-    static  BehaviorTypeTransitPtr  createDependent  (BitVector bFlags);
+    static  LuaBehaviorTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -210,27 +159,18 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
-    /*! \name                      Fields                                  */
-    /*! \{                                                                 */
-
-    SFString          _sfName;
-    MFString          _mfDescription;
-    SFUInt32          _sfID;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
     /*! \name                   Constructors                               */
     /*! \{                                                                 */
 
-    BehaviorTypeBase(void);
-    BehaviorTypeBase(const BehaviorTypeBase &source);
+    LuaBehaviorBase(void);
+    LuaBehaviorBase(const LuaBehaviorBase &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~BehaviorTypeBase(void);
+    virtual ~LuaBehaviorBase(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -243,37 +183,6 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
-    GetFieldHandlePtr  getHandleName            (void) const;
-    EditFieldHandlePtr editHandleName           (void);
-    GetFieldHandlePtr  getHandleDescription     (void) const;
-    EditFieldHandlePtr editHandleDescription    (void);
-    GetFieldHandlePtr  getHandleID              (void) const;
-    EditFieldHandlePtr editHandleID             (void);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Get                                 */
-    /*! \{                                                                 */
-
-
-                  SFString            *editSFName           (void);
-            const SFString            *getSFName            (void) const;
-
-
-                  std::string         &editName           (void);
-            const std::string         &getName            (void) const;
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                    Field Set                                 */
-    /*! \{                                                                 */
-
-            void setName           (const std::string &value);
-
-    /*! \}                                                                 */
-    /*---------------------------------------------------------------------*/
-    /*! \name                Ptr MField Set                                */
-    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -287,7 +196,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
                                  ConstFieldMaskArg  syncMode  ,
                            const UInt32             uiSyncInfo);
 
-            void execSync (      BehaviorTypeBase *pFrom,
+            void execSync (      LuaBehaviorBase *pFrom,
                                  ConstFieldMaskArg  whichField,
                                  AspectOffsetStore &oOffsets,
                                  ConstFieldMaskArg  syncMode  ,
@@ -327,11 +236,11 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorTypeBase : public AttachmentContainer
     /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const BehaviorTypeBase &source);
+    void operator =(const LuaBehaviorBase &source);
 };
 
-typedef BehaviorTypeBase *BehaviorTypeBaseP;
+typedef LuaBehaviorBase *LuaBehaviorBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEBEHAVIORTYPEBASE_H_ */
+#endif /* _OSGLUABEHAVIORBASE_H_ */

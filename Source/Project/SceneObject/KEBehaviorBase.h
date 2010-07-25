@@ -276,4 +276,4 @@ typedef BehaviorBase *BehaviorBaseP;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEBEHAVIORBASE_H_ */
+#endif /* _OSGBEHAVIORBASE_H_ */

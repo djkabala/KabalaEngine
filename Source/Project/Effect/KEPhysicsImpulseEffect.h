@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  Robert Goetz (rdgoetz@iastate.edu)                            *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -32,41 +32,22 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
-#ifndef _KEBEHAVIOR_H_
-#define _KEBEHAVIOR_H_
+#ifndef _KEPHYSICSIMPULSEEFFECT_H_
+#define _KEPHYSICSIMPULSEEFFECT_H_
 #ifdef __sgi
 #pragma once
 #endif
 
-#include "KEBehaviorBase.h"
-
-#include <Project/Scene/KESceneFields.h>
-#include <Project/SceneObject/KESceneObjectFields.h>
-#include <OpenSG/OSGGenericEvent.h>
-#include <OpenSG/OSGEvent.h>
-#include <OpenSG/OSGEventListener.h>
-#include <OpenSG/OSGEventProducerType.h>
-#include <OpenSG/OSGEventProducer.h>
-#include <OpenSG/OSGEventConnection.h>
-#include "KEBehaviorType.h"
+#include "KEPhysicsImpulseEffectBase.h"
 
 OSG_BEGIN_NAMESPACE
 
-/*! \brief Behavior class. See \ref
-           PageKabalaEngineBehavior for a description.
+/*! \brief PhysicsImpulseEffect class. See \ref
+           PageKabalaEnginePhysicsImpulseEffect for a description.
 */
 
-class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
+class KE_KABALAENGINE_DLLMAPPING PhysicsImpulseEffect : public PhysicsImpulseEffectBase
 {
   protected:
 
@@ -74,21 +55,8 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
   public:
 
-
-    typedef BehaviorBase Inherited;
-    typedef Behavior     Self;
-
-    const SceneObject* getParentSceneObject(void) const;
-	void addedToSceneObject(SceneObjectUnrecPtr rootSceneObject);
-
-	BehaviorType * getBehaviorType(void);
-
-	bool isInitialized();
-
-	void checkListenerAttachment();
-
-    void produceEvent(std::string name);
-    void produceEvent(UInt32 id);
+    typedef PhysicsImpulseEffectBase Inherited;
+    typedef PhysicsImpulseEffect     Self;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -106,65 +74,35 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     virtual void dump(      UInt32     uiIndent = 0,
                       const BitVector  bvFlags  = 0) const;
 
-	
-    virtual ~Behavior(void);
-
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
   protected:
-	
-	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID) = 0;
-    virtual void depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 ID) = 0;
 
-	virtual void initialize(SceneObjectUnrecPtr rootSceneObject) = 0;
+    // Variables should all be in PhysicsImpulseEffectBase.
 
-	void attachListeners (EventProducerPtr eventProducer);
-
-	BehaviorType* theBehaviorType;
-    bool initialized;
-
-    // Variables should all be in BehaviorBase.
-
-    class DepBehaviorListener : public EventListener
-	{
-		public:
-			
-			DepBehaviorListener(BehaviorUnrecPtr TheBehavior);
-
-			virtual void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
-
-		protected :
-			BehaviorRecPtr _Behavior;
-	};
-
-    class DepFieldContainerListener : public EventListener
-	{
-		public:
-			
-			DepFieldContainerListener(BehaviorUnrecPtr TheBehavior);
-
-			virtual void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
-
-		protected :
-			BehaviorRecPtr _Behavior;
-	};
-
-	DepBehaviorListener		    _DepBehaviorListener;
-    DepFieldContainerListener	_DepFieldContainerListener;
+    void inheritedBegin    (void);
+    bool inheritedIsPlaying(void);
+    bool inheritedIsPaused (void);
+    void inheritedPause    (void);
+    void inheritedUnpause  (void);
+    void inheritedStop     (void);
+    void initEffect        (void);
+    void finished          (void);
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
     /*! \{                                                                 */
 
-    Behavior(void);
-    Behavior(const Behavior &source);
+    PhysicsImpulseEffect(void);
+    PhysicsImpulseEffect(const PhysicsImpulseEffect &source);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
+    virtual ~PhysicsImpulseEffect(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -173,28 +111,27 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
     static void initMethod(InitPhase ePhase);
 
-    /*! \} 
-    */
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
 
   private:
 
     friend class FieldContainer;
-    friend class BehaviorBase;
-	friend class BehaviorFactoryBase;
-	friend class BehaviorType;
+    friend class PhysicsImpulseEffectBase;
 
     // prohibit default functions (move to 'public' if you need one)
-    void operator =(const Behavior &source);
+    void operator =(const PhysicsImpulseEffect &source);
 };
 
-typedef Behavior *BehaviorP;
+typedef PhysicsImpulseEffect *PhysicsImpulseEffectP;
 
 OSG_END_NAMESPACE
 
-#include "Project/SceneObject/KESceneObject.h"
+#include <OpenSG/OSGPhysicsBody.h>      // PhysicsBodies Class
+#include <OpenSG/OSGPhysicsWorld.h>     // PhysicsWorld Class
+#include <OpenSG/OSGPhysicsSpace.h>     // PhysicsSpace Class
+#include <OpenSG/OSGPhysicsWorld.h>     // PhysicsWorld Class
+#include "KEPhysicsImpulseEffectBase.inl"
+#include "KEPhysicsImpulseEffect.inl"
 
-#include "KEBehaviorBase.inl"
-#include "KEBehavior.inl"
-
-#endif /* _KEBEHAVIOR_H_ */
+#endif /* _KEPHYSICSIMPULSEEFFECT_H_ */
