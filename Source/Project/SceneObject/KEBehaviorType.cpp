@@ -1,24 +1,27 @@
 /*---------------------------------------------------------------------------*\
- *                             Kabala Engine                                 *
+ *                        OpenSG ToolBox Toolbox                             *
  *                                                                           *
- *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *                                                                           *
+ *                                                                           *
+ *                         www.vrac.iastate.edu                              *
+ *                                                                           *
+ *            Authors: David Kabala,Eric Langkamp,Robert Goetz               *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU General Public License as published            *
- * by the Free Software Foundation, version 3.                               *
+ * under the terms of the GNU Library General Public License as published    *
+ * by the Free Software Foundation, version 2.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
  * WITHOUT ANY WARRANTY; without even the implied warranty of                *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU General Public                 *
+ * You should have received a copy of the GNU Library General Public         *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -32,91 +35,267 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
-//---------------------------------------------------------------------------
-//  Includes
-//---------------------------------------------------------------------------
+#include <stdlib.h>
+#include <stdio.h>
 
-#include <cstdlib>
-#include <cstdio>
+#include "OSGConfig.h"
 
-#define KE_COMPILEKABALAENGINELIB
+#include <iostream>
 
-#include <OpenSG/OSGConfig.h>
+#include <algorithm>
+
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/regex.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 #include "KEBehaviorType.h"
+#include "KEBehaviorFactory.h"
+#include "Project/Scene/KEScene.h"
 
-OSG_BEGIN_NAMESPACE
+#include "OSGMethodDescription.h"
+#include "OSGLog.h"
+#include "OSGTypeBase.h"
 
-// Documentation for this class is emitted in the
-// OSGBehaviorTypeBase.cpp file.
-// To modify it, please change the .fcd file (OSGBehaviorType.fcd) and
-// regenerate the base file.
+#include "OSGFilePathAttachment.h"
+#include "OSGContainerUtils.h"
+#include "OSGFieldContainerFactory.h"
+#include <fstream>
+#include <sstream>
 
-/***************************************************************************\
- *                           Class variables                               *
-\***************************************************************************/
 
-/***************************************************************************\
- *                           Class methods                                 *
-\***************************************************************************/
+OSG_USING_NAMESPACE
 
-void BehaviorType::initMethod(InitPhase ePhase)
+//---------------------------------------------------------------------------
+//  Class
+//---------------------------------------------------------------------------
+
+const std::vector<std::string> BehaviorType::getSourceContainers()
 {
-    Inherited::initMethod(ePhase);
+    return _bSourceContainers;
+}
 
-    if(ePhase == TypeObject::SystemPost)
+
+const std::vector<BehaviorType*> BehaviorType::getDependencies()
+{
+    return _bDependencies;
+}
+
+/*-------------------------------------------------------------------------*/
+/*                                Find                                     */
+
+UInt32 BehaviorType::findEventID(std::string eventName)
+{
+	if(_bEvents.empty())
+	{
+		SWARNING << "BehaviorType: " << getName() << " has not been registered. Search for EventID's default returns ZERO!!" << std::endl;
+		return 0;
+	}
+	for(UInt32 i = 0; _bEvents.size() > i; i++)
+	{
+		if(_bEvents[i] == eventName)
+		{
+			return _bActiveEventIDs[i];
+		}
+	}
+
+	SWARNING << "BehaviorType: " << getName() << " has no event by the name of " << eventName << "Search for EventID's default returns ZERO!!" <<std::endl;
+	return 0;
+}
+
+std::string BehaviorType::findEventName(UInt32 id)
+{
+	if(id > 0 && id < _bActiveEventIDs.size())
     {
+		return _bEvents[id];
+	}
+    else
+    {
+    	SWARNING << "BehaviorType: " << getName() << " has no event by the id of " << id << "Search for EventID's default returns ZERO!!" <<std::endl;
+	    return NULL;
     }
 }
 
+/*-------------------------------------------------------------------------*/
+/*                                Has                                      */
 
-/***************************************************************************\
- *                           Instance methods                              *
-\***************************************************************************/
+bool BehaviorType::hasEvent(std::string e)
+{
+	for(UInt32 i = 0; i < _bEvents.size(); i++)
+	{
+		if(_bEvents[i].compare(e) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
-/*-------------------------------------------------------------------------*\
- -  private                                                                 -
-\*-------------------------------------------------------------------------*/
+bool BehaviorType::hasEventLink(std::string e)
+{
+	for(UInt32 i = 0; i < _bEventLinks.size(); i++)
+	{
+		if(_bEventLinks[i].compare(e) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
-/*----------------------- constructors & destructors ----------------------*/
+bool BehaviorType::hasDependent(BehaviorType* d)
+{
+	for(UInt32 i = 0; i < _bDependencies.size(); i++)
+	{
+		if(_bDependencies[i] == d)
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
-BehaviorType::BehaviorType(void) :
-    Inherited()
+bool BehaviorType::hasDependency(BehaviorType* d)
+{
+	for(UInt32 i = 0; i < _bDependents.size(); i++)
+	{
+		if(_bDependents[i] == d)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/*-------------------------------------------------------------------------*/
+/*                              Register                                   */
+
+void BehaviorType::registerType()
+{
+    BehaviorFactory::the()->registerType(this);
+}
+
+void BehaviorType::registerWithScene(Scene* scene)
+{
+//	scene = (Scene*)scene;
+	if(scene != attachedScene)
+	{
+        _bActiveEventIDs.clear();
+		for(UInt32 i = 0; i < _bEvents.size(); i++)
+		{
+            _bActiveEventIDs.push_back(scene->registerNewGenericMethod(_bEvents[i]));
+		}
+		attachedScene = scene;
+	}
+
+	scene->checkBehaviorInitialization();
+}
+
+/*-------------------------------------------------------------------------*/
+/*                            Constructors                                 */
+
+BehaviorType::BehaviorType( const std::string &szName,
+							FieldContainerType * bBehaviorFieldContainerType,
+                            std::vector<std::string> eventSourceNames,
+		                    std::vector<std::string> bEvents,
+		                    std::vector<std::string> bEventLinks) :
+    Inherited        (szName.c_str(), 
+                      "TypeBase"),
+
+    _bInitialized     (false            ),
+
+	behaviorFieldContainerType	(bBehaviorFieldContainerType),
+
+    _pParent          (NULL             ),
+
+	_bEvents		  (bEvents			),
+
+	_bEventLinks	  (bEventLinks		),
+
+    _bSourceContainers(eventSourceNames ),
+	
+	attachedScene	  (NULL             )
 {
 }
 
-BehaviorType::BehaviorType(const BehaviorType &source) :
-    Inherited(source)
+BehaviorType::BehaviorType(const BehaviorType &obj) :
+
+     Inherited        (obj                   ),
+
+    _bInitialized     (true                 ),
+
+    _pParent          (obj._pParent          ),
+
+    behaviorFieldContainerType	(obj.behaviorFieldContainerType),
+
+	_bDependencies	  (obj._bDependencies	 ),
+
+    _bEvents		  (obj._bEvents			 ),
+
+	_bEventLinks	  (obj._bEventLinks		 ),
+	
+	attachedScene	  (NULL					 ),
+
+    _bSourceContainers (obj._bSourceContainers      )
 {
 }
+
+/*-------------------------------------------------------------------------*/
+/*                             Destructor                                  */
 
 BehaviorType::~BehaviorType(void)
 {
+    if(GlobalSystemState != Shutdown)
+    {
+        terminate();
+    }
 }
 
-/*----------------------------- class specific ----------------------------*/
+/*-------------------------------------------------------------------------*/
+/*                            Add / Sub                                    */
 
-void BehaviorType::changed(ConstFieldMaskArg whichField, 
-                            UInt32            origin,
-                            BitVector         details)
+bool BehaviorType::isAbstract   (void) const
 {
-    Inherited::changed(whichField, origin, details);
+    return false;
 }
 
-void BehaviorType::dump(      UInt32    ,
-                         const BitVector ) const
+/*-------------------------------------------------------------------------*/
+/*                                Dump                                     */
+
+void BehaviorType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
+                              const BitVector OSG_CHECK_ARG(bvFlags )) const
 {
-    SLOG << "Dump BehaviorType NI" << std::endl;
+    SLOG << "BehaviorType: "
+         << getCName()
+         << ", Id: "       
+         << getId()
+         << ", parentP: " 
+         << (_pParent ? _pParent->getCName() : "NONE")
+         << std::endl;
 }
 
-OSG_END_NAMESPACE
+
+/*-------------------------------------------------------------------------*/
+/*                                Init                                     */
+
+bool BehaviorType::initialize(void)
+{
+    if(_bInitialized == true)
+        return _bInitialized;
+
+    _bInitialized = true;
+
+    if(_bInitialized == false)
+        return _bInitialized;
+
+    if(_bInitialized == false)
+        return _bInitialized;
+    
+    return _bInitialized;
+}
+
+void BehaviorType::terminate(void)
+{
+    _bInitialized = false;
+}

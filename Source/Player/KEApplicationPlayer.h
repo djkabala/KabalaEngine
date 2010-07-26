@@ -44,6 +44,8 @@
 
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGTransform.h>
+#include <OpenSG/OSGLineChunk.h>
+#include <OpenSG/OSGMaterialChunk.h>
 #include <OpenSG/OSGNavigator.h>
 #include <OpenSG/OSGEventListener.h>
 
@@ -166,6 +168,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     virtual void reset(void);
     virtual void gotoScene(SceneRefPtr TheScene);
     void enableDebug(bool EnableDebug);
+    bool isDebugging(void) const;
 
 	CommandManagerPtr getCommandManager(void);
 	void setCurrentAction(UInt32 action);
@@ -193,6 +196,8 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void setDebugView(UInt32 Index);
     void updateHighlightNode(void);
     void updateWireframeNode(void);
+    
+    void openEditor(FieldContainer* FCToEdit);
     /*=========================  PROTECTED  ===============================*/
 
   protected:
@@ -329,10 +334,20 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
 
     NodeRefPtr _HighlightNode;
+    NodeRefPtr _HighlightVolumeBoxNode;
+    GeometryRefPtr _HighlightVolumeBoxGeo;
+    LineChunkRefPtr _HighlightBoundBoxMatLineChunk;
+    NodeRefPtr _HighlightAxisNode;
+    GeometryRefPtr _HighlightAxisGeo;
+    LineChunkRefPtr _HighlightAxisLineChunk;
+    NodeRefPtr _WireframeMatGroupNode;
     NodeRefPtr _WireframeNode;
     TransformRefPtr _WireframeTransform;
+    MaterialChunkRefPtr _WireframeMatMaterialChunk;
+    LineChunkRefPtr _WireframeMatLineChunk;
     NodeRefPtr _SelectedNode;
     NodeRefPtr _WorkspaceGrid;
+    LineChunkRefPtr _WorkspaceGridLineChunk;
 
     HierarchyPanelRefPtr	_HierarchyPanel;
     HelperPanelRefPtr		_HelperPanel;
@@ -354,11 +369,16 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     PanelRefPtr			_Toolbar;
 
+    ButtonRefPtr	_EditProjectButton;
+
     ButtonRefPtr	_OpenFileButton;
     ButtonRefPtr	_SaveFileButton;
     ButtonRefPtr	_CloseFileButton;
 
 
+    MenuItemRefPtr _LoadProjectItem ;				
+    MenuItemRefPtr _SaveProjectItem ;				
+    MenuItemRefPtr _SaveProjectAsItem;
     MenuItemRefPtr _ResetItem ;				
     MenuItemRefPtr _ForceQuitItem ;			
 
@@ -464,6 +484,9 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void updateDebugSceneChange(void);
 
     void createHighlightNode(void);
+    void createHighlightBoundBoxNode(void);
+    void createHighlightAxisNode(void);
+    void createHighlightTriMeshNode(void);
 
     InternalWindowRefPtr MainInternalWindow;		
     GraphicsRefPtr DebuggerGraphics;				
@@ -476,6 +499,8 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     NodeRefPtr                           _PhysDrawableNode;
     bool _WasMouseHidden;
     bool _WasMouseAttached;
+
+    void updateFromSettings(void);
 
     /*==========================  PRIVATE  ================================*/
 

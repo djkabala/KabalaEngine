@@ -44,13 +44,15 @@
 #include <OpenSG/OSGWindowFields.h>
 #include <OpenSG/OSGWindowAdapter.h>
 #include <boost/program_options.hpp>
-#include "Application/KEApplicationSettingsFields.h" // Settings type
+#include "Application/KEApplicationSettings.h" // Settings type
 #include <OpenSG/OSGBoostPathFields.h> // SettingsLoadFile type
 #include <OpenSG/OSGWindowEventProducerFields.h> // MainWindowEventProducer type
 #include "Project/KEProjectFields.h" // Project type
 #include "Project/Scene/KESceneFields.h" // Scene type
-#include "Application/KEApplicationModeFields.h" 
-
+#include "Application/KEApplicationModeFields.h"
+#include <set> 
+#include "Application/Logging/KELogListener.h"
+#include <OpenSG/OSGEventConnection.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -86,8 +88,8 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 
 	void attachStartScreen(void);
 
-           ApplicationSettingsRefPtr &getSettings       (void);
-     const ApplicationSettingsRefPtr &getSettings       (void) const;
+           ApplicationSettings      &getSettings       (void);
+     const ApplicationSettings      &getSettings       (void) const;
            BoostPath                &getSettingsLoadFile(void);
      const BoostPath                &getSettingsLoadFile(void) const;
            WindowEventProducerRefPtr &getMainWindow(void);
@@ -103,7 +105,7 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
            ApplicationModeRefPtr  &getCurrentMode    (void);
      const ApplicationModeRefPtr  &getCurrentMode    (void) const;
      
-     void setSettings       ( const ApplicationSettingsRefPtr &value );
+     void setSettings       ( const ApplicationSettings &value );
      void setSettingsLoadFile( const BoostPath &value );
      void setMainWindow( const WindowEventProducerRefPtr &value );
      void setProject        ( const ProjectRefPtr &value );
@@ -113,19 +115,24 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
      void setCurrentMode    ( const ApplicationModeRefPtr &value );
 
      static const BoostPath EngineAppDataDirectory;
+    
+     EventConnection addLogListener(LogListenerPtr Listener);
+     bool isLogListenerAttached(LogListenerPtr Listener) const;
+     void removeLogListener(LogListenerPtr Listener);
     /*=========================  PROTECTED  ===============================*/
   protected:
 
-     ApplicationSettingsRefPtr _Settings;
-     BoostPath                 _SettingsPath;
-     WindowEventProducerRefPtr              _MainWindow;
-     ProjectRefPtr             _Project;
-     ApplicationModeRefPtr     _BuilderMode;
-     ApplicationModeRefPtr     _StartScreenMode;
-     ApplicationModeRefPtr     _PlayerMode;
-     ApplicationModeRefPtr     _CurrentMode;
+     ApplicationSettings        _Settings;
+     BoostPath                  _SettingsPath;
+     WindowEventProducerRefPtr  _MainWindow;
+     ProjectRefPtr              _Project;
+     ApplicationModeRefPtr      _BuilderMode;
+     ApplicationModeRefPtr      _StartScreenMode;
+     ApplicationModeRefPtr      _PlayerMode;
+     ApplicationModeRefPtr      _CurrentMode;
 
-     static ApplicationSettingsRefPtr createDefaultSettings(void);
+     static ApplicationSettings createDefaultSettings(void);
+     static void applyDefaultSettings(ApplicationSettings& TheSettings, bool overwriteIfDefined = true);
 
      void createDefaultBuilderMode(void);
 
@@ -164,6 +171,24 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 
     static boost::program_options::options_description _OptionsDescription;
     static boost::program_options::positional_options_description _PositionalOptions;
+
+	typedef std::set<LogListenerPtr> LogListenerSet;
+    typedef LogListenerSet::iterator LogListenerSetItor;
+    typedef LogListenerSet::const_iterator LogListenerSetConstItor;
+
+    LogListenerSet       _LogListeners;
+
+    void produceLog(const LogEventUnrecPtr e);
+
+    void initializeLogging(LogType TheLogType = LOG_FILE,
+                           BoostPath LogFilePath = BoostPath("./KabalaEngine.log"));
+
+    static void KELogBufferCallback(const Char8 *data, 
+                                    Int32  size,
+                                    void  *clientData);
+
+    void initOpenSG(int argc, char **argv);
+    void updateRecentProject(const BoostPath& ProjectFile);
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
   private:

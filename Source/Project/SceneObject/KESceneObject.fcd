@@ -11,21 +11,49 @@
 	decoratable="false"
 	useLocalIncludes="false"
 	libnamespace="KE"
-    authors="David Kabala (djkabala@gmail.com)                             "
+    childFields="multi"
+    authors="David Kabala (djkabala@gmail.com), Eric Langkamp             "
 >
 The SceneObject.
 	<Field
+        name="ParentScene"
+		type="FieldContainer"
+		category="parentpointer"
+		cardinality="single"
+		visibility="external"
+		access="none"
+		defaultValue="NULL"
+        doRefCount="false"
+        passFieldMask="true"
+	>
+	</Field>
+    <Field
 		name="Behaviors"
 		type="Behavior"
-		category="pointer"
+        childParentType="FieldContainer"
+		category="childpointer"
 		cardinality="multi"
 		visibility="external"
 		fieldHeader="Project/SceneObject/KEBehaviorFields.h"
 		typeHeader="Project/SceneObject/KEBehavior.h"
-		access="protected"
+		access="public"
+        linkParentField="SceneObject"
 	>
 	</Field>
-	<Field
+    <Field
+		name="AttachedEffects"
+		type="Effect"
+        childParentType="FieldContainer"
+		category="childpointer"
+		cardinality="multi"
+		visibility="external"
+		fieldHeader="Project/Effect/KEEffectFields.h"
+		typeHeader="Project/Effect/KEEffect.h"
+		access="public"
+        linkParentField="ParentSceneObject"
+	>
+	</Field>
+    <Field
 		name="Node"
 		type="Node"
 		category="pointer"

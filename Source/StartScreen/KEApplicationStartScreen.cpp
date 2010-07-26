@@ -82,6 +82,7 @@
 #include <OpenSG/OSGKeyframeSequences.h>
 
 #include <boost/filesystem/operations.hpp>
+#include "KEVersion.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -299,8 +300,8 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
     //Version Label
     LabelRefPtr VersionLabel = OSG::Label::create();
     VersionLabel->setText("Version:");
-    VersionLabel->setAlignment(Vec2f(1.0f,0.5f));
-    VersionLabel->setPreferredSize(Vec2f(100,20));
+    VersionLabel->setAlignment(Vec2f(0.0f,0.5f));
+    VersionLabel->setPreferredSize(Vec2f(70,20));
     VersionLabel->setTextColors(Color4f(1.0f,1.0f,1.0f,1.0f));
     VersionLabel->setBackgrounds(NULL);
     VersionLabel->setBorders(NULL);
@@ -309,7 +310,7 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
     //Version Value Label
     LabelRefPtr VersionValueLabel = OSG::Label::create();
     VersionValueLabel->setText(getKabalaEngineVersion() + " - " + getKabalaEngineBuildType());
-    VersionValueLabel->setPreferredSize(Vec2f(110,20));
+    VersionValueLabel->setPreferredSize(Vec2f(105,20));
     VersionValueLabel->setTextColors(Color4f(1.0f,1.0f,1.0f,1.0f));
     VersionValueLabel->setBackgrounds(NULL);
     VersionValueLabel->setBorders(NULL);
@@ -324,6 +325,15 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
     AuthorValueLabel->setBorders(NULL);
     AuthorValueLabel->setFont(LabelFont);
 
+    //Revision Value Label
+    LabelRefPtr RevisionValueLabel = OSG::Label::create();
+    RevisionValueLabel->setText(getKabalaEngineBuildRepositoryRevision());
+    RevisionValueLabel->setPreferredSize(Vec2f(312,20));
+    RevisionValueLabel->setTextColors(Color4f(1.0f,1.0f,1.0f,1.0f));
+    RevisionValueLabel->setBackgrounds(NULL);
+    RevisionValueLabel->setBorders(NULL);
+    RevisionValueLabel->setFont(LabelFont);
+
     // Create The Main InternalWindow
     InternalWindowRefPtr StartScreenInternalWindow = OSG::InternalWindow::create();
 
@@ -336,16 +346,16 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
     StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, ButtonPanel, 0, SpringLayoutConstraints::SOUTH_EDGE, StartScreenInternalWindow);
 
     //Version Label
-    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, VersionLabel, 0, SpringLayoutConstraints::WEST_EDGE, VersionValueLabel);
-    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, VersionLabel, 0, SpringLayoutConstraints::SOUTH_EDGE, StartScreenInternalWindow);
-    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::HEIGHT_EDGE, VersionLabel, LayoutSpring::height(VersionLabel));
-    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::WIDTH_EDGE, VersionLabel, LayoutSpring::width(VersionLabel));
+    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, VersionLabel, 0, SpringLayoutConstraints::WEST_EDGE, RevisionValueLabel);
+    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, VersionLabel, -4, SpringLayoutConstraints::NORTH_EDGE, RevisionValueLabel);
 
     //Version Value Label
-    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, VersionValueLabel, 0, SpringLayoutConstraints::EAST_EDGE, StartScreenInternalWindow);
-    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, VersionValueLabel, 0, SpringLayoutConstraints::SOUTH_EDGE, StartScreenInternalWindow);
-    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::HEIGHT_EDGE, VersionValueLabel, LayoutSpring::height(VersionValueLabel));
-    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::WIDTH_EDGE, VersionValueLabel, LayoutSpring::width(VersionValueLabel));
+    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, VersionValueLabel, 1, SpringLayoutConstraints::EAST_EDGE, VersionLabel);
+    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, VersionValueLabel, -4, SpringLayoutConstraints::NORTH_EDGE, RevisionValueLabel);
+
+    //Revision Value Label
+    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, RevisionValueLabel, 0, SpringLayoutConstraints::EAST_EDGE, StartScreenInternalWindow);
+    StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, RevisionValueLabel, 0, SpringLayoutConstraints::SOUTH_EDGE, StartScreenInternalWindow);
 
     //Author Value Label
     StartScreenInternalWindowLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, AuthorValueLabel, 0, SpringLayoutConstraints::WEST_EDGE, StartScreenInternalWindow);
@@ -357,6 +367,7 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
     StartScreenInternalWindow->pushToChildren(AuthorValueLabel);
     StartScreenInternalWindow->pushToChildren(VersionLabel);
     StartScreenInternalWindow->pushToChildren(VersionValueLabel);
+    StartScreenInternalWindow->pushToChildren(RevisionValueLabel);
     StartScreenInternalWindow->setLayout(StartScreenInternalWindowLayout);
     StartScreenInternalWindow->setAlignmentInDrawingSurface(Vec2f(0.5f,0.5f));
     StartScreenInternalWindow->setScalingInDrawingSurface(Vec2f(1.0f,1.0f));
@@ -437,7 +448,7 @@ void ApplicationStartScreen::dump(      UInt32    ,
 
 void ApplicationStartScreen::StartScreenKeyListener::keyTyped(const KeyEventUnrecPtr e)
 {
-   if(e->getKey() == KeyEvent::KEY_Q && e->getModifiers() & KeyEvent::KEY_MODIFIER_CONTROL)
+   if(e->getKey() == KeyEvent::KEY_Q && e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND)
    {
 		MainApplication::the()->exit();
    }

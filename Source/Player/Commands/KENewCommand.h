@@ -73,6 +73,7 @@ protected:
 
 	HierarchyPanelRefPtr _HierarchyPanel;
 	NodeRefPtr _NewNode;
+    NodeUnrecPtr _NodeToAddTo;
 	FieldContainerType* _FCType;
 	std::string _Name;
 

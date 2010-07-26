@@ -43,16 +43,13 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include <OpenSG/OSGPathType.h>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/info_parser.hpp>
 
 #include "KEApplicationSettings.h"
-#include <OpenSG/OSGFCFileHandler.h>
 
 OSG_BEGIN_NAMESPACE
-
-// Documentation for this class is emitted in the
-// OSGApplicationSettingsBase.cpp file.
-// To modify it, please change the .fcd file (OSGApplicationSettings.fcd) and
-// regenerate the base file.
 
 /***************************************************************************\
  *                           Class variables                               *
@@ -62,53 +59,71 @@ OSG_BEGIN_NAMESPACE
  *                           Class methods                                 *
 \***************************************************************************/
 
-void ApplicationSettings::initMethod(InitPhase ePhase)
-{
-    Inherited::initMethod(ePhase);
-
-    if(ePhase == TypeObject::SystemPost)
-    {
-    }
-}
-
-ApplicationSettingsUnrecPtr ApplicationSettings::load(const BoostPath& FilePath)
-{
-	return create(FilePath);
-}
-
-ApplicationSettingsUnrecPtr ApplicationSettings::create(const BoostPath& FilePath)
-{
-	FCFileType::FCPtrStore NewContainers;
-	NewContainers = FCFileHandler::the()->read(FilePath);
-
-	for(FCFileType::FCPtrStore::iterator Itor(NewContainers.begin()) ; Itor!= NewContainers.end() ; ++Itor)
-	{
-		if((*Itor)->getType() == ApplicationSettings::getClassType())
-		{
-			return dynamic_pointer_cast<ApplicationSettings>(*Itor);
-		}
-	}
-
-	return ApplicationSettingsTransitPtr();
-}
-
-ApplicationSettingsTransitPtr ApplicationSettings::create(void)
-{
-    return ApplicationSettingsBase::create();
-}
-
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
 
-void ApplicationSettings::save(const BoostPath& FilePath)
+bool ApplicationSettings::writeXML(const BoostPath& FilePath)
 {
-	FCFileType::FCPtrStore Containers;
-	Containers.insert(ApplicationSettingsRefPtr(this));
+    try
+    {
+        boost::property_tree::xml_parser::write_xml(FilePath.string(), 
+                                                    _PropertyTree, 
+                                                    std::locale(), 
+                                                    boost::property_tree::xml_parser::xml_writer_make_settings<boost::property_tree::ptree::key_type::value_type>(' ', 4));
+    }
+    catch(std::exception& ex)
+    {
+        SWARNING << "Failed to write settings to file: " << FilePath.string() 
+                 << ", error: " << ex.what() << std::endl;
+	    return false;
+    }
+	return true;
+}
 
-	FCFileType::FCTypeVector IgnoreTypes;
+bool ApplicationSettings::readXML(const BoostPath& FilePath)
+{
+    try
+    {
+        boost::property_tree::xml_parser::read_xml(FilePath.string(), _PropertyTree);
+    }
+    catch(std::exception& ex)
+    {
+        SWARNING << "Failed to read settings from file: " << FilePath.string() 
+                 << ", error: " << ex.what() << std::endl;
+	    return false;
+    }
 
-	FCFileHandler::the()->write(Containers,FilePath,IgnoreTypes);
+	return true;
+}
+
+//bool ApplicationSettings::writeXML(OutputStreamType& Stream)
+//{
+//    try
+//    {
+//        //boost::property_tree::xml_parser::write_xml(Stream, _PropertyTree);
+//    }
+//    catch(std::exception& ex)
+//    {
+//        SWARNING << "Failed to write settings to stream, error: " << ex.what() << std::endl;
+//	    return false;
+//    }
+//	return true;
+//}
+
+bool ApplicationSettings::readXML(InputStreamType& Stream)
+{
+    try
+    {
+        boost::property_tree::xml_parser::read_xml(Stream, _PropertyTree);
+    }
+    catch(std::exception& ex)
+    {
+        SWARNING << "Failed to read settings from stream, error: " << ex.what() << std::endl;
+	    return false;
+    }
+
+	return true;
 }
 
 /*-------------------------------------------------------------------------*\
@@ -117,13 +132,12 @@ void ApplicationSettings::save(const BoostPath& FilePath)
 
 /*----------------------- constructors & destructors ----------------------*/
 
-ApplicationSettings::ApplicationSettings(void) :
-    Inherited()
+ApplicationSettings::ApplicationSettings(void)
 {
 }
 
 ApplicationSettings::ApplicationSettings(const ApplicationSettings &source) :
-    Inherited(source)
+_PropertyTree(source._PropertyTree)
 {
 }
 
@@ -133,17 +147,16 @@ ApplicationSettings::~ApplicationSettings(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void ApplicationSettings::changed(ConstFieldMaskArg whichField, 
-                            UInt32            origin,
-                            BitVector         details)
+void ApplicationSettings::dump(      UInt32     uiIndent) const
 {
-    Inherited::changed(whichField, origin, details);
-}
-
-void ApplicationSettings::dump(      UInt32    ,
-                         const BitVector ) const
-{
-    SLOG << "Dump ApplicationSettings NI" << std::endl;
+    try
+    {
+        boost::property_tree::info_parser::write_info(SLOG, _PropertyTree);
+    }
+    catch(std::exception& ex)
+    {
+        SWARNING << "Failed to dump settings: " << ex.what() << std::endl;
+    }
 }
 
 OSG_END_NAMESPACE

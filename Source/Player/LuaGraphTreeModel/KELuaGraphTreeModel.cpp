@@ -212,15 +212,16 @@ UInt32 LuaGraphTreeModel::getIndexOfChild(const boost::any& parent, const boost:
 
 boost::any LuaGraphTreeModel::getRoot(void) const
 {
-    //if(boost::filesystem::exists(getInternalRoot()))
-    //{
+    if(boost::filesystem::exists(getInternalRoot()))
+    {
         return boost::any(getInternalRoot());
-    //}
-    //else
-    //{
-        //SWARNING << "Root doesn't exist." << std::endl;
+    }
+    else
+    {
+        SWARNING << "Root doesn't exist." << std::endl;
+        return boost::any(getInternalRoot());
         //return boost::any();
-    //}
+    }
 }
 
 bool LuaGraphTreeModel::isLeaf(const boost::any& node) const

@@ -58,13 +58,17 @@ std::string getKabalaEngineBuilderVersion(void)
 inline
 std::string getKabalaEngineBuildType(void)
 {
+#ifdef WIN32
+	return CMAKE_INTDIR;
+#else
 	return "@KABALA_ENGINE_BUILD_TYPE@";
+#endif
 }
 
 inline
 std::string getKabalaEngineBuildRepositoryRevision(void)
 {
-	return "@KABALA_ENGINE_REPOSITORY_REVISION@";
+	return "@KABALA_ENGINE_GIT_COMMIT@";
 }
 
 inline

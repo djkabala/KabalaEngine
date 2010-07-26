@@ -1,10 +1,12 @@
-
 Add the following to the end of the file KELuaBindings.cpp after code generation
-
 
 OSG::LuaManager::OpenBoundLuaLibFunctor getKabalaEngineLuaBindingsLibFunctor(void)
 {
     return boost::bind(&luaopen_KabalaEngine, _1);
 }
 
-GenericEventPtrs may need to be appended w/ OSG::
+void push_Behavior_on_lua(lua_State* L, OSG::BehaviorRefPtr value)
+{
+    OSG::BehaviorRefPtr * resultptr = new OSG::BehaviorRefPtr((const OSG::BehaviorRefPtr &) value);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__BehaviorRefPtr,1);
+}

@@ -32,15 +32,6 @@
  *                                                                           *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
- *                                Changes                                    *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
- *                                                                           *
-\*---------------------------------------------------------------------------*/
 
 #ifndef _KESCENEOBJECT_H_
 #define _KESCENEOBJECT_H_
@@ -49,7 +40,7 @@
 #endif
 
 #include "KESceneObjectBase.h"
-#include <OpenSG/OSGNode.h>
+#include "Project/Scene/KESceneFields.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -67,6 +58,13 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
 
     typedef SceneObjectBase Inherited;
     typedef SceneObject     Self;
+
+    Effect* getEffect(std::string name);
+	const Scene* getParentScene () const;
+	Scene* getParentScene ();
+
+	void checkBehaviorInitialization();
+
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -87,7 +85,13 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
+	
+    virtual ~SceneObject(void);
+
   protected:
+
+	  void InitializeAll();
+	  void InitializeBehaviors();
 
     // Variables should all be in SceneObjectBase.
 
@@ -103,7 +107,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~SceneObject(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -128,7 +131,10 @@ typedef SceneObject *SceneObjectP;
 
 OSG_END_NAMESPACE
 
-#include "Project/SceneObject/KEBehavior.h"
+#include "Project/SceneObject/KEBehavior.h" // Behaviors Class
+#include <OpenSG/OSGNode.h>             // Node Class
+#include "Project/Effect/KEEffect.h"    // AttachedEffects Class
+#include "Project/Scene/KEScene.h"
 #include "KESceneObjectBase.inl"
 #include "KESceneObject.inl"
 

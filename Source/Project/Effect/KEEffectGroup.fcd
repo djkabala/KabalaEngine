@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="EffectGroup"
+	parent="Effect"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="abstract"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="Robert Goetz (rdgoetz@iastate.edu)                            "
+>
+The SceneObject.
+	<Field
+		name="EffectList"
+		type="Effect"
+		category="pointer"
+		cardinality="multi"
+		visibility="external"
+		access="public"
+        fieldHeader="Project/Effect/KEEffectFields.h"
+		typeHeader="Project/Effect/KEEffect.h"
+	>
+	</Field>
+</FieldContainer>

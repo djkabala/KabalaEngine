@@ -75,6 +75,12 @@ ApplicationPlayer::ProjectListener::~ProjectListener()
 {
 }
 
+inline
+bool ApplicationPlayer::isDebugging(void) const
+{
+    return _IsDebugActive;
+}
+
 inline 
 CommandManagerPtr ApplicationPlayer::getCommandManager(void)
 {
