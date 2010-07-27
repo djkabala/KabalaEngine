@@ -4545,10 +4545,10 @@ fail:
 }
 
 
-static int _wrap_SceneObjectRefPtr_getParentScene__SWIG_0(lua_State* L) {
+static int _wrap_SceneObjectRefPtr_getParentScene(lua_State* L) {
   int SWIG_arg = 0;
   OSG::SceneObjectRefPtr *arg1 = (OSG::SceneObjectRefPtr *) 0 ;
-  OSG::Scene *result = 0 ;
+  OSG::SceneRefPtr result;
   
   SWIG_check_num_args("getParentScene",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentScene",1,"OSG::SceneObjectRefPtr const *");
@@ -4557,8 +4557,11 @@ static int _wrap_SceneObjectRefPtr_getParentScene__SWIG_0(lua_State* L) {
     SWIG_fail_ptr("SceneObjectRefPtr_getParentScene",1,SWIGTYPE_p_OSG__SceneObjectRefPtr);
   }
   
-  result = (OSG::Scene *)(*arg1)->getParentScene();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__Scene,0); SWIG_arg++; 
+  result = (*arg1)->getParentScene();
+  {
+    OSG::SceneRefPtr * resultptr = new OSG::SceneRefPtr((const OSG::SceneRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__SceneRefPtr,1); SWIG_arg++;
+  }
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -4566,74 +4569,6 @@ static int _wrap_SceneObjectRefPtr_getParentScene__SWIG_0(lua_State* L) {
 fail:
   lua_error(L);
   return SWIG_arg;
-}
-
-
-static int _wrap_SceneObjectRefPtr_getParentScene__SWIG_1(lua_State* L) {
-  int SWIG_arg = 0;
-  OSG::SceneObjectRefPtr *arg1 = (OSG::SceneObjectRefPtr *) 0 ;
-  OSG::Scene *result = 0 ;
-  
-  SWIG_check_num_args("getParentScene",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentScene",1,"OSG::SceneObjectRefPtr *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__SceneObjectRefPtr,0))){
-    SWIG_fail_ptr("SceneObjectRefPtr_getParentScene",1,SWIGTYPE_p_OSG__SceneObjectRefPtr);
-  }
-  
-  result = (OSG::Scene *)(*arg1)->getParentScene();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__Scene,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_SceneObjectRefPtr_getParentScene(lua_State* L) {
-  int argc;
-  int argv[2]={
-    1,2
-  };
-  
-  argc = lua_gettop(L);
-  if (argc == 1) {
-    int _v;
-    {
-      void *ptr;
-      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__SceneObjectRefPtr, 0)) {
-        _v = 0;
-      } else {
-        _v = 1;
-      }
-    }
-    if (_v) {
-      return _wrap_SceneObjectRefPtr_getParentScene__SWIG_1(L);
-    }
-  }
-  if (argc == 1) {
-    int _v;
-    {
-      void *ptr;
-      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__SceneObjectRefPtr, 0)) {
-        _v = 0;
-      } else {
-        _v = 1;
-      }
-    }
-    if (_v) {
-      return _wrap_SceneObjectRefPtr_getParentScene__SWIG_0(L);
-    }
-  }
-  
-  lua_pushstring(L,"Wrong arguments for overloaded function 'SceneObjectRefPtr_getParentScene'\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    getParentScene(OSG::SceneObjectRefPtr const *)\n"
-    "    getParentScene(OSG::SceneObjectRefPtr *)\n");
-  lua_error(L);return 0;
 }
 
 
@@ -5287,10 +5222,10 @@ fail:
 }
 
 
-static int _wrap_SceneObject_getParentScene__SWIG_0(lua_State* L) {
+static int _wrap_SceneObject_getParentScene(lua_State* L) {
   int SWIG_arg = 0;
   OSG::SceneObject *arg1 = (OSG::SceneObject *) 0 ;
-  OSG::Scene *result = 0 ;
+  OSG::SceneRefPtr result;
   
   SWIG_check_num_args("getParentScene",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentScene",1,"OSG::SceneObject const *");
@@ -5299,8 +5234,11 @@ static int _wrap_SceneObject_getParentScene__SWIG_0(lua_State* L) {
     SWIG_fail_ptr("SceneObject_getParentScene",1,SWIGTYPE_p_OSG__SceneObject);
   }
   
-  result = (OSG::Scene *)((OSG::SceneObject const *)arg1)->getParentScene();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__Scene,0); SWIG_arg++; 
+  result = ((OSG::SceneObject const *)arg1)->getParentScene();
+  {
+    OSG::SceneRefPtr * resultptr = new OSG::SceneRefPtr((const OSG::SceneRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__SceneRefPtr,1); SWIG_arg++;
+  }
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -5308,74 +5246,6 @@ static int _wrap_SceneObject_getParentScene__SWIG_0(lua_State* L) {
 fail:
   lua_error(L);
   return SWIG_arg;
-}
-
-
-static int _wrap_SceneObject_getParentScene__SWIG_1(lua_State* L) {
-  int SWIG_arg = 0;
-  OSG::SceneObject *arg1 = (OSG::SceneObject *) 0 ;
-  OSG::Scene *result = 0 ;
-  
-  SWIG_check_num_args("getParentScene",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentScene",1,"OSG::SceneObject *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__SceneObject,0))){
-    SWIG_fail_ptr("SceneObject_getParentScene",1,SWIGTYPE_p_OSG__SceneObject);
-  }
-  
-  result = (OSG::Scene *)(arg1)->getParentScene();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__Scene,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_SceneObject_getParentScene(lua_State* L) {
-  int argc;
-  int argv[2]={
-    1,2
-  };
-  
-  argc = lua_gettop(L);
-  if (argc == 1) {
-    int _v;
-    {
-      void *ptr;
-      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__SceneObject, 0)) {
-        _v = 0;
-      } else {
-        _v = 1;
-      }
-    }
-    if (_v) {
-      return _wrap_SceneObject_getParentScene__SWIG_1(L);
-    }
-  }
-  if (argc == 1) {
-    int _v;
-    {
-      void *ptr;
-      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OSG__SceneObject, 0)) {
-        _v = 0;
-      } else {
-        _v = 1;
-      }
-    }
-    if (_v) {
-      return _wrap_SceneObject_getParentScene__SWIG_0(L);
-    }
-  }
-  
-  lua_pushstring(L,"Wrong arguments for overloaded function 'SceneObject_getParentScene'\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    getParentScene(OSG::SceneObject const *)\n"
-    "    getParentScene(OSG::SceneObject *)\n");
-  lua_error(L);return 0;
 }
 
 
@@ -6077,7 +5947,7 @@ fail:
 static int _wrap_Behavior_getParentSceneObject(lua_State* L) {
   int SWIG_arg = 0;
   OSG::Behavior *arg1 = (OSG::Behavior *) 0 ;
-  OSG::SceneObject *result = 0 ;
+  OSG::SceneObjectRefPtr result;
   
   SWIG_check_num_args("getParentSceneObject",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentSceneObject",1,"OSG::Behavior const *");
@@ -6086,8 +5956,11 @@ static int _wrap_Behavior_getParentSceneObject(lua_State* L) {
     SWIG_fail_ptr("Behavior_getParentSceneObject",1,SWIGTYPE_p_OSG__Behavior);
   }
   
-  result = (OSG::SceneObject *)((OSG::Behavior const *)arg1)->getParentSceneObject();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__SceneObject,0); SWIG_arg++; 
+  result = ((OSG::Behavior const *)arg1)->getParentSceneObject();
+  {
+    OSG::SceneObjectRefPtr * resultptr = new OSG::SceneObjectRefPtr((const OSG::SceneObjectRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__SceneObjectRefPtr,1); SWIG_arg++;
+  }
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -6102,17 +5975,26 @@ static int _wrap_Behavior_produceEvent__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   OSG::Behavior *arg1 = (OSG::Behavior *) 0 ;
   std::string arg2 ;
+  OSG::GenericEventRefPtr arg3 ;
+  OSG::GenericEventRefPtr *argp3 ;
   
-  SWIG_check_num_args("produceEvent",2,2)
+  SWIG_check_num_args("produceEvent",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("produceEvent",1,"OSG::Behavior *");
   if(!lua_isstring(L,2)) SWIG_fail_arg("produceEvent",2,"std::string");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("produceEvent",3,"OSG::GenericEventRefPtr");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Behavior,0))){
     SWIG_fail_ptr("Behavior_produceEvent",1,SWIGTYPE_p_OSG__Behavior);
   }
   
   (&arg2)->assign(lua_tostring(L,2),lua_strlen(L,2));
-  (arg1)->produceEvent(arg2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_OSG__GenericEventRefPtr,0))){
+    SWIG_fail_ptr("Behavior_produceEvent",3,SWIGTYPE_p_OSG__GenericEventRefPtr);
+  }
+  arg3 = *argp3;
+  
+  (arg1)->produceEvent(arg2,arg3);
   
   return SWIG_arg;
   
@@ -6128,10 +6010,13 @@ static int _wrap_Behavior_produceEvent__SWIG_1(lua_State* L) {
   int SWIG_arg = 0;
   OSG::Behavior *arg1 = (OSG::Behavior *) 0 ;
   OSG::UInt32 arg2 ;
+  OSG::GenericEventRefPtr arg3 ;
+  OSG::GenericEventRefPtr *argp3 ;
   
-  SWIG_check_num_args("produceEvent",2,2)
+  SWIG_check_num_args("produceEvent",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("produceEvent",1,"OSG::Behavior *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("produceEvent",2,"OSG::UInt32");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("produceEvent",3,"OSG::GenericEventRefPtr");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Behavior,0))){
     SWIG_fail_ptr("Behavior_produceEvent",1,SWIGTYPE_p_OSG__Behavior);
@@ -6139,7 +6024,13 @@ static int _wrap_Behavior_produceEvent__SWIG_1(lua_State* L) {
   
   SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
   arg2 = (OSG::UInt32)lua_tonumber(L, 2);
-  (arg1)->produceEvent(arg2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_OSG__GenericEventRefPtr,0))){
+    SWIG_fail_ptr("Behavior_produceEvent",3,SWIGTYPE_p_OSG__GenericEventRefPtr);
+  }
+  arg3 = *argp3;
+  
+  (arg1)->produceEvent(arg2,arg3);
   
   return SWIG_arg;
   
@@ -6153,12 +6044,12 @@ fail:
 
 static int _wrap_Behavior_produceEvent(lua_State* L) {
   int argc;
-  int argv[3]={
-    1,2,3
+  int argv[4]={
+    1,2,3,4
   };
   
   argc = lua_gettop(L);
-  if (argc == 2) {
+  if (argc == 3) {
     int _v;
     {
       void *ptr;
@@ -6173,11 +6064,21 @@ static int _wrap_Behavior_produceEvent(lua_State* L) {
         _v = lua_isnumber(L,argv[1]);
       }
       if (_v) {
-        return _wrap_Behavior_produceEvent__SWIG_1(L);
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_OSG__GenericEventRefPtr, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_Behavior_produceEvent__SWIG_1(L);
+        }
       }
     }
   }
-  if (argc == 2) {
+  if (argc == 3) {
     int _v;
     {
       void *ptr;
@@ -6192,15 +6093,25 @@ static int _wrap_Behavior_produceEvent(lua_State* L) {
         _v = lua_isstring(L,argv[1]);
       }
       if (_v) {
-        return _wrap_Behavior_produceEvent__SWIG_0(L);
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_OSG__GenericEventRefPtr, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_Behavior_produceEvent__SWIG_0(L);
+        }
       }
     }
   }
   
   lua_pushstring(L,"Wrong arguments for overloaded function 'Behavior_produceEvent'\n"
     "  Possible C/C++ prototypes are:\n"
-    "    produceEvent(OSG::Behavior *,std::string)\n"
-    "    produceEvent(OSG::Behavior *,OSG::UInt32)\n");
+    "    produceEvent(OSG::Behavior *,std::string,OSG::GenericEventRefPtr)\n"
+    "    produceEvent(OSG::Behavior *,OSG::UInt32,OSG::GenericEventRefPtr)\n");
   lua_error(L);return 0;
 }
 
@@ -6397,7 +6308,7 @@ fail:
 static int _wrap_BehaviorRefPtr_getParentSceneObject(lua_State* L) {
   int SWIG_arg = 0;
   OSG::BehaviorRefPtr *arg1 = (OSG::BehaviorRefPtr *) 0 ;
-  OSG::SceneObject *result = 0 ;
+  OSG::SceneObjectRefPtr result;
   
   SWIG_check_num_args("getParentSceneObject",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentSceneObject",1,"OSG::BehaviorRefPtr const *");
@@ -6406,8 +6317,11 @@ static int _wrap_BehaviorRefPtr_getParentSceneObject(lua_State* L) {
     SWIG_fail_ptr("BehaviorRefPtr_getParentSceneObject",1,SWIGTYPE_p_OSG__BehaviorRefPtr);
   }
   
-  result = (OSG::SceneObject *)(*arg1)->getParentSceneObject();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__SceneObject,0); SWIG_arg++; 
+  result = (*arg1)->getParentSceneObject();
+  {
+    OSG::SceneObjectRefPtr * resultptr = new OSG::SceneObjectRefPtr((const OSG::SceneObjectRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__SceneObjectRefPtr,1); SWIG_arg++;
+  }
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -6422,17 +6336,26 @@ static int _wrap_BehaviorRefPtr_produceEvent__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   OSG::BehaviorRefPtr *arg1 = (OSG::BehaviorRefPtr *) 0 ;
   std::string arg2 ;
+  OSG::GenericEventRefPtr arg3 ;
+  OSG::GenericEventRefPtr *argp3 ;
   
-  SWIG_check_num_args("produceEvent",2,2)
+  SWIG_check_num_args("produceEvent",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("produceEvent",1,"OSG::BehaviorRefPtr *");
   if(!lua_isstring(L,2)) SWIG_fail_arg("produceEvent",2,"std::string");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("produceEvent",3,"OSG::GenericEventRefPtr");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorRefPtr,0))){
     SWIG_fail_ptr("BehaviorRefPtr_produceEvent",1,SWIGTYPE_p_OSG__BehaviorRefPtr);
   }
   
   (&arg2)->assign(lua_tostring(L,2),lua_strlen(L,2));
-  (*arg1)->produceEvent(arg2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_OSG__GenericEventRefPtr,0))){
+    SWIG_fail_ptr("BehaviorRefPtr_produceEvent",3,SWIGTYPE_p_OSG__GenericEventRefPtr);
+  }
+  arg3 = *argp3;
+  
+  (*arg1)->produceEvent(arg2,arg3);
   
   return SWIG_arg;
   
@@ -6448,10 +6371,13 @@ static int _wrap_BehaviorRefPtr_produceEvent__SWIG_1(lua_State* L) {
   int SWIG_arg = 0;
   OSG::BehaviorRefPtr *arg1 = (OSG::BehaviorRefPtr *) 0 ;
   OSG::UInt32 arg2 ;
+  OSG::GenericEventRefPtr arg3 ;
+  OSG::GenericEventRefPtr *argp3 ;
   
-  SWIG_check_num_args("produceEvent",2,2)
+  SWIG_check_num_args("produceEvent",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("produceEvent",1,"OSG::BehaviorRefPtr *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("produceEvent",2,"OSG::UInt32");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("produceEvent",3,"OSG::GenericEventRefPtr");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorRefPtr,0))){
     SWIG_fail_ptr("BehaviorRefPtr_produceEvent",1,SWIGTYPE_p_OSG__BehaviorRefPtr);
@@ -6459,7 +6385,13 @@ static int _wrap_BehaviorRefPtr_produceEvent__SWIG_1(lua_State* L) {
   
   SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
   arg2 = (OSG::UInt32)lua_tonumber(L, 2);
-  (*arg1)->produceEvent(arg2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_OSG__GenericEventRefPtr,0))){
+    SWIG_fail_ptr("BehaviorRefPtr_produceEvent",3,SWIGTYPE_p_OSG__GenericEventRefPtr);
+  }
+  arg3 = *argp3;
+  
+  (*arg1)->produceEvent(arg2,arg3);
   
   return SWIG_arg;
   
@@ -6473,12 +6405,12 @@ fail:
 
 static int _wrap_BehaviorRefPtr_produceEvent(lua_State* L) {
   int argc;
-  int argv[3]={
-    1,2,3
+  int argv[4]={
+    1,2,3,4
   };
   
   argc = lua_gettop(L);
-  if (argc == 2) {
+  if (argc == 3) {
     int _v;
     {
       void *ptr;
@@ -6493,11 +6425,21 @@ static int _wrap_BehaviorRefPtr_produceEvent(lua_State* L) {
         _v = lua_isnumber(L,argv[1]);
       }
       if (_v) {
-        return _wrap_BehaviorRefPtr_produceEvent__SWIG_1(L);
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_OSG__GenericEventRefPtr, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_BehaviorRefPtr_produceEvent__SWIG_1(L);
+        }
       }
     }
   }
-  if (argc == 2) {
+  if (argc == 3) {
     int _v;
     {
       void *ptr;
@@ -6512,15 +6454,25 @@ static int _wrap_BehaviorRefPtr_produceEvent(lua_State* L) {
         _v = lua_isstring(L,argv[1]);
       }
       if (_v) {
-        return _wrap_BehaviorRefPtr_produceEvent__SWIG_0(L);
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_OSG__GenericEventRefPtr, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_BehaviorRefPtr_produceEvent__SWIG_0(L);
+        }
       }
     }
   }
   
   lua_pushstring(L,"Wrong arguments for overloaded function 'BehaviorRefPtr_produceEvent'\n"
     "  Possible C/C++ prototypes are:\n"
-    "    produceEvent(OSG::BehaviorRefPtr *,std::string)\n"
-    "    produceEvent(OSG::BehaviorRefPtr *,OSG::UInt32)\n");
+    "    produceEvent(OSG::BehaviorRefPtr *,std::string,OSG::GenericEventRefPtr)\n"
+    "    produceEvent(OSG::BehaviorRefPtr *,OSG::UInt32,OSG::GenericEventRefPtr)\n");
   lua_error(L);return 0;
 }
 
@@ -7355,7 +7307,7 @@ fail:
 static int _wrap_LuaBehaviorRefPtr_getParentSceneObject(lua_State* L) {
   int SWIG_arg = 0;
   OSG::LuaBehaviorRefPtr *arg1 = (OSG::LuaBehaviorRefPtr *) 0 ;
-  OSG::SceneObject *result = 0 ;
+  OSG::SceneObjectRefPtr result;
   
   SWIG_check_num_args("getParentSceneObject",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getParentSceneObject",1,"OSG::LuaBehaviorRefPtr const *");
@@ -7364,8 +7316,11 @@ static int _wrap_LuaBehaviorRefPtr_getParentSceneObject(lua_State* L) {
     SWIG_fail_ptr("LuaBehaviorRefPtr_getParentSceneObject",1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr);
   }
   
-  result = (OSG::SceneObject *)(*arg1)->getParentSceneObject();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__SceneObject,0); SWIG_arg++; 
+  result = (*arg1)->getParentSceneObject();
+  {
+    OSG::SceneObjectRefPtr * resultptr = new OSG::SceneObjectRefPtr((const OSG::SceneObjectRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__SceneObjectRefPtr,1); SWIG_arg++;
+  }
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -7380,17 +7335,26 @@ static int _wrap_LuaBehaviorRefPtr_produceEvent__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   OSG::LuaBehaviorRefPtr *arg1 = (OSG::LuaBehaviorRefPtr *) 0 ;
   std::string arg2 ;
+  OSG::GenericEventRefPtr arg3 ;
+  OSG::GenericEventRefPtr *argp3 ;
   
-  SWIG_check_num_args("produceEvent",2,2)
+  SWIG_check_num_args("produceEvent",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("produceEvent",1,"OSG::LuaBehaviorRefPtr *");
   if(!lua_isstring(L,2)) SWIG_fail_arg("produceEvent",2,"std::string");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("produceEvent",3,"OSG::GenericEventRefPtr");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr,0))){
     SWIG_fail_ptr("LuaBehaviorRefPtr_produceEvent",1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr);
   }
   
   (&arg2)->assign(lua_tostring(L,2),lua_strlen(L,2));
-  (*arg1)->produceEvent(arg2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_OSG__GenericEventRefPtr,0))){
+    SWIG_fail_ptr("LuaBehaviorRefPtr_produceEvent",3,SWIGTYPE_p_OSG__GenericEventRefPtr);
+  }
+  arg3 = *argp3;
+  
+  (*arg1)->produceEvent(arg2,arg3);
   
   return SWIG_arg;
   
@@ -7406,10 +7370,13 @@ static int _wrap_LuaBehaviorRefPtr_produceEvent__SWIG_1(lua_State* L) {
   int SWIG_arg = 0;
   OSG::LuaBehaviorRefPtr *arg1 = (OSG::LuaBehaviorRefPtr *) 0 ;
   OSG::UInt32 arg2 ;
+  OSG::GenericEventRefPtr arg3 ;
+  OSG::GenericEventRefPtr *argp3 ;
   
-  SWIG_check_num_args("produceEvent",2,2)
+  SWIG_check_num_args("produceEvent",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("produceEvent",1,"OSG::LuaBehaviorRefPtr *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("produceEvent",2,"OSG::UInt32");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("produceEvent",3,"OSG::GenericEventRefPtr");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr,0))){
     SWIG_fail_ptr("LuaBehaviorRefPtr_produceEvent",1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr);
@@ -7417,7 +7384,13 @@ static int _wrap_LuaBehaviorRefPtr_produceEvent__SWIG_1(lua_State* L) {
   
   SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
   arg2 = (OSG::UInt32)lua_tonumber(L, 2);
-  (*arg1)->produceEvent(arg2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&argp3,SWIGTYPE_p_OSG__GenericEventRefPtr,0))){
+    SWIG_fail_ptr("LuaBehaviorRefPtr_produceEvent",3,SWIGTYPE_p_OSG__GenericEventRefPtr);
+  }
+  arg3 = *argp3;
+  
+  (*arg1)->produceEvent(arg2,arg3);
   
   return SWIG_arg;
   
@@ -7431,12 +7404,12 @@ fail:
 
 static int _wrap_LuaBehaviorRefPtr_produceEvent(lua_State* L) {
   int argc;
-  int argv[3]={
-    1,2,3
+  int argv[4]={
+    1,2,3,4
   };
   
   argc = lua_gettop(L);
-  if (argc == 2) {
+  if (argc == 3) {
     int _v;
     {
       void *ptr;
@@ -7451,11 +7424,21 @@ static int _wrap_LuaBehaviorRefPtr_produceEvent(lua_State* L) {
         _v = lua_isnumber(L,argv[1]);
       }
       if (_v) {
-        return _wrap_LuaBehaviorRefPtr_produceEvent__SWIG_1(L);
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_OSG__GenericEventRefPtr, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_LuaBehaviorRefPtr_produceEvent__SWIG_1(L);
+        }
       }
     }
   }
-  if (argc == 2) {
+  if (argc == 3) {
     int _v;
     {
       void *ptr;
@@ -7470,15 +7453,25 @@ static int _wrap_LuaBehaviorRefPtr_produceEvent(lua_State* L) {
         _v = lua_isstring(L,argv[1]);
       }
       if (_v) {
-        return _wrap_LuaBehaviorRefPtr_produceEvent__SWIG_0(L);
+        {
+          void *ptr;
+          if (lua_isuserdata(L,argv[2])==0 || SWIG_ConvertPtr(L,argv[2], (void **) &ptr, SWIGTYPE_p_OSG__GenericEventRefPtr, 0)) {
+            _v = 0;
+          } else {
+            _v = 1;
+          }
+        }
+        if (_v) {
+          return _wrap_LuaBehaviorRefPtr_produceEvent__SWIG_0(L);
+        }
       }
     }
   }
   
   lua_pushstring(L,"Wrong arguments for overloaded function 'LuaBehaviorRefPtr_produceEvent'\n"
     "  Possible C/C++ prototypes are:\n"
-    "    produceEvent(OSG::LuaBehaviorRefPtr *,std::string)\n"
-    "    produceEvent(OSG::LuaBehaviorRefPtr *,OSG::UInt32)\n");
+    "    produceEvent(OSG::LuaBehaviorRefPtr *,std::string,OSG::GenericEventRefPtr)\n"
+    "    produceEvent(OSG::LuaBehaviorRefPtr *,OSG::UInt32,OSG::GenericEventRefPtr)\n");
   lua_error(L);return 0;
 }
 

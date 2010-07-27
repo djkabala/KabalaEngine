@@ -134,7 +134,7 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 	}
 }
 
-const SceneObject* Behavior::getParentSceneObject(void) const
+SceneObject* Behavior::getParentSceneObject(void) const
 {
     return dynamic_cast<const SceneObject*>(_sfSceneObject.getValue());
 }

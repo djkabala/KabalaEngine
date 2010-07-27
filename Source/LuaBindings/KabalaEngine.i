@@ -216,8 +216,7 @@ namespace OSG {
       public:
     
         Effect* getEffect(std::string name);
-        const Scene* getParentScene () const;
-        Scene* getParentScene ();
+        SceneRefPtr getParentScene () const;
 
         OSG::BehaviorUnrecPtr getBehaviors (UInt32 index);
     
@@ -226,6 +225,13 @@ namespace OSG {
         SceneObject(const SceneObject &source);
         virtual ~SceneObject(void); 
     };
+    %extend SceneObject
+    {
+        SceneRefPtr getParentScene () const
+        {
+            return SceneRefPtr(this->getParentScene());
+        }
+    }
 
     
     /******************************************************/
@@ -324,7 +330,7 @@ namespace OSG {
     {
         public:
             BehaviorType * getBehaviorType(void);
-            const SceneObject* getParentSceneObject(void) const;
+            SceneObjectRefPtr getParentSceneObject(void) const;
             void produceEvent(std::string name);
             void produceEvent(UInt32 id);
             bool isInitialized();
@@ -333,6 +339,13 @@ namespace OSG {
             Behavior(const Behavior &source);
             virtual ~Behavior(void); 
     };
+    %extend Behavior
+    {
+        SceneObjectRefPtr getParentSceneObject () const
+        {
+            return SceneObjectRefPtr(this->getParentSceneObject());
+        }
+    }
     
     /******************************************************/
     /*                  BehaviorRefPtr                    */

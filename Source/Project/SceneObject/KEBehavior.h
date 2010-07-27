@@ -78,7 +78,7 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     typedef BehaviorBase Inherited;
     typedef Behavior     Self;
 
-    const SceneObject* getParentSceneObject(void) const;
+    SceneObject* getParentSceneObject(void) const;
 	void addedToSceneObject(SceneObjectUnrecPtr rootSceneObject);
 
 	BehaviorType * getBehaviorType(void);
