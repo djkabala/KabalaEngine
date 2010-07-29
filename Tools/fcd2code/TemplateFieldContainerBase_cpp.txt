@@ -238,7 +238,7 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
         "@!Classname!@EventProducer",
         "Event Producer",
         EventProducerFieldId,EventProducerFieldMask,
-        true,
+        false,
         (Field::SFDefaultFlags | Field::FStdAccess),
         static_cast     <FieldEditMethodSig>(&@!Classname!@::editHandleEventProducer),
         static_cast     <FieldGetMethodSig >(&@!Classname!@::getHandleEventProducer));

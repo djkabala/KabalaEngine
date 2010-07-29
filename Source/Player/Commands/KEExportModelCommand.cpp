@@ -127,7 +127,7 @@ void ExportModelCommand::execute(void)
             SceneFileHandler::the()->write(_ExportNode, FileToSave.string().c_str());
         }
         //Is the extension handled by the FCFileHandler
-        else if(FCFileHandler::the()->getFileType(extension.c_str(),FCFileType::OSG_WRITE_SUPPORTED) != NULL)
+        else if(FCFileHandler::the()->getFileType(extension,FCFileType::OSG_WRITE_SUPPORTED) != NULL)
         {
             SLOG << "Exporting " << FileToSave.string() << std::endl;
             //Try saving the file using the FCFileHandler
