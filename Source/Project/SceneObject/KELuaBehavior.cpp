@@ -55,6 +55,7 @@
 #include <sstream>
 
 #include "LuaBindings/KELuaBindings.h"
+#include <boost/algorithm/string.hpp>
 
 
 OSG_BEGIN_NAMESPACE
@@ -101,7 +102,25 @@ void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
             if(desc != NULL)
             {
                 uId |=  desc->getMethodId();
-                luaFunctionsMap[uId] = theLuaType->getLuaFunctionNames()[i];
+                _FunctionsMap[uId] = std::vector<std::string>();
+
+                std::string NestedTableFunction(theLuaType->getLuaFunctionNames()[i]);
+                std::string::size_type subStrStart(0),
+                                       subStrEnd(0);
+                //Loop through all nested tables
+                while(subStrEnd != std::string::npos)
+                {
+                    subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
+                    _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd));
+
+                    if(subStrEnd != std::string::npos) ++subStrEnd; 
+                    subStrStart = subStrEnd;
+                }
+                //BUG: For some reason using the split algorithm is causing a
+                //misaligned stack error on OS X builds of the engine.  This
+                //does not occur for the use of split in dependent libraries.
+                //So for now the split is done by hand.
+                //boost::algorithm::split( , NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
             }
             else
             {
@@ -122,7 +141,25 @@ void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
             if(desc != NULL)
             {
                 uId |=  desc->getMethodId();
-                luaFunctionsMap[uId] = theLuaType->getLuaFunctionNames()[i];
+                _FunctionsMap[uId] = std::vector<std::string>();
+
+                std::string NestedTableFunction(theLuaType->getLuaFunctionNames()[i]);
+                std::string::size_type subStrStart(0),
+                                       subStrEnd(0);
+                //Loop through all nested tables
+                while(subStrEnd != std::string::npos)
+                {
+                    subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
+                    _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd));
+
+                    if(subStrEnd != std::string::npos) ++subStrEnd; 
+                    subStrStart = subStrEnd;
+                }
+                //BUG: For some reason using the split algorithm is causing a
+                //misaligned stack error on OS X builds of the engine.  This
+                //does not occur for the use of split in dependent libraries.
+                //So for now the split is done by hand.
+                //boost::algorithm::split( _FunctionsMap[uId], NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
             }
             else
             {
@@ -136,80 +173,91 @@ void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
 
 void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 producedEventID)
 {
-    LuaBehaviorType* const theLuaType = getLuaBehaviorType();
-    if(!theLuaType->getLuaFunctionNames().empty())
-    {
-		//Get the Lua state
-		lua_State *LuaState(LuaManager::the()->getLuaState());
-        
-        //std::map<UInt64, std::string> LuaFuncMap;
-        //dont forget the << add!
-        //LuaFuncMap[e->getSource()->getId()][producedEventID];
+    UInt64 uId(producedEventID);
 
-        UInt64 uId(producedEventID);
-        
-        std::string funcName = luaFunctionsMap[uId];
-
-	    //Get the Lua function to be called
-        lua_getglobal(LuaState, funcName.c_str());
-
-	    //Push on the arguments
-	    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
-
-		push_Behavior_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
-
-	    lua_pushnumber(LuaState,producedEventID);             //Argument 3: the ProducedEvent ID
-
-	    //Execute the Function
-	    //
-	    //                  |------3 arguments to function
-	    //                  |
-	    //                  |  |---0 arguments returned
-	    //                  |  |
-	    //                  V  V
-	    LuaManager::the()->checkError(lua_pcall(LuaState, 3, 0, 0));
-        
-	}
+    callLuaFunctionForEvent(uId,e,producedEventID);
 }
 
 void LuaBehavior::depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 producedEventID)
 {
-    LuaBehaviorType* const theLuaType = getLuaBehaviorType();
-    if(!theLuaType->getLuaFunctionNames().empty())
+    UInt64 uId(e->getSource()->getId());
+    uId <<= 32;
+    uId |= producedEventID;
+
+    callLuaFunctionForEvent(uId,e,producedEventID);
+}
+
+void LuaBehavior::callLuaFunctionForEvent(UInt64 MapId,
+                                          EventUnrecPtr e,
+                                          UInt32 ProducedMethodID)
+{
+    //Get the Lua state
+    lua_State *LuaState(LuaManager::the()->getLuaState());
+        
+    const std::vector<std::string>& funcPath = _FunctionsMap[MapId];
+
+    //Get the Lua function to be called
+    for(UInt32 i(0) ; i<funcPath.size() ; ++i)
     {
-		//Get the Lua state
-		lua_State *LuaState(LuaManager::the()->getLuaState());
+        if(i == 0)
+        {
+            lua_pushstring(LuaState,funcPath[i].c_str());             //push the name of the table on the stack
+            lua_gettable(LuaState, LUA_GLOBALSINDEX);  //Push The table onto the stack
+        }
+        else
+        {
+            //Check if the the value given is a table
+            if(!lua_istable(LuaState, -1))
+            {
+                lua_pop(LuaState, 1); //Pop the value off the stack
+                std::string TablePath("");
+                for(UInt32 j(0) ; j<i ; ++j)
+                {
+                    if(j!=0) TablePath += ".";
+                    TablePath += funcPath[j];
+                }
+                SWARNING << TablePath << " cannot be referenced in lua because it is not a table" << std::endl;
+                return;
+            }
         
-        //std::map<UInt64, std::string> LuaFuncMap;
-        //dont forget the << add!
-        //LuaFuncMap[e->getSource()->getId()][producedEventID];
+            lua_pushstring(LuaState,funcPath[i].c_str());             //push the name of the table on the stack
+            lua_gettable(LuaState, -2);  //Push The table onto the stack
 
-        UInt64 uId(e->getSource()->getId());
-        uId <<= 32;
-        uId |= producedEventID;
+            //Remove the original table from the stack
+            lua_remove(LuaState, -2);
+        }
+    }
 
-        std::string funcName = luaFunctionsMap[uId];
+    //Check if the the value given is a function
+    if(!lua_isfunction(LuaState, -1))
+    {
+        lua_pop(LuaState, 1); //Pop the value off the stack
 
-	    //Get the Lua function to be called
-        lua_getglobal(LuaState, funcName.c_str());
+        std::string TablePath("");
+        for(UInt32 i(0) ; i<funcPath.size() ; ++i)
+        {
+            if(i!=0) TablePath += ".";
+            TablePath += funcPath[i];
+        }
+        SWARNING << TablePath << " cannot be referenced in lua because it is not a function" << std::endl;
+        return;
+    }
 
-	    //Push on the arguments
-	    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
+    //Push on the arguments
+    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
 
-		push_Behavior_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
+    push_Behavior_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
 
-	    lua_pushnumber(LuaState,producedEventID);             //Argument 3: the ProducedEvent ID
+    lua_pushnumber(LuaState,ProducedMethodID);             //Argument 3: the ProducedEvent ID
 
-	    //Execute the Function
-	    //
-	    //                  |------3 arguments to function
-	    //                  |
-	    //                  |  |---0 arguments returned
-	    //                  |  |
-	    //                  V  V
-	    LuaManager::the()->checkError(lua_pcall(LuaState, 3, 0, 0));
-        
-	}
+    //Execute the Function
+    //
+    //                                                |------3 arguments to function
+    //                                                |
+    //                                                |  |---0 arguments returned
+    //                                                |  |
+    //                                                V  V
+    LuaManager::the()->checkError(lua_pcall(LuaState, 3, 0, 0));
 }
 
 /***************************************************************************\

@@ -87,6 +87,10 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
 	void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
     void depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 ID);
 
+    void callLuaFunctionForEvent(UInt64 MapId,
+                                 EventUnrecPtr e,
+                                 UInt32 ProducedMethodID);
+
     void initialize(SceneObjectUnrecPtr rootSceneObject);
 
     /*---------------------------------------------------------------------*/
@@ -118,7 +122,7 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
     friend class FieldContainer;
     friend class LuaBehaviorBase;
 
-    std::map<UInt64,std::string> luaFunctionsMap;
+    std::map<UInt64,std::vector< std::string > > _FunctionsMap;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const LuaBehavior &source);
