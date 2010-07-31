@@ -59,6 +59,7 @@
 
 #include <OpenSG/OSGSoundManager.h>
 #include <OpenSG/OSGLuaManager.h>
+#include <OpenSG/OSGWindowUtils.h>
 
 #include <boost/filesystem/operations.hpp>
 
@@ -150,6 +151,7 @@ void Project::save(void)
     Containers.insert(ProjectRefPtr(this));
 
     FCFileType::FCTypeVector IgnoreTypes;
+    IgnoreTypes.push_back(getNativeWindowType()->getId());
 
     FCFileHandler::the()->write(Containers,getFilePath(),IgnoreTypes);
 }

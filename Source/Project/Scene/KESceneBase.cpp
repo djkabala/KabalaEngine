@@ -510,7 +510,7 @@ void SceneBase::classDescInserter(TypeObject &oType)
         "EventProducer",
         "Event Producer",
         EventProducerFieldId,EventProducerFieldMask,
-        true,
+        false,
         (Field::SFDefaultFlags | Field::FStdAccess),
         static_cast     <FieldEditMethodSig>(&Scene::editHandleEventProducer),
         static_cast     <FieldGetMethodSig >(&Scene::getHandleEventProducer));

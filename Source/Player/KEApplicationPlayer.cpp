@@ -221,6 +221,7 @@ void ApplicationPlayer::createDebugInterface(void)
 
     // setting the fields of the menu items
     _LoadProjectItem->setText("Open Project ...");
+    _LoadProjectItem->setEnabled(false);
     _LoadProjectItem->setAcceleratorKey(KeyEvent::KEY_O);
     _LoadProjectItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _LoadProjectItem->setMnemonicKey(KeyEvent::KEY_O);
