@@ -45,9 +45,7 @@
 
 #include <algorithm>
 
-#include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/regex.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
 #include "KEBehaviorType.h"

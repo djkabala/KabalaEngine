@@ -60,10 +60,9 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     typedef SceneObject     Self;
 
     Effect* getEffect(std::string name);
-	const Scene* getParentScene () const;
-	Scene* getParentScene ();
+	Scene* getParentScene (void) const;
 
-	void checkBehaviorInitialization();
+	void checkBehaviorInitialization(void);
 
 
     /*---------------------------------------------------------------------*/

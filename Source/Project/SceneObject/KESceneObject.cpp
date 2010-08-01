@@ -82,12 +82,7 @@ void SceneObject::initMethod(InitPhase ePhase)
     }
 }
 
-const Scene* SceneObject::getParentScene () const
-{
-	return dynamic_cast<const Scene*>(_sfParentScene.getValue());
-}
-
-Scene* SceneObject::getParentScene ()
+Scene* SceneObject::getParentScene () const
 {
 	return dynamic_cast<Scene*>(_sfParentScene.getValue());
 }

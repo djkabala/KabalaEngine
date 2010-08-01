@@ -331,8 +331,8 @@ namespace OSG {
         public:
             BehaviorType * getBehaviorType(void);
             SceneObjectRefPtr getParentSceneObject(void) const;
-            void produceEvent(std::string name);
-            void produceEvent(UInt32 id);
+            void produceEvent(std::string name, GenericEventRefPtr eventData = NULL);
+            void produceEvent(UInt32 id, GenericEventRefPtr eventData = NULL);
             bool isInitialized();
         protected:
             Behavior(void);

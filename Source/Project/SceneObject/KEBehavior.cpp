@@ -136,10 +136,10 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 
 SceneObject* Behavior::getParentSceneObject(void) const
 {
-    return dynamic_cast<const SceneObject*>(_sfSceneObject.getValue());
+    return dynamic_cast<SceneObject*>(_sfSceneObject.getValue());
 }
 
-void Behavior::produceEvent(std::string name)
+void Behavior::produceEvent(std::string name, GenericEventRefPtr eventData)
 {
     if(!getBehaviorType()->hasEvent(name))
     {
@@ -153,11 +153,18 @@ void Behavior::produceEvent(std::string name)
         return;
     }
     
-    getBehaviorType()->attachedScene->produceGenericEvent(  name,
-                                                            GenericEvent::create(BehaviorRefPtr(this), getTimeStamp()));
+    if(eventData == NULL){
+        getBehaviorType()->attachedScene->produceGenericEvent(  name,
+                                                                GenericEvent::create(BehaviorRefPtr(this), getTimeStamp()));
+    }
+    else
+    {
+        getBehaviorType()->attachedScene->produceGenericEvent(  name,
+                                                                eventData);
+    }
 }
 
-void Behavior::produceEvent(UInt32 id)
+void Behavior::produceEvent(UInt32 id, GenericEventRefPtr eventData)
 {
     if(!getBehaviorType()->hasEvent(getBehaviorType()->findEventName(id)))
     {
@@ -171,8 +178,15 @@ void Behavior::produceEvent(UInt32 id)
         return;
     }
     
-    getBehaviorType()->attachedScene->produceGenericEvent(  id,
-                                                            GenericEvent::create(BehaviorRefPtr(this), getTimeStamp()));
+    if(eventData == NULL){
+        getBehaviorType()->attachedScene->produceGenericEvent(  id,
+                                                                GenericEvent::create(BehaviorRefPtr(this), getTimeStamp()));
+    }
+    else
+    {
+        getBehaviorType()->attachedScene->produceGenericEvent(  id,
+                                                                eventData);
+    }
 }
 
 /*-------------------------------------------------------------------------*\
