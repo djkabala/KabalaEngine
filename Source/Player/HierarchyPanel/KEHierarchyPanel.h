@@ -301,9 +301,6 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     SceneGraphPopupListener _TheSceneGraphPopupListener;
 
     void changeDebugCameraPosition(void);
-    void showAll(CameraRefPtr TheCameraOrig,
-                 NodeRefPtr Scene,
-                 ViewportRefPtr LocalViewport);
 
     
     /*---------------------------------------------------------------------*/

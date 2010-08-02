@@ -125,6 +125,11 @@
 #include <OpenSG/OSGFieldAnimation.h>
 #include <OpenSG/OSGAnimationGroup.h>
 
+
+//XForm Manipulator
+#include <OpenSG/OSGManipulatorManager.h>
+#include <OpenSG/OSGReplicateTransform.h>
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationPlayer class. See \ref
@@ -141,6 +146,13 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     typedef ApplicationPlayerBase Inherited;
     typedef ApplicationPlayer     Self;
+
+    enum DebugGraphMasks
+    {
+        DEBUG_GRAPH_NONE          = 0x0,
+        DEBUG_GRAPH_DRAWN         = 0x1,
+        DEBUG_GRAPH_INTERSECTABLE = 0x2
+    };
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -196,8 +208,16 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void setDebugView(UInt32 Index);
     void updateHighlightNode(void);
     void updateWireframeNode(void);
+    void updateXFormManipulator(void);
+    
+    const ManipulatorManager& getXFormManipMgr(void) const;
+    ManipulatorManager& editXFormManipMgr(void);
     
     void openEditor(FieldContainer* FCToEdit);
+    void focusSelectedNode(void);
+    void showAll(CameraRefPtr TheCameraOrig,
+                 NodeRefPtr Scene,
+                 ViewportRefPtr LocalViewport);
     /*=========================  PROTECTED  ===============================*/
 
   protected:
@@ -332,22 +352,43 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     friend class highlightNodeListener;
     highlightNodeListener _highlightNodeListener;
 
+    //Selected Node
+    NodeRefPtr _SelectedNode;
 
+    /*---------------------------------------------------------------------*/
+    /*! \name                  Visual Annotations                          */
+    /*! \{                                                                 */
+
+    //Main Highlight Node
     NodeRefPtr _HighlightNode;
+
+    //Volume Box
     NodeRefPtr _HighlightVolumeBoxNode;
     GeometryRefPtr _HighlightVolumeBoxGeo;
     LineChunkRefPtr _HighlightBoundBoxMatLineChunk;
+
+    //Local Coordinate Axis
     NodeRefPtr _HighlightAxisNode;
     GeometryRefPtr _HighlightAxisGeo;
     LineChunkRefPtr _HighlightAxisLineChunk;
+
+    //Mesh Wireframe
     NodeRefPtr _WireframeMatGroupNode;
     NodeRefPtr _WireframeNode;
-    TransformRefPtr _WireframeTransform;
+    ReplicateTransformRefPtr _WireframeTransform;
     MaterialChunkRefPtr _WireframeMatMaterialChunk;
     LineChunkRefPtr _WireframeMatLineChunk;
-    NodeRefPtr _SelectedNode;
+
+    //Workspace grid
     NodeRefPtr _WorkspaceGrid;
     LineChunkRefPtr _WorkspaceGridLineChunk;
+
+    //Transformation Manipulators
+    ManipulatorManager _XFormManipMgr;
+    NodeRefPtr         _XFormManipNode;
+    ReplicateTransformRefPtr _XFormManipNodeCore;
+
+    /*! \}                                                                 */
 
     HierarchyPanelRefPtr	_HierarchyPanel;
     HelperPanelRefPtr		_HelperPanel;
@@ -487,6 +528,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void createHighlightBoundBoxNode(void);
     void createHighlightAxisNode(void);
     void createHighlightTriMeshNode(void);
+    void createXFormManipulator(void);
 
     InternalWindowRefPtr MainInternalWindow;		
     GraphicsRefPtr DebuggerGraphics;				
