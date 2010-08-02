@@ -48,6 +48,9 @@
 #include <OpenSG/OSGInternalWindow.h>
 #include <OpenSG/OSGTitlebar.h>
 #include "Player/KEApplicationPlayer.h"
+#include <OpenSG/OSGSetFieldValueCommand.h>
+#include <OpenSG/OSGMathFieldTraits.h>
+#include <sstream>
 
 OSG_BEGIN_NAMESPACE
 
@@ -325,6 +328,7 @@ void ContentPanel::createSceneEditorPanel()
     //Scene Editing Panel
     _SceneEditorPanel = Panel::createEmpty();
     _SceneEditorPanel->addMouseListener(&_SceneEditorPanelListener);
+    _SceneEditorPanel->addKeyListener(&_SceneEditorPanelListener);
     _SceneEditorPanel->addMouseMotionListener(&_SceneEditorPanelListener);
     _SceneEditorPanel->addMouseWheelListener(&_SceneEditorPanelListener);
 }
@@ -388,6 +392,12 @@ void ContentPanel::SceneEditorPanelListener::mouseMoved(const MouseEventUnrecPtr
 void ContentPanel::SceneEditorPanelListener::mouseDragged(const MouseEventUnrecPtr e)
 {
     _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().moveTo(e->getX(),e->getY());
+
+    if( _ContentPanel->_ApplicationPlayer->editXFormManipMgr().isManipulating() )
+    {
+        _ContentPanel->_ApplicationPlayer->editXFormManipMgr().mouseMove(e->getX(),
+                                                                         e->getViewport()->getPixelHeight() - e->getY());
+    }
 }
 
 
@@ -402,6 +412,35 @@ void ContentPanel::SceneEditorPanelListener::mouseClicked(const MouseEventUnrecP
     }
 }
 
+void ContentPanel::SceneEditorPanelListener::keyTyped(const KeyEventUnrecPtr e)
+{
+    switch(e->getKey())
+    {
+        case KeyEvent::KEY_F:
+            _ContentPanel->_ApplicationPlayer->focusSelectedNode();
+            break;
+        case KeyEvent::KEY_T:
+            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::TRANSLATE);
+            break;
+        case KeyEvent::KEY_S:
+            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::SCALE);
+            break;
+        case KeyEvent::KEY_R:
+            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::ROTATE);
+            break;
+        case KeyEvent::KEY_ESCAPE:
+            if( _ContentPanel->_ApplicationPlayer->editXFormManipMgr().isManipulating() )
+            {
+                _ContentPanel->_ApplicationPlayer->editXFormManipMgr().cancelManip();
+            }
+            else
+            {
+            }
+            break;
+    }
+
+}
+
 void ContentPanel::SceneEditorPanelListener::mouseEntered(const MouseEventUnrecPtr e)
 {
 }
@@ -412,21 +451,40 @@ void ContentPanel::SceneEditorPanelListener::mouseExited(const MouseEventUnrecPt
 
 void ContentPanel::SceneEditorPanelListener::mousePressed(const MouseEventUnrecPtr e)
 {
-    //if()
-    //{
-    switch (e->getButton())
+    if(dynamic_cast<WindowEventProducer*>(e->getSource())->getKeyModifiers() & KeyEvent::KEY_MODIFIER_ALT)
     {
-        case MouseEvent::BUTTON1: 
-            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::LEFT_MOUSE,e->getX(),e->getY());
-            break;
-        case MouseEvent::BUTTON2:
-            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::RIGHT_MOUSE,e->getX(),e->getY());
-            break;
-        case MouseEvent::BUTTON3:
-            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
-            break;
+        switch (e->getButton())
+        {
+            case MouseEvent::BUTTON1: 
+                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::LEFT_MOUSE,e->getX(),e->getY());
+                break;
+            case MouseEvent::BUTTON2:
+                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::RIGHT_MOUSE,e->getX(),e->getY());
+                break;
+            case MouseEvent::BUTTON3:
+                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
+                break;
+        }
     }
-    //}
+    else if(e->getButton() == MouseEvent::BUTTON1)
+    {
+        Line ViewRay;
+        ViewportRefPtr
+            TheViewport(_ContentPanel->_ApplicationPlayer->getDebugViewport());
+        TheViewport->getCamera()->calcViewRay( ViewRay, e->getX(),e->getY(), *TheViewport);
+
+        IntersectAction *CastRayAction = IntersectAction::create();
+
+        CastRayAction->setLine( ViewRay );
+        CastRayAction->setTravMask(ApplicationPlayer::DEBUG_GRAPH_INTERSECTABLE);
+        CastRayAction->apply( TheViewport->getRoot() );             
+
+        if ( (CastRayAction->didHit()) &&
+             (_ContentPanel->_ApplicationPlayer->editXFormManipMgr().startManip( CastRayAction->getHitObject()) ) )
+        {
+            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().mouseButtonPress(e->getButton(), e->getX(),e->getViewport()->getPixelHeight() - e->getY());
+        }
+    }
 }
 
 void ContentPanel::SceneEditorPanelListener::mouseReleased(const MouseEventUnrecPtr e)
@@ -442,6 +500,37 @@ void ContentPanel::SceneEditorPanelListener::mouseReleased(const MouseEventUnrec
         case MouseEvent::BUTTON3:
             _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
             break;
+    }
+    if(e->getButton() == MouseEvent::BUTTON1)
+    {
+        if(_ContentPanel->_ApplicationPlayer->editXFormManipMgr().isManipulating() )
+        {
+            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().mouseButtonRelease(e->getButton(), e->getX(),e->getViewport()->getPixelHeight() - e->getY());
+            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().endManip();
+
+            Node* target(_ContentPanel->_ApplicationPlayer->editXFormManipMgr().getTarget());
+            if(target &&
+               target->getCore() &&
+               target->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+            {
+                std::ostringstream initMatStrStream;
+                OutStream theinitMatOutStream(initMatStrStream);
+                FieldTraits<Matrix>::putToStream(_ContentPanel->_ApplicationPlayer->editXFormManipMgr().getManipulator()->getInitialXForm(),theinitMatOutStream);
+
+
+                std::ostringstream matStrStream;
+                OutStream theOutStream(matStrStream);
+                dynamic_cast<Transform*>(target->getCore())->getField(Transform::MatrixFieldId)->pushValueToStream(theOutStream);
+
+                SetFieldValueCommandPtr SetCommand =
+                    SetFieldValueCommand::create(target->getCore(),
+                                                 Transform::MatrixFieldId,
+                                                 matStrStream.str(),
+                                                 initMatStrStream.str());
+
+                _ContentPanel->_ApplicationPlayer->getCommandManager()->executeCommand(SetCommand);
+            }
+        }
     }
 }
 

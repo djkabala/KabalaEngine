@@ -155,6 +155,7 @@ void ApplicationPlayer::setSelectedNode(NodeRefPtr selectedNode)
         _SelectedNode = selectedNode;
         updateHighlightNode();
         updateWireframeNode();
+        updateXFormManipulator();
     }
 }
 
@@ -174,6 +175,18 @@ inline
 Navigator& ApplicationPlayer::getDebugSceneNavigator(void)
 {
     return _DebugSceneNavigator;
+}
+
+inline 
+const ManipulatorManager& ApplicationPlayer::getXFormManipMgr(void) const
+{
+    return _XFormManipMgr;
+}
+
+inline 
+ManipulatorManager& ApplicationPlayer::editXFormManipMgr(void)
+{
+    return _XFormManipMgr;
 }
 
 OSG_END_NAMESPACE
