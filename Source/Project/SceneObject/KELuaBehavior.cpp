@@ -111,7 +111,7 @@ void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
                 while(subStrEnd != std::string::npos)
                 {
                     subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
-                    _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd));
+                    _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd-subStrStart));
 
                     if(subStrEnd != std::string::npos) ++subStrEnd; 
                     subStrStart = subStrEnd;
@@ -150,7 +150,7 @@ void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
                 while(subStrEnd != std::string::npos)
                 {
                     subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
-                    _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd));
+                    _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd-subStrStart));
 
                     if(subStrEnd != std::string::npos) ++subStrEnd; 
                     subStrStart = subStrEnd;
