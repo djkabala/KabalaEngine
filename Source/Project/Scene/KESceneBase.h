@@ -65,6 +65,7 @@
 
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
+#include "Project/SceneObject/KESceneObjectFields.h" // SceneObjects type
 #include "Project/KEProjectFields.h"    // InternalParentProject type
 #include <OpenSG/OSGViewportFields.h>   // Viewports type
 #include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
@@ -112,7 +113,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
     enum
     {
-        InternalParentProjectFieldId = Inherited::NextFieldId,
+        SceneObjectsFieldId = Inherited::NextFieldId,
+        InternalParentProjectFieldId = SceneObjectsFieldId + 1,
         ViewportsFieldId = InternalParentProjectFieldId + 1,
         BackgroundsFieldId = ViewportsFieldId + 1,
         UIDrawingSurfacesFieldId = BackgroundsFieldId + 1,
@@ -139,6 +141,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
         NextFieldId = EventProducerFieldId + 1
     };
 
+    static const OSG::BitVector SceneObjectsFieldMask =
+        (TypeTraits<BitVector>::One << SceneObjectsFieldId);
     static const OSG::BitVector InternalParentProjectFieldMask =
         (TypeTraits<BitVector>::One << InternalParentProjectFieldId);
     static const OSG::BitVector ViewportsFieldMask =
@@ -190,6 +194,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
+    typedef MFUnrecChildSceneObjectPtr MFSceneObjectsType;
     typedef SFUnrecProjectPtr SFInternalParentProjectType;
     typedef MFUnrecViewportPtr MFViewportsType;
     typedef MFUnrecBackgroundPtr MFBackgroundsType;
@@ -271,6 +276,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
+            const MFUnrecChildSceneObjectPtr *getMFSceneObjects   (void) const;
+                  MFUnrecChildSceneObjectPtr *editMFSceneObjects   (void);
             const MFUnrecViewportPtr  *getMFViewports      (void) const;
                   MFUnrecViewportPtr  *editMFViewports      (void);
             const MFUnrecBackgroundPtr *getMFBackgrounds    (void) const;
@@ -307,6 +314,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
             const SFUnrecPhysicsWorldPtr *getSFPhysicsWorld   (void) const;
                   SFUnrecPhysicsWorldPtr *editSFPhysicsWorld   (void);
 
+
+                  SceneObject * getSceneObjects   (const UInt32 index) const;
 
                   Viewport * getViewports      (const UInt32 index) const;
 
@@ -363,6 +372,12 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*---------------------------------------------------------------------*/
     /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
+
+    void pushToSceneObjects           (SceneObject * const value   );
+    void assignSceneObjects          (const MFUnrecChildSceneObjectPtr &value);
+    void removeFromSceneObjects (UInt32               uiIndex );
+    void removeObjFromSceneObjects(SceneObject * const value   );
+    void clearSceneObjects            (void                         );
 
     void pushToViewports           (Viewport * const value   );
     void assignViewports          (const MFUnrecViewportPtr &value);
@@ -522,6 +537,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
+    MFUnrecChildSceneObjectPtr _mfSceneObjects;
     SFUnrecProjectPtr _sfInternalParentProject;
     MFUnrecViewportPtr _mfViewports;
     MFUnrecBackgroundPtr _mfBackgrounds;
@@ -571,9 +587,19 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
+    /*! \name Child linking                                                */
+    /*! \{                                                                 */
+
+    virtual bool unlinkChild(FieldContainer * const pChild,
+                             UInt16           const childFieldId);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
     /*! \name                    Generic Field Access                      */
     /*! \{                                                                 */
 
+    GetFieldHandlePtr  getHandleSceneObjects    (void) const;
+    EditFieldHandlePtr editHandleSceneObjects   (void);
     GetFieldHandlePtr  getHandleInternalParentProject (void) const;
     EditFieldHandlePtr editHandleInternalParentProject(void);
     GetFieldHandlePtr  getHandleViewports       (void) const;

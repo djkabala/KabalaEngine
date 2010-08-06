@@ -69,7 +69,9 @@
 #include <OpenSG/OSGPhysicsHandler.h>
 #include <OpenSG/OSGPhysicsUtils.h>
 #include <OpenSG/OSGGenericEvent.h>
+#include "Project/SceneObject/KESceneObject.h"
 
+#include <boost/filesystem/operations.hpp>
 OSG_BEGIN_NAMESPACE
 
 // Documentation for this class is emitted in the
@@ -206,13 +208,26 @@ void Scene::enter(void)
 void Scene::start(void)
 {
     SLOG << "Starting Scene: "
-        << (getName(SceneRefPtr(this)) ? getName(SceneRefPtr(this)) : "UNNAMED SCENE")
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
         << "." << std::endl;
 
     //If there is  a Lua Module for this scene then load it
     if(!getLuaModule().string().empty())
     {
-        LuaManager::the()->runScript(getLuaModule());
+        if(!boost::filesystem::exists(getLuaModule()))
+        {
+            SWARNING << "Cannot load script for scene " << (getName(this) ? getName(this) : "UNNAMED SCENE") << " because file: "
+                << getLuaModule().string() << " does not exist." << std::endl;
+        }
+        else if(!boost::filesystem::is_regular_file(getLuaModule()))
+        {
+            SWARNING << "Cannot load script for scene " << (getName(this) ? getName(this) : "UNNAMED SCENE") << " because file: "
+                << getLuaModule().string() << " is not a regular file." << std::endl;
+        }
+        else
+        {
+            LuaManager::the()->runScript(getLuaModule());
+        }
     }
 
     producerSceneStarted(SceneEvent::create(SceneRefPtr(this), getTimeStamp()));
@@ -448,6 +463,7 @@ bool Scene::isGenericMethodDefined(const std::string& MethodName) const
     return Id != 0;
 }
 
+
 UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
 {
     const MethodDescription* desc = _Producer.getProducerType().findMethodDescription(MethodName.c_str());
@@ -461,6 +477,19 @@ UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
     }
 }
 
+std::string Scene::getGenericMethodName  (      UInt32       Id        ) const
+{
+    const MethodDescription* desc = _Producer.getProducerType().getMethodDescription(Id);
+    if(desc != NULL)
+    {
+        return desc->getName();
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
 void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e)
 {
     if(isGenericMethodDefined(GenericEventId))
@@ -471,6 +500,19 @@ void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e)
     {
         SWARNING << "Generic Event ID " << GenericEventId << " Not Found.";
     }
+}
+
+void Scene::produceGenericEvent(std::string GenericEventName, GenericEventUnrecPtr e)
+{
+    produceGenericEvent(getGenericMethodId(GenericEventName),e);
+}
+
+void Scene::checkBehaviorInitialization()
+{
+	for(UInt32 i = 0; i < _mfSceneObjects.size(); i++)
+	{
+		getSceneObjects(i)->checkBehaviorInitialization();
+	}
 }
 
 /*-------------------------------------------------------------------------*\

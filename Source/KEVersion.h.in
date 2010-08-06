@@ -68,7 +68,7 @@ std::string getKabalaEngineBuildType(void)
 inline
 std::string getKabalaEngineBuildRepositoryRevision(void)
 {
-	return "@KABALA_ENGINE_REPOSITORY_REVISION@";
+	return "@KABALA_ENGINE_GIT_COMMIT@";
 }
 
 inline

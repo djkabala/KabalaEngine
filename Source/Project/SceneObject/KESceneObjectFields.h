@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -143,6 +143,77 @@ const Char8 *FieldTraits<SceneObject *, 0>::getMName<NoRefCountPolicy>(void)
 }
 
 
+/*! \ingroup GrpKabalaEngineFieldTraits
+ */
+template <>
+struct FieldTraits<SceneObject *, 1> :
+    public FieldTraitsFCPtrBase<SceneObject *, 1>
+{
+  private:
+
+  public:
+    typedef FieldTraits<SceneObject *, 1>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+};
+
+template<> inline
+const Char8 *FieldTraits<SceneObject *, 1>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecChildSceneObjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<SceneObject *, 1>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecChildSceneObjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<SceneObject *, 1>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakChildSceneObjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<SceneObject *, 1>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdChildSceneObjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<SceneObject *, 1>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecChildSceneObjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<SceneObject *, 1>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecChildSceneObjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<SceneObject *, 1>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakChildSceneObjectPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<SceneObject *, 1>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdChildSceneObjectPtr"; 
+}
+
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /*! \ingroup GrpKabalaEngineFieldSFields */
 typedef PointerSField<SceneObject *,
@@ -171,6 +242,13 @@ typedef PointerMField<SceneObject *,
 typedef PointerMField<SceneObject *,
                       NoRefCountPolicy        > MFUncountedSceneObjectPtr;
 
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef ChildPointerMField<
+          SceneObject *, 
+          UnrecordedRefCountPolicy,
+          1             > MFUnrecChildSceneObjectPtr;
 
 
 
@@ -211,6 +289,14 @@ struct MFUncountedSceneObjectPtr :
     public PointerMField<SceneObject *,
                          NoRefCountPolicy        > {};
 
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecChildSceneObjectPtr :
+    public ChildPointerMField<
+        SceneObject *, 
+        UnrecordedRefCountPolicy,
+        1             > {};
 
 
 #endif // these are the doxygen hacks

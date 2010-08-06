@@ -82,6 +82,7 @@
 
 //Kabala Engine Lua Bindings
 #include "LuaBindings/KELuaBindings.h"
+#include "KEVersion.h"
 
 OSG_USING_NAMESPACE
 
@@ -136,8 +137,6 @@ MainApplication *MainApplication::the(void)
 
 void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, bool overwriteIfDefined)
 {
-
-
     TheSettings.put("basic.data.directory", BoostPath("./share") / EngineAppDataDirectory, overwriteIfDefined);
     
     TheSettings.put("basic.window.position",   Pnt2f(-1.0f,-1.0f), overwriteIfDefined);
@@ -146,7 +145,8 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
 
     TheSettings.put<UInt32>("basic.recent_projects.max", 8, overwriteIfDefined);
 
-    
+    TheSettings.put<bool>("basic.load_most_recent_project", true, overwriteIfDefined);
+    TheSettings.put<std::string>("basic.initial_mode", "play", overwriteIfDefined);
 
     TheSettings.put<Real32>("basic.default_scene.camera.near_plane", 0.1f, overwriteIfDefined);
     TheSettings.put<Real32>("basic.default_scene.camera.far_plane", 5000.0f, overwriteIfDefined);
@@ -178,6 +178,7 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<std::string>("player.key_bindings", "", overwriteIfDefined);
 
     TheSettings.put<bool>   ("player.debugger.block_scene_input",           true, overwriteIfDefined);
+    TheSettings.put<bool>   ("player.debugger.initially_active",           false, overwriteIfDefined);
 
     TheSettings.put<UInt32>("player.debugger.lua.console.max_history", 50, overwriteIfDefined);
 
@@ -205,6 +206,8 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<Color4f>("player.debugger.selected_node.axis.z_axis_color", Color4f(0.0f,0.0f,1.0f,1.0f), overwriteIfDefined);
     TheSettings.put<Real32> ("player.debugger.selected_node.axis.line_thickness", 2.0f, overwriteIfDefined);
     TheSettings.put<Real32> ("player.debugger.selected_node.axis.relative_length", 0.55f, overwriteIfDefined);
+
+    TheSettings.put<Real32> ("player.debugger.transform_manip.axis.relative_length", 0.55f, overwriteIfDefined);
 
     TheSettings.put<bool>   ("player.debugger.selected_node.mesh.draw", true, overwriteIfDefined);
     TheSettings.put<Color4f>("player.debugger.selected_node.mesh.color", Color4f(1.0f,0.0f,1.0f,1.0f), overwriteIfDefined);
@@ -309,21 +312,21 @@ Int32 MainApplication::run(int argc, char **argv)
 
     //If the settings aren't being overriden by the command-line options
     //then set the logging with the settings values
-    if(!OptionsVariableMap.count("log-level"))
-    {
-        osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
-    }
-    if(osgLogP->getLogType() == LOG_FILE &&
-       !OptionsVariableMap.count("log-file") &&
-       !boost::filesystem::equivalent(getSettings().get<BoostPath>("logging.file"),KELogFilePath))
-    {
-        initializeLogging(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), getSettings().get<BoostPath>("logging.file"));
-    }
-    if(!OptionsVariableMap.count("log-type"))
-    {
-       osgLogP->setLogType(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), true);
-    }
-	osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
+    //if(!OptionsVariableMap.count("log-level"))
+    //{
+        //osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
+    //}
+    //if(osgLogP->getLogType() == LOG_FILE &&
+       //!OptionsVariableMap.count("log-file") &&
+       //!boost::filesystem::equivalent(getSettings().get<BoostPath>("logging.file"),KELogFilePath))
+    //{
+        //initializeLogging(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), getSettings().get<BoostPath>("logging.file"));
+    //}
+    //if(!OptionsVariableMap.count("log-type"))
+    //{
+       //osgLogP->setLogType(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), true);
+    //}
+	//osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
 
     //Initialize OpenSG
     initOpenSG(argc,argv);
@@ -426,7 +429,7 @@ Int32 MainApplication::run(int argc, char **argv)
     {
         loadProject(BoostPath(OptionsVariableMap["project-file"].as<std::string>()));
     }
-    else
+    else if(getSettings().get<bool>("basic.load_most_recent_project"))
     {
         boost::optional<BoostPath> LastOpenedProjectFile = getSettings().get_optional<BoostPath>("basic.last_opened_project");
         if(LastOpenedProjectFile)
@@ -455,7 +458,22 @@ Int32 MainApplication::run(int argc, char **argv)
     }
     else
     {
-        attachStartScreen();
+        if(getSettings().get<std::string>("basic.initial_mode").compare(std::string("builder")) == 0)
+        {
+            attachBuilder();
+        }
+        else if(getSettings().get<std::string>("basic.initial_mode").compare(std::string("play")) == 0)
+        {
+            attachPlayer();
+            if(OptionsVariableMap.count("debug") || getSettings().get<bool>("player.debugger.initially_active"))
+            {
+                dynamic_pointer_cast<ApplicationPlayer>(getPlayerMode())->enableDebug(true);
+            }
+        }
+        else
+        {
+            attachStartScreen();
+        }
     }
 
     //Main Loop
@@ -557,7 +575,42 @@ void MainApplication::saveProject(const BoostPath& ProjectFile)
     if(getProject() != NULL)
     {
         getProject()->save(ProjectFile);
+
+        updateRecentProject(ProjectFile);
     }
+}
+
+void MainApplication::updateRecentProject(const BoostPath& ProjectFile)
+{
+    getSettings().put<BoostPath>("basic.last_opened_project",ProjectFile);
+
+    //Update Recent Projects
+    std::vector<BoostPath> RecentProjects(getSettings().get_vec<BoostPath>("basic.recent_projects"));
+    std::vector<BoostPath>::iterator SearchItor(RecentProjects.begin());
+    for( ; SearchItor!=RecentProjects.end() ; ++SearchItor)
+    {
+        if(boost::filesystem::equivalent((*SearchItor),ProjectFile))
+        {
+            break;
+        }
+    }
+    if(SearchItor != RecentProjects.end())
+    {
+        RecentProjects.erase(SearchItor);
+    }
+    RecentProjects.push_back(ProjectFile);
+
+    //Resize
+    UInt32 MaxRecProj(getSettings().get<UInt32>("basic.recent_projects.max"));
+    while(RecentProjects.size() > MaxRecProj)
+    {
+        //Pop off the front
+        RecentProjects.erase(RecentProjects.begin());
+    }
+
+
+    getSettings().put_vec("basic.recent_projects.file", RecentProjects);
+
 }
 
 void MainApplication::loadProject(const BoostPath& ProjectFile)
@@ -567,36 +620,7 @@ void MainApplication::loadProject(const BoostPath& ProjectFile)
     if(LoadedProject != NULL)
     {
         setProject(LoadedProject);
-
-        getSettings().put<BoostPath>("basic.last_opened_project",ProjectFile);
-
-        //Update Recent Projects
-        std::vector<BoostPath> RecentProjects(getSettings().get_vec<BoostPath>("basic.recent_projects"));
-        std::vector<BoostPath>::iterator SearchItor(RecentProjects.begin());
-        for( ; SearchItor!=RecentProjects.end() ; ++SearchItor)
-        {
-            if(boost::filesystem::equivalent((*SearchItor),ProjectFile))
-            {
-                break;
-            }
-        }
-        if(SearchItor != RecentProjects.end())
-        {
-            RecentProjects.erase(SearchItor);
-        }
-        RecentProjects.push_back(ProjectFile);
-
-        //Resize
-        UInt32 MaxRecProj(getSettings().get<UInt32>("basic.recent_projects.max"));
-        while(RecentProjects.size() > MaxRecProj)
-        {
-            //Pop off the front
-            RecentProjects.erase(RecentProjects.begin());
-        }
-
-
-        getSettings().put_vec("basic.recent_projects.file", RecentProjects);
-
+        updateRecentProject(ProjectFile);
     }
 }
 
@@ -678,6 +702,7 @@ SceneRefPtr MainApplication::createDefaultScene(void)
     //Camera
     PerspectiveCameraRefPtr DefaultSceneCamera = PerspectiveCamera::create();
     setName(DefaultSceneCamera, "Untitled Camera" );
+
     DefaultSceneCamera->setFov(getSettings().get<Real32>("basic.default_scene.camera.fov"));
     DefaultSceneCamera->setNear(getSettings().get<Real32>("basic.default_scene.camera.near_plane"));
     DefaultSceneCamera->setFar(getSettings().get<Real32>("basic.default_scene.camera.far_plane"));

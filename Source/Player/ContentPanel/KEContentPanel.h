@@ -52,6 +52,7 @@
 #include <OpenSG/OSGCardLayout.h>
 
 #include <OpenSG/OSGMouseListener.h>
+#include <OpenSG/OSGKeyAdapter.h>
 #include <OpenSG/OSGMouseMotionListener.h>
 #include <OpenSG/OSGMouseWheelListener.h>
 #include "Player/KEApplicationPlayerFields.h"
@@ -176,6 +177,7 @@ class KE_KABALAENGINE_DLLMAPPING ContentPanel : public ContentPanelBase
 
     class SceneEditorPanelListener : public MouseListener, 
     public MouseMotionListener,
+    public KeyAdapter,
     public MouseWheelListener
     {
       public:
@@ -192,6 +194,8 @@ class KE_KABALAENGINE_DLLMAPPING ContentPanel : public ContentPanelBase
         virtual void mouseReleased(const MouseEventUnrecPtr e);
 
         virtual void mouseWheelMoved(const MouseWheelEventUnrecPtr e);
+
+        virtual void keyTyped(const KeyEventUnrecPtr e);
 
       protected :
         ContentPanelRefPtr _ContentPanel;

@@ -142,7 +142,7 @@ void EffectBase::classDescInserter(TypeObject &oType)
         "EventProducer",
         "Event Producer",
         EventProducerFieldId,EventProducerFieldMask,
-        true,
+        false,
         (Field::SFDefaultFlags | Field::FStdAccess),
         static_cast     <FieldEditMethodSig>(&Effect::editHandleEventProducer),
         static_cast     <FieldGetMethodSig >(&Effect::getHandleEventProducer));

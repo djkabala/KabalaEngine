@@ -72,32 +72,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettings
         // Custom inserter - converts data from T to string
         std::string put_value(const T &value) const;
     };
-    template<> 
-    struct settings_translator<bool>
-    {
-    public:
-        typedef settings_translator<bool> type;
-        typedef std::string            internal_type;
-        typedef bool                      external_type;
 
-        // Custom extractor - converts data from string to T
-        boost::optional<bool> get_value(const std::string &str_value) const
-        {
-            const Char8* send_by_ref_temp = str_value.c_str();
-            bool value(TypeTraits<bool>::getFromCString(send_by_ref_temp));
-
-            return boost::optional<bool>(value);
-        }
-
-
-        // Custom inserter - converts data from T to string
-        std::string put_value(const bool &value) const
-        {
-            std::string StrValue("");
-            TypeTraits<bool>::putToString(value, StrValue);
-            return StrValue;
-        }
-    };
 
     boost::property_tree::ptree _PropertyTree;
 
@@ -106,8 +81,8 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettings
   public:
 
     typedef ApplicationSettings     Self;
-    typedef std::basic_istream<typename boost::property_tree::ptree::key_type::value_type> InputStreamType;
-    typedef std::basic_ostream<typename boost::property_tree::ptree::key_type::value_type> OutputStreamType;
+    typedef std::basic_istream<boost::property_tree::ptree::key_type::value_type> InputStreamType;
+    typedef std::basic_ostream<boost::property_tree::ptree::key_type::value_type> OutputStreamType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
@@ -234,6 +209,55 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationSettings
     /*==========================  PRIVATE  ================================*/
 
   private:
+};
+
+template<> 
+struct ApplicationSettings::settings_translator<std::string>
+{
+public:
+    typedef settings_translator<std::string> type;
+    typedef std::string            internal_type;
+    typedef bool                      external_type;
+
+    // Custom extractor - converts data from string to T
+    boost::optional<std::string> get_value(const std::string &str_value) const
+    {
+        return boost::optional<std::string>(str_value);
+    }
+
+
+    // Custom inserter - converts data from T to string
+    std::string put_value(const std::string &value) const
+    {
+        return value;
+    }
+};
+
+template<> 
+struct ApplicationSettings::settings_translator<bool>
+{
+public:
+    typedef settings_translator<bool> type;
+    typedef std::string            internal_type;
+    typedef bool                      external_type;
+
+    // Custom extractor - converts data from string to T
+    boost::optional<bool> get_value(const std::string &str_value) const
+    {
+        const Char8* send_by_ref_temp = str_value.c_str();
+        bool value(TypeTraits<bool>::getFromCString(send_by_ref_temp));
+
+        return boost::optional<bool>(value);
+    }
+
+
+    // Custom inserter - converts data from T to string
+    std::string put_value(const bool &value) const
+    {
+        std::string StrValue("");
+        TypeTraits<bool>::putToString(value, StrValue);
+        return StrValue;
+    }
 };
 
 typedef ApplicationSettings *ApplicationSettingsP;

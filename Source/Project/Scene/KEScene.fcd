@@ -15,6 +15,19 @@
     childFields="multi"
 >
 The Scene.
+    <Field
+		name="SceneObjects"
+		type="SceneObject"
+        childParentType="FieldContainer"
+		category="childpointer"
+		cardinality="multi"
+		visibility="external"
+		fieldHeader="Project/SceneObject/KESceneObjectFields.h"
+		typeHeader="Project/SceneObject/KESceneObject.h"
+		access="public"
+        linkParentField="ParentScene"
+	>
+	</Field>
 	<Field
 	   name="ParentProject"
 	   type="FieldContainer"

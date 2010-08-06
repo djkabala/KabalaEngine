@@ -440,7 +440,7 @@ void ProjectBase::classDescInserter(TypeObject &oType)
         "EventProducer",
         "Event Producer",
         EventProducerFieldId,EventProducerFieldMask,
-        true,
+        false,
         (Field::SFDefaultFlags | Field::FStdAccess),
         static_cast     <FieldEditMethodSig>(&Project::editHandleEventProducer),
         static_cast     <FieldGetMethodSig >(&Project::getHandleEventProducer));

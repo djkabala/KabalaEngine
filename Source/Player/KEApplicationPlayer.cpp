@@ -67,6 +67,8 @@
 #include <OpenSG/OSGSimpleGeometryExt.h>
 #include <OpenSG/OSGFieldContainerEditorDialog.h>
 //#include <OpenSG/OSGGeometryUtils.h>
+#include <OpenSG/OSGFCPtrFieldEditor.h>
+#include <OpenSG/OSGFCPtrEditorRootedStore.h>
 
 // the general scene file loading handler
 #include <OpenSG/OSGSceneFileHandler.h>
@@ -84,6 +86,9 @@
 
 #include "Player/Commands/KEUndoCommandOfPlayer.h"
 #include "Player/Commands/KERedoCommandOfPlayer.h"
+
+#include "Player/Commands/KELoadProjectCommand.h"
+#include "Player/Commands/KESaveProjectCommand.h"
 
 
 OSG_BEGIN_NAMESPACE
@@ -107,6 +112,8 @@ void ApplicationPlayer::initMethod(InitPhase ePhase)
 
     if(ePhase == TypeObject::SystemPost)
     {
+        //Set the FCPtrFieldEditor to use the FCPtrEditorRootedStore by default
+        FCPtrFieldEditor::setDefaultFindFCStorePrototype(FCPtrEditorRootedStore::create());
     }
 }
 
@@ -182,6 +189,10 @@ void ApplicationPlayer::createDebugInterface(void)
 
     /*************************************************** Menu creation *******************************************************************/
     // the menu items
+    _LoadProjectItem = MenuItem::create();				
+    _SaveProjectItem = MenuItem::create();				
+    _SaveProjectAsItem = MenuItem::create();				
+
     _ResetItem = MenuItem::create();				
     _ForceQuitItem = MenuItem::create();			
 
@@ -209,6 +220,22 @@ void ApplicationPlayer::createDebugInterface(void)
 
 
     // setting the fields of the menu items
+    _LoadProjectItem->setText("Open Project ...");
+    _LoadProjectItem->setEnabled(false);
+    _LoadProjectItem->setAcceleratorKey(KeyEvent::KEY_O);
+    _LoadProjectItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
+    _LoadProjectItem->setMnemonicKey(KeyEvent::KEY_O);
+
+    _SaveProjectItem->setText("Save Project");
+    _SaveProjectItem->setAcceleratorKey(KeyEvent::KEY_S);
+    _SaveProjectItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
+    _SaveProjectItem->setMnemonicKey(KeyEvent::KEY_S);
+
+    _SaveProjectAsItem->setText("Save Project As ...");
+    _SaveProjectAsItem->setAcceleratorKey(KeyEvent::KEY_S);
+    _SaveProjectAsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
+    _SaveProjectAsItem->setMnemonicKey(KeyEvent::KEY_S);
+
     _ResetItem->setText("Reset");
     _ResetItem->setAcceleratorKey(KeyEvent::KEY_E);
     _ResetItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
@@ -250,33 +277,33 @@ void ApplicationPlayer::createDebugInterface(void)
 
     _SceneSubItem->setText("Scenes");
 
-    _FlyNavigatorItem->setText("FlyNavigator ");
+    _FlyNavigatorItem->setText("FlyNavigator");
     _FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_N);
     _FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_N);
 
-    _TrackballNavigatorItem->setText("TrackballNavigator ");
+    _TrackballNavigatorItem->setText("TrackballNavigator");
     _TrackballNavigatorItem->setAcceleratorKey(KeyEvent::KEY_T);
     _TrackballNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _TrackballNavigatorItem->setMnemonicKey(KeyEvent::KEY_T);
 
-    _BasicItem->setText("Basic ");
+    _BasicItem->setText("Basic");
     _BasicItem->setAcceleratorKey(KeyEvent::KEY_B);
     _BasicItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _BasicItem->setMnemonicKey(KeyEvent::KEY_B);
 
-    _RenderItem->setText("Render ");
+    _RenderItem->setText("Render");
     _RenderItem->setAcceleratorKey(KeyEvent::KEY_R);
     _RenderItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
     _RenderItem->setMnemonicKey(KeyEvent::KEY_R);
 
-    _PhysicsItem->setText("Physics ");
+    _PhysicsItem->setText("Physics");
     _PhysicsItem->setMnemonicKey(KeyEvent::KEY_Y);
 
-    _ParticleSystemItem->setText("ParticleSystem ");
+    _ParticleSystemItem->setText("ParticleSystem");
     _ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_Z);
 
-    _AnimationItem->setText("Animation ");
+    _AnimationItem->setText("Animation");
     _AnimationItem->setMnemonicKey(KeyEvent::KEY_A);
 
     _PauseActiveUpdatesItem->setText("Pause Active Updates");
@@ -333,18 +360,18 @@ void ApplicationPlayer::createDebugInterface(void)
     _ContentPanel->setConstraints(ContentConstraints);
     _ContentPanel->init();
 
-    _OpenFileButton = Button::create();
+    _EditProjectButton = Button::create();
+    _EditProjectButton->setText("Edit Project");
+    _EditProjectButton->addActionListener(&_BasicListener);
 
+    _OpenFileButton = Button::create();
     _OpenFileButton->setText("Open File");
     //_OpenFileButton->setPreferredSize(Vec2f(100,50));
-
     _OpenFileButton->addActionListener(&_BasicListener);
 
     _SaveFileButton = Button::create();
-
     _SaveFileButton->setText("Save File");
     //_SaveFileButton->setPreferredSize(Vec2f(100,50));
-
     _SaveFileButton->addActionListener(&_BasicListener);
 
     /*_CloseFileButton = Button::create();
@@ -371,6 +398,7 @@ void ApplicationPlayer::createDebugInterface(void)
     ToolbarLayout->setOrientation(FlowLayout::HORIZONTAL_ORIENTATION);
     ToolbarLayout->setMajorAxisAlignment(1.0);
 
+    _Toolbar->pushToChildren(_EditProjectButton);
     _Toolbar->pushToChildren(_OpenFileButton);
     _Toolbar->pushToChildren(_SaveFileButton);
     _Toolbar->pushToChildren(_ModeComboBox);
@@ -379,6 +407,10 @@ void ApplicationPlayer::createDebugInterface(void)
 
     // creation of menus and addition of menu items to them
     _ProjectMenu = Menu::create();
+    _ProjectMenu->addItem(_LoadProjectItem);
+    _ProjectMenu->addItem(_SaveProjectItem);
+    _ProjectMenu->addItem(_SaveProjectAsItem);
+    _ProjectMenu->addSeparator();
     _ProjectMenu->addItem(_ResetItem);
     _ProjectMenu->addSeparator();
     _ProjectMenu->addItem(_ForceQuitItem);
@@ -434,6 +466,9 @@ void ApplicationPlayer::createDebugInterface(void)
     _ToggleMenu->setMnemonicKey(KeyEvent::KEY_G);
 
     // adding actionlisteners to each of the menuitems
+    _LoadProjectItem->addActionListener(&_BasicListener);
+    _SaveProjectItem->addActionListener(&_BasicListener);
+    _SaveProjectAsItem->addActionListener(&_BasicListener);
     _ResetItem->addActionListener(&_BasicListener);
     _ForceQuitItem->addActionListener(&_BasicListener);
 
@@ -666,6 +701,15 @@ void ApplicationPlayer::attachDebugInterface(void)
 
     }
 
+    //Root the FCPtr
+    FCPtrEditorStorePtr FCEditorStore = FCPtrFieldEditor::getDefaultFindFCStorePrototype();
+    if(boost::dynamic_pointer_cast<FCPtrEditorRootedStore>(FCEditorStore))
+    {
+        FCPtrEditorRootedStore::FieldContianerVector Roots;
+        Roots.push_back(MainApplication::the()->getProject());
+        boost::dynamic_pointer_cast<FCPtrEditorRootedStore>(FCEditorStore)->setRoots(Roots);
+    }
+
     updateHighlightNode();
     DebuggerDrawingSurface->setEventProducer(MainApplication::the()->getMainWindow());
 
@@ -761,6 +805,21 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
         //Reset the Project
         MainApplication::the()->getProject()->reset();
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
+    }
+    else if(e->getSource() == _LoadProjectItem)
+    {
+        CommandPtr LoadProjectItemCommand = LoadProjectCommand::create();
+        getCommandManager()->executeCommand(LoadProjectItemCommand);
+    }
+    else if(e->getSource() == _SaveProjectItem)
+    {
+        CommandPtr SaveProjectItemCommand = SaveProjectCommand::create(false);
+        getCommandManager()->executeCommand(SaveProjectItemCommand);
+    }
+    else if(e->getSource() == _SaveProjectAsItem)
+    {
+        CommandPtr SaveProjectItemCommand = SaveProjectCommand::create(true);
+        getCommandManager()->executeCommand(SaveProjectItemCommand);
     }
     else if(e->getSource() == _ForceQuitItem)
     {
@@ -886,6 +945,10 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
         int index = _ModeComboBox->getSelectedIndex();
         _HierarchyPanel->setView(index);
         _ContentPanel->setView(index);
+    }
+    else if(e->getSource() == _EditProjectButton)
+    {
+        openEditor(MainApplication::the()->getProject());
     }
     else if(e->getSource() == _OpenFileButton)
     {
@@ -1305,6 +1368,9 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     //Create the Highlight Node
     createHighlightNode();
 
+    //Create the XFormManipulator Node
+    createXFormManipulator();
+
     //Camera Transformation Node	
     _DebugBeaconTransform = Transform::create();
 
@@ -1313,9 +1379,10 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
 
     //Debug Root Node
     NodeRefPtr DefaultRootNode = OSG::Node::create();
-    DefaultRootNode->setCore(OSG::Group::create());
+    DefaultRootNode->setCore(OSG::DirectionalLight::create());
     DefaultRootNode->addChild(_DebugCameraBeacon);
     DefaultRootNode->addChild(_HighlightNode);
+    DefaultRootNode->addChild(_XFormManipNode);
     DefaultRootNode->addChild(_WorkspaceGrid);
 
     //Background
@@ -1324,11 +1391,17 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     ViewportRefPtr DebugViewport = Viewport::create();
     setName(DebugViewport,"__KABALA_ENGINE_DEBUGGER_VIEWPORT");
 
-    DebugViewport->setRoot                    (DefaultRootNode);
-    DebugViewport->setSize                    (0.0f,0.0f, 1.0f,1.0f);
-    DebugViewport->setBackground              (DefaultBackground);
-    DebugViewport->addForeground              (DebuggerUIForeground);
+    DebugViewport->setRoot      (DefaultRootNode);
+    DebugViewport->setSize      (0.0f,0.0f, 1.0f,1.0f);
+    DebugViewport->setBackground(DefaultBackground);
+    DebugViewport->addForeground(DebuggerUIForeground);
+    DebugViewport->setTravMask  (DEBUG_GRAPH_DRAWN);
 
+    //Setup the XForm Manipulation Manager
+    _XFormManipMgr.setTarget(NULL);
+    _XFormManipMgr.setViewport(DebugViewport);
+
+    //Setup the Navigator
     _DebugSceneNavigator.setMode(Navigator::TRACKBALL);
     _DebugSceneNavigator.setViewport(DebugViewport);
     _DebugSceneNavigator.setCameraTransformation(_DebugCameraBeacon);
@@ -1460,11 +1533,11 @@ void ApplicationPlayer::updateFromSettings(void)
     //Grid
     if(MainApplication::the()->getSettings().get<bool>("player.debugger.grid.draw"))
     {
-        _WorkspaceGrid->setTravMask(TypeTraits<UInt32>::getMax());
+        _WorkspaceGrid->setTravMask(DEBUG_GRAPH_DRAWN);
     }
     else
     {
-        _WorkspaceGrid->setTravMask(0);
+        _WorkspaceGrid->setTravMask(DEBUG_GRAPH_NONE);
     }
     Vec2f GridSize(MainApplication::the()->getSettings().get<Vec2f>("player.debugger.grid.dimensions"));
     NodeRefPtr GridGeoNode = makeGrid(GridSize.x(),
@@ -1479,15 +1552,15 @@ void ApplicationPlayer::updateFromSettings(void)
         //Volume Box
         if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.volume_box.draw"))
         {
-            _HighlightVolumeBoxNode->setTravMask(TypeTraits<UInt32>::getMax());
+            _HighlightVolumeBoxNode->setTravMask(DEBUG_GRAPH_DRAWN);
         }
         else
         {
-            _HighlightVolumeBoxNode->setTravMask(0);
+            _HighlightVolumeBoxNode->setTravMask(DEBUG_GRAPH_NONE);
         }
         Color4f bbColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.volume_box.color"));
         GeoVec4fPropertyRefPtr bbColors =
-            dynamic_cast<GeoVec4fProperty*>(_HighlightVolumeBoxGeo->getColors());
+            static_cast<GeoVec4fProperty*>(_HighlightVolumeBoxGeo->getColors());
         for(UInt32 i(0) ; i<bbColors->size() ; ++i)
         {
             bbColors->setValue(bbColor,i);
@@ -1497,16 +1570,16 @@ void ApplicationPlayer::updateFromSettings(void)
         //Local Axis
         if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.axis.draw"))
         {
-            _HighlightAxisNode->setTravMask(TypeTraits<UInt32>::getMax());
+            _HighlightAxisNode->setTravMask(DEBUG_GRAPH_DRAWN);
         }
         else
         {
-            _HighlightAxisNode->setTravMask(0);
+            _HighlightAxisNode->setTravMask(DEBUG_GRAPH_NONE);
         }
         Color4f xAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.x_axis_color"));
         Color4f yAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.y_axis_color"));
         Color4f zAxisColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.axis.z_axis_color"));
-        GeoVec4fPropertyRefPtr axisColors = dynamic_cast<GeoVec4fProperty*>(_HighlightAxisGeo->getColors());
+        GeoVec4fPropertyRefPtr axisColors = static_cast<GeoVec4fProperty*>(_HighlightAxisGeo->getColors());
         axisColors->setValue(xAxisColor,0);
         axisColors->setValue(xAxisColor,1);
         axisColors->setValue(yAxisColor,2);
@@ -1518,11 +1591,11 @@ void ApplicationPlayer::updateFromSettings(void)
         //Tri Mesh
         if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.mesh.draw"))
         {
-            _WireframeNode->setTravMask(TypeTraits<UInt32>::getMax());
+            _WireframeNode->setTravMask(DEBUG_GRAPH_DRAWN);
         }
         else
         {
-            _WireframeNode->setTravMask(0);
+            _WireframeNode->setTravMask(DEBUG_GRAPH_NONE);
         }
         _WireframeMatMaterialChunk->setEmission(MainApplication::the()->getSettings().get<Color4f>("player.debugger.selected_node.mesh.color"));
         _WireframeMatLineChunk->setWidth(MainApplication::the()->getSettings().get<Real32>("player.debugger.selected_node.mesh.line_thickness"));
@@ -1663,9 +1736,234 @@ void ApplicationPlayer::highlightNodeListener::update(const UpdateEventUnrecPtr 
     _ApplicationPlayer->updateHighlightNode();
 }
 
+void ApplicationPlayer::updateXFormManipulator(void)
+{
+    Node* XFormTargetNode(NULL);
+    if(_SelectedNode != NULL)
+    {
+        if(_SelectedNode->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+        {
+            XFormTargetNode = _SelectedNode;
+        }
+        else if(_SelectedNode->getParent() != NULL &&
+                _SelectedNode->getParent()->getNChildren() == 1 &&
+                _SelectedNode->getParent()->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+        {
+            XFormTargetNode = _SelectedNode->getParent();
+        }
+    }
+
+    if(XFormTargetNode &&
+       XFormTargetNode != _XFormManipMgr.getTarget())
+    {
+        // calc the world bbox of the highlight object
+        BoxVolume      vol;
+        XFormTargetNode->getWorldVolume(vol);
+
+        Pnt3f min,max;
+        vol.getBounds(min, max);
+
+        //If the Volume is Zero, use a volume of size 1.0
+        if(min == max)
+        {
+            min = Pnt3f(-0.5f,-0.5f,-0.5f);
+            max = Pnt3f(0.5f,0.5f,0.5f);
+        }
+
+        //Get the side lengths of the volume
+        Vec3f  Sides(max - min);
+        Real32 AxisScaling(Sides.maxValue() *
+                           MainApplication::the()->getSettings().get<Real32>("player.debugger.transform_manip.axis.relative_length"));
+
+        _XFormManipMgr.setTarget(XFormTargetNode);
+        _XFormManipMgr.setLength(Vec3f(AxisScaling,AxisScaling,AxisScaling));
+        _XFormManipNodeCore->setTarget(XFormTargetNode);
+        _XFormManipNode->setTravMask(DEBUG_GRAPH_DRAWN | DEBUG_GRAPH_INTERSECTABLE);
+        if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.axis.draw"))
+        {
+            _HighlightAxisNode->setTravMask(DEBUG_GRAPH_NONE);
+        }
+    }
+    else
+    {
+        _XFormManipMgr.setTarget(NULL);
+        _XFormManipNodeCore->setTarget(NULL);
+        _XFormManipNode->setTravMask(DEBUG_GRAPH_NONE);
+        if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.axis.draw"))
+        {
+            _HighlightAxisNode->setTravMask(DEBUG_GRAPH_DRAWN);
+        }
+    }
+}
+
+void ApplicationPlayer::focusSelectedNode(void)
+{
+	showAll(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getCamera(),
+            getSelectedNode(),
+            MainApplication::the()->getProject()->getActiveScene()->getViewports(0));
+}
+
+void ApplicationPlayer::showAll(CameraRefPtr TheCameraOrig,
+                             NodeRefPtr Scene,
+                             ViewportRefPtr LocalViewport)
+{
+    NodeRefPtr FocusNode(Scene);
+	if(FocusNode==NULL)
+	{
+        FocusNode = MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot();
+    }
+
+	if(TheCameraOrig!=NULL)
+	{
+        PerspectiveCameraRefPtr TheCamera;
+        if(TheCameraOrig->getType() == PerspectiveCamera::getClassType())
+        {
+            TheCamera = dynamic_pointer_cast<PerspectiveCamera>(TheCameraOrig);
+        }
+
+        //Make sure the volume is up to date for the FocusNode
+        FocusNode->updateVolume();
+
+        //Get the Minimum and Maximum bounds of the volume
+        Vec3f min,max;
+        BoxVolume TheVol;
+        FocusNode->getWorldVolume(TheVol);
+        TheVol.getBounds( min, max );
+
+        Vec3f d = max - min;
+        if(d.length() < Eps) //The volume is 0
+        {
+            Pnt3f NodeOrigin(0.0f,0.0f,0.0f);
+            FocusNode->getToWorld().mult(NodeOrigin, NodeOrigin);
+            //Default to a 1x1x1 box volume
+            min = Vec3f(NodeOrigin) - Vec3f(1.0f,1.0f,1.0f);
+            max = Vec3f(NodeOrigin) + Vec3f(1.0f,1.0f,1.0f);
+            d = max - min;
+        }
+
+        // try to be nice to people giving degrees...
+        Real32 VertFov(TheCamera->getFov());
+        if(VertFov > Pi)
+        {
+            VertFov = osgDegree2Rad(VertFov);
+        }
+
+        //Get the horizontal feild of view
+        Real32 HorFov = 2.0f * osgATan(static_cast<Real32>(LocalViewport->getPixelWidth())
+                                       /(static_cast<Real32>(LocalViewport->getPixelHeight())/osgTan(VertFov*0.5f)));
+
+        Pnt3f at((min[0] + max[0]) * .5f,(min[1] + max[1]) * .5f,(min[2] + max[2]) * .5f);
+
+        //Get the camera world transformation
+        Matrix CameraToWorld(TheCamera->getBeacon()->getToWorld());
+        Matrix WorldToCamera(CameraToWorld);
+        WorldToCamera.invert();
+
+        //Get the 8 points of the bounding box in camera space
+        Pnt3f p1(min),
+              p2(max.x(), min.y(), min.z()),
+              p3(max.x(), max.y(), min.z()),
+              p4(max.x(), min.y(), max.z()),
+              p5(min.x(), max.y(), min.z()),
+              p6(min.x(), max.y(), max.z()),
+              p7(min.x(), min.y(), max.z()),
+              p8(max);
+
+        p1 = WorldToCamera * p1;
+        p2 = WorldToCamera * p2;
+        p3 = WorldToCamera * p3;
+        p4 = WorldToCamera * p4;
+        p5 = WorldToCamera * p5;
+        p6 = WorldToCamera * p6;
+        p7 = WorldToCamera * p7;
+        p8 = WorldToCamera * p8;
+
+        //Get the min and max of the bounding volume relative camera space
+        Vec3f BBMinCamera;
+        Vec3f BBMaxCamera;
+        BBMinCamera[0] = osgMin(p1.x(),
+                         osgMin(p2.x(),
+                         osgMin(p3.x(),
+                         osgMin(p4.x(),
+                         osgMin(p5.x(),
+                         osgMin(p6.x(),
+                         osgMin(p7.x(),p8.x())))))));
+
+        BBMinCamera[1] = osgMin(p1.y(),
+                         osgMin(p2.y(),
+                         osgMin(p3.y(),
+                         osgMin(p4.y(),
+                         osgMin(p5.y(),
+                         osgMin(p6.y(),
+                         osgMin(p7.y(),p8.y())))))));
+
+        BBMinCamera[2] = osgMin(p1.z(),
+                         osgMin(p2.z(),
+                         osgMin(p3.z(),
+                         osgMin(p4.z(),
+                         osgMin(p5.z(),
+                         osgMin(p6.z(),
+                         osgMin(p7.z(),p8.z())))))));
+
+        BBMaxCamera[0] = osgMax(p1.x(),
+                         osgMax(p2.x(),
+                         osgMax(p3.x(),
+                         osgMax(p4.x(),
+                         osgMax(p5.x(),
+                         osgMax(p6.x(),
+                         osgMax(p7.x(),p8.x())))))));
+
+        BBMaxCamera[1] = osgMax(p1.y(),
+                         osgMax(p2.y(),
+                         osgMax(p3.y(),
+                         osgMax(p4.y(),
+                         osgMax(p5.y(),
+                         osgMax(p6.y(),
+                         osgMax(p7.y(),p8.y())))))));
+
+        BBMaxCamera[2] = osgMax(p1.z(),
+                         osgMax(p2.z(),
+                         osgMax(p3.z(),
+                         osgMax(p4.z(),
+                         osgMax(p5.z(),
+                         osgMax(p6.z(),
+                         osgMax(p7.z(),p8.z())))))));
+
+        Pnt3f CamerAt(WorldToCamera * at);
+
+        //Calculate the distance to move the camera back to make sure the bound
+        //box is visible
+        Real32 dist = 1.05f * ((BBMaxCamera.z()-CamerAt.z()) +
+                              osgMax(((BBMaxCamera.y()-BBMinCamera.y()) / (2.0f * osgTan(VertFov *0.5f))),
+                                     ((BBMaxCamera.x()-BBMinCamera.x()) / (2.0f * osgTan(HorFov  *0.5f)))));
+
+        //Get the cameras current orientation
+        Vec3f OrigY(0.0f,1.0f,0.0f),
+              OrigZ(0.0f,0.0f,1.0f);
+        CameraToWorld.mult(OrigY, OrigY);
+        CameraToWorld.mult(OrigZ, OrigZ);
+
+        //Keep the same camera heading
+        Pnt3f  from = at + (OrigZ * dist); 
+
+        Matrix m;
+        if(!MatrixLookAt(m, from, at, OrigY))
+        {
+            moveDebugCamera(m);
+        }
+
+        //Scale the Motion Factor of the Navigator
+        getDebugSceneNavigator().setMotionFactor((d[0] + d[1] + d[2]) / 100.f);
+	}
+	else
+	{
+		SWARNING << "Camera is NULL!" <<std::endl;
+	}
+}
+
 void ApplicationPlayer::updateWireframeNode(void)
 {
-    //Clone the sub-tree rooted at the selected node
+    //visit the sub-tree rooted at the selected node
     if(_SelectedNode != NULL)
     {
         dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
@@ -1676,7 +1974,11 @@ void ApplicationPlayer::updateWireframeNode(void)
     if(_SelectedNode != NULL &&
        _SelectedNode->getParent() != NULL)
     {
-        _WireframeTransform->setMatrix(_SelectedNode->getParent()->getToWorld());
+        _WireframeTransform->setTarget(_SelectedNode->getParent());
+    }
+    else
+    {
+        _WireframeTransform->setTarget(NULL);
     }
 }
 
@@ -1687,11 +1989,11 @@ void ApplicationPlayer::updateHighlightNode(void)
     // attach the hightlight node to the root if the highlight is active
     if(_SelectedNode == NULL)
     {
-        _HighlightNode->setTravMask(0);
+        _HighlightNode->setTravMask(DEBUG_GRAPH_NONE);
     }
     else
     {
-        _HighlightNode->setTravMask(UInt32(-1));
+        _HighlightNode->setTravMask(DEBUG_GRAPH_DRAWN);
     }
 
     if(_SelectedNode != NULL)		// selected node is the node that is being selected.
@@ -1721,14 +2023,8 @@ void ApplicationPlayer::updateHighlightNode(void)
         //Get the side lengths of the volume
         Vec3f  Sides(max - min);
 
-        /*if(_HighlightVolumeBoxGeo->getPositions() == NULL)
-        {
-            GeoPnt3fPropertyUnrecPtr Positions = GeoPnt3fProperty::create();
-            _HighlightVolumeBoxGeo->setPositions(Positions);
-        }*/
-
         GeoPnt3fPropertyUnrecPtr temphighlightPoints =
-            dynamic_cast<GeoPnt3fProperty*>(_HighlightVolumeBoxGeo->getPositions());
+            static_cast<GeoPnt3fProperty*>(_HighlightVolumeBoxGeo->getPositions());
 
         //Update Bounding Box
         temphighlightPoints->setValue(Pnt3f(min[0], min[1], min[2]), 0);
@@ -1741,7 +2037,7 @@ void ApplicationPlayer::updateHighlightNode(void)
         temphighlightPoints->setValue(Pnt3f(max[0], max[1], max[2]), 7);
         
         temphighlightPoints =
-            dynamic_cast<GeoPnt3fProperty*>(_HighlightAxisGeo->getPositions());
+            static_cast<GeoPnt3fProperty*>(_HighlightAxisGeo->getPositions());
 
         //Update Local Coordinate Axis
         Real32 AxisScaling(Sides.maxValue() * MainApplication::the()->getSettings().get<Real32>("player.debugger.selected_node.axis.relative_length"));
@@ -1751,14 +2047,19 @@ void ApplicationPlayer::updateHighlightNode(void)
         temphighlightPoints->setValue(NodeOrigin + (NodeYDir* AxisScaling), 3);
         temphighlightPoints->setValue(NodeOrigin, 4);
         temphighlightPoints->setValue(NodeOrigin + (NodeZDir* AxisScaling), 5);
-
-        //Update the transformation for the wireframe node
-        if(_SelectedNode != NULL &&
-           _SelectedNode->getParent() != NULL)
-        {
-            _WireframeTransform->setMatrix(_SelectedNode->getParent()->getToWorld());
-        }
     }
+}
+
+void ApplicationPlayer::createXFormManipulator(void)
+{
+    _XFormManipMgr.setUniformScale(true);
+    _XFormManipNodeCore = ReplicateTransform::create();
+
+    _XFormManipNode = Node::create();
+    _XFormManipNode->setCore(_XFormManipNodeCore);
+    _XFormManipNode->addChild(_XFormManipMgr.createManipulator(OSG::ManipulatorManager::TRANSLATE));
+
+    _XFormManipNode->setTravMask(DEBUG_GRAPH_NONE);
 }
 
 void ApplicationPlayer::createHighlightNode(void)
@@ -1996,7 +2297,7 @@ void ApplicationPlayer::createHighlightTriMeshNode(void)
     _WireframeMatGroupNode->addChild(SelectedSubTreeNode);
 
     //Mesh Highlight Transformation Node
-    _WireframeTransform = Transform::create();
+    _WireframeTransform = ReplicateTransform::create();
 
     _WireframeNode = Node::create();
     setName(_WireframeNode,"DEBUG_MODE_MESH_HIGHLIGHT_NODE");

@@ -59,14 +59,15 @@
 
 #include <OpenSG/OSGSoundManager.h>
 #include <OpenSG/OSGLuaManager.h>
+#include <OpenSG/OSGWindowUtils.h>
 
+#include <boost/filesystem/operations.hpp>
 
 //Bindings for the OSGToolbox libraries
 #include <OpenSG/OSGToolbox_wrap.h>
 
 //Kabala Engine Lua Bindings
-//TODO: Uncomment
-//#include "LuaBindings/KELuaBindings.h"
+#include "LuaBindings/KELuaBindings.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -109,9 +110,9 @@ ProjectRefPtr Project::create(const BoostPath& ProjectFile)
             dynamic_pointer_cast<Project>(*Itor)->setFilePath(ProjectFile);
             dynamic_pointer_cast<Project>(*Itor)->attachNames();
 
-            FilePathAttachment::setFilePath(dynamic_pointer_cast<Project>(*Itor), ProjectFile);
-
             //Attach the FilePath to me
+            //FilePathAttachment::setFilePath(dynamic_pointer_cast<Project>(*Itor), ProjectFile);
+
             return dynamic_pointer_cast<Project>(*Itor);
         }
     }
@@ -150,6 +151,7 @@ void Project::save(void)
     Containers.insert(ProjectRefPtr(this));
 
     FCFileType::FCTypeVector IgnoreTypes;
+    IgnoreTypes.push_back(getNativeWindowType()->getId());
 
     FCFileHandler::the()->write(Containers,getFilePath(),IgnoreTypes);
 }
@@ -215,8 +217,7 @@ void Project::reset(void)
     LuaManager::the()->openLuaBindingLib(getOSGToolboxLuaBindingsLibFunctor());
 
     //Kabala Engine Bindings
-    //TODO: Uncomment
-    //LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
+    LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
 
     //Reload this projects Script
     loadScripts();
@@ -302,7 +303,20 @@ void Project::loadScripts(void)
     //If I have a Lua Module then load it
     if(!getLuaModule().string().empty())
     {
-        LuaManager::the()->runScript(getLuaModule());
+        if(!boost::filesystem::exists(getLuaModule()))
+        {
+            SWARNING << "Cannot load script for project because file: "
+                << getLuaModule().string() << " does not exist." << std::endl;
+        }
+        else if(!boost::filesystem::is_regular_file(getLuaModule()))
+        {
+            SWARNING << "Cannot load script for project because file: "
+                << getLuaModule().string() << " is not a regular file." << std::endl;
+        }
+        else
+        {
+            LuaManager::the()->runScript(getLuaModule());
+        }
     }
 
 }

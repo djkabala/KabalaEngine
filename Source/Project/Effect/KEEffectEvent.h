@@ -58,8 +58,8 @@ class KE_KABALAENGINE_DLLMAPPING EffectEvent : public EffectEventBase
     typedef EffectEventBase Inherited;
     typedef EffectEvent     Self;
 
-    static EffectEventTransitPtr EffectEvent::create(FieldContainerRefPtr Source,
-                                        Time TimeStamp);
+    static EffectEventTransitPtr create(FieldContainerRefPtr Source,
+                                                     Time TimeStamp);
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */

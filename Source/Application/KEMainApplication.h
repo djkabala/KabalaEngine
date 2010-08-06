@@ -188,6 +188,7 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
                                     void  *clientData);
 
     void initOpenSG(int argc, char **argv);
+    void updateRecentProject(const BoostPath& ProjectFile);
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
   private:

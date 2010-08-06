@@ -3,7 +3,7 @@
  *                                                                           *
  *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   authors:  David Kabala (djkabala@gmail.com), Eric Langkamp              *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -45,8 +45,8 @@
 \*****************************************************************************/
 
 
-#ifndef _KEBEHAVIORFACTORYFIELDS_H_
-#define _KEBEHAVIORFACTORYFIELDS_H_
+#ifndef _KELUABEHAVIORFIELDS_H_
+#define _KELUABEHAVIORFIELDS_H_
 #ifdef __sgi
 #pragma once
 #endif
@@ -61,16 +61,16 @@
 
 OSG_BEGIN_NAMESPACE
 
-class BehaviorFactory;
+class LuaBehavior;
 
-OSG_GEN_CONTAINERPTR(BehaviorFactory);
+OSG_GEN_CONTAINERPTR(LuaBehavior);
 
 /*! \ingroup GrpKabalaEngineFieldTraits
     \ingroup GrpLibOSGKabalaEngine
  */
 template <>
-struct FieldTraits<BehaviorFactory *> :
-    public FieldTraitsFCPtrBase<BehaviorFactory *>
+struct FieldTraits<LuaBehavior *> :
+    public FieldTraitsFCPtrBase<LuaBehavior *>
 {
   private:
 
@@ -78,7 +78,7 @@ struct FieldTraits<BehaviorFactory *> :
 
   public:
 
-    typedef FieldTraits<BehaviorFactory *>  Self;
+    typedef FieldTraits<LuaBehavior *>  Self;
 
     enum                        { Convertible = NotConvertible };
 
@@ -87,89 +87,89 @@ struct FieldTraits<BehaviorFactory *> :
     template<typename RefCountPolicy> inline
     static const Char8    *getSName     (void);
 
-//    static const char *getSName(void) { return "SFBehaviorFactoryPtr"; }
+//    static const char *getSName(void) { return "SFLuaBehaviorPtr"; }
     template<typename RefCountPolicy> inline
     static const Char8    *getMName     (void);
 
-//    static const char *getMName(void) { return "MFBehaviorFactoryPtr"; }
+//    static const char *getMName(void) { return "MFLuaBehaviorPtr"; }
 };
 
 template<> inline
-const Char8 *FieldTraits<BehaviorFactory *, 0>::getSName<RecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<LuaBehavior *, 0>::getSName<RecordedRefCountPolicy>(void)
 {
-    return "SFRecBehaviorFactoryPtr"; 
+    return "SFRecLuaBehaviorPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorFactory *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<LuaBehavior *, 0>::getSName<UnrecordedRefCountPolicy>(void)
 {
-    return "SFUnrecBehaviorFactoryPtr"; 
+    return "SFUnrecLuaBehaviorPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorFactory *, 0>::getSName<WeakRefCountPolicy>(void)
+const Char8 *FieldTraits<LuaBehavior *, 0>::getSName<WeakRefCountPolicy>(void)
 {
-    return "SFWeakBehaviorFactoryPtr"; 
+    return "SFWeakLuaBehaviorPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorFactory *, 0>::getSName<NoRefCountPolicy>(void)
+const Char8 *FieldTraits<LuaBehavior *, 0>::getSName<NoRefCountPolicy>(void)
 {
-    return "SFUnrefdBehaviorFactoryPtr"; 
+    return "SFUnrefdLuaBehaviorPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorFactory *, 0>::getMName<RecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<LuaBehavior *, 0>::getMName<RecordedRefCountPolicy>(void)
 {
-    return "MFRecBehaviorFactoryPtr"; 
+    return "MFRecLuaBehaviorPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorFactory *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+const Char8 *FieldTraits<LuaBehavior *, 0>::getMName<UnrecordedRefCountPolicy>(void)
 {
-    return "MFUnrecBehaviorFactoryPtr"; 
+    return "MFUnrecLuaBehaviorPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorFactory *, 0>::getMName<WeakRefCountPolicy>(void)
+const Char8 *FieldTraits<LuaBehavior *, 0>::getMName<WeakRefCountPolicy>(void)
 {
-    return "MFWeakBehaviorFactoryPtr"; 
+    return "MFWeakLuaBehaviorPtr"; 
 }
 
 template<> inline
-const Char8 *FieldTraits<BehaviorFactory *, 0>::getMName<NoRefCountPolicy>(void)
+const Char8 *FieldTraits<LuaBehavior *, 0>::getMName<NoRefCountPolicy>(void)
 {
-    return "MFUnrefdBehaviorFactoryPtr"; 
+    return "MFUnrefdLuaBehaviorPtr"; 
 }
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<BehaviorFactory *,
-                      RecordedRefCountPolicy  > SFRecBehaviorFactoryPtr;
+typedef PointerSField<LuaBehavior *,
+                      RecordedRefCountPolicy  > SFRecLuaBehaviorPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<BehaviorFactory *,
-                      UnrecordedRefCountPolicy> SFUnrecBehaviorFactoryPtr;
+typedef PointerSField<LuaBehavior *,
+                      UnrecordedRefCountPolicy> SFUnrecLuaBehaviorPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<BehaviorFactory *,
-                      WeakRefCountPolicy      > SFWeakBehaviorFactoryPtr;
+typedef PointerSField<LuaBehavior *,
+                      WeakRefCountPolicy      > SFWeakLuaBehaviorPtr;
 /*! \ingroup GrpKabalaEngineFieldSFields */
-typedef PointerSField<BehaviorFactory *,
-                      NoRefCountPolicy        > SFUncountedBehaviorFactoryPtr;
+typedef PointerSField<LuaBehavior *,
+                      NoRefCountPolicy        > SFUncountedLuaBehaviorPtr;
 
 
 /*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<BehaviorFactory *,
-                      RecordedRefCountPolicy  > MFRecBehaviorFactoryPtr;
+typedef PointerMField<LuaBehavior *,
+                      RecordedRefCountPolicy  > MFRecLuaBehaviorPtr;
 /*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<BehaviorFactory *,
-                      UnrecordedRefCountPolicy> MFUnrecBehaviorFactoryPtr;
+typedef PointerMField<LuaBehavior *,
+                      UnrecordedRefCountPolicy> MFUnrecLuaBehaviorPtr;
 /*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<BehaviorFactory *,
-                      WeakRefCountPolicy      > MFWeakBehaviorFactoryPtr;
+typedef PointerMField<LuaBehavior *,
+                      WeakRefCountPolicy      > MFWeakLuaBehaviorPtr;
 /*! \ingroup GrpKabalaEngineFieldMFields */
-typedef PointerMField<BehaviorFactory *,
-                      NoRefCountPolicy        > MFUncountedBehaviorFactoryPtr;
+typedef PointerMField<LuaBehavior *,
+                      NoRefCountPolicy        > MFUncountedLuaBehaviorPtr;
 
 
 
@@ -177,38 +177,38 @@ typedef PointerMField<BehaviorFactory *,
 #else // these are the doxygen hacks
 
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFRecBehaviorFactoryPtr : 
-    public PointerSField<BehaviorFactory *,
+struct SFRecLuaBehaviorPtr : 
+    public PointerSField<LuaBehavior *,
                          RecordedRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFUnrecBehaviorFactoryPtr : 
-    public PointerSField<BehaviorFactory *,
+struct SFUnrecLuaBehaviorPtr : 
+    public PointerSField<LuaBehavior *,
                          UnrecordedRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFWeakBehaviorFactoryPtr :
-    public PointerSField<BehaviorFactory *,
+struct SFWeakLuaBehaviorPtr :
+    public PointerSField<LuaBehavior *,
                          WeakRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
-struct SFUncountedBehaviorFactoryPtr :
-    public PointerSField<BehaviorFactory *,
+struct SFUncountedLuaBehaviorPtr :
+    public PointerSField<LuaBehavior *,
                          NoRefCountPolicy> {};
 
 
 /*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFRecBehaviorFactoryPtr :
-    public PointerMField<BehaviorFactory *,
+struct MFRecLuaBehaviorPtr :
+    public PointerMField<LuaBehavior *,
                          RecordedRefCountPolicy  > {};
 /*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFUnrecBehaviorFactoryPtr :
-    public PointerMField<BehaviorFactory *,
+struct MFUnrecLuaBehaviorPtr :
+    public PointerMField<LuaBehavior *,
                          UnrecordedRefCountPolicy> {};
 /*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFWeakBehaviorFactoryPtr :
-    public PointerMField<BehaviorFactory *,
+struct MFWeakLuaBehaviorPtr :
+    public PointerMField<LuaBehavior *,
                          WeakRefCountPolicy      > {};
 /*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
-struct MFUncountedBehaviorFactoryPtr :
-    public PointerMField<BehaviorFactory *,
+struct MFUncountedLuaBehaviorPtr :
+    public PointerMField<LuaBehavior *,
                          NoRefCountPolicy        > {};
 
 
@@ -217,4 +217,4 @@ struct MFUncountedBehaviorFactoryPtr :
 
 OSG_END_NAMESPACE
 
-#endif /* _KEBEHAVIORFACTORYFIELDS_H_ */
+#endif /* _KELUABEHAVIORFIELDS_H_ */
