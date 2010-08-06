@@ -12,19 +12,22 @@
 	useLocalIncludes="false"
 	libnamespace="KE"
     authors="David Kabala (djkabala@gmail.com)                             "
+    childFields="multi"
 >
 The Scene.
 	<Field
-		name="InternalParentProject"
-		type="Project"
-		category="pointer"
-		cardinality="single"
-		visibility="external"
-		defaultValue="NULL"
-		fieldHeader="Project/KEProjectFields.h"
-		typeHeader="Project/KEProjectFields.h"
-		access="protected"
-	>
+	   name="ParentProject"
+	   type="FieldContainer"
+	   cardinality="single"
+	   visibility="external"
+	   access="none"
+       doRefCount="false"
+       passFieldMask="true"
+       category="parentpointer"
+	   fieldHeader="Project/KEProjectFields.h"
+	   typeHeader="Project/KEProjectFields.h"
+	   >
+	  The Project this Scene is contained in.
 	</Field>
 	<Field
 		name="Viewports"

@@ -46,12 +46,15 @@ The Project.
 	<Field
 		name="Scenes"
 		type="Scene"
-		category="pointer"
 		cardinality="multi"
+        category="childpointer"
+        childParentType="FieldContainer"
 		visibility="external"
+		access="public"
+        ptrFieldAccess = "nullCheck"
+        linkParentField="ParentContainer"
 		fieldHeader="Project/Scene/KESceneFields.h"
 		typeHeader="Project/Scene/KEScene.h"
-		access="public"
 	>
 	</Field>
 	<Field
