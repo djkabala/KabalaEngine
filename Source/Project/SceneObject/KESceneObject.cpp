@@ -87,16 +87,6 @@ Scene* SceneObject::getParentScene () const
 	return dynamic_cast<Scene*>(_sfParentScene.getValue());
 }
 
-void SceneObject::checkBehaviorInitialization()
-{
-	for(UInt32 i = 0;_mfBehaviors.size() > i; i++)
-	{
-		if(!getBehaviors(i)->isInitialized())
-		{
-			getBehaviors(i)->checkListenerAttachment();
-		}
-	}
-}
 
 /***************************************************************************\
  *                           Instance methods                              *
@@ -120,25 +110,28 @@ Effect* SceneObject::getEffect(std::string name)
     }
 }
 
-void SceneObject::InitializeAll()
+void SceneObject::InitializeBehaviorEvents()
 {
-	SLOG << "Initializing All Behaviors"  << std::endl;
-
-	for(UInt32 i = 0; i < getMFBehaviors()->size(); i++)
+	SLOG << "Initializing All Behaviors Events"  << std::endl;
+    
+    for(UInt32 i = 0; i < getMFBehaviors()->size(); i++)
 	{
-		getBehaviors(i)->addedToSceneObject(SceneObjectUnrecPtr(this));
+        if(!getBehaviors(i)->eventsAreInitted())
+		{
+    		getBehaviors(i)->initEvents(SceneObjectUnrecPtr(this));
+        }
 	}
 }
 
-void SceneObject::InitializeBehaviors()
+void SceneObject::InitializeBehaviorLinks()
 {
-	SLOG << "Initializing all uninitialized behaviors"  << std::endl;
+	SLOG << "Initializing all Behaviors Links"  << std::endl;
 
 	for(UInt32 i = 0; i < getMFBehaviors()->size(); i++)
 	{
-		if(!getBehaviors(i)->isInitialized())
+		if(!getBehaviors(i)->isLinked())
 		{
-			getBehaviors(i)->addedToSceneObject(SceneObjectUnrecPtr(this));
+			getBehaviors(i)->initLinks(SceneObjectUnrecPtr(this));
 		}
 	}
 }
@@ -170,15 +163,19 @@ void SceneObject::changed(ConstFieldMaskArg whichField,
                             BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
-
-	if(whichField & ParentSceneFieldMask)
+    
+    if(whichField & ParentSceneFieldMask)
 	{
-		InitializeAll();
+		//should be ReInitializeAll();
+        getParentScene()->checkBehaviorInitialization();
 	}
-	if(whichField & BehaviorsFieldMask)
+    else if(whichField & BehaviorsFieldMask)
 	{
-		InitializeBehaviors();
-	}
+        if(getParentScene() != NULL)
+        {
+		    getParentScene()->checkBehaviorInitialization();
+        }
+    }
 }
 
 void SceneObject::dump(      UInt32    ,

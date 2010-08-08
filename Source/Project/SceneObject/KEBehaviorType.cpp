@@ -186,8 +186,6 @@ void BehaviorType::registerWithScene(Scene* scene)
 		}
 		attachedScene = scene;
 	}
-
-	scene->checkBehaviorInitialization();
 }
 
 /*-------------------------------------------------------------------------*/

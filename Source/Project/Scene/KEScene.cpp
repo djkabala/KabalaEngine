@@ -511,7 +511,12 @@ void Scene::checkBehaviorInitialization()
 {
 	for(UInt32 i = 0; i < _mfSceneObjects.size(); i++)
 	{
-		getSceneObjects(i)->checkBehaviorInitialization();
+		getSceneObjects(i)->InitializeBehaviorEvents();
+	}
+
+    for(UInt32 i = 0; i < _mfSceneObjects.size(); i++)
+	{
+		getSceneObjects(i)->InitializeBehaviorLinks();
 	}
 }
 

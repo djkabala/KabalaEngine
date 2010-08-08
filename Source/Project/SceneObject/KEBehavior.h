@@ -79,11 +79,14 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     typedef Behavior     Self;
 
     SceneObject* getParentSceneObject(void) const;
-	void addedToSceneObject(SceneObjectUnrecPtr rootSceneObject);
+
+    virtual void initEvents(SceneObjectUnrecPtr rootSceneObject) = 0;
+	virtual void initLinks(SceneObjectUnrecPtr rootSceneObject) = 0;
 
 	BehaviorType * getBehaviorType(void);
 
-	bool isInitialized();
+	bool isLinked();
+    bool eventsAreInitted();
 
 	void checkListenerAttachment();
 
@@ -117,12 +120,11 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 	virtual void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID) = 0;
     virtual void depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 ID) = 0;
 
-	virtual void initialize(SceneObjectUnrecPtr rootSceneObject) = 0;
-
 	void attachListeners (EventProducerPtr eventProducer);
 
 	BehaviorType* theBehaviorType;
-    bool initialized;
+    UInt32 linksMade;
+    bool eventsInitted;
 
     // Variables should all be in BehaviorBase.
 

@@ -5234,7 +5234,7 @@ static int _wrap_SceneObject_getParentScene(lua_State* L) {
     SWIG_fail_ptr("SceneObject_getParentScene",1,SWIGTYPE_p_OSG__SceneObject);
   }
   
-  result = ((OSG::SceneObject *)arg1)->getParentScene();
+  result = ((OSG::SceneObject const *)arg1)->getParentScene();
   {
     OSG::SceneRefPtr * resultptr = new OSG::SceneRefPtr((const OSG::SceneRefPtr &) result);
     SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__SceneRefPtr,1); SWIG_arg++;
@@ -6209,35 +6209,10 @@ static int _wrap_Behavior_produceEvent(lua_State* L) {
 }
 
 
-static int _wrap_Behavior_isInitialized(lua_State* L) {
-  int SWIG_arg = 0;
-  OSG::Behavior *arg1 = (OSG::Behavior *) 0 ;
-  bool result;
-  
-  SWIG_check_num_args("isInitialized",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInitialized",1,"OSG::Behavior *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Behavior,0))){
-    SWIG_fail_ptr("Behavior_isInitialized",1,SWIGTYPE_p_OSG__Behavior);
-  }
-  
-  result = (bool)(arg1)->isInitialized();
-  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static swig_lua_method swig_OSG_Behavior_methods[] = {
     {"getBehaviorType", _wrap_Behavior_getBehaviorType}, 
     {"getParentSceneObject", _wrap_Behavior_getParentSceneObject}, 
     {"produceEvent", _wrap_Behavior_produceEvent}, 
-    {"isInitialized", _wrap_Behavior_isInitialized}, 
     {0,0}
 };
 static swig_lua_attribute swig_OSG_Behavior_attributes[] = {
@@ -6660,30 +6635,6 @@ static int _wrap_BehaviorRefPtr_produceEvent(lua_State* L) {
     "    produceEvent(OSG::BehaviorRefPtr *,OSG::UInt32,OSG::GenericEventRefPtr)\n"
     "    produceEvent(OSG::BehaviorRefPtr *,OSG::UInt32)\n");
   lua_error(L);return 0;
-}
-
-
-static int _wrap_BehaviorRefPtr_isInitialized(lua_State* L) {
-  int SWIG_arg = 0;
-  OSG::BehaviorRefPtr *arg1 = (OSG::BehaviorRefPtr *) 0 ;
-  bool result;
-  
-  SWIG_check_num_args("isInitialized",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInitialized",1,"OSG::BehaviorRefPtr *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorRefPtr,0))){
-    SWIG_fail_ptr("BehaviorRefPtr_isInitialized",1,SWIGTYPE_p_OSG__BehaviorRefPtr);
-  }
-  
-  result = (bool)(*arg1)->isInitialized();
-  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
 }
 
 
@@ -7265,7 +7216,6 @@ static swig_lua_method swig_OSG_BehaviorRefPtr_methods[] = {
     {"getBehaviorType", _wrap_BehaviorRefPtr_getBehaviorType}, 
     {"getParentSceneObject", _wrap_BehaviorRefPtr_getParentSceneObject}, 
     {"produceEvent", _wrap_BehaviorRefPtr_produceEvent}, 
-    {"isInitialized", _wrap_BehaviorRefPtr_isInitialized}, 
     {"addAttachment", _wrap_BehaviorRefPtr_addAttachment}, 
     {"subAttachment", _wrap_BehaviorRefPtr_subAttachment}, 
     {"findAttachment", _wrap_BehaviorRefPtr_findAttachment}, 
@@ -7752,30 +7702,6 @@ static int _wrap_LuaBehaviorRefPtr_produceEvent(lua_State* L) {
     "    produceEvent(OSG::LuaBehaviorRefPtr *,OSG::UInt32,OSG::GenericEventRefPtr)\n"
     "    produceEvent(OSG::LuaBehaviorRefPtr *,OSG::UInt32)\n");
   lua_error(L);return 0;
-}
-
-
-static int _wrap_LuaBehaviorRefPtr_isInitialized(lua_State* L) {
-  int SWIG_arg = 0;
-  OSG::LuaBehaviorRefPtr *arg1 = (OSG::LuaBehaviorRefPtr *) 0 ;
-  bool result;
-  
-  SWIG_check_num_args("isInitialized",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInitialized",1,"OSG::LuaBehaviorRefPtr *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr,0))){
-    SWIG_fail_ptr("LuaBehaviorRefPtr_isInitialized",1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr);
-  }
-  
-  result = (bool)(*arg1)->isInitialized();
-  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
 }
 
 
@@ -8358,7 +8284,6 @@ static swig_lua_method swig_OSG_LuaBehaviorRefPtr_methods[] = {
     {"getBehaviorType", _wrap_LuaBehaviorRefPtr_getBehaviorType}, 
     {"getParentSceneObject", _wrap_LuaBehaviorRefPtr_getParentSceneObject}, 
     {"produceEvent", _wrap_LuaBehaviorRefPtr_produceEvent}, 
-    {"isInitialized", _wrap_LuaBehaviorRefPtr_isInitialized}, 
     {"addAttachment", _wrap_LuaBehaviorRefPtr_addAttachment}, 
     {"subAttachment", _wrap_LuaBehaviorRefPtr_subAttachment}, 
     {"findAttachment", _wrap_LuaBehaviorRefPtr_findAttachment}, 
