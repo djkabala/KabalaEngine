@@ -333,7 +333,6 @@ namespace OSG {
             SceneObjectRefPtr getParentSceneObject(void) const;
             void produceEvent(std::string name, GenericEventRefPtr eventData = NULL);
             void produceEvent(UInt32 id, GenericEventRefPtr eventData = NULL);
-            bool isInitialized();
         protected:
             Behavior(void);
             Behavior(const Behavior &source);

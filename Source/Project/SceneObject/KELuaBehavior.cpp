@@ -87,10 +87,16 @@ LuaBehaviorType* const LuaBehavior::getLuaBehaviorType(void) const
     return dynamic_cast<LuaBehaviorType* const>(theBehaviorType);
 }
 
-void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
+void LuaBehavior::initEvents(SceneObjectUnrecPtr rootSceneObject)
 {
     LuaBehaviorType* const theLuaType = getLuaBehaviorType();
 	theLuaType->registerWithScene(rootSceneObject->getParentScene());
+    eventsInitted = true;
+}
+
+void LuaBehavior::initLinks(SceneObjectUnrecPtr rootSceneObject)
+{
+    LuaBehaviorType* const theLuaType = getLuaBehaviorType();
 
     for(UInt32 i(0); i < theLuaType->getSourceContainers().size(); ++i)
     {
@@ -121,13 +127,13 @@ void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
                 //does not occur for the use of split in dependent libraries.
                 //So for now the split is done by hand.
                 //boost::algorithm::split( , NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
+
+                attachListeners(rootSceneObject->getParentScene()->editEventProducer());
             }
             else
             {
                 SWARNING << "LuaBehavior could not find event " << theLuaType->getEventLinks()[i] << endLog;
             }
-
-            attachListeners(rootSceneObject->getParentScene()->editEventProducer());
         }
         else
         {
@@ -160,13 +166,14 @@ void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
                 //does not occur for the use of split in dependent libraries.
                 //So for now the split is done by hand.
                 //boost::algorithm::split( _FunctionsMap[uId], NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
+
+                eventProducer->attachEventListener(&_DepFieldContainerListener,eventProducer->getProducedEventId(theLuaType->getEventLinks()[i]));
+                linksMade++;
             }
             else
             {
                 SWARNING << "LuaBehavior could not find event " << theLuaType->getEventLinks()[i] << endLog;
             }
-            
-            eventProducer->attachEventListener(&_DepFieldContainerListener,eventProducer->getProducedEventId(theLuaType->getEventLinks()[i]));
         }
     }
 }

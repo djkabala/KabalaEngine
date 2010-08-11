@@ -88,11 +88,6 @@ void Behavior::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void Behavior::addedToSceneObject(SceneObjectUnrecPtr rootSceneObject)
-{
-	initialize(rootSceneObject);
-}
-
 void Behavior::DepFieldContainerListener::eventProduced(const EventUnrecPtr e, UInt32 ID)
 {
 	_Behavior->depFieldContainerProducedMethod(e, ID);
@@ -110,8 +105,7 @@ void Behavior::checkListenerAttachment()
 
 void Behavior::attachListeners (EventProducerPtr eventProducer)
 {
-	initialized = true;
-
+    
 	for(UInt32 i = 0; i < theBehaviorType->_bDependencies.size(); i++)
 	{
 		if(theBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
@@ -123,13 +117,10 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 					if(theBehaviorType->_bDependencies[i]->hasEvent(theBehaviorType->_bEventLinks[c]))
 					{
 						eventProducer->attachEventListener(&_DepBehaviorListener,theBehaviorType->_bDependencies[i]->findEventID(theBehaviorType->_bEventLinks[c]));
+                        linksMade++;
 					}
 				}
 			}
-		}
-		else
-		{
-			initialized = false;
 		}
 	}
 }
@@ -199,7 +190,8 @@ Behavior::Behavior(void) :
     Inherited(),
 	_DepBehaviorListener(BehaviorUnrecPtr(this)),
     _DepFieldContainerListener(BehaviorUnrecPtr(this)),
-	initialized(false)
+	linksMade(0),
+    eventsInitted(false)
 {
 }
 
@@ -207,7 +199,8 @@ Behavior::Behavior(const Behavior &source) :
     Inherited(source),
 	_DepBehaviorListener(BehaviorUnrecPtr(this)),
     _DepFieldContainerListener(BehaviorUnrecPtr(this)),
-	initialized(false)
+	linksMade(0),
+    eventsInitted(false)
 {
 }
 

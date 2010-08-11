@@ -59,9 +59,16 @@ Behavior::DepFieldContainerListener::DepFieldContainerListener(BehaviorUnrecPtr 
 }
 
 inline
-bool Behavior::isInitialized()
+bool Behavior::eventsAreInitted()
 {
-	return Behavior::initialized;
+	return Behavior::eventsInitted;
+}
+
+
+inline
+bool Behavior::isLinked()
+{
+	return Behavior::linksMade == theBehaviorType->getEventLinks().size();
 }
 
 inline

@@ -62,9 +62,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
     Effect* getEffect(std::string name);
 	Scene* getParentScene (void) const;
 
-	void checkBehaviorInitialization(void);
-
-
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
     /*! \{                                                                 */
@@ -89,8 +86,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
 
   protected:
 
-	  void InitializeAll();
-	  void InitializeBehaviors();
+	  void InitializeBehaviorLinks();
+	  void InitializeBehaviorEvents();
 
     // Variables should all be in SceneObjectBase.
 
@@ -120,6 +117,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
   private:
 
     friend class FieldContainer;
+    friend class Scene;
     friend class SceneObjectBase;
 
     // prohibit default functions (move to 'public' if you need one)
