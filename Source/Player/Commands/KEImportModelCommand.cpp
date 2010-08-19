@@ -45,6 +45,8 @@
 #include <OpenSG/OSGSceneFileHandler.h>
 #include <OpenSG/OSGFCFileHandler.h>
 #include <OpenSG/OSGWindowEventProducer.h>
+#include <OpenSG/OSGCollisionMeshGraphOp.h>
+#include <OpenSG/OSGImageFileHandler.h>
 
 OSG_USING_NAMESPACE
 
@@ -79,7 +81,6 @@ void ImportModelCommand::execute(void)
 {
     //Have the user select the file to import
     std::vector<WindowEventProducer::FileDialogFilter> Filters;
-
     std::list< const Char8 * > ReadableModelSuff;
     SceneFileHandler::the()->getSuffixList(ReadableModelSuff, SceneFileType::OSG_READ_SUPPORTED);
     //Determine all of the readable model filetypes
@@ -112,7 +113,8 @@ void ImportModelCommand::execute(void)
     if(FilesToOpen.size() > 0)
     {
         //Try loading the file using the SceneFileHandler
-        _NewNode = SceneFileHandler::the()->read(FilesToOpen[0].string().c_str());
+		//ImageFileHandler::the()->setPathHandler(SceneFileHandler::the()->getPathHandler());
+        _NewNode = SceneFileHandler::the()->read(FilesToOpen[0].string().c_str(), NULL);
 
         //Try loading the file using the XML file handler
         if(_NewNode == NULL)
@@ -131,13 +133,25 @@ void ImportModelCommand::execute(void)
             }
         }
     }
-
+	
+	if(MainApplication::the()->getSettings().get<bool>("player.debugger.model_import.trav_mask_graph_op.enabled"))
+	{
+		OSG::CollisionMeshGraphOpRefPtr colMeshGrOp = OSG::CollisionMeshGraphOp::create();
+		colMeshGrOp->setSearchString(MainApplication::the()->getSettings().get<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string"));
+		colMeshGrOp->setNewTravMask(MainApplication::the()->getSettings().get<UInt32>("player.debugger.model_import.trav_mask_graph_op.mask"));
+		// default values for this graph op will do fine.
+		if(colMeshGrOp->traverse(_NewNode))
+		{
+			SLOG << "Number of nodes hidden: " << colMeshGrOp->getNumChanged() << std::endl;
+		}
+	}
 
     if(_NodeToAddTo!=NULL && _NewNode != NULL)
 	{
 	    _HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
 	    _HasBeenDone = true;
     }
+
 	
 	_HasBeenDone = true;
 }

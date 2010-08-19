@@ -212,6 +212,11 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<bool>   ("player.debugger.selected_node.mesh.draw", true, overwriteIfDefined);
     TheSettings.put<Color4f>("player.debugger.selected_node.mesh.color", Color4f(1.0f,0.0f,1.0f,1.0f), overwriteIfDefined);
     TheSettings.put<Real32> ("player.debugger.selected_node.mesh.line_thickness", 1.0f, overwriteIfDefined);
+
+
+	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.enabled", true, overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string", "_Col", overwriteIfDefined);
+	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.mask", 0, overwriteIfDefined);
 }
 
 ApplicationSettings MainApplication::createDefaultSettings(void)
