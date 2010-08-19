@@ -45,7 +45,7 @@
 #include <OpenSG/OSGSceneFileHandler.h>
 #include <OpenSG/OSGFCFileHandler.h>
 #include <OpenSG/OSGWindowEventProducer.h>
-#include <OpenSG/OSGCollisionMeshGraphOp.h>
+#include <OpenSG/OSGNodeNameTravMaskGraphOp.h>
 #include <OpenSG/OSGImageFileHandler.h>
 
 OSG_USING_NAMESPACE
@@ -136,7 +136,7 @@ void ImportModelCommand::execute(void)
 	
 	if(MainApplication::the()->getSettings().get<bool>("player.debugger.model_import.trav_mask_graph_op.enabled"))
 	{
-		OSG::CollisionMeshGraphOpRefPtr colMeshGrOp = OSG::CollisionMeshGraphOp::create();
+		OSG::NodeNameTravMaskGraphOpRefPtr colMeshGrOp = OSG::NodeNameTravMaskGraphOp::create();
 		colMeshGrOp->setSearchString(MainApplication::the()->getSettings().get<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string"));
 		colMeshGrOp->setNewTravMask(MainApplication::the()->getSettings().get<UInt32>("player.debugger.model_import.trav_mask_graph_op.mask"));
 		// default values for this graph op will do fine.

@@ -188,6 +188,9 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     MenuItemRefPtr _ExportItem ;
     MenuItemRefPtr _FocusCamera ;
 
+	MenuRefPtr     _GraphOpMenu;
+	MenuItemRefPtr _LodGraphOpItem;
+
     void createPopUpMenu(void);
     void updatePopupMenu(void);
     void changeShowHideMenuItem(void);
