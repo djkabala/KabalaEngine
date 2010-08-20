@@ -41,11 +41,11 @@
 
 #include <OpenSG/OSGConfig.h>
 
-#include "KELODSetupCommand.h"
+#include "KEPruneGraphOpCommand.h"
 #include <OpenSG/OSGSceneFileHandler.h>
 #include <OpenSG/OSGFCFileHandler.h>
 #include <OpenSG/OSGWindowEventProducer.h>
-#include <OpenSG/OSGLODSetupGraphOp.h>
+#include <OpenSG/OSGPruneGraphOp.h>
 
 #include <boost/filesystem/convenience.hpp>
 #include <boost/algorithm/string.hpp>
@@ -64,48 +64,39 @@ A ExportModelCommand.
  *                           Class variables                               *
 \***************************************************************************/
 
-CommandType LODSetupCommand::_Type("LODSetupCommand", "Command");
+CommandType PruneGraphOpCommand::_Type("PruneGraphOpCommand", "Command");
 
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
-LODSetupCommandPtr LODSetupCommand::create(NodeUnrecPtr RootNode)
+PruneGraphOpCommandPtr PruneGraphOpCommand::create(NodeUnrecPtr RootNode)
 {
-	return RefPtr(new LODSetupCommand(RootNode));
+	return RefPtr(new PruneGraphOpCommand(RootNode));
 }
 
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
 
-void LODSetupCommand::execute(void)
+void PruneGraphOpCommand::execute(void)
 {
-	OSG::LODSetupGraphOpRefPtr LODSetupGrOp = OSG::LODSetupGraphOp::create();
-	LODSetupGrOp->addLODInfo(0,100.0f,"_High");
-	LODSetupGrOp->addLODInfo(1,200.0f,"_Mid");
-	LODSetupGrOp->addLODInfo(2,200.0f,"_Med");
-	LODSetupGrOp->addLODInfo(3,290.0f,"_Low");
-
-	if(LODSetupGrOp->traverse(_RootNode))
-	{
-		std::cout << "Number of LOD nodes set up: " << LODSetupGrOp->getNumLODSMade() << std::endl;
-	}
+	
 }
 
-std::string LODSetupCommand::getCommandDescription(void) const
+std::string PruneGraphOpCommand::getCommandDescription(void) const
 {
 	std::string Description("Sets up level of detail nodes in the scene");
 	
 	return Description;
 }
 
-std::string LODSetupCommand::getPresentationName(void) const
+std::string PruneGraphOpCommand::getPresentationName(void) const
 {
 	return getCommandDescription();
 }
 
-const CommandType &LODSetupCommand::getType(void) const
+const CommandType &PruneGraphOpCommand::getType(void) const
 {
 	return _Type;
 }
@@ -115,13 +106,13 @@ const CommandType &LODSetupCommand::getType(void) const
 
 /*----------------------- constructors & destructors ----------------------*/
 
-LODSetupCommand::~LODSetupCommand(void)
+PruneGraphOpCommand::~PruneGraphOpCommand(void)
 {
 }
 
 /*----------------------------- class specific ----------------------------*/
 
-void LODSetupCommand::operator =(const LODSetupCommand& source)
+void PruneGraphOpCommand::operator =(const PruneGraphOpCommand& source)
 {
 }
 

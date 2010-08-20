@@ -215,8 +215,19 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
 
 
 	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.enabled", true, overwriteIfDefined);
+	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.new_mask", 0, overwriteIfDefined);
 	TheSettings.put<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string", "_Col", overwriteIfDefined);
-	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.mask", 0, overwriteIfDefined);
+	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_string", true, overwriteIfDefined);
+	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.cur_mask", 1, overwriteIfDefined);
+	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_cur_mask", false, overwriteIfDefined);
+	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.core_type_id", 0, overwriteIfDefined);
+	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_core_type", false, overwriteIfDefined);
+
+	
+	TheSettings.put<Vec3f>("player.debugger.lod_graph_op.lod_ranges", Vec3f(50.0f,100.0f,300.0f), overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_high_tag", "_High", overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_mid_tag", "_Mid", overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_low_tag", "_Low", overwriteIfDefined);
 }
 
 ApplicationSettings MainApplication::createDefaultSettings(void)
