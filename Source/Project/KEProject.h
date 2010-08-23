@@ -40,24 +40,18 @@
 #endif
 
 #include "KEProjectBase.h"
-#include <OpenSG/OSGBackground.h>       // Backgrounds Class
-#include <OpenSG/OSGForeground.h>       // Foregrounds Class
-#include <OpenSG/OSGNode.h>             // ModelNodes Class
-#include <OpenSG/OSGCamera.h>           // Cameras Class
-#include <OpenSG/OSGAnimation.h>        // ActiveAnimations Class
-#include <OpenSG/OSGParticleSystem.h>   // ActiveParticleSystems Class
+#include <OpenSG/OSGBackgroundFields.h>       // Backgrounds Class
+#include <OpenSG/OSGForegroundFields.h>       // Foregrounds Class
+#include <OpenSG/OSGNodeFields.h>             // ModelNodes Class
+#include <OpenSG/OSGCameraFields.h>           // Cameras Class
+#include <OpenSG/OSGAnimationFields.h>        // ActiveAnimations Class
+#include <OpenSG/OSGParticleSystemFields.h>   // ActiveParticleSystems Class
 
 #include <OpenSG/OSGPathType.h>
 #include <OpenSG/OSGWindowEventProducerFields.h>
-#include <OpenSG/OSGUpdateListener.h>
-#include <OpenSG/OSGMouseListener.h>
-#include <OpenSG/OSGMouseMotionListener.h>
-#include <OpenSG/OSGMouseWheelListener.h>
-#include <OpenSG/OSGKeyListener.h>
-#include <OpenSG/OSGWindowListener.h>
 #include <OpenSG/OSGNavigator.h>
 
-#include "KEProjectEvent.h"
+#include "KEProjectEventDetailsFields.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -101,10 +95,10 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
     void stop(void);
 
     void setActiveScene(SceneRefPtr TheScene);
-    SceneRefPtr getActiveScene(void) const;
+    Scene* getActiveScene(void) const;
 
     void setActiveNode(NodeRefPtr TheNode);
-    NodeRefPtr getActiveNode(void);
+    Node* getActiveNode(void);
 
     void addActiveAnimation(AnimationRefPtr TheAnimation);
     void removeActiveAnimation(AnimationRefPtr TheAnimation);
@@ -121,15 +115,15 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
 
     void attachNames(void);
 
-    WindowEventProducerRefPtr getEventProducer(void) const;
+    WindowEventProducer* getEventProducer(void) const;
 
     void pauseActiveUpdates(void);
     void unpauseActiveUpdates(void);
     void togglePauseActiveUpdates(void);
     bool getPauseActiveUpdates(void) const;
 
-    SceneRefPtr getLastActiveScene(void) const;
-    SceneRefPtr getSceneByName(const std::string& FindSceneName) const;
+    Scene* getLastActiveScene(void) const;
+    Scene* getSceneByName(const std::string& FindSceneName) const;
 
     void blockInput(bool block);
     bool isInputBlocked(void) const;
@@ -139,7 +133,7 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
     void removeViewport(const ViewportRefPtr& port);
     void clearViewports(void);
     UInt32 numViewports(void) const;
-    ViewportRefPtr getViewport(UInt32 index) const;
+    Viewport* getViewport(UInt32 index) const;
 
     BoostPath getProjectFilePath(void) const;
     BoostPath getLuaModulePath(void) const;
@@ -171,60 +165,71 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
     static void initMethod(InitPhase ePhase);
 
     /*! \}                                                                 */
-    
-	class ProjectUpdateListener : public UpdateListener,
-                                  public MouseListener,
-                                  public MouseMotionListener,
-                                  public MouseWheelListener,
-                                  public KeyListener,
-                                  public WindowListener
-    {
-      public:
-        ProjectUpdateListener(ProjectRefPtr TheProject);
+     /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
 
-        virtual void update(const UpdateEventUnrecPtr e);
+    virtual void resolveLinks(void);
 
-        virtual void mouseClicked(const MouseEventUnrecPtr e);
-        virtual void mouseEntered(const MouseEventUnrecPtr e);
-        virtual void mouseExited(const MouseEventUnrecPtr e);
-        virtual void mousePressed(const MouseEventUnrecPtr e);
-        virtual void mouseReleased(const MouseEventUnrecPtr e);
+    /*! \}                                                                 */
+   
+    void handleUpdate(UpdateEventDetails* const details);
 
-        virtual void mouseMoved(const MouseEventUnrecPtr e);
-        virtual void mouseDragged(const MouseEventUnrecPtr e);
+    void handleMouseClicked(MouseEventDetails* const details);
+    void handleMouseEntered(MouseEventDetails* const details);
+    void handleMouseExited(MouseEventDetails* const details);
+    void handleMousePressed(MouseEventDetails* const details);
+    void handleMouseReleased(MouseEventDetails* const details);
 
-        virtual void mouseWheelMoved(const MouseWheelEventUnrecPtr e);
+    void handleMouseMoved(MouseEventDetails* const details);
+    void handleMouseDragged(MouseEventDetails* const details);
 
-        virtual void keyPressed(const KeyEventUnrecPtr e);
-        virtual void keyReleased(const KeyEventUnrecPtr e);
-        virtual void keyTyped(const KeyEventUnrecPtr e);
+    void handleMouseWheelMoved(MouseWheelEventDetails* const details);
 
-        virtual void windowOpened(const WindowEventUnrecPtr e);
-        virtual void windowClosing(const WindowEventUnrecPtr e);
-        virtual void windowClosed(const WindowEventUnrecPtr e);
-        virtual void windowIconified(const WindowEventUnrecPtr e);
-        virtual void windowDeiconified(const WindowEventUnrecPtr e);
-        virtual void windowActivated(const WindowEventUnrecPtr e);
-        virtual void windowDeactivated(const WindowEventUnrecPtr e);
-        virtual void windowEntered(const WindowEventUnrecPtr e);
-        virtual void windowExited(const WindowEventUnrecPtr e);
-      protected :
-        ProjectRefPtr _Project;
-    };
+    void handleKeyPressed(KeyEventDetails* const details);
+    void handleKeyReleased(KeyEventDetails* const details);
+    void handleKeyTyped(KeyEventDetails* const details);
 
-    friend class ProjectUpdateListener;
-
-    ProjectUpdateListener _ProjectUpdateListener;
+    void handleWindowOpened(WindowEventDetails* const details);
+    void handleWindowClosing(WindowEventDetails* const details);
+    void handleWindowClosed(WindowEventDetails* const details);
+    void handleWindowIconified(WindowEventDetails* const details);
+    void handleWindowDeiconified(WindowEventDetails* const details);
+    void handleWindowActivated(WindowEventDetails* const details);
+    void handleWindowDeactivated(WindowEventDetails* const details);
+    void handleWindowEntered(WindowEventDetails* const details);
+    void handleWindowExited(WindowEventDetails* const details);
+    boost::signals2::connection _UpdateConnection,
+                                _MouseClickedConnection,
+                                _MouseEnteredConnection,
+                                _MouseExitedConnection,
+                                _MousePressedConnection,
+                                _MouseReleasedConnection,
+                                _MouseMovedConnection,
+                                _MouseDraggedConnection,
+                                _MouseWheelMovedConnection,
+                                _KeyPressedConnection,
+                                _KeyReleasedConnection,
+                                _KeyTypedConnection,
+                                _WindowOpenedConnection,
+                                _WindowClosingConnection,
+                                _WindowClosedConnection,
+                                _WindowIconifiedConnection,
+                                _WindowDeiconifiedConnection,
+                                _WindowActivatedConnection,
+                                _WindowDeactivatedConnection,
+                                _WindowEnteredConnection,
+                                _WindowExitedConnection;
 
     bool _PauseActiveUpdates;
 
     SceneRefPtr _LastActiveScene;
 
-    void produceSceneChanged(const ProjectEventUnrecPtr e);
-    void produceProjectStarted(const ProjectEventUnrecPtr e);
-    void produceProjectStopping(const ProjectEventUnrecPtr e);
-    void produceProjectStopped(const ProjectEventUnrecPtr e);
-    void produceProjectReset(const ProjectEventUnrecPtr e);
+    void produceSceneChanged(void);
+    void produceProjectStarted(void);
+    void produceProjectStopping(void);
+    void produceProjectStopped(void);
+    void produceProjectReset(void);
 
     void loadScripts(void);
     bool _BlockInput;

@@ -77,27 +77,23 @@ void ParticleSystemEffect::initMethod(InitPhase ePhase)
 
 void ParticleSystemEffect::initEffect()
 {
-    theUpdateProducer = getEventProducer(dynamic_cast<FieldContainer *>(const_cast<Scene *>(getParentSceneObject()->getParentScene())));
-    theInternalParticleSystemListener = InternalParticleSystemListener(this);
-    theInternalUpdateListener = InternalUpdateListener(this);
 }
 
 void ParticleSystemEffect::inheritedBegin()
 {
-    ParticleSystemUnrecPtr ps = getTheSystem();
-    if(ps != NULL)
+    if(getTheSystem() != NULL)
     {
-        ps->assignGenerators(*getMFGenerators());
-        ps->attachUpdateProducer(theUpdateProducer);
-        ps->addParticleSystemListener(&theInternalParticleSystemListener);
-        theUpdateProducer->attachEventListener(&theInternalUpdateListener, std::string("Update"));
+        getTheSystem()->assignGenerators(*getMFGenerators());
+        getTheSystem()->attachUpdateProducer(getParentSceneObject()->getParentScene());
+        _SystemUpdatedConnection = getTheSystem()->connectSystemUpdated(boost::bind(&ParticleSystemEffect::handleSystemUpdated, this, _1));
+        _UpdateConnection = getParentSceneObject()->getParentScene()->connectUpdate(boost::bind(&ParticleSystemEffect::handleUpdate, this, _1));
     }
     else
     {
         SWARNING << "ParticleSystemEffect::inheritedBegin(): Null Particle System. Not set yet?";
     }
 
-    lifetime = Real32(0.0f);
+    _Age = 0.0;
 }
 
 bool ParticleSystemEffect::inheritedIsPlaying()
@@ -113,13 +109,15 @@ bool ParticleSystemEffect::inheritedIsPaused()
 void ParticleSystemEffect::inheritedPause()
 {
     getTheSystem()->detachUpdateProducer();
-    theUpdateProducer->detachEventListener(&theInternalUpdateListener, std::string("Update"));
+    _SystemUpdatedConnection.disconnect();
+    _UpdateConnection.disconnect();
 }
 
 void ParticleSystemEffect::inheritedUnpause()
 {
-    getTheSystem()->attachUpdateProducer(theUpdateProducer);
-    theUpdateProducer->attachEventListener(&theInternalUpdateListener, std::string("Update"));
+    getTheSystem()->attachUpdateProducer(getParentSceneObject()->getParentScene());
+    _SystemUpdatedConnection = getTheSystem()->connectSystemUpdated(boost::bind(&ParticleSystemEffect::handleSystemUpdated, this, _1));
+    _UpdateConnection = getParentSceneObject()->getParentScene()->connectUpdate(boost::bind(&ParticleSystemEffect::handleUpdate, this, _1));
 }
 
 void ParticleSystemEffect::inheritedStop()
@@ -129,10 +127,9 @@ void ParticleSystemEffect::inheritedStop()
 
 void ParticleSystemEffect::finished()
 {
-    ParticleSystemUnrecPtr ps = getTheSystem();
-    ps->detachUpdateProducer();
-    ps->removeParticleSystemListener(&theInternalParticleSystemListener);
-    theUpdateProducer->detachEventListener(&theInternalUpdateListener, std::string("Update"));
+    getTheSystem()->detachUpdateProducer();
+    _UpdateConnection.disconnect();
+    _SystemUpdatedConnection.disconnect();
     Inherited::finished();
 }
 
@@ -141,14 +138,9 @@ void ParticleSystemEffect::finished()
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-void ParticleSystemEffect::updateLifetime(Time elps)
-{
-    lifetime += elps;
-}
-
 bool ParticleSystemEffect::checkTimeoutEndCondition(void)
 {
-    return (getLifespan() >= 0.0f && lifetime > getLifespan());
+    return (getLifespan() >= 0.0f && _Age > getLifespan());
 }
 
 bool ParticleSystemEffect::checkVolumeEndCondition(void)
@@ -182,8 +174,8 @@ bool ParticleSystemEffect::checkParticleCountEndCondition(void)
 
 void ParticleSystemEffect::endSystem()
 {
-    getTheSystem()->removeParticleSystemListener(&theInternalParticleSystemListener);
-    theUpdateProducer->detachEventListener(&theInternalUpdateListener, std::string("Update"));
+    _UpdateConnection.disconnect();
+    _SystemUpdatedConnection.disconnect();
     killSystem();
 
     finished();
@@ -232,49 +224,27 @@ void ParticleSystemEffect::dump(      UInt32    ,
     SLOG << "Dump ParticleSystemEffect NI" << std::endl;
 }
 
+void ParticleSystemEffect::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    _UpdateConnection.disconnect();
+    _SystemUpdatedConnection.disconnect();
+}
+
 /*----------------------------- Internal Listener Functions ----------------------------*/
 
-//Update Listener
-
-ParticleSystemEffect::InternalUpdateListener::InternalUpdateListener(ParticleSystemEffect* parent)
+void ParticleSystemEffect::handleUpdate(UpdateEventDetails* const details)
 {
-    fx = parent;
+    _Age += details->getElapsedTime();
 }
 
-void ParticleSystemEffect::InternalUpdateListener::eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId)
+void ParticleSystemEffect::handleSystemUpdated(ParticleSystemEventDetails* const details)
 {
-    fx->updateLifetime(dynamic_pointer_cast<UpdateEvent>(EventDetails)->getElapsedTime());
-}
-
-//Particle System Listener
-
-ParticleSystemEffect::InternalParticleSystemListener::InternalParticleSystemListener(ParticleSystemEffect* parent)
-{
-    fx = parent;
-}
-
-void ParticleSystemEffect::InternalParticleSystemListener::systemUpdated(const ParticleSystemEventUnrecPtr e)
-{
-    if(fx->checkTimeoutEndCondition() || fx->checkParticleCountEndCondition() || fx->checkVolumeEndCondition())
+    if(checkTimeoutEndCondition() || checkParticleCountEndCondition() || checkVolumeEndCondition())
     {
-        fx->endSystem();
+        endSystem();
     }
-}
-
-void ParticleSystemEffect::InternalParticleSystemListener::volumeChanged(const ParticleSystemEventUnrecPtr e)
-{
-}
-
-void ParticleSystemEffect::InternalParticleSystemListener::particleKilled(const ParticleEventUnrecPtr e)
-{
-}
-
-void ParticleSystemEffect::InternalParticleSystemListener::particleStolen(const ParticleEventUnrecPtr e)
-{
-}
-
-void ParticleSystemEffect::InternalParticleSystemListener::particleGenerated(const ParticleEventUnrecPtr e)
-{
 }
 
 OSG_END_NAMESPACE

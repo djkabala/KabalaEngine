@@ -60,9 +60,9 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef CutCommandPtr RefPtr;
 
-    CutCommand(ApplicationPlayerRefPtr ApplicationPlayer,
-               SceneGraphTreeModelRefPtr SceneGraphTreeModel,
-               NodeRefPtr CutNode);
+    CutCommand(ApplicationPlayer* const ApplicationPlayer,
+               SceneGraphTreeModel* const SceneGraphTreeModel,
+               Node* const CutNode);
 
 	CutCommand(const CutCommand& source);
 
@@ -93,9 +93,9 @@ public:
 
 	virtual ~CutCommand(void);
 	
-    static CutCommandPtr create(ApplicationPlayerRefPtr ApplicationPlayer,
-                                SceneGraphTreeModelRefPtr SceneGraphTreeModel,
-                                NodeRefPtr CutNode);
+    static CutCommandPtr create(ApplicationPlayer* const ApplicationPlayer,
+                                SceneGraphTreeModel* const SceneGraphTreeModel,
+                                Node* const CutNode);
 };
 
 OSG_END_NAMESPACE

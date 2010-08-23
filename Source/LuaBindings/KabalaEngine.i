@@ -7,8 +7,7 @@
 #include <OpenSG/OSGConfig.h>
 #include <OpenSG/OSGActivity.h>
 #include <OpenSG/OSGLuaActivity.h>
-#include <OpenSG/OSGGenericEvent.h>
-#include <OpenSG/OSGEventProducerType.h>
+#include <OpenSG/OSGGenericEventDetails.h>
 #include <boost/bind.hpp>
 #include <OpenSG/OSGPathType.h>
 #include "KELuaBindings.h"
@@ -57,6 +56,7 @@ namespace OSG {
     class BehaviorType;
     class LuaBehaviorType;
     class Behavior;
+    class BehaviorRefPtr;
     class LuaBehavior;
     
     
@@ -94,14 +94,14 @@ namespace OSG {
         void blockInput(bool block);
         bool isInputBlocked(void) const;
         
-        UInt32 registerNewGenericMethod(const std::string& MethodName,const std::string& MethodDescriptionText = std::string(""));
+        UInt32 registerNewGenericEvent(const std::string& EventName,const std::string& EventDescriptionText = std::string(""));
 
-        bool unregisterNewGenericMethod(UInt32 Id);
-        bool unregisterNewGenericMethod(const std::string& MethodName);
+        bool unregisterNewGenericEvent(UInt32 Id);
+        bool unregisterNewGenericEvent(const std::string& EventName);
 
-        bool isGenericMethodDefined(UInt32 Id) const;
-        bool isGenericMethodDefined(const std::string& MethodName) const;
-        UInt32 getGenericMethodId(const std::string& MethodName) const;
+        bool isGenericEventDefined(UInt32 Id) const;
+        bool isGenericEventDefined(const std::string& EventName) const;
+        UInt32 getGenericEventId(const std::string& EventName) const;
     
       protected:
         Scene(void);
@@ -110,7 +110,7 @@ namespace OSG {
     };
     %extend Scene
     {
-        void produceGenericEvent(UInt32 GenericEventId, GenericEventRefPtr e)
+        void produceGenericEvent(UInt32 GenericEventId, GenericEventDetailsRefPtr e)
         {
             self->produceGenericEvent(GenericEventId, e);
         }
@@ -173,8 +173,6 @@ namespace OSG {
     
         //void attachNames(void);
     
-        WindowEventProducerRefPtr getEventProducer(void) const;
-    
         void pauseActiveUpdates(void);
         void unpauseActiveUpdates(void);
         void togglePauseActiveUpdates(void);
@@ -217,8 +215,6 @@ namespace OSG {
     
         Effect* getEffect(std::string name);
         SceneRefPtr getParentScene () const;
-
-        OSG::BehaviorUnrecPtr getBehaviors (UInt32 index);
     
       protected:
         SceneObject(void);
@@ -229,7 +225,11 @@ namespace OSG {
     {
         SceneRefPtr getParentScene () const
         {
-            return SceneRefPtr(this->getParentScene());
+            return self->getParentScene();
+        }
+        BehaviorRefPtr getBehaviors (UInt32 index)
+        {
+            return self->getBehaviors(index);
         }
     }
 
@@ -330,9 +330,6 @@ namespace OSG {
     {
         public:
             BehaviorType * getBehaviorType(void);
-            SceneObjectRefPtr getParentSceneObject(void) const;
-            void produceEvent(std::string name, GenericEventRefPtr eventData = NULL);
-            void produceEvent(UInt32 id, GenericEventRefPtr eventData = NULL);
             bool isInitialized();
         protected:
             Behavior(void);
@@ -343,9 +340,19 @@ namespace OSG {
     {
         SceneObjectRefPtr getParentSceneObject () const
         {
-            return SceneObjectRefPtr(this->getParentSceneObject());
+            return self->getParentSceneObject();
         }
-    }
+        
+         void produceEvent(std::string name, GenericEventDetailsRefPtr eventData = NULL)
+        {
+            self->produceEvent(name, eventData);
+        }
+        
+        void produceEvent(UInt32 id, GenericEventDetailsRefPtr eventData = NULL)
+        {
+            self->produceEvent(id, eventData);
+        } 
+    };
     
     /******************************************************/
     /*                  BehaviorRefPtr                    */
@@ -416,12 +423,17 @@ namespace OSG {
         void unpause(void);
         void stop(void);
         
-        const SceneObject* getParentSceneObject(void) const;
-        
       protected:
         Effect(void);
         Effect(const Effect &source);
         virtual ~Effect(void); 
+    };
+    %extend Effect
+    {
+        SceneObjectRefPtr getParentSceneObject () const
+        {
+            return self->getParentSceneObject();
+        }
     };
     
     /******************************************************/
@@ -466,7 +478,7 @@ namespace OSG {
         //}
         static void openEditor(FieldContainerRefPtr FCToEdit)
         {
-            OSG::dynamic_pointer_cast<OSG::ApplicationPlayer>(OSG::MainApplication::the()->getPlayerMode())->openEditor(FCToEdit);
+            dynamic_cast<OSG::ApplicationPlayer*>(OSG::MainApplication::the()->getPlayerMode())->openEditor(FCToEdit);
         }
     };
     

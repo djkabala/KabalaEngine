@@ -68,7 +68,7 @@
 
 #include <boost/bind.hpp>
 
-#include <OpenSG/OSGEvent.h>
+#include <OpenSG/OSGEventDetails.h>
 
 #ifdef WIN32 // turn off 'this' : used in base member initializer list warning
 #pragma warning(disable:4355)
@@ -232,13 +232,13 @@ void ProjectBase::classDescInserter(TypeObject &oType)
 
     oType.addInitialDesc(pDesc);
 
-    pDesc = new MFUnrecScenePtr::Description(
-        MFUnrecScenePtr::getClassType(),
+    pDesc = new MFUnrecChildScenePtr::Description(
+        MFUnrecChildScenePtr::getClassType(),
         "Scenes",
         "",
         ScenesFieldId, ScenesFieldMask,
         false,
-        (Field::MFDefaultFlags | Field::FStdAccess),
+        (Field::MFDefaultFlags | Field::FNullCheckAccess),
         static_cast<FieldEditMethodSig>(&Project::editHandleScenes),
         static_cast<FieldGetMethodSig >(&Project::getHandleScenes));
 
@@ -435,17 +435,6 @@ void ProjectBase::classDescInserter(TypeObject &oType)
         static_cast<FieldGetMethodSig >(&Project::getHandleLuaModulesDirectory));
 
     oType.addInitialDesc(pDesc);
-    pDesc = new SFEventProducerPtr::Description(
-        SFEventProducerPtr::getClassType(),
-        "EventProducer",
-        "Event Producer",
-        EventProducerFieldId,EventProducerFieldMask,
-        false,
-        (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&Project::editHandleEventProducer),
-        static_cast     <FieldGetMethodSig >(&Project::getHandleEventProducer));
-
-    oType.addInitialDesc(pDesc);
 }
 
 
@@ -508,12 +497,15 @@ ProjectBase::TypeObject ProjectBase::_type(
     "\t<Field\n"
     "\t\tname=\"Scenes\"\n"
     "\t\ttype=\"Scene\"\n"
-    "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"multi\"\n"
+    "        category=\"childpointer\"\n"
+    "        childParentType=\"FieldContainer\"\n"
     "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "        ptrFieldAccess = \"nullCheck\"\n"
+    "        linkParentField=\"ParentContainer\"\n"
     "\t\tfieldHeader=\"Project/Scene/KESceneFields.h\"\n"
     "\t\ttypeHeader=\"Project/Scene/KEScene.h\"\n"
-    "\t\taccess=\"public\"\n"
     "\t>\n"
     "\t</Field>\n"
     "\t<Field\n"
@@ -669,274 +661,362 @@ ProjectBase::TypeObject ProjectBase::_type(
     "        defaultValue=\"./lua\"\n"
     "\t>\n"
     "\t</Field>\n"
-    "\t<ProducedMethod\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"ProjectStarted\"\n"
-    "\t\ttype=\"ProjectEvent\"\n"
+    "\t\tdetailsType=\"ProjectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/KEProjectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEProjectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"ProjectStopping\"\n"
-    "\t\ttype=\"ProjectEvent\"\n"
+    "\t\tdetailsType=\"ProjectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/KEProjectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEProjectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"ProjectStopped\"\n"
-    "\t\ttype=\"ProjectEvent\"\n"
+    "\t\tdetailsType=\"ProjectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/KEProjectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEProjectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"ProjectReset\"\n"
-    "\t\ttype=\"ProjectEvent\"\n"
+    "\t\tdetailsType=\"ProjectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/KEProjectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEProjectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"SceneChanged\"\n"
-    "\t\ttype=\"ProjectEvent\"\n"
+    "\t\tdetailsType=\"ProjectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/KEProjectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEProjectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowOpened\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowClosing\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowClosed\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowIconified\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowDeiconified\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowActivated\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowDeactivated\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowEntered\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowExited\"\n"
-    "\t\ttype=\"WindowEvent\"\n"
+    "\t\tdetailsType=\"WindowEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"MouseClicked\"\n"
-    "\t\ttype=\"MouseEvent\"\n"
+    "\t\tdetailsType=\"MouseEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"MouseEntered\"\n"
-    "\t\ttype=\"MouseEvent\"\n"
+    "\t\tdetailsType=\"MouseEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"MouseExited\"\n"
-    "\t\ttype=\"MouseEvent\"\n"
+    "\t\tdetailsType=\"MouseEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"MousePressed\"\n"
-    "\t\ttype=\"MouseEvent\"\n"
+    "\t\tdetailsType=\"MouseEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"MouseReleased\"\n"
-    "\t\ttype=\"MouseEvent\"\n"
+    "\t\tdetailsType=\"MouseEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"MouseMoved\"\n"
-    "\t\ttype=\"MouseEvent\"\n"
+    "\t\tdetailsType=\"MouseEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"MouseDragged\"\n"
-    "\t\ttype=\"MouseEvent\"\n"
+    "\t\tdetailsType=\"MouseEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"MouseWheelMoved\"\n"
-    "\t\ttype=\"MouseWheelEvent\"\n"
+    "\t\tdetailsType=\"MouseWheelEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"KeyPressed\"\n"
-    "\t\ttype=\"KeyEvent\"\n"
+    "\t\tdetailsType=\"KeyEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"KeyReleased\"\n"
-    "\t\ttype=\"KeyEvent\"\n"
+    "\t\tdetailsType=\"KeyEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"KeyTyped\"\n"
-    "\t\ttype=\"KeyEvent\"\n"
+    "\t\tdetailsType=\"KeyEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"Update\"\n"
-    "\t\ttype=\"UpdateEvent\"\n"
+    "\t\tdetailsType=\"UpdateEventDetails\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
+    "\t</ProducedEvent>\n"
     "</FieldContainer>\n",
     "The Project.\n"
     );
 
-//! Project Produced Methods
+//! Project Produced Events
 
-MethodDescription *ProjectBase::_methodDesc[] =
+EventDescription *ProjectBase::_eventDesc[] =
 {
-    new MethodDescription("ProjectStarted", 
-                    "",
-                     ProjectStartedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("ProjectStopping", 
-                    "",
-                     ProjectStoppingMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("ProjectStopped", 
-                    "",
-                     ProjectStoppedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("ProjectReset", 
-                    "",
-                     ProjectResetMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("SceneChanged", 
-                    "",
-                     SceneChangedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowOpened", 
-                    "",
-                     WindowOpenedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowClosing", 
-                    "",
-                     WindowClosingMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowClosed", 
-                    "",
-                     WindowClosedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowIconified", 
-                    "",
-                     WindowIconifiedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowDeiconified", 
-                    "",
-                     WindowDeiconifiedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowActivated", 
-                    "",
-                     WindowActivatedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowDeactivated", 
-                    "",
-                     WindowDeactivatedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowEntered", 
-                    "",
-                     WindowEnteredMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("WindowExited", 
-                    "",
-                     WindowExitedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("MouseClicked", 
-                    "",
-                     MouseClickedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("MouseEntered", 
-                    "",
-                     MouseEnteredMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("MouseExited", 
-                    "",
-                     MouseExitedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("MousePressed", 
-                    "",
-                     MousePressedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("MouseReleased", 
-                    "",
-                     MouseReleasedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("MouseMoved", 
-                    "",
-                     MouseMovedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("MouseDragged", 
-                    "",
-                     MouseDraggedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("MouseWheelMoved", 
-                    "",
-                     MouseWheelMovedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("KeyPressed", 
-                    "",
-                     KeyPressedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("KeyReleased", 
-                    "",
-                     KeyReleasedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("KeyTyped", 
-                    "",
-                     KeyTypedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("Update", 
-                    "",
-                     UpdateMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod())
+    new EventDescription("ProjectStarted", 
+                          "",
+                          ProjectStartedEventId, 
+                          FieldTraits<ProjectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleProjectStartedSignal)),
+
+    new EventDescription("ProjectStopping", 
+                          "",
+                          ProjectStoppingEventId, 
+                          FieldTraits<ProjectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleProjectStoppingSignal)),
+
+    new EventDescription("ProjectStopped", 
+                          "",
+                          ProjectStoppedEventId, 
+                          FieldTraits<ProjectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleProjectStoppedSignal)),
+
+    new EventDescription("ProjectReset", 
+                          "",
+                          ProjectResetEventId, 
+                          FieldTraits<ProjectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleProjectResetSignal)),
+
+    new EventDescription("SceneChanged", 
+                          "",
+                          SceneChangedEventId, 
+                          FieldTraits<ProjectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleSceneChangedSignal)),
+
+    new EventDescription("WindowOpened", 
+                          "",
+                          WindowOpenedEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowOpenedSignal)),
+
+    new EventDescription("WindowClosing", 
+                          "",
+                          WindowClosingEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowClosingSignal)),
+
+    new EventDescription("WindowClosed", 
+                          "",
+                          WindowClosedEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowClosedSignal)),
+
+    new EventDescription("WindowIconified", 
+                          "",
+                          WindowIconifiedEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowIconifiedSignal)),
+
+    new EventDescription("WindowDeiconified", 
+                          "",
+                          WindowDeiconifiedEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowDeiconifiedSignal)),
+
+    new EventDescription("WindowActivated", 
+                          "",
+                          WindowActivatedEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowActivatedSignal)),
+
+    new EventDescription("WindowDeactivated", 
+                          "",
+                          WindowDeactivatedEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowDeactivatedSignal)),
+
+    new EventDescription("WindowEntered", 
+                          "",
+                          WindowEnteredEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowEnteredSignal)),
+
+    new EventDescription("WindowExited", 
+                          "",
+                          WindowExitedEventId, 
+                          FieldTraits<WindowEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleWindowExitedSignal)),
+
+    new EventDescription("MouseClicked", 
+                          "",
+                          MouseClickedEventId, 
+                          FieldTraits<MouseEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleMouseClickedSignal)),
+
+    new EventDescription("MouseEntered", 
+                          "",
+                          MouseEnteredEventId, 
+                          FieldTraits<MouseEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleMouseEnteredSignal)),
+
+    new EventDescription("MouseExited", 
+                          "",
+                          MouseExitedEventId, 
+                          FieldTraits<MouseEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleMouseExitedSignal)),
+
+    new EventDescription("MousePressed", 
+                          "",
+                          MousePressedEventId, 
+                          FieldTraits<MouseEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleMousePressedSignal)),
+
+    new EventDescription("MouseReleased", 
+                          "",
+                          MouseReleasedEventId, 
+                          FieldTraits<MouseEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleMouseReleasedSignal)),
+
+    new EventDescription("MouseMoved", 
+                          "",
+                          MouseMovedEventId, 
+                          FieldTraits<MouseEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleMouseMovedSignal)),
+
+    new EventDescription("MouseDragged", 
+                          "",
+                          MouseDraggedEventId, 
+                          FieldTraits<MouseEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleMouseDraggedSignal)),
+
+    new EventDescription("MouseWheelMoved", 
+                          "",
+                          MouseWheelMovedEventId, 
+                          FieldTraits<MouseWheelEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleMouseWheelMovedSignal)),
+
+    new EventDescription("KeyPressed", 
+                          "",
+                          KeyPressedEventId, 
+                          FieldTraits<KeyEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleKeyPressedSignal)),
+
+    new EventDescription("KeyReleased", 
+                          "",
+                          KeyReleasedEventId, 
+                          FieldTraits<KeyEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleKeyReleasedSignal)),
+
+    new EventDescription("KeyTyped", 
+                          "",
+                          KeyTypedEventId, 
+                          FieldTraits<KeyEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleKeyTypedSignal)),
+
+    new EventDescription("Update", 
+                          "",
+                          UpdateEventId, 
+                          FieldTraits<UpdateEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleUpdateSignal))
+
 };
 
 EventProducerType ProjectBase::_producerType(
@@ -944,8 +1024,8 @@ EventProducerType ProjectBase::_producerType(
     "EventProducerType",
     "",
     InitEventProducerFunctor(),
-    _methodDesc,
-    sizeof(_methodDesc));
+    _eventDesc,
+    sizeof(_eventDesc));
 
 /*------------------------------ get -----------------------------------*/
 
@@ -1012,15 +1092,8 @@ const SFBoostPath *ProjectBase::getSFFilePath(void) const
 
 
 //! Get the Project::_mfScenes field.
-const MFUnrecScenePtr *ProjectBase::getMFScenes(void) const
+const MFUnrecChildScenePtr *ProjectBase::getMFScenes(void) const
 {
-    return &_mfScenes;
-}
-
-MFUnrecScenePtr     *ProjectBase::editMFScenes         (void)
-{
-    editMField(ScenesFieldMask, _mfScenes);
-
     return &_mfScenes;
 }
 
@@ -1236,16 +1309,19 @@ const SFBoostPath *ProjectBase::getSFLuaModulesDirectory(void) const
 
 void ProjectBase::pushToScenes(Scene * const value)
 {
+    if(value == NULL)
+        return;
+
     editMField(ScenesFieldMask, _mfScenes);
 
     _mfScenes.push_back(value);
 }
 
-void ProjectBase::assignScenes   (const MFUnrecScenePtr   &value)
+void ProjectBase::assignScenes   (const MFUnrecChildScenePtr &value)
 {
-    MFUnrecScenePtr  ::const_iterator elemIt  =
+    MFUnrecChildScenePtr::const_iterator elemIt  =
         value.begin();
-    MFUnrecScenePtr  ::const_iterator elemEnd =
+    MFUnrecChildScenePtr::const_iterator elemEnd =
         value.end  ();
 
     static_cast<Project *>(this)->clearScenes();
@@ -1255,6 +1331,51 @@ void ProjectBase::assignScenes   (const MFUnrecScenePtr   &value)
         this->pushToScenes(*elemIt);
 
         ++elemIt;
+    }
+}
+
+void ProjectBase::insertIntoScenes(UInt32               uiIndex,
+                                                   Scene * const value   )
+{
+    if(value == NULL)
+        return;
+
+    editMField(ScenesFieldMask, _mfScenes);
+
+    MFUnrecChildScenePtr::iterator fieldIt = _mfScenes.begin_nc();
+
+    fieldIt += uiIndex;
+
+    _mfScenes.insert(fieldIt, value);
+}
+
+void ProjectBase::replaceInScenes(UInt32               uiIndex,
+                                                       Scene * const value   )
+{
+    if(value == NULL)
+        return;
+
+    if(uiIndex >= _mfScenes.size())
+        return;
+
+    editMField(ScenesFieldMask, _mfScenes);
+
+    _mfScenes.replace(uiIndex, value);
+}
+
+void ProjectBase::replaceObjInScenes(Scene * const pOldElem,
+                                                        Scene * const pNewElem)
+{
+    if(pNewElem == NULL)
+        return;
+
+    Int32  elemIdx = _mfScenes.findIndex(pOldElem);
+
+    if(elemIdx != -1)
+    {
+        editMField(ScenesFieldMask, _mfScenes);
+
+        _mfScenes.replace(elemIdx, pNewElem);
     }
 }
 
@@ -1905,10 +2026,6 @@ UInt32 ProjectBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfLuaModulesDirectory.getBinSize();
     }
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        returnValue += _sfEventProducer.getBinSize();
-    }
 
     return returnValue;
 }
@@ -1998,10 +2115,6 @@ void ProjectBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfLuaModulesDirectory.copyToBin(pMem);
     }
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        _sfEventProducer.copyToBin(pMem);
-    }
 }
 
 void ProjectBase::copyFromBin(BinaryDataHandler &pMem,
@@ -2088,10 +2201,6 @@ void ProjectBase::copyFromBin(BinaryDataHandler &pMem,
     if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
     {
         _sfLuaModulesDirectory.copyFromBin(pMem);
-    }
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        _sfEventProducer.copyFromBin(pMem);
     }
 }
 
@@ -2213,16 +2322,725 @@ FieldContainerTransitPtr ProjectBase::shallowCopy(void) const
 
 
 
+/*------------------------- event producers ----------------------------------*/
+void ProjectBase::produceEvent(UInt32 eventId, EventDetails* const e)
+{
+    switch(eventId)
+    {
+    case ProjectStartedEventId:
+        OSG_ASSERT(dynamic_cast<ProjectStartedEventDetailsType* const>(e));
+
+        _ProjectStartedEvent.set_combiner(ConsumableEventCombiner(e));
+        _ProjectStartedEvent(dynamic_cast<ProjectStartedEventDetailsType* const>(e), ProjectStartedEventId);
+        break;
+    case ProjectStoppingEventId:
+        OSG_ASSERT(dynamic_cast<ProjectStoppingEventDetailsType* const>(e));
+
+        _ProjectStoppingEvent.set_combiner(ConsumableEventCombiner(e));
+        _ProjectStoppingEvent(dynamic_cast<ProjectStoppingEventDetailsType* const>(e), ProjectStoppingEventId);
+        break;
+    case ProjectStoppedEventId:
+        OSG_ASSERT(dynamic_cast<ProjectStoppedEventDetailsType* const>(e));
+
+        _ProjectStoppedEvent.set_combiner(ConsumableEventCombiner(e));
+        _ProjectStoppedEvent(dynamic_cast<ProjectStoppedEventDetailsType* const>(e), ProjectStoppedEventId);
+        break;
+    case ProjectResetEventId:
+        OSG_ASSERT(dynamic_cast<ProjectResetEventDetailsType* const>(e));
+
+        _ProjectResetEvent.set_combiner(ConsumableEventCombiner(e));
+        _ProjectResetEvent(dynamic_cast<ProjectResetEventDetailsType* const>(e), ProjectResetEventId);
+        break;
+    case SceneChangedEventId:
+        OSG_ASSERT(dynamic_cast<SceneChangedEventDetailsType* const>(e));
+
+        _SceneChangedEvent.set_combiner(ConsumableEventCombiner(e));
+        _SceneChangedEvent(dynamic_cast<SceneChangedEventDetailsType* const>(e), SceneChangedEventId);
+        break;
+    case WindowOpenedEventId:
+        OSG_ASSERT(dynamic_cast<WindowOpenedEventDetailsType* const>(e));
+
+        _WindowOpenedEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowOpenedEvent(dynamic_cast<WindowOpenedEventDetailsType* const>(e), WindowOpenedEventId);
+        break;
+    case WindowClosingEventId:
+        OSG_ASSERT(dynamic_cast<WindowClosingEventDetailsType* const>(e));
+
+        _WindowClosingEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowClosingEvent(dynamic_cast<WindowClosingEventDetailsType* const>(e), WindowClosingEventId);
+        break;
+    case WindowClosedEventId:
+        OSG_ASSERT(dynamic_cast<WindowClosedEventDetailsType* const>(e));
+
+        _WindowClosedEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowClosedEvent(dynamic_cast<WindowClosedEventDetailsType* const>(e), WindowClosedEventId);
+        break;
+    case WindowIconifiedEventId:
+        OSG_ASSERT(dynamic_cast<WindowIconifiedEventDetailsType* const>(e));
+
+        _WindowIconifiedEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowIconifiedEvent(dynamic_cast<WindowIconifiedEventDetailsType* const>(e), WindowIconifiedEventId);
+        break;
+    case WindowDeiconifiedEventId:
+        OSG_ASSERT(dynamic_cast<WindowDeiconifiedEventDetailsType* const>(e));
+
+        _WindowDeiconifiedEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowDeiconifiedEvent(dynamic_cast<WindowDeiconifiedEventDetailsType* const>(e), WindowDeiconifiedEventId);
+        break;
+    case WindowActivatedEventId:
+        OSG_ASSERT(dynamic_cast<WindowActivatedEventDetailsType* const>(e));
+
+        _WindowActivatedEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowActivatedEvent(dynamic_cast<WindowActivatedEventDetailsType* const>(e), WindowActivatedEventId);
+        break;
+    case WindowDeactivatedEventId:
+        OSG_ASSERT(dynamic_cast<WindowDeactivatedEventDetailsType* const>(e));
+
+        _WindowDeactivatedEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowDeactivatedEvent(dynamic_cast<WindowDeactivatedEventDetailsType* const>(e), WindowDeactivatedEventId);
+        break;
+    case WindowEnteredEventId:
+        OSG_ASSERT(dynamic_cast<WindowEnteredEventDetailsType* const>(e));
+
+        _WindowEnteredEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowEnteredEvent(dynamic_cast<WindowEnteredEventDetailsType* const>(e), WindowEnteredEventId);
+        break;
+    case WindowExitedEventId:
+        OSG_ASSERT(dynamic_cast<WindowExitedEventDetailsType* const>(e));
+
+        _WindowExitedEvent.set_combiner(ConsumableEventCombiner(e));
+        _WindowExitedEvent(dynamic_cast<WindowExitedEventDetailsType* const>(e), WindowExitedEventId);
+        break;
+    case MouseClickedEventId:
+        OSG_ASSERT(dynamic_cast<MouseClickedEventDetailsType* const>(e));
+
+        _MouseClickedEvent.set_combiner(ConsumableEventCombiner(e));
+        _MouseClickedEvent(dynamic_cast<MouseClickedEventDetailsType* const>(e), MouseClickedEventId);
+        break;
+    case MouseEnteredEventId:
+        OSG_ASSERT(dynamic_cast<MouseEnteredEventDetailsType* const>(e));
+
+        _MouseEnteredEvent.set_combiner(ConsumableEventCombiner(e));
+        _MouseEnteredEvent(dynamic_cast<MouseEnteredEventDetailsType* const>(e), MouseEnteredEventId);
+        break;
+    case MouseExitedEventId:
+        OSG_ASSERT(dynamic_cast<MouseExitedEventDetailsType* const>(e));
+
+        _MouseExitedEvent.set_combiner(ConsumableEventCombiner(e));
+        _MouseExitedEvent(dynamic_cast<MouseExitedEventDetailsType* const>(e), MouseExitedEventId);
+        break;
+    case MousePressedEventId:
+        OSG_ASSERT(dynamic_cast<MousePressedEventDetailsType* const>(e));
+
+        _MousePressedEvent.set_combiner(ConsumableEventCombiner(e));
+        _MousePressedEvent(dynamic_cast<MousePressedEventDetailsType* const>(e), MousePressedEventId);
+        break;
+    case MouseReleasedEventId:
+        OSG_ASSERT(dynamic_cast<MouseReleasedEventDetailsType* const>(e));
+
+        _MouseReleasedEvent.set_combiner(ConsumableEventCombiner(e));
+        _MouseReleasedEvent(dynamic_cast<MouseReleasedEventDetailsType* const>(e), MouseReleasedEventId);
+        break;
+    case MouseMovedEventId:
+        OSG_ASSERT(dynamic_cast<MouseMovedEventDetailsType* const>(e));
+
+        _MouseMovedEvent.set_combiner(ConsumableEventCombiner(e));
+        _MouseMovedEvent(dynamic_cast<MouseMovedEventDetailsType* const>(e), MouseMovedEventId);
+        break;
+    case MouseDraggedEventId:
+        OSG_ASSERT(dynamic_cast<MouseDraggedEventDetailsType* const>(e));
+
+        _MouseDraggedEvent.set_combiner(ConsumableEventCombiner(e));
+        _MouseDraggedEvent(dynamic_cast<MouseDraggedEventDetailsType* const>(e), MouseDraggedEventId);
+        break;
+    case MouseWheelMovedEventId:
+        OSG_ASSERT(dynamic_cast<MouseWheelMovedEventDetailsType* const>(e));
+
+        _MouseWheelMovedEvent.set_combiner(ConsumableEventCombiner(e));
+        _MouseWheelMovedEvent(dynamic_cast<MouseWheelMovedEventDetailsType* const>(e), MouseWheelMovedEventId);
+        break;
+    case KeyPressedEventId:
+        OSG_ASSERT(dynamic_cast<KeyPressedEventDetailsType* const>(e));
+
+        _KeyPressedEvent.set_combiner(ConsumableEventCombiner(e));
+        _KeyPressedEvent(dynamic_cast<KeyPressedEventDetailsType* const>(e), KeyPressedEventId);
+        break;
+    case KeyReleasedEventId:
+        OSG_ASSERT(dynamic_cast<KeyReleasedEventDetailsType* const>(e));
+
+        _KeyReleasedEvent.set_combiner(ConsumableEventCombiner(e));
+        _KeyReleasedEvent(dynamic_cast<KeyReleasedEventDetailsType* const>(e), KeyReleasedEventId);
+        break;
+    case KeyTypedEventId:
+        OSG_ASSERT(dynamic_cast<KeyTypedEventDetailsType* const>(e));
+
+        _KeyTypedEvent.set_combiner(ConsumableEventCombiner(e));
+        _KeyTypedEvent(dynamic_cast<KeyTypedEventDetailsType* const>(e), KeyTypedEventId);
+        break;
+    case UpdateEventId:
+        OSG_ASSERT(dynamic_cast<UpdateEventDetailsType* const>(e));
+
+        _UpdateEvent.set_combiner(ConsumableEventCombiner(e));
+        _UpdateEvent(dynamic_cast<UpdateEventDetailsType* const>(e), UpdateEventId);
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        break;
+    }
+}
+
+boost::signals2::connection ProjectBase::connectEvent(UInt32 eventId, 
+                                                             const BaseEventType::slot_type &listener, 
+                                                             boost::signals2::connect_position at)
+{
+    switch(eventId)
+    {
+    case ProjectStartedEventId:
+        return _ProjectStartedEvent.connect(listener, at);
+        break;
+    case ProjectStoppingEventId:
+        return _ProjectStoppingEvent.connect(listener, at);
+        break;
+    case ProjectStoppedEventId:
+        return _ProjectStoppedEvent.connect(listener, at);
+        break;
+    case ProjectResetEventId:
+        return _ProjectResetEvent.connect(listener, at);
+        break;
+    case SceneChangedEventId:
+        return _SceneChangedEvent.connect(listener, at);
+        break;
+    case WindowOpenedEventId:
+        return _WindowOpenedEvent.connect(listener, at);
+        break;
+    case WindowClosingEventId:
+        return _WindowClosingEvent.connect(listener, at);
+        break;
+    case WindowClosedEventId:
+        return _WindowClosedEvent.connect(listener, at);
+        break;
+    case WindowIconifiedEventId:
+        return _WindowIconifiedEvent.connect(listener, at);
+        break;
+    case WindowDeiconifiedEventId:
+        return _WindowDeiconifiedEvent.connect(listener, at);
+        break;
+    case WindowActivatedEventId:
+        return _WindowActivatedEvent.connect(listener, at);
+        break;
+    case WindowDeactivatedEventId:
+        return _WindowDeactivatedEvent.connect(listener, at);
+        break;
+    case WindowEnteredEventId:
+        return _WindowEnteredEvent.connect(listener, at);
+        break;
+    case WindowExitedEventId:
+        return _WindowExitedEvent.connect(listener, at);
+        break;
+    case MouseClickedEventId:
+        return _MouseClickedEvent.connect(listener, at);
+        break;
+    case MouseEnteredEventId:
+        return _MouseEnteredEvent.connect(listener, at);
+        break;
+    case MouseExitedEventId:
+        return _MouseExitedEvent.connect(listener, at);
+        break;
+    case MousePressedEventId:
+        return _MousePressedEvent.connect(listener, at);
+        break;
+    case MouseReleasedEventId:
+        return _MouseReleasedEvent.connect(listener, at);
+        break;
+    case MouseMovedEventId:
+        return _MouseMovedEvent.connect(listener, at);
+        break;
+    case MouseDraggedEventId:
+        return _MouseDraggedEvent.connect(listener, at);
+        break;
+    case MouseWheelMovedEventId:
+        return _MouseWheelMovedEvent.connect(listener, at);
+        break;
+    case KeyPressedEventId:
+        return _KeyPressedEvent.connect(listener, at);
+        break;
+    case KeyReleasedEventId:
+        return _KeyReleasedEvent.connect(listener, at);
+        break;
+    case KeyTypedEventId:
+        return _KeyTypedEvent.connect(listener, at);
+        break;
+    case UpdateEventId:
+        return _UpdateEvent.connect(listener, at);
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        return boost::signals2::connection();
+        break;
+    }
+
+    return boost::signals2::connection();
+}
+
+boost::signals2::connection  ProjectBase::connectEvent(UInt32 eventId, 
+                                                              const BaseEventType::group_type &group,
+                                                              const BaseEventType::slot_type &listener,
+                                                              boost::signals2::connect_position at)
+{
+    switch(eventId)
+    {
+    case ProjectStartedEventId:
+        return _ProjectStartedEvent.connect(group, listener, at);
+        break;
+    case ProjectStoppingEventId:
+        return _ProjectStoppingEvent.connect(group, listener, at);
+        break;
+    case ProjectStoppedEventId:
+        return _ProjectStoppedEvent.connect(group, listener, at);
+        break;
+    case ProjectResetEventId:
+        return _ProjectResetEvent.connect(group, listener, at);
+        break;
+    case SceneChangedEventId:
+        return _SceneChangedEvent.connect(group, listener, at);
+        break;
+    case WindowOpenedEventId:
+        return _WindowOpenedEvent.connect(group, listener, at);
+        break;
+    case WindowClosingEventId:
+        return _WindowClosingEvent.connect(group, listener, at);
+        break;
+    case WindowClosedEventId:
+        return _WindowClosedEvent.connect(group, listener, at);
+        break;
+    case WindowIconifiedEventId:
+        return _WindowIconifiedEvent.connect(group, listener, at);
+        break;
+    case WindowDeiconifiedEventId:
+        return _WindowDeiconifiedEvent.connect(group, listener, at);
+        break;
+    case WindowActivatedEventId:
+        return _WindowActivatedEvent.connect(group, listener, at);
+        break;
+    case WindowDeactivatedEventId:
+        return _WindowDeactivatedEvent.connect(group, listener, at);
+        break;
+    case WindowEnteredEventId:
+        return _WindowEnteredEvent.connect(group, listener, at);
+        break;
+    case WindowExitedEventId:
+        return _WindowExitedEvent.connect(group, listener, at);
+        break;
+    case MouseClickedEventId:
+        return _MouseClickedEvent.connect(group, listener, at);
+        break;
+    case MouseEnteredEventId:
+        return _MouseEnteredEvent.connect(group, listener, at);
+        break;
+    case MouseExitedEventId:
+        return _MouseExitedEvent.connect(group, listener, at);
+        break;
+    case MousePressedEventId:
+        return _MousePressedEvent.connect(group, listener, at);
+        break;
+    case MouseReleasedEventId:
+        return _MouseReleasedEvent.connect(group, listener, at);
+        break;
+    case MouseMovedEventId:
+        return _MouseMovedEvent.connect(group, listener, at);
+        break;
+    case MouseDraggedEventId:
+        return _MouseDraggedEvent.connect(group, listener, at);
+        break;
+    case MouseWheelMovedEventId:
+        return _MouseWheelMovedEvent.connect(group, listener, at);
+        break;
+    case KeyPressedEventId:
+        return _KeyPressedEvent.connect(group, listener, at);
+        break;
+    case KeyReleasedEventId:
+        return _KeyReleasedEvent.connect(group, listener, at);
+        break;
+    case KeyTypedEventId:
+        return _KeyTypedEvent.connect(group, listener, at);
+        break;
+    case UpdateEventId:
+        return _UpdateEvent.connect(group, listener, at);
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        return boost::signals2::connection();
+        break;
+    }
+
+    return boost::signals2::connection();
+}
+    
+void  ProjectBase::disconnectEvent(UInt32 eventId, const BaseEventType::group_type &group)
+{
+    switch(eventId)
+    {
+    case ProjectStartedEventId:
+        _ProjectStartedEvent.disconnect(group);
+        break;
+    case ProjectStoppingEventId:
+        _ProjectStoppingEvent.disconnect(group);
+        break;
+    case ProjectStoppedEventId:
+        _ProjectStoppedEvent.disconnect(group);
+        break;
+    case ProjectResetEventId:
+        _ProjectResetEvent.disconnect(group);
+        break;
+    case SceneChangedEventId:
+        _SceneChangedEvent.disconnect(group);
+        break;
+    case WindowOpenedEventId:
+        _WindowOpenedEvent.disconnect(group);
+        break;
+    case WindowClosingEventId:
+        _WindowClosingEvent.disconnect(group);
+        break;
+    case WindowClosedEventId:
+        _WindowClosedEvent.disconnect(group);
+        break;
+    case WindowIconifiedEventId:
+        _WindowIconifiedEvent.disconnect(group);
+        break;
+    case WindowDeiconifiedEventId:
+        _WindowDeiconifiedEvent.disconnect(group);
+        break;
+    case WindowActivatedEventId:
+        _WindowActivatedEvent.disconnect(group);
+        break;
+    case WindowDeactivatedEventId:
+        _WindowDeactivatedEvent.disconnect(group);
+        break;
+    case WindowEnteredEventId:
+        _WindowEnteredEvent.disconnect(group);
+        break;
+    case WindowExitedEventId:
+        _WindowExitedEvent.disconnect(group);
+        break;
+    case MouseClickedEventId:
+        _MouseClickedEvent.disconnect(group);
+        break;
+    case MouseEnteredEventId:
+        _MouseEnteredEvent.disconnect(group);
+        break;
+    case MouseExitedEventId:
+        _MouseExitedEvent.disconnect(group);
+        break;
+    case MousePressedEventId:
+        _MousePressedEvent.disconnect(group);
+        break;
+    case MouseReleasedEventId:
+        _MouseReleasedEvent.disconnect(group);
+        break;
+    case MouseMovedEventId:
+        _MouseMovedEvent.disconnect(group);
+        break;
+    case MouseDraggedEventId:
+        _MouseDraggedEvent.disconnect(group);
+        break;
+    case MouseWheelMovedEventId:
+        _MouseWheelMovedEvent.disconnect(group);
+        break;
+    case KeyPressedEventId:
+        _KeyPressedEvent.disconnect(group);
+        break;
+    case KeyReleasedEventId:
+        _KeyReleasedEvent.disconnect(group);
+        break;
+    case KeyTypedEventId:
+        _KeyTypedEvent.disconnect(group);
+        break;
+    case UpdateEventId:
+        _UpdateEvent.disconnect(group);
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        break;
+    }
+}
+
+void  ProjectBase::disconnectAllSlotsEvent(UInt32 eventId)
+{
+    switch(eventId)
+    {
+    case ProjectStartedEventId:
+        _ProjectStartedEvent.disconnect_all_slots();
+        break;
+    case ProjectStoppingEventId:
+        _ProjectStoppingEvent.disconnect_all_slots();
+        break;
+    case ProjectStoppedEventId:
+        _ProjectStoppedEvent.disconnect_all_slots();
+        break;
+    case ProjectResetEventId:
+        _ProjectResetEvent.disconnect_all_slots();
+        break;
+    case SceneChangedEventId:
+        _SceneChangedEvent.disconnect_all_slots();
+        break;
+    case WindowOpenedEventId:
+        _WindowOpenedEvent.disconnect_all_slots();
+        break;
+    case WindowClosingEventId:
+        _WindowClosingEvent.disconnect_all_slots();
+        break;
+    case WindowClosedEventId:
+        _WindowClosedEvent.disconnect_all_slots();
+        break;
+    case WindowIconifiedEventId:
+        _WindowIconifiedEvent.disconnect_all_slots();
+        break;
+    case WindowDeiconifiedEventId:
+        _WindowDeiconifiedEvent.disconnect_all_slots();
+        break;
+    case WindowActivatedEventId:
+        _WindowActivatedEvent.disconnect_all_slots();
+        break;
+    case WindowDeactivatedEventId:
+        _WindowDeactivatedEvent.disconnect_all_slots();
+        break;
+    case WindowEnteredEventId:
+        _WindowEnteredEvent.disconnect_all_slots();
+        break;
+    case WindowExitedEventId:
+        _WindowExitedEvent.disconnect_all_slots();
+        break;
+    case MouseClickedEventId:
+        _MouseClickedEvent.disconnect_all_slots();
+        break;
+    case MouseEnteredEventId:
+        _MouseEnteredEvent.disconnect_all_slots();
+        break;
+    case MouseExitedEventId:
+        _MouseExitedEvent.disconnect_all_slots();
+        break;
+    case MousePressedEventId:
+        _MousePressedEvent.disconnect_all_slots();
+        break;
+    case MouseReleasedEventId:
+        _MouseReleasedEvent.disconnect_all_slots();
+        break;
+    case MouseMovedEventId:
+        _MouseMovedEvent.disconnect_all_slots();
+        break;
+    case MouseDraggedEventId:
+        _MouseDraggedEvent.disconnect_all_slots();
+        break;
+    case MouseWheelMovedEventId:
+        _MouseWheelMovedEvent.disconnect_all_slots();
+        break;
+    case KeyPressedEventId:
+        _KeyPressedEvent.disconnect_all_slots();
+        break;
+    case KeyReleasedEventId:
+        _KeyReleasedEvent.disconnect_all_slots();
+        break;
+    case KeyTypedEventId:
+        _KeyTypedEvent.disconnect_all_slots();
+        break;
+    case UpdateEventId:
+        _UpdateEvent.disconnect_all_slots();
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        break;
+    }
+}
+
+bool  ProjectBase::isEmptyEvent(UInt32 eventId) const
+{
+    switch(eventId)
+    {
+    case ProjectStartedEventId:
+        return _ProjectStartedEvent.empty();
+        break;
+    case ProjectStoppingEventId:
+        return _ProjectStoppingEvent.empty();
+        break;
+    case ProjectStoppedEventId:
+        return _ProjectStoppedEvent.empty();
+        break;
+    case ProjectResetEventId:
+        return _ProjectResetEvent.empty();
+        break;
+    case SceneChangedEventId:
+        return _SceneChangedEvent.empty();
+        break;
+    case WindowOpenedEventId:
+        return _WindowOpenedEvent.empty();
+        break;
+    case WindowClosingEventId:
+        return _WindowClosingEvent.empty();
+        break;
+    case WindowClosedEventId:
+        return _WindowClosedEvent.empty();
+        break;
+    case WindowIconifiedEventId:
+        return _WindowIconifiedEvent.empty();
+        break;
+    case WindowDeiconifiedEventId:
+        return _WindowDeiconifiedEvent.empty();
+        break;
+    case WindowActivatedEventId:
+        return _WindowActivatedEvent.empty();
+        break;
+    case WindowDeactivatedEventId:
+        return _WindowDeactivatedEvent.empty();
+        break;
+    case WindowEnteredEventId:
+        return _WindowEnteredEvent.empty();
+        break;
+    case WindowExitedEventId:
+        return _WindowExitedEvent.empty();
+        break;
+    case MouseClickedEventId:
+        return _MouseClickedEvent.empty();
+        break;
+    case MouseEnteredEventId:
+        return _MouseEnteredEvent.empty();
+        break;
+    case MouseExitedEventId:
+        return _MouseExitedEvent.empty();
+        break;
+    case MousePressedEventId:
+        return _MousePressedEvent.empty();
+        break;
+    case MouseReleasedEventId:
+        return _MouseReleasedEvent.empty();
+        break;
+    case MouseMovedEventId:
+        return _MouseMovedEvent.empty();
+        break;
+    case MouseDraggedEventId:
+        return _MouseDraggedEvent.empty();
+        break;
+    case MouseWheelMovedEventId:
+        return _MouseWheelMovedEvent.empty();
+        break;
+    case KeyPressedEventId:
+        return _KeyPressedEvent.empty();
+        break;
+    case KeyReleasedEventId:
+        return _KeyReleasedEvent.empty();
+        break;
+    case KeyTypedEventId:
+        return _KeyTypedEvent.empty();
+        break;
+    case UpdateEventId:
+        return _UpdateEvent.empty();
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        return true;
+        break;
+    }
+}
+
+UInt32  ProjectBase::numSlotsEvent(UInt32 eventId) const
+{
+    switch(eventId)
+    {
+    case ProjectStartedEventId:
+        return _ProjectStartedEvent.num_slots();
+        break;
+    case ProjectStoppingEventId:
+        return _ProjectStoppingEvent.num_slots();
+        break;
+    case ProjectStoppedEventId:
+        return _ProjectStoppedEvent.num_slots();
+        break;
+    case ProjectResetEventId:
+        return _ProjectResetEvent.num_slots();
+        break;
+    case SceneChangedEventId:
+        return _SceneChangedEvent.num_slots();
+        break;
+    case WindowOpenedEventId:
+        return _WindowOpenedEvent.num_slots();
+        break;
+    case WindowClosingEventId:
+        return _WindowClosingEvent.num_slots();
+        break;
+    case WindowClosedEventId:
+        return _WindowClosedEvent.num_slots();
+        break;
+    case WindowIconifiedEventId:
+        return _WindowIconifiedEvent.num_slots();
+        break;
+    case WindowDeiconifiedEventId:
+        return _WindowDeiconifiedEvent.num_slots();
+        break;
+    case WindowActivatedEventId:
+        return _WindowActivatedEvent.num_slots();
+        break;
+    case WindowDeactivatedEventId:
+        return _WindowDeactivatedEvent.num_slots();
+        break;
+    case WindowEnteredEventId:
+        return _WindowEnteredEvent.num_slots();
+        break;
+    case WindowExitedEventId:
+        return _WindowExitedEvent.num_slots();
+        break;
+    case MouseClickedEventId:
+        return _MouseClickedEvent.num_slots();
+        break;
+    case MouseEnteredEventId:
+        return _MouseEnteredEvent.num_slots();
+        break;
+    case MouseExitedEventId:
+        return _MouseExitedEvent.num_slots();
+        break;
+    case MousePressedEventId:
+        return _MousePressedEvent.num_slots();
+        break;
+    case MouseReleasedEventId:
+        return _MouseReleasedEvent.num_slots();
+        break;
+    case MouseMovedEventId:
+        return _MouseMovedEvent.num_slots();
+        break;
+    case MouseDraggedEventId:
+        return _MouseDraggedEvent.num_slots();
+        break;
+    case MouseWheelMovedEventId:
+        return _MouseWheelMovedEvent.num_slots();
+        break;
+    case KeyPressedEventId:
+        return _KeyPressedEvent.num_slots();
+        break;
+    case KeyReleasedEventId:
+        return _KeyReleasedEvent.num_slots();
+        break;
+    case KeyTypedEventId:
+        return _KeyTypedEvent.num_slots();
+        break;
+    case UpdateEventId:
+        return _UpdateEvent.num_slots();
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        return 0;
+        break;
+    }
+}
+
 
 /*------------------------- constructors ----------------------------------*/
 
 ProjectBase::ProjectBase(void) :
-    _Producer(&getProducerType()),
     Inherited(),
     _sfVersion                (),
     _sfMainWindowTitle        (),
     _sfFilePath               (),
-    _mfScenes                 (),
+    _mfScenes                 (this,
+                          ScenesFieldId,
+                          Scene::ParentProjectFieldId),
     _sfInitialScene           (NULL),
     _sfInternalActiveScene    (NULL),
     _mfBackgrounds            (),
@@ -2239,17 +3057,17 @@ ProjectBase::ProjectBase(void) :
     _mfActiveParticleSystems  (),
     _sfLuaModule              (),
     _sfLuaModulesDirectory    (BoostPath("./lua"))
-    ,_sfEventProducer(&_Producer)
 {
 }
 
 ProjectBase::ProjectBase(const ProjectBase &source) :
-    _Producer(&source.getProducerType()),
     Inherited(source),
     _sfVersion                (source._sfVersion                ),
     _sfMainWindowTitle        (source._sfMainWindowTitle        ),
     _sfFilePath               (source._sfFilePath               ),
-    _mfScenes                 (),
+    _mfScenes                 (this,
+                          ScenesFieldId,
+                          Scene::ParentProjectFieldId),
     _sfInitialScene           (NULL),
     _sfInternalActiveScene    (NULL),
     _mfBackgrounds            (),
@@ -2266,7 +3084,6 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _mfActiveParticleSystems  (),
     _sfLuaModule              (source._sfLuaModule              ),
     _sfLuaModulesDirectory    (source._sfLuaModulesDirectory    )
-    ,_sfEventProducer(&_Producer)
 {
 }
 
@@ -2277,6 +3094,44 @@ ProjectBase::~ProjectBase(void)
 {
 }
 
+/*-------------------------------------------------------------------------*/
+/* Child linking                                                           */
+
+bool ProjectBase::unlinkChild(
+    FieldContainer * const pChild,
+    UInt16           const childFieldId)
+{
+    if(childFieldId == ScenesFieldId)
+    {
+        Scene * pTypedChild =
+            dynamic_cast<Scene *>(pChild);
+
+        if(pTypedChild != NULL)
+        {
+            Int32 iChildIdx = _mfScenes.findIndex(pTypedChild);
+
+            if(iChildIdx != -1)
+            {
+                editMField(ScenesFieldMask, _mfScenes);
+
+                _mfScenes.erase(iChildIdx);
+
+                return true;
+            }
+
+            FWARNING(("ProjectBase::unlinkParent: Child <-> "
+                      "Parent link inconsistent.\n"));
+
+            return false;
+        }
+
+        return false;
+    }
+
+
+    return Inherited::unlinkChild(pChild, childFieldId);
+}
+
 void ProjectBase::onCreate(const Project *source)
 {
     Inherited::onCreate(source);
@@ -2285,9 +3140,9 @@ void ProjectBase::onCreate(const Project *source)
     {
         Project *pThis = static_cast<Project *>(this);
 
-        MFUnrecScenePtr::const_iterator ScenesIt  =
+        MFUnrecChildScenePtr::const_iterator ScenesIt  =
             source->_mfScenes.begin();
-        MFUnrecScenePtr::const_iterator ScenesEnd =
+        MFUnrecChildScenePtr::const_iterator ScenesEnd =
             source->_mfScenes.end  ();
 
         while(ScenesIt != ScenesEnd)
@@ -2504,8 +3359,8 @@ EditFieldHandlePtr ProjectBase::editHandleFilePath       (void)
 
 GetFieldHandlePtr ProjectBase::getHandleScenes          (void) const
 {
-    MFUnrecScenePtr::GetHandlePtr returnValue(
-        new  MFUnrecScenePtr::GetHandle(
+    MFUnrecChildScenePtr::GetHandlePtr returnValue(
+        new  MFUnrecChildScenePtr::GetHandle(
              &_mfScenes,
              this->getType().getFieldDesc(ScenesFieldId),
              const_cast<ProjectBase *>(this)));
@@ -2515,8 +3370,8 @@ GetFieldHandlePtr ProjectBase::getHandleScenes          (void) const
 
 EditFieldHandlePtr ProjectBase::editHandleScenes         (void)
 {
-    MFUnrecScenePtr::EditHandlePtr returnValue(
-        new  MFUnrecScenePtr::EditHandle(
+    MFUnrecChildScenePtr::EditHandlePtr returnValue(
+        new  MFUnrecChildScenePtr::EditHandle(
              &_mfScenes,
              this->getType().getFieldDesc(ScenesFieldId),
              this));
@@ -2524,6 +3379,15 @@ EditFieldHandlePtr ProjectBase::editHandleScenes         (void)
     returnValue->setAddMethod(
         boost::bind(&Project::pushToScenes,
                     static_cast<Project *>(this), _1));
+    returnValue->setInsertMethod(
+        boost::bind(&Project::insertIntoScenes,
+                    static_cast<Project *>(this), _1, _2));
+    returnValue->setReplaceMethod(
+        boost::bind(&Project::replaceInScenes,
+                    static_cast<Project *>(this), _1, _2));
+    returnValue->setReplaceObjMethod(
+        boost::bind(&Project::replaceObjInScenes,
+                    static_cast<Project *>(this), _1, _2));
     returnValue->setRemoveMethod(
         boost::bind(&Project::removeFromScenes,
                     static_cast<Project *>(this), _1));
@@ -3072,27 +3936,288 @@ EditFieldHandlePtr ProjectBase::editHandleLuaModulesDirectory(void)
 }
 
 
-GetFieldHandlePtr ProjectBase::getHandleEventProducer        (void) const
+GetEventHandlePtr ProjectBase::getHandleProjectStartedSignal(void) const
 {
-    SFEventProducerPtr::GetHandlePtr returnValue(
-        new  SFEventProducerPtr::GetHandle(
-             &_sfEventProducer,
-             this->getType().getFieldDesc(EventProducerFieldId),
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<ProjectStartedEventType>(
+             const_cast<ProjectStartedEventType *>(&_ProjectStartedEvent),
+             _producerType.getEventDescription(ProjectStartedEventId),
              const_cast<ProjectBase *>(this)));
 
     return returnValue;
 }
 
-EditFieldHandlePtr ProjectBase::editHandleEventProducer       (void)
+GetEventHandlePtr ProjectBase::getHandleProjectStoppingSignal(void) const
 {
-    SFEventProducerPtr::EditHandlePtr returnValue(
-        new  SFEventProducerPtr::EditHandle(
-             &_sfEventProducer,
-             this->getType().getFieldDesc(EventProducerFieldId),
-             this));
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<ProjectStoppingEventType>(
+             const_cast<ProjectStoppingEventType *>(&_ProjectStoppingEvent),
+             _producerType.getEventDescription(ProjectStoppingEventId),
+             const_cast<ProjectBase *>(this)));
 
+    return returnValue;
+}
 
-    editSField(EventProducerFieldMask);
+GetEventHandlePtr ProjectBase::getHandleProjectStoppedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<ProjectStoppedEventType>(
+             const_cast<ProjectStoppedEventType *>(&_ProjectStoppedEvent),
+             _producerType.getEventDescription(ProjectStoppedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleProjectResetSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<ProjectResetEventType>(
+             const_cast<ProjectResetEventType *>(&_ProjectResetEvent),
+             _producerType.getEventDescription(ProjectResetEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleSceneChangedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<SceneChangedEventType>(
+             const_cast<SceneChangedEventType *>(&_SceneChangedEvent),
+             _producerType.getEventDescription(SceneChangedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowOpenedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowOpenedEventType>(
+             const_cast<WindowOpenedEventType *>(&_WindowOpenedEvent),
+             _producerType.getEventDescription(WindowOpenedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowClosingSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowClosingEventType>(
+             const_cast<WindowClosingEventType *>(&_WindowClosingEvent),
+             _producerType.getEventDescription(WindowClosingEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowClosedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowClosedEventType>(
+             const_cast<WindowClosedEventType *>(&_WindowClosedEvent),
+             _producerType.getEventDescription(WindowClosedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowIconifiedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowIconifiedEventType>(
+             const_cast<WindowIconifiedEventType *>(&_WindowIconifiedEvent),
+             _producerType.getEventDescription(WindowIconifiedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowDeiconifiedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowDeiconifiedEventType>(
+             const_cast<WindowDeiconifiedEventType *>(&_WindowDeiconifiedEvent),
+             _producerType.getEventDescription(WindowDeiconifiedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowActivatedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowActivatedEventType>(
+             const_cast<WindowActivatedEventType *>(&_WindowActivatedEvent),
+             _producerType.getEventDescription(WindowActivatedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowDeactivatedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowDeactivatedEventType>(
+             const_cast<WindowDeactivatedEventType *>(&_WindowDeactivatedEvent),
+             _producerType.getEventDescription(WindowDeactivatedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowEnteredSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowEnteredEventType>(
+             const_cast<WindowEnteredEventType *>(&_WindowEnteredEvent),
+             _producerType.getEventDescription(WindowEnteredEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleWindowExitedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<WindowExitedEventType>(
+             const_cast<WindowExitedEventType *>(&_WindowExitedEvent),
+             _producerType.getEventDescription(WindowExitedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleMouseClickedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<MouseClickedEventType>(
+             const_cast<MouseClickedEventType *>(&_MouseClickedEvent),
+             _producerType.getEventDescription(MouseClickedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleMouseEnteredSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<MouseEnteredEventType>(
+             const_cast<MouseEnteredEventType *>(&_MouseEnteredEvent),
+             _producerType.getEventDescription(MouseEnteredEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleMouseExitedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<MouseExitedEventType>(
+             const_cast<MouseExitedEventType *>(&_MouseExitedEvent),
+             _producerType.getEventDescription(MouseExitedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleMousePressedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<MousePressedEventType>(
+             const_cast<MousePressedEventType *>(&_MousePressedEvent),
+             _producerType.getEventDescription(MousePressedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleMouseReleasedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<MouseReleasedEventType>(
+             const_cast<MouseReleasedEventType *>(&_MouseReleasedEvent),
+             _producerType.getEventDescription(MouseReleasedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleMouseMovedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<MouseMovedEventType>(
+             const_cast<MouseMovedEventType *>(&_MouseMovedEvent),
+             _producerType.getEventDescription(MouseMovedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleMouseDraggedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<MouseDraggedEventType>(
+             const_cast<MouseDraggedEventType *>(&_MouseDraggedEvent),
+             _producerType.getEventDescription(MouseDraggedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleMouseWheelMovedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<MouseWheelMovedEventType>(
+             const_cast<MouseWheelMovedEventType *>(&_MouseWheelMovedEvent),
+             _producerType.getEventDescription(MouseWheelMovedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleKeyPressedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<KeyPressedEventType>(
+             const_cast<KeyPressedEventType *>(&_KeyPressedEvent),
+             _producerType.getEventDescription(KeyPressedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleKeyReleasedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<KeyReleasedEventType>(
+             const_cast<KeyReleasedEventType *>(&_KeyReleasedEvent),
+             _producerType.getEventDescription(KeyReleasedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleKeyTypedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<KeyTypedEventType>(
+             const_cast<KeyTypedEventType *>(&_KeyTypedEvent),
+             _producerType.getEventDescription(KeyTypedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleUpdateSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<UpdateEventType>(
+             const_cast<UpdateEventType *>(&_UpdateEvent),
+             _producerType.getEventDescription(UpdateEventId),
+             const_cast<ProjectBase *>(this)));
 
     return returnValue;
 }

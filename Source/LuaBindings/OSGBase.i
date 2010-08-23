@@ -12,6 +12,7 @@
 #include "OSGColor.h"
 #include "OSGVector.h"
 #include "OSGMatrix.h"
+#include "OSGMatrixUtility.h"
 #include "OSGQuaternion.h"
 #include "OSGLine.h"
 #include "OSGPlane.h"
@@ -857,6 +858,8 @@ namespace OSG {
                                             Real32 &radians) const;
               void       getValueAsAxisDeg (VectorType &axis,
                                             Real32 &degrees) const;
+              void       getEulerAngleRad  (VectorType &euler  ) const;
+              void       getEulerAngleDeg  (VectorType &euler  ) const;
               void       getValue          (MatrixType &matrix ) const;
               void       getValuesOnly     (MatrixType &matrix ) const;
 
@@ -1319,5 +1322,92 @@ namespace OSG {
                             const UInt8 index,      Pnt3f & pnt) const;
      
     };
+
+    bool MatrixOrthogonal(Matrix &result, 
+            Real32  rLeft, 
+            Real32  rRight, 
+            Real32  rBottom, 
+            Real32  rTop, 
+            Real32  rNear, 
+            Real32  rFar        );
+
+    bool MatrixFrustum(Matrix &result, 
+            Real32     rLeft, 
+            Real32     rRight,
+            Real32     rBottom, 
+            Real32     rTop, 
+            Real32     rNear, 
+            Real32     rFar       );
+
+    bool MatrixPerspective(Matrix &result, 
+            Real32     rFovy, 
+            Real32     rAspect,
+            Real32     rNear, 
+            Real32     rFar        );
+
+    bool MatrixStereoPerspective(Matrix &projection, 
+            Matrix &projtrans, 
+            Real32     rFovy, 
+            Real32     rAspect, 
+            Real32     rNear, 
+            Real32     rFfar, 
+            Real32     rZeroparallax, 
+            Real32     rEyedistance, 
+            Real32     rWhicheye, 
+            Real32     rOverlap    );
+
+    bool MatrixLookAt(Matrix &result, 
+            Real32  fromx, 
+            Real32  fromy, 
+            Real32  fromz, 
+            Real32  atx,   
+            Real32  aty,   
+            Real32  atz, 
+            Real32  upx,   
+            Real32  upy,   
+            Real32  upz);
+
+    bool MatrixLookAt(Matrix &result, 
+            Pnt3f   from,
+            Pnt3f   at,
+            Vec3f   up);
+
+
+    bool MatrixProjection(Matrix &result, 
+            Real32  rLeft,
+            Real32  rRight, 
+            Real32  rBottom,
+            Real32  rTop,  
+            Real32  rNear,
+            Real32  rFar);
+
+    void makeViewFromUVND(Matrix &Result,
+            const Vec3f  &U,
+            const Vec3f  &V,
+            const Vec3f  &N,
+            const Vec3f  &D);
+
+    void makeViewFromUVNP(Matrix &Result,
+            const Vec3f  &U,
+            const Vec3f  &V,
+            const Vec3f  &N,
+            const Pnt3f  &P);
+
+    void getUVNDFromMat(const Matrix &Mat,
+            Vec3f  &U,
+            Vec3f  &V,
+            Vec3f  &N,
+            Vec3f  &D);
+    void getUVNPFromMat(const Matrix &Mat,
+            Vec3f  &U,
+            Vec3f  &V,
+            Vec3f  &N,
+            Pnt3f  &P);
+
+    void getPFromViewMat(Pnt3f  &P,
+            const Matrix &Mat);
+
+    void setViewMatEyePos(Matrix &Result,
+            const Pnt3f  &P);
 }
 

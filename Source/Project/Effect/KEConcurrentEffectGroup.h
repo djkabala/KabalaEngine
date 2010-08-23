@@ -40,7 +40,6 @@
 #endif
 
 #include "KEConcurrentEffectGroupBase.h"
-#include "KEEffectListener.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -80,7 +79,8 @@ class KE_KABALAENGINE_DLLMAPPING ConcurrentEffectGroup : public ConcurrentEffect
 
   protected:
     
-    void handleEffectFinished(void);
+    void handleEffectFinished(EffectEventDetails* const details);
+    std::vector<boost::signals2::connection> _EffectFinishedConnections;
     
     void initEffect        (void);
     void inheritedBegin    (void);
@@ -113,6 +113,13 @@ class KE_KABALAENGINE_DLLMAPPING ConcurrentEffectGroup : public ConcurrentEffect
     /*! \{                                                                 */
 
     static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
 
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/

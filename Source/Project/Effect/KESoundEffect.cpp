@@ -77,16 +77,15 @@ void SoundEffect::initMethod(InitPhase ePhase)
 
 void SoundEffect::initEffect()
 {
-    theInternalSoundListener = InternalSoundListener(this);
 }
 
 void SoundEffect::inheritedBegin()
 {
-    SoundUnrecPtr sound = getSound();
-    if(sound != NULL)
+    if(getSound() != NULL)
     {
-        sound->addSoundListener(&theInternalSoundListener);
-        sound->play();
+        _SoundStoppedConnection = getSound()->connectSoundStopped(boost::bind(&SoundEffect::handleSoundStopped, this, _1));
+        _SoundEndedConnection = getSound()->connectSoundEnded(boost::bind(&SoundEffect::handleSoundEnded, this, _1));
+        getSound()->play();
     }
 }
 
@@ -117,7 +116,8 @@ void SoundEffect::inheritedStop()
 
 void SoundEffect::finished()
 {
-    getSound()->removeSoundListener(&theInternalSoundListener);
+    _SoundStoppedConnection.disconnect();
+    _SoundEndedConnection.disconnect();
     Inherited::finished();
 }
 
@@ -126,31 +126,14 @@ void SoundEffect::finished()
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-SoundEffect::InternalSoundListener::InternalSoundListener(SoundEffect* parent)
+void SoundEffect::handleSoundEnded(SoundEventDetails* const details)
 {
-    fx = parent;
+    finished();
 }
 
-void SoundEffect::InternalSoundListener::soundPlayed(const SoundEventUnrecPtr e)
+void SoundEffect::handleSoundStopped(SoundEventDetails* const details)
 {
-}
-void SoundEffect::InternalSoundListener::soundPaused(const SoundEventUnrecPtr e)
-{
-}
-void SoundEffect::InternalSoundListener::soundUnpaused(const SoundEventUnrecPtr e)
-{
-}
-void SoundEffect::InternalSoundListener::soundLooped(const SoundEventUnrecPtr e)
-{
-}
-void SoundEffect::InternalSoundListener::soundEnded(const SoundEventUnrecPtr e)
-{
-    fx->finished();
-}
-
-void SoundEffect::InternalSoundListener::soundStopped(const SoundEventUnrecPtr e)
-{
-    fx->finished();
+    finished();
 }
 
 /*----------------------- constructors & destructors ----------------------*/

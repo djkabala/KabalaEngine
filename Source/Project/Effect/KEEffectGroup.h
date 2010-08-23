@@ -40,7 +40,6 @@
 #endif
 
 #include "KEEffectGroupBase.h"
-#include "KEEffectListener.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -83,32 +82,10 @@ class KE_KABALAENGINE_DLLMAPPING EffectGroup : public EffectGroupBase
 
   protected:
 
-    virtual void handleEffectFinished() = 0;
     virtual void inheritedBegin();
     virtual void finished          (void);
 
     // Variables should all be in EffectGroupBase.
-
-    class InternalEffectListener : public EffectListener
-    {
-      public:
-
-        InternalEffectListener(EffectGroup* parent);
-        InternalEffectListener(){};
-        ~InternalEffectListener(){};
-
-        void effectBegan(const EffectEventUnrecPtr e);
-        void effectStopped(const EffectEventUnrecPtr e);
-        void effectPaused(const EffectEventUnrecPtr e);
-        void effectUnpaused(const EffectEventUnrecPtr e);
-        void effectFinished(const EffectEventUnrecPtr e);
-
-      protected:
-        
-        EffectGroup* fx;
-    };
-
-    InternalEffectListener theInternalEffectListener;
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */

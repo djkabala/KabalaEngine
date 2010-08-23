@@ -52,7 +52,6 @@
 #include "KEBehaviorFactory.h"
 #include "Project/Scene/KEScene.h"
 
-#include <OpenSG/OSGMethodDescription.h>
 #include <OpenSG/OSGLog.h>
 
 #include <OpenSG/OSGFieldContainerFactory.h>

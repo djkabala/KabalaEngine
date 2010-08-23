@@ -36,7 +36,7 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-ImportModelCommand::ImportModelCommand(HierarchyPanelRefPtr HierarchyPanel,NodeUnrecPtr NodeToAddTo) : Inherited(),
+ImportModelCommand::ImportModelCommand(HierarchyPanel* const HierarchyPanel,Node* const NodeToAddTo) : Inherited(),
     _HierarchyPanel(HierarchyPanel),
     _NewNode(NULL),
     _NodeToAddTo(NodeToAddTo)

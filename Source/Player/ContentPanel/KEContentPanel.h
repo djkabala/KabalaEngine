@@ -40,21 +40,18 @@
 #endif
 
 #include "KEContentPanelBase.h"
-#include <OpenSG/OSGSplitPanel.h>
-#include <OpenSG/OSGTabPanel.h>
-#include <OpenSG/OSGTextArea.h>
-#include <OpenSG/OSGScrollPanel.h>
-#include <OpenSG/OSGBorderLayoutConstraints.h>
-#include <OpenSG/OSGLabel.h>
-#include <OpenSG/OSGPanel.h>
-#include <OpenSG/OSGSpringLayout.h>
-#include <OpenSG/OSGSpringLayoutConstraints.h>
-#include <OpenSG/OSGCardLayout.h>
+#include <OpenSG/OSGSplitPanelFields.h>
+#include <OpenSG/OSGTabPanelFields.h>
+#include <OpenSG/OSGTextAreaFields.h>
+#include <OpenSG/OSGScrollPanelFields.h>
+#include <OpenSG/OSGBorderLayoutConstraintsFields.h>
+#include <OpenSG/OSGLabelFields.h>
+#include <OpenSG/OSGPanelFields.h>
+#include <OpenSG/OSGSpringLayoutFields.h>
+#include <OpenSG/OSGSpringLayoutConstraintsFields.h>
+#include <OpenSG/OSGCardLayoutFields.h>
+#include <OpenSG/OSGActionEventDetailsFields.h>
 
-#include <OpenSG/OSGMouseListener.h>
-#include <OpenSG/OSGKeyAdapter.h>
-#include <OpenSG/OSGMouseMotionListener.h>
-#include <OpenSG/OSGMouseWheelListener.h>
 #include "Player/KEApplicationPlayerFields.h"
 
 OSG_BEGIN_NAMESPACE
@@ -102,7 +99,7 @@ class KE_KABALAENGINE_DLLMAPPING ContentPanel : public ContentPanelBase
     void saveTextFile(BoostPath);
 
     void setView(UInt32 Index);
-    void setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer);
+    void setApplicationPlayer(ApplicationPlayer* const TheApplicationPlayer);
     /*=========================  PROTECTED  ===============================*/
 
   protected:
@@ -129,6 +126,13 @@ class KE_KABALAENGINE_DLLMAPPING ContentPanel : public ContentPanelBase
     /*! \{                                                                 */
 
     static void initMethod(InitPhase ePhase);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
 
     /*! \}                                                                 */
 
@@ -158,51 +162,23 @@ class KE_KABALAENGINE_DLLMAPPING ContentPanel : public ContentPanelBase
     void createRightTabPanel(void);
     void createDefaultTabs(void);
     void updatePanel(void);
-    void actionPerformed(const ActionEventUnrecPtr e);
 
-    class CloseButtonListener:public ActionListener
-    {
-      public:
-        CloseButtonListener(ContentPanelRefPtr TheContentPanel);
-        ~CloseButtonListener(void);
+    void handleCloseButtonAction(ActionEventDetails* const details);
+    boost::signals2::connection _CloseRightButtonActionConnection,
+                                _CloseLeftButtonActionConnection;
 
-        virtual void actionPerformed(const ActionEventUnrecPtr e);
-      protected :
-        ContentPanelRefPtr _ContentPanel;
-    };
-
-    CloseButtonListener _CloseButtonListener;
-    friend class CloseButtonListener;
-
-
-    class SceneEditorPanelListener : public MouseListener, 
-    public MouseMotionListener,
-    public KeyAdapter,
-    public MouseWheelListener
-    {
-      public:
-        SceneEditorPanelListener(ContentPanelRefPtr TheContentPanel);
-        ~SceneEditorPanelListener(void);
-
-        virtual void mouseMoved(const MouseEventUnrecPtr e);
-        virtual void mouseDragged(const MouseEventUnrecPtr e);
-
-        virtual void mouseClicked(const MouseEventUnrecPtr e);
-        virtual void mouseEntered(const MouseEventUnrecPtr e);
-        virtual void mouseExited(const MouseEventUnrecPtr e);
-        virtual void mousePressed(const MouseEventUnrecPtr e);
-        virtual void mouseReleased(const MouseEventUnrecPtr e);
-
-        virtual void mouseWheelMoved(const MouseWheelEventUnrecPtr e);
-
-        virtual void keyTyped(const KeyEventUnrecPtr e);
-
-      protected :
-        ContentPanelRefPtr _ContentPanel;
-    };
-
-    SceneEditorPanelListener _SceneEditorPanelListener;
-    friend class SceneEditorPanelListener;
+    void handleSceneEditorPanelMouseDragged(MouseEventDetails* const details);
+    void handleSceneEditorPanelMouseClicked(MouseEventDetails* const details);
+    void handleSceneEditorPanelMousePressed(MouseEventDetails* const details);
+    void handleSceneEditorPanelMouseReleased(MouseEventDetails* const details);
+    void handleSceneEditorPanelMouseWheelMoved(MouseWheelEventDetails* const details);
+    void handleSceneEditorPanelKeyTyped(KeyEventDetails* const details);
+    boost::signals2::connection _SceneEditorPanelMouseDraggedConnection,
+                                _SceneEditorPanelMouseClickedConnection,
+                                _SceneEditorPanelMousePressedConnection,
+                                _SceneEditorPanelMouseReleasedConnection,
+                                _SceneEditorPanelMouseWheelMovedConnection,
+                                _SceneEditorPanelKeyTypedConnection;
     /*==========================  PRIVATE  ================================*/
 
   private:

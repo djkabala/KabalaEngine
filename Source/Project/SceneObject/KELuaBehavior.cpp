@@ -87,7 +87,7 @@ LuaBehaviorType* const LuaBehavior::getLuaBehaviorType(void) const
     return dynamic_cast<LuaBehaviorType* const>(theBehaviorType);
 }
 
-void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
+void LuaBehavior::initialize(SceneObject* const rootSceneObject)
 {
     LuaBehaviorType* const theLuaType = getLuaBehaviorType();
 	theLuaType->registerWithScene(rootSceneObject->getParentScene());
@@ -98,98 +98,112 @@ void LuaBehavior::initialize(SceneObjectUnrecPtr rootSceneObject)
         {
             UInt64 uId(0);//rootSceneObject->getParentScene()->getId();
             //uId <<= 32;
-            const MethodDescription* desc = getEventProducer(rootSceneObject->getParentScene())->getProducerType().findMethodDescription(theLuaType->getEventLinks()[i]);
+            const EventDescription* desc = rootSceneObject->getParentScene()->getProducerType().findEventDescription(theLuaType->getEventLinks()[i]);
             if(desc != NULL)
             {
-                uId |=  desc->getMethodId();
+                uId |=  desc->getEventId();
                 _FunctionsMap[uId] = std::vector<std::string>();
 
                 std::string NestedTableFunction(theLuaType->getLuaFunctionNames()[i]);
-                std::string::size_type subStrStart(0),
-                                       subStrEnd(0);
-                //Loop through all nested tables
-                while(subStrEnd != std::string::npos)
+                if(NestedTableFunction.empty())
                 {
-                    subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
-                    _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd-subStrStart));
-
-                    if(subStrEnd != std::string::npos) ++subStrEnd; 
-                    subStrStart = subStrEnd;
+                    SWARNING << "The lua function bound to the " << desc->getName() << " produced event of " << theLuaType->getName() << " is empty." << theLuaType->getEventLinks()[i] << endLog;
                 }
-                //BUG: For some reason using the split algorithm is causing a
-                //misaligned stack error on OS X builds of the engine.  This
-                //does not occur for the use of split in dependent libraries.
-                //So for now the split is done by hand.
-                //boost::algorithm::split( , NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
+                else
+                {
+                    std::string::size_type subStrStart(0),
+                                           subStrEnd(0);
+                    //Loop through all nested tables
+                    while(subStrEnd != std::string::npos)
+                    {
+                        subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
+                        _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd-subStrStart));
+
+                        if(subStrEnd != std::string::npos) ++subStrEnd; 
+                        subStrStart = subStrEnd;
+                    }
+                    //BUG: For some reason using the split algorithm is causing a
+                    //misaligned stack error on OS X builds of the engine.  This
+                    //does not occur for the use of split in dependent libraries.
+                    //So for now the split is done by hand.
+                    //boost::algorithm::split( , NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
+                }
             }
             else
             {
                 SWARNING << "LuaBehavior could not find event " << theLuaType->getEventLinks()[i] << endLog;
             }
 
-            attachListeners(rootSceneObject->getParentScene()->editEventProducer());
+            attachHandlers(rootSceneObject->getParentScene());
         }
         else
         {
             FieldContainerRefPtr fc = getFieldContainer(theLuaType->getSourceContainers()[i]);
-            EventProducerPtr eventProducer = getEventProducer(fc);
 
             UInt64 uId = fc->getId();
 
             uId <<= 32;
-            const MethodDescription* desc = getEventProducer(fc)->getProducerType().findMethodDescription(theLuaType->getEventLinks()[i]);
+            const EventDescription* desc = fc->getProducerType().findEventDescription(theLuaType->getEventLinks()[i]);
             if(desc != NULL)
             {
-                uId |=  desc->getMethodId();
-                _FunctionsMap[uId] = std::vector<std::string>();
-
                 std::string NestedTableFunction(theLuaType->getLuaFunctionNames()[i]);
-                std::string::size_type subStrStart(0),
-                                       subStrEnd(0);
-                //Loop through all nested tables
-                while(subStrEnd != std::string::npos)
+                if(NestedTableFunction.empty())
                 {
-                    subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
-                    _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd-subStrStart));
-
-                    if(subStrEnd != std::string::npos) ++subStrEnd; 
-                    subStrStart = subStrEnd;
+                    SWARNING << "The lua function bound to the " << desc->getName() << " produced event of " << fc->getProducerType().getName() << " is empty." << theLuaType->getEventLinks()[i] << endLog;
                 }
-                //BUG: For some reason using the split algorithm is causing a
-                //misaligned stack error on OS X builds of the engine.  This
-                //does not occur for the use of split in dependent libraries.
-                //So for now the split is done by hand.
-                //boost::algorithm::split( _FunctionsMap[uId], NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
+                else
+                {
+                    uId |=  desc->getEventId();
+                    _FunctionsMap[uId] = std::vector<std::string>();
+
+                    std::string::size_type subStrStart(0),
+                                           subStrEnd(0);
+                    //Loop through all nested tables
+                    while(subStrEnd != std::string::npos)
+                    {
+                        subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
+                        _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd-subStrStart));
+
+                        if(subStrEnd != std::string::npos) ++subStrEnd; 
+                        subStrStart = subStrEnd;
+                    }
+                    //BUG: For some reason using the split algorithm is causing a
+                    //misaligned stack error on OS X builds of the engine.  This
+                    //does not occur for the use of split in dependent libraries.
+                    //So for now the split is done by hand.
+                    //boost::algorithm::split( _FunctionsMap[uId], NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
+                }
             }
             else
             {
                 SWARNING << "LuaBehavior could not find event " << theLuaType->getEventLinks()[i] << endLog;
             }
             
-            eventProducer->attachEventListener(&_DepFieldContainerListener,eventProducer->getProducedEventId(theLuaType->getEventLinks()[i]));
+            UInt32 EventID(fc->getProducerType().getProducedEventId(theLuaType->getEventLinks()[i]));
+            fc->connectEvent(EventID, boost::bind(&LuaBehavior::handleDepFieldContainerEvent, this, _1, EventID));
         }
     }
 }
 
-void LuaBehavior::depBehaviorProducedMethod(EventUnrecPtr e, UInt32 producedEventID)
+void LuaBehavior::depBehaviorProducedEvent(EventDetails* const e, UInt32 producedEventID)
 {
     UInt64 uId(producedEventID);
 
     callLuaFunctionForEvent(uId,e,producedEventID);
 }
 
-void LuaBehavior::depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 producedEventID)
+void LuaBehavior::depFieldContainerProducedEvent(EventDetails* const details, UInt32 producedEventID)
 {
-    UInt64 uId(e->getSource()->getId());
+    UInt64 uId(details->getSource()->getId());
     uId <<= 32;
     uId |= producedEventID;
 
-    callLuaFunctionForEvent(uId,e,producedEventID);
+    callLuaFunctionForEvent(uId,details,producedEventID);
 }
 
 void LuaBehavior::callLuaFunctionForEvent(UInt64 MapId,
-                                          EventUnrecPtr e,
-                                          UInt32 ProducedMethodID)
+                                          EventDetails* const details,
+                                          UInt32 ProducedEventID)
 {
     //Get the Lua state
     lua_State *LuaState(LuaManager::the()->getLuaState());
@@ -244,11 +258,11 @@ void LuaBehavior::callLuaFunctionForEvent(UInt64 MapId,
     }
 
     //Push on the arguments
-    push_FieldContainer_on_lua(LuaState, e);   //Argument 1: the EventUnrecPtr
+    push_FieldContainer_on_lua(LuaState, details);   //Argument 1: the Event
 
     push_Behavior_on_lua(LuaState, this);   //Argument 2: the The Behavior it came from
 
-    lua_pushnumber(LuaState,ProducedMethodID);             //Argument 3: the ProducedEvent ID
+    lua_pushnumber(LuaState,ProducedEventID);             //Argument 3: the ProducedEvent ID
 
     //Execute the Function
     //

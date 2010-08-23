@@ -40,8 +40,7 @@
 #endif
 
 #include "KESoundEffectBase.h"
-#include <OpenSG/OSGSoundListener.h>
-#include <OpenSG/OSGEventProducer.h>
+#include <OpenSG/OSGSoundEventDetailsFields.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -121,26 +120,10 @@ class KE_KABALAENGINE_DLLMAPPING SoundEffect : public SoundEffectBase
     friend class FieldContainer;
     friend class SoundEffectBase;
 
-    class InternalSoundListener : public SoundListener
-    {
-      public:
-
-        InternalSoundListener(SoundEffect* parent);
-        InternalSoundListener(){};
-        ~InternalSoundListener(){};
-
-        void soundPlayed(const SoundEventUnrecPtr e);
-        void soundStopped(const SoundEventUnrecPtr e);
-        void soundPaused(const SoundEventUnrecPtr e);
-        void soundUnpaused(const SoundEventUnrecPtr e);
-        void soundLooped(const SoundEventUnrecPtr e);
-        void soundEnded(const SoundEventUnrecPtr e);
-      protected:
-        
-        SoundEffect* fx;
-    };
-
-    InternalSoundListener theInternalSoundListener;
+    void handleSoundStopped(SoundEventDetails* const details);
+    void handleSoundEnded(SoundEventDetails* const details);
+    boost::signals2::connection _SoundStoppedConnection,
+                                _SoundEndedConnection;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const SoundEffect &source);

@@ -82,12 +82,17 @@ void SceneObject::initMethod(InitPhase ePhase)
     }
 }
 
-Scene* SceneObject::getParentScene () const
+/***************************************************************************\
+ *                           Instance methods                              *
+\***************************************************************************/
+
+
+Scene* SceneObject::getParentScene (void) const
 {
 	return dynamic_cast<Scene*>(_sfParentScene.getValue());
 }
 
-void SceneObject::checkBehaviorInitialization()
+void SceneObject::checkBehaviorInitialization(void)
 {
 	for(UInt32 i = 0;_mfBehaviors.size() > i; i++)
 	{
@@ -97,10 +102,6 @@ void SceneObject::checkBehaviorInitialization()
 		}
 	}
 }
-
-/***************************************************************************\
- *                           Instance methods                              *
-\***************************************************************************/
 
 Effect* SceneObject::getEffect(std::string name)
 {
@@ -120,17 +121,17 @@ Effect* SceneObject::getEffect(std::string name)
     }
 }
 
-void SceneObject::InitializeAll()
+void SceneObject::InitializeAll(void)
 {
 	SLOG << "Initializing All Behaviors"  << std::endl;
 
 	for(UInt32 i = 0; i < getMFBehaviors()->size(); i++)
 	{
-		getBehaviors(i)->addedToSceneObject(SceneObjectUnrecPtr(this));
+		getBehaviors(i)->addedToSceneObject(this);
 	}
 }
 
-void SceneObject::InitializeBehaviors()
+void SceneObject::InitializeBehaviors(void)
 {
 	SLOG << "Initializing all uninitialized behaviors"  << std::endl;
 
@@ -138,7 +139,7 @@ void SceneObject::InitializeBehaviors()
 	{
 		if(!getBehaviors(i)->isInitialized())
 		{
-			getBehaviors(i)->addedToSceneObject(SceneObjectUnrecPtr(this));
+			getBehaviors(i)->addedToSceneObject(this);
 		}
 	}
 }

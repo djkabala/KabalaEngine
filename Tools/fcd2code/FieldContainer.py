@@ -11,7 +11,7 @@ class FieldContainer(FCDElement):
         super(FieldContainer, self).__init__();
         self.m_log    = logging.getLogger("FieldContainer");
         self.m_fields = [];
-        self.m_producedMethods = [];
+        self.m_producedEvents = [];
         self.m_usedTypeInclude  = {};
         self.m_usedFieldInclude = {};
         self.initFCDDict();
@@ -47,6 +47,7 @@ class FieldContainer(FCDElement):
         self.setFCD("parentFields",               "none",   True);
         self.setFCD("docGroupBase",               "",       True);
         self.setFCD("realparent",                 "",       True);
+        self.setFCD("supportUnregisteredCreate",  "false",  True);
         self.setFCD("authors",                "",       True);
     #
     # Access fields
@@ -57,16 +58,13 @@ class FieldContainer(FCDElement):
         self.m_fields.append(field);
         return idx;
     
-    def addProducedMethod(self, prodMethod):
-        idx = len(self.m_producedMethods);
-        prodMethod.setFieldContainer(self);
-        self.m_producedMethods.append(prodMethod);
+    def addProducedEvent(self, prodEvent):
+        idx = len(self.m_producedEvents);
+        prodEvent.setFieldContainer(self);
+        self.m_producedEvents.append(prodEvent);
         return idx;
     #
     # Common tests
-    
-    def isParentSystemComponent(self):
-        return self["isParentSystemComponent"];
     
     def isSystemComponent(self):
         return self["isSystemComponent"];
@@ -75,13 +73,16 @@ class FieldContainer(FCDElement):
         return self["isDecoratable"];
 
     def isRootProducer(self):
-        return self.hasProducedMethods() and (not self.hasParentProducer());
+        return self.hasProducedEvents() and (not self.hasParentProducer());
 
     def hasParentProducer(self):
         return len(self["parentProducer"]) != 0;
     
-    def hasProducedMethods(self):
-        return len(self.m_producedMethods) > 0;
+    def hasProducedEvents(self):
+        return len(self.m_producedEvents) > 0;
+        
+    def supportUnregisteredCreate(self):
+        return self["supportUnregisteredCreate"];
 
     def hasAuthors(self):
         return len(self["authors"]) != 0;
@@ -144,6 +145,11 @@ class FieldContainer(FCDElement):
         else:
             self["parentProducer"] = "";
             self["hasParentProducer"] = False;
+        
+        if  self.getFCD("supportUnregisteredCreate") == "true":
+            self["supportUnregisteredCreate"] = True;
+        else:
+            self["supportUnregisteredCreate"] = False;
 
         if self.getFCD("authors") != "":
             self["hasAuthors"] = True;
@@ -307,32 +313,44 @@ class FieldContainer(FCDElement):
                 if not field.isPtrField():
                     self["hasValueMField"] = True;
 
-        self["ProducedMethods"]  = [];
+        self["ProducedEvents"]  = [];
 
-        self["hasProducedMethods"] = False
+        self["hasProducedEvents"] = False
 
-        for i, producedMethod in enumerate(self.m_producedMethods):
-            producedMethod.finalize();
+        for i, producedEvent in enumerate(self.m_producedEvents):
+            producedEvent.finalize();
 
-            self["hasProducedMethods"] = True
+            self["hasProducedEvents"] = True
+            
+            # only use type includes once
+            if self.m_usedTypeInclude.has_key(producedEvent["TypeInclude"]):
+                producedEvent["needTypeInclude"] = False;
+            else:
+                self.m_usedTypeInclude[producedEvent["TypeInclude"]] = True;
+
+            # only use field includes once
+            if self.m_usedFieldInclude.has_key(producedEvent["FieldInclude"]):
+                producedEvent["needFieldInclude"] = False;
+            else:
+                self.m_usedFieldInclude[producedEvent["FieldInclude"]] = True;
 
             if i == 0:
-                producedMethod["prevProducedMethod"]    = None;
-                producedMethod["isFirstProducedMethod"] = True;
+                producedEvent["prevProducedEvent"]    = None;
+                producedEvent["isFirstProducedEvent"] = True;
             else:
-                producedMethod["prevProducedMethod"]    = self.m_producedMethods[i - 1];
-                producedMethod["isFirstProducedMethod"] = False;
+                producedEvent["prevProducedEvent"]    = self.m_producedEvents[i - 1];
+                producedEvent["isFirstProducedEvent"] = False;
             
-            if i == len(self.m_producedMethods) - 1:
-                producedMethod["Separator"]   = "";
-                producedMethod["nextProducedMethod"]   = None;
-                producedMethod["isLastProducedMethod"] = True;
+            if i == len(self.m_producedEvents) - 1:
+                producedEvent["Separator"]   = "";
+                producedEvent["nextProducedEvent"]   = None;
+                producedEvent["isLastProducedEvent"] = True;
             else:
-                producedMethod["Separator"]   = ",";
-                producedMethod["nextProducedMethod"]   = self.m_producedMethods[i + 1];
-                producedMethod["isLastProducedMethod"] = False;
+                producedEvent["Separator"]   = ",";
+                producedEvent["nextProducedEvent"]   = self.m_producedEvents[i + 1];
+                producedEvent["isLastProducedEvent"] = False;
 
-            self["ProducedMethods"].append(producedMethod);
+            self["ProducedEvents"].append(producedEvent);
 
         if self.isRootProducer():
             self["isRootProducer"] = True

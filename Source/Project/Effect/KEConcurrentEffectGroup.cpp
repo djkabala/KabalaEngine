@@ -76,7 +76,6 @@ void ConcurrentEffectGroup::initMethod(InitPhase ePhase)
 
 void ConcurrentEffectGroup::initEffect()
 {
-    theInternalEffectListener = InternalEffectListener(this);
 }
 
 void ConcurrentEffectGroup::inheritedBegin()
@@ -86,7 +85,7 @@ void ConcurrentEffectGroup::inheritedBegin()
     //for all effects, begin and attach a listener.
     for(UInt32 i(0);i < getMFEffectList()->size(); ++i)
     {
-        getEffectList(i)->addEffectListener(&theInternalEffectListener);
+        _EffectFinishedConnections.push_back(getEffectList(i)->connectEffectFinished(boost::bind(&ConcurrentEffectGroup::handleEffectFinished, this, _1)));
         getEffectList(i)->begin();
     }
 
@@ -141,14 +140,15 @@ void ConcurrentEffectGroup::inheritedStop()
 
 void ConcurrentEffectGroup::finished()
 {
-    for(UInt32 i(0);i < getMFEffectList()->size(); ++i)
+    for(UInt32 i(0);i < _EffectFinishedConnections.size(); ++i)
     {
-        getEffectList(i)->removeEffectListener(&theInternalEffectListener);
+        _EffectFinishedConnections[i].disconnect();
     }
+    _EffectFinishedConnections.clear();
     Inherited::finished();
 }
 
-void ConcurrentEffectGroup::handleEffectFinished()
+void ConcurrentEffectGroup::handleEffectFinished(EffectEventDetails* const details)
 {
     --activeEffects;
     if(activeEffects == 0)
@@ -160,6 +160,17 @@ void ConcurrentEffectGroup::handleEffectFinished()
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
+
+void ConcurrentEffectGroup::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    for(UInt32 i(0);i < _EffectFinishedConnections.size(); ++i)
+    {
+        _EffectFinishedConnections[i].disconnect();
+    }
+    _EffectFinishedConnections.clear();
+}
 
 /*----------------------- constructors & destructors ----------------------*/
 

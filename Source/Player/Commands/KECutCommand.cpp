@@ -64,9 +64,9 @@ CommandType CutCommand::_Type("CutCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-CutCommandPtr CutCommand::create(ApplicationPlayerRefPtr ApplicationPlayer,
-                                 SceneGraphTreeModelRefPtr SceneGraphTreeModel,
-                                 NodeRefPtr CutNode)
+CutCommandPtr CutCommand::create(ApplicationPlayer* const ApplicationPlayer,
+                                 SceneGraphTreeModel* const SceneGraphTreeModel,
+                                 Node* const CutNode)
 {
 	return RefPtr(new CutCommand(ApplicationPlayer,SceneGraphTreeModel, CutNode));
 }

@@ -70,10 +70,10 @@
 #include "KEEffectFields.h"
 
 //Event Producer Headers
-#include <OpenSG/OSGEventProducer.h>
-#include <OpenSG/OSGEventProducerType.h>
-#include <OpenSG/OSGMethodDescription.h>
-#include <OpenSG/OSGEventProducerPtrType.h>
+#include <OpenSG/OSGActivity.h>
+#include <OpenSG/OSGConsumableEventCombiner.h>
+
+#include "Project/Effect/KEEffectEventDetailsFields.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -92,6 +92,20 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
     typedef TypeObject::InitPhase InitPhase;
 
     OSG_GEN_INTERNALPTR(Effect);
+    
+    
+    typedef EffectEventDetails EffectBeganEventDetailsType;
+    typedef EffectEventDetails EffectPausedEventDetailsType;
+    typedef EffectEventDetails EffectUnpausedEventDetailsType;
+    typedef EffectEventDetails EffectFinishedEventDetailsType;
+    typedef EffectEventDetails EffectStoppedEventDetailsType;
+
+    typedef boost::signals2::signal<void (EventDetails* const            , UInt32)> BaseEventType;
+    typedef boost::signals2::signal<void (EffectEventDetails* const, UInt32), ConsumableEventCombiner> EffectBeganEventType;
+    typedef boost::signals2::signal<void (EffectEventDetails* const, UInt32), ConsumableEventCombiner> EffectPausedEventType;
+    typedef boost::signals2::signal<void (EffectEventDetails* const, UInt32), ConsumableEventCombiner> EffectUnpausedEventType;
+    typedef boost::signals2::signal<void (EffectEventDetails* const, UInt32), ConsumableEventCombiner> EffectFinishedEventType;
+    typedef boost::signals2::signal<void (EffectEventDetails* const, UInt32), ConsumableEventCombiner> EffectStoppedEventType;
 
     /*==========================  PUBLIC  =================================*/
 
@@ -100,28 +114,24 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
     enum
     {
         ParentSceneObjectFieldId = Inherited::NextFieldId,
-        EventProducerFieldId = ParentSceneObjectFieldId + 1,
-        NextFieldId = EventProducerFieldId + 1
+        NextFieldId = ParentSceneObjectFieldId + 1
     };
 
     static const OSG::BitVector ParentSceneObjectFieldMask =
         (TypeTraits<BitVector>::One << ParentSceneObjectFieldId);
-    static const OSG::BitVector EventProducerFieldMask =
-        (TypeTraits<BitVector>::One << EventProducerFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
     typedef SFParentFieldContainerPtr SFParentSceneObjectType;
-    typedef SFEventProducerPtr          SFEventProducerType;
 
     enum
     {
-        EffectBeganMethodId = 1,
-        EffectPausedMethodId = EffectBeganMethodId + 1,
-        EffectUnpausedMethodId = EffectPausedMethodId + 1,
-        EffectFinishedMethodId = EffectUnpausedMethodId + 1,
-        EffectStoppedMethodId = EffectFinishedMethodId + 1,
-        NextProducedMethodId = EffectStoppedMethodId + 1
+        EffectBeganEventId = 1,
+        EffectPausedEventId = EffectBeganEventId + 1,
+        EffectUnpausedEventId = EffectPausedEventId + 1,
+        EffectFinishedEventId = EffectUnpausedEventId + 1,
+        EffectStoppedEventId = EffectFinishedEventId + 1,
+        NextProducedEventId = EffectStoppedEventId + 1
     };
 
     /*---------------------------------------------------------------------*/
@@ -158,40 +168,107 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                Method Produced Get                           */
+    /*! \name                Event Produced Get                           */
     /*! \{                                                                 */
 
     virtual const EventProducerType &getProducerType(void) const; 
 
-    EventConnection          attachActivity             (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId);
-    bool                     isActivityAttached         (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId) const;
-    UInt32                   getNumActivitiesAttached   (UInt32 ProducedEventId) const;
-    ActivityRefPtr           getAttachedActivity        (UInt32 ProducedEventId,
-                                                         UInt32 ActivityIndex) const;
-    void                     detachActivity             (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId);
-    UInt32                   getNumProducedEvents       (void) const;
-    const MethodDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
-    const MethodDescription *getProducedEventDescription(UInt32 ProducedEventId) const;
-    UInt32                   getProducedEventId         (const std::string &ProducedEventName) const;
+    virtual boost::signals2::connection attachActivity(UInt32 eventId,
+                                                       Activity* TheActivity);
+                                                         
+    virtual UInt32                   getNumProducedEvents       (void                                ) const;
+    virtual const EventDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
+    virtual const EventDescription *getProducedEventDescription(UInt32 ProducedEventId              ) const;
+    virtual UInt32                   getProducedEventId         (const std::string &ProducedEventName) const;
+    
+    virtual boost::signals2::connection connectEvent(UInt32 eventId, 
+                                              const BaseEventType::slot_type &listener,
+                                              boost::signals2::connect_position at= boost::signals2::at_back);
+                                              
+    virtual boost::signals2::connection connectEvent(UInt32 eventId, 
+                                              const BaseEventType::group_type &group,
+                                              const BaseEventType::slot_type &listener,
+                                              boost::signals2::connect_position at= boost::signals2::at_back);
+    
+    virtual void   disconnectEvent        (UInt32 eventId, const BaseEventType::group_type &group);
+    virtual void   disconnectAllSlotsEvent(UInt32 eventId);
+    virtual bool   isEmptyEvent           (UInt32 eventId) const;
+    virtual UInt32 numSlotsEvent          (UInt32 eventId) const;
 
-    SFEventProducerPtr *editSFEventProducer(void);
-    EventProducerPtr   &editEventProducer  (void);
-
+    /*! \}                                                                 */
+    /*! \name                Event Access                                 */
+    /*! \{                                                                 */
+    
+    //EffectBegan
+    boost::signals2::connection connectEffectBegan    (const EffectBeganEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectEffectBegan    (const EffectBeganEventType::group_type &group,
+                                                       const EffectBeganEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectEffectBegan            (const EffectBeganEventType::group_type &group);
+    void   disconnectAllSlotsEffectBegan    (void);
+    bool   isEmptyEffectBegan               (void) const;
+    UInt32 numSlotsEffectBegan              (void) const;
+    
+    //EffectPaused
+    boost::signals2::connection connectEffectPaused   (const EffectPausedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectEffectPaused   (const EffectPausedEventType::group_type &group,
+                                                       const EffectPausedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectEffectPaused           (const EffectPausedEventType::group_type &group);
+    void   disconnectAllSlotsEffectPaused   (void);
+    bool   isEmptyEffectPaused              (void) const;
+    UInt32 numSlotsEffectPaused             (void) const;
+    
+    //EffectUnpaused
+    boost::signals2::connection connectEffectUnpaused (const EffectUnpausedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectEffectUnpaused (const EffectUnpausedEventType::group_type &group,
+                                                       const EffectUnpausedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectEffectUnpaused         (const EffectUnpausedEventType::group_type &group);
+    void   disconnectAllSlotsEffectUnpaused (void);
+    bool   isEmptyEffectUnpaused            (void) const;
+    UInt32 numSlotsEffectUnpaused           (void) const;
+    
+    //EffectFinished
+    boost::signals2::connection connectEffectFinished (const EffectFinishedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectEffectFinished (const EffectFinishedEventType::group_type &group,
+                                                       const EffectFinishedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectEffectFinished         (const EffectFinishedEventType::group_type &group);
+    void   disconnectAllSlotsEffectFinished (void);
+    bool   isEmptyEffectFinished            (void) const;
+    UInt32 numSlotsEffectFinished           (void) const;
+    
+    //EffectStopped
+    boost::signals2::connection connectEffectStopped  (const EffectStoppedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectEffectStopped  (const EffectStoppedEventType::group_type &group,
+                                                       const EffectStoppedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectEffectStopped          (const EffectStoppedEventType::group_type &group);
+    void   disconnectAllSlotsEffectStopped  (void);
+    bool   isEmptyEffectStopped             (void) const;
+    UInt32 numSlotsEffectStopped            (void) const;
+    
+    
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
   protected:
     /*---------------------------------------------------------------------*/
-    /*! \name                    Event Producer                            */
+    /*! \name                    Produced Event Signals                   */
     /*! \{                                                                 */
-    EventProducer _Producer;
-    
-    GetFieldHandlePtr  getHandleEventProducer        (void) const;
-    EditFieldHandlePtr editHandleEventProducer       (void);
 
+    //Event Event producers
+    EffectBeganEventType _EffectBeganEvent;
+    EffectPausedEventType _EffectPausedEvent;
+    EffectUnpausedEventType _EffectUnpausedEvent;
+    EffectFinishedEventType _EffectFinishedEvent;
+    EffectStoppedEventType _EffectStoppedEvent;
     /*! \}                                                                 */
 
     static TypeObject _type;
@@ -204,7 +281,6 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
     /*! \{                                                                 */
 
     SFParentFieldContainerPtr _sfParentSceneObject;
-    SFEventProducerPtr _sfEventProducer;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -246,6 +322,28 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
     GetFieldHandlePtr  getHandleParentSceneObject (void) const;
     EditFieldHandlePtr editHandleParentSceneObject(void);
 
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Event Access                     */
+    /*! \{                                                                 */
+
+    GetEventHandlePtr getHandleEffectBeganSignal(void) const;
+    GetEventHandlePtr getHandleEffectPausedSignal(void) const;
+    GetEventHandlePtr getHandleEffectUnpausedSignal(void) const;
+    GetEventHandlePtr getHandleEffectFinishedSignal(void) const;
+    GetEventHandlePtr getHandleEffectStoppedSignal(void) const;
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Event Producer Firing                    */
+    /*! \{                                                                 */
+
+    virtual void produceEvent       (UInt32 eventId, EventDetails* const e);
+    
+    void produceEffectBegan         (EffectBeganEventDetailsType* const e);
+    void produceEffectPaused        (EffectPausedEventDetailsType* const e);
+    void produceEffectUnpaused      (EffectUnpausedEventDetailsType* const e);
+    void produceEffectFinished      (EffectFinishedEventDetailsType* const e);
+    void produceEffectStopped       (EffectStoppedEventDetailsType* const e);
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
@@ -291,7 +389,7 @@ class KE_KABALAENGINE_DLLMAPPING EffectBase : public AttachmentContainer
 
   private:
     /*---------------------------------------------------------------------*/
-    static MethodDescription   *_methodDesc[];
+    static EventDescription   *_eventDesc[];
     static EventProducerType _producerType;
 
 

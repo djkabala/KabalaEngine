@@ -62,7 +62,7 @@
 
 #include <boost/bind.hpp>
 
-#include <OpenSG/OSGEvent.h>
+#include <OpenSG/OSGEventDetails.h>
 
 #ifdef WIN32 // turn off 'this' : used in base member initializer list warning
 #pragma warning(disable:4355)
@@ -137,17 +137,6 @@ void EffectBase::classDescInserter(TypeObject &oType)
         static_cast     <FieldGetMethodSig >(&Effect::invalidGetField));
 
     oType.addInitialDesc(pDesc);
-    pDesc = new SFEventProducerPtr::Description(
-        SFEventProducerPtr::getClassType(),
-        "EventProducer",
-        "Event Producer",
-        EventProducerFieldId,EventProducerFieldMask,
-        false,
-        (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&Effect::editHandleEventProducer),
-        static_cast     <FieldGetMethodSig >(&Effect::getHandleEventProducer));
-
-    oType.addInitialDesc(pDesc);
 }
 
 
@@ -191,64 +180,89 @@ EffectBase::TypeObject EffectBase::_type(
     "        passFieldMask=\"true\"\n"
     "\t>\n"
     "\t</Field>\n"
-    "    <ProducedMethod\n"
+    "    <ProducedEvent\n"
     "\t\tname=\"EffectBegan\"\n"
-    "\t\ttype=\"EffectEvent\"\n"
+    "\t\tdetailsType=\"EffectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/Effect/KEEffectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Effect/KEEffectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"EffectPaused\"\n"
-    "\t\ttype=\"EffectEvent\"\n"
+    "\t\tdetailsType=\"EffectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/Effect/KEEffectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Effect/KEEffectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"EffectUnpaused\"\n"
-    "\t\ttype=\"EffectEvent\"\n"
+    "\t\tdetailsType=\"EffectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/Effect/KEEffectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Effect/KEEffectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"EffectFinished\"\n"
-    "\t\ttype=\"EffectEvent\"\n"
+    "\t\tdetailsType=\"EffectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/Effect/KEEffectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Effect/KEEffectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
-    "\t<ProducedMethod\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"EffectStopped\"\n"
-    "\t\ttype=\"EffectEvent\"\n"
+    "\t\tdetailsType=\"EffectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/Effect/KEEffectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/Effect/KEEffectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
     "\t>\n"
-    "\t</ProducedMethod>\n"
+    "\t</ProducedEvent>\n"
     "</FieldContainer>\n",
     "The SceneObject.\n"
     );
 
-//! Effect Produced Methods
+//! Effect Produced Events
 
-MethodDescription *EffectBase::_methodDesc[] =
+EventDescription *EffectBase::_eventDesc[] =
 {
-    new MethodDescription("EffectBegan", 
-                    "",
-                     EffectBeganMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("EffectPaused", 
-                    "",
-                     EffectPausedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("EffectUnpaused", 
-                    "",
-                     EffectUnpausedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("EffectFinished", 
-                    "",
-                     EffectFinishedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod()),
-    new MethodDescription("EffectStopped", 
-                    "",
-                     EffectStoppedMethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod())
+    new EventDescription("EffectBegan", 
+                          "",
+                          EffectBeganEventId, 
+                          FieldTraits<EffectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&EffectBase::getHandleEffectBeganSignal)),
+
+    new EventDescription("EffectPaused", 
+                          "",
+                          EffectPausedEventId, 
+                          FieldTraits<EffectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&EffectBase::getHandleEffectPausedSignal)),
+
+    new EventDescription("EffectUnpaused", 
+                          "",
+                          EffectUnpausedEventId, 
+                          FieldTraits<EffectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&EffectBase::getHandleEffectUnpausedSignal)),
+
+    new EventDescription("EffectFinished", 
+                          "",
+                          EffectFinishedEventId, 
+                          FieldTraits<EffectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&EffectBase::getHandleEffectFinishedSignal)),
+
+    new EventDescription("EffectStopped", 
+                          "",
+                          EffectStoppedEventId, 
+                          FieldTraits<EffectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&EffectBase::getHandleEffectStoppedSignal))
+
 };
 
 EventProducerType EffectBase::_producerType(
@@ -256,8 +270,8 @@ EventProducerType EffectBase::_producerType(
     "EventProducerType",
     "",
     InitEventProducerFunctor(),
-    _methodDesc,
-    sizeof(_methodDesc));
+    _eventDesc,
+    sizeof(_eventDesc));
 
 /*------------------------------ get -----------------------------------*/
 
@@ -299,10 +313,6 @@ UInt32 EffectBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfParentSceneObject.getBinSize();
     }
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        returnValue += _sfEventProducer.getBinSize();
-    }
 
     return returnValue;
 }
@@ -316,10 +326,6 @@ void EffectBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfParentSceneObject.copyToBin(pMem);
     }
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        _sfEventProducer.copyToBin(pMem);
-    }
 }
 
 void EffectBase::copyFromBin(BinaryDataHandler &pMem,
@@ -331,30 +337,226 @@ void EffectBase::copyFromBin(BinaryDataHandler &pMem,
     {
         _sfParentSceneObject.copyFromBin(pMem);
     }
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        _sfEventProducer.copyFromBin(pMem);
-    }
 }
 
 
+
+/*------------------------- event producers ----------------------------------*/
+void EffectBase::produceEvent(UInt32 eventId, EventDetails* const e)
+{
+    switch(eventId)
+    {
+    case EffectBeganEventId:
+        OSG_ASSERT(dynamic_cast<EffectBeganEventDetailsType* const>(e));
+
+        _EffectBeganEvent.set_combiner(ConsumableEventCombiner(e));
+        _EffectBeganEvent(dynamic_cast<EffectBeganEventDetailsType* const>(e), EffectBeganEventId);
+        break;
+    case EffectPausedEventId:
+        OSG_ASSERT(dynamic_cast<EffectPausedEventDetailsType* const>(e));
+
+        _EffectPausedEvent.set_combiner(ConsumableEventCombiner(e));
+        _EffectPausedEvent(dynamic_cast<EffectPausedEventDetailsType* const>(e), EffectPausedEventId);
+        break;
+    case EffectUnpausedEventId:
+        OSG_ASSERT(dynamic_cast<EffectUnpausedEventDetailsType* const>(e));
+
+        _EffectUnpausedEvent.set_combiner(ConsumableEventCombiner(e));
+        _EffectUnpausedEvent(dynamic_cast<EffectUnpausedEventDetailsType* const>(e), EffectUnpausedEventId);
+        break;
+    case EffectFinishedEventId:
+        OSG_ASSERT(dynamic_cast<EffectFinishedEventDetailsType* const>(e));
+
+        _EffectFinishedEvent.set_combiner(ConsumableEventCombiner(e));
+        _EffectFinishedEvent(dynamic_cast<EffectFinishedEventDetailsType* const>(e), EffectFinishedEventId);
+        break;
+    case EffectStoppedEventId:
+        OSG_ASSERT(dynamic_cast<EffectStoppedEventDetailsType* const>(e));
+
+        _EffectStoppedEvent.set_combiner(ConsumableEventCombiner(e));
+        _EffectStoppedEvent(dynamic_cast<EffectStoppedEventDetailsType* const>(e), EffectStoppedEventId);
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        break;
+    }
+}
+
+boost::signals2::connection EffectBase::connectEvent(UInt32 eventId, 
+                                                             const BaseEventType::slot_type &listener, 
+                                                             boost::signals2::connect_position at)
+{
+    switch(eventId)
+    {
+    case EffectBeganEventId:
+        return _EffectBeganEvent.connect(listener, at);
+        break;
+    case EffectPausedEventId:
+        return _EffectPausedEvent.connect(listener, at);
+        break;
+    case EffectUnpausedEventId:
+        return _EffectUnpausedEvent.connect(listener, at);
+        break;
+    case EffectFinishedEventId:
+        return _EffectFinishedEvent.connect(listener, at);
+        break;
+    case EffectStoppedEventId:
+        return _EffectStoppedEvent.connect(listener, at);
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        return boost::signals2::connection();
+        break;
+    }
+
+    return boost::signals2::connection();
+}
+
+boost::signals2::connection  EffectBase::connectEvent(UInt32 eventId, 
+                                                              const BaseEventType::group_type &group,
+                                                              const BaseEventType::slot_type &listener,
+                                                              boost::signals2::connect_position at)
+{
+    switch(eventId)
+    {
+    case EffectBeganEventId:
+        return _EffectBeganEvent.connect(group, listener, at);
+        break;
+    case EffectPausedEventId:
+        return _EffectPausedEvent.connect(group, listener, at);
+        break;
+    case EffectUnpausedEventId:
+        return _EffectUnpausedEvent.connect(group, listener, at);
+        break;
+    case EffectFinishedEventId:
+        return _EffectFinishedEvent.connect(group, listener, at);
+        break;
+    case EffectStoppedEventId:
+        return _EffectStoppedEvent.connect(group, listener, at);
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        return boost::signals2::connection();
+        break;
+    }
+
+    return boost::signals2::connection();
+}
+    
+void  EffectBase::disconnectEvent(UInt32 eventId, const BaseEventType::group_type &group)
+{
+    switch(eventId)
+    {
+    case EffectBeganEventId:
+        _EffectBeganEvent.disconnect(group);
+        break;
+    case EffectPausedEventId:
+        _EffectPausedEvent.disconnect(group);
+        break;
+    case EffectUnpausedEventId:
+        _EffectUnpausedEvent.disconnect(group);
+        break;
+    case EffectFinishedEventId:
+        _EffectFinishedEvent.disconnect(group);
+        break;
+    case EffectStoppedEventId:
+        _EffectStoppedEvent.disconnect(group);
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        break;
+    }
+}
+
+void  EffectBase::disconnectAllSlotsEvent(UInt32 eventId)
+{
+    switch(eventId)
+    {
+    case EffectBeganEventId:
+        _EffectBeganEvent.disconnect_all_slots();
+        break;
+    case EffectPausedEventId:
+        _EffectPausedEvent.disconnect_all_slots();
+        break;
+    case EffectUnpausedEventId:
+        _EffectUnpausedEvent.disconnect_all_slots();
+        break;
+    case EffectFinishedEventId:
+        _EffectFinishedEvent.disconnect_all_slots();
+        break;
+    case EffectStoppedEventId:
+        _EffectStoppedEvent.disconnect_all_slots();
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        break;
+    }
+}
+
+bool  EffectBase::isEmptyEvent(UInt32 eventId) const
+{
+    switch(eventId)
+    {
+    case EffectBeganEventId:
+        return _EffectBeganEvent.empty();
+        break;
+    case EffectPausedEventId:
+        return _EffectPausedEvent.empty();
+        break;
+    case EffectUnpausedEventId:
+        return _EffectUnpausedEvent.empty();
+        break;
+    case EffectFinishedEventId:
+        return _EffectFinishedEvent.empty();
+        break;
+    case EffectStoppedEventId:
+        return _EffectStoppedEvent.empty();
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        return true;
+        break;
+    }
+}
+
+UInt32  EffectBase::numSlotsEvent(UInt32 eventId) const
+{
+    switch(eventId)
+    {
+    case EffectBeganEventId:
+        return _EffectBeganEvent.num_slots();
+        break;
+    case EffectPausedEventId:
+        return _EffectPausedEvent.num_slots();
+        break;
+    case EffectUnpausedEventId:
+        return _EffectUnpausedEvent.num_slots();
+        break;
+    case EffectFinishedEventId:
+        return _EffectFinishedEvent.num_slots();
+        break;
+    case EffectStoppedEventId:
+        return _EffectStoppedEvent.num_slots();
+        break;
+    default:
+        SWARNING << "No event defined with that ID";
+        return 0;
+        break;
+    }
+}
 
 
 /*------------------------- constructors ----------------------------------*/
 
 EffectBase::EffectBase(void) :
-    _Producer(&getProducerType()),
     Inherited(),
     _sfParentSceneObject      (NULL)
-    ,_sfEventProducer(&_Producer)
 {
 }
 
 EffectBase::EffectBase(const EffectBase &source) :
-    _Producer(&source.getProducerType()),
     Inherited(source),
     _sfParentSceneObject      (NULL)
-    ,_sfEventProducer(&_Producer)
 {
 }
 
@@ -452,27 +654,57 @@ EditFieldHandlePtr EffectBase::editHandleParentSceneObject(void)
 }
 
 
-GetFieldHandlePtr EffectBase::getHandleEventProducer        (void) const
+GetEventHandlePtr EffectBase::getHandleEffectBeganSignal(void) const
 {
-    SFEventProducerPtr::GetHandlePtr returnValue(
-        new  SFEventProducerPtr::GetHandle(
-             &_sfEventProducer,
-             this->getType().getFieldDesc(EventProducerFieldId),
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<EffectBeganEventType>(
+             const_cast<EffectBeganEventType *>(&_EffectBeganEvent),
+             _producerType.getEventDescription(EffectBeganEventId),
              const_cast<EffectBase *>(this)));
 
     return returnValue;
 }
 
-EditFieldHandlePtr EffectBase::editHandleEventProducer       (void)
+GetEventHandlePtr EffectBase::getHandleEffectPausedSignal(void) const
 {
-    SFEventProducerPtr::EditHandlePtr returnValue(
-        new  SFEventProducerPtr::EditHandle(
-             &_sfEventProducer,
-             this->getType().getFieldDesc(EventProducerFieldId),
-             this));
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<EffectPausedEventType>(
+             const_cast<EffectPausedEventType *>(&_EffectPausedEvent),
+             _producerType.getEventDescription(EffectPausedEventId),
+             const_cast<EffectBase *>(this)));
 
+    return returnValue;
+}
 
-    editSField(EventProducerFieldMask);
+GetEventHandlePtr EffectBase::getHandleEffectUnpausedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<EffectUnpausedEventType>(
+             const_cast<EffectUnpausedEventType *>(&_EffectUnpausedEvent),
+             _producerType.getEventDescription(EffectUnpausedEventId),
+             const_cast<EffectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr EffectBase::getHandleEffectFinishedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<EffectFinishedEventType>(
+             const_cast<EffectFinishedEventType *>(&_EffectFinishedEvent),
+             _producerType.getEventDescription(EffectFinishedEventId),
+             const_cast<EffectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr EffectBase::getHandleEffectStoppedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<EffectStoppedEventType>(
+             const_cast<EffectStoppedEventType *>(&_EffectStoppedEvent),
+             _producerType.getEventDescription(EffectStoppedEventId),
+             const_cast<EffectBase *>(this)));
 
     return returnValue;
 }

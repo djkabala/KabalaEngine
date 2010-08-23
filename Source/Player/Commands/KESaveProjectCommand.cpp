@@ -102,10 +102,10 @@ void SaveProjectCommand::execute(void)
     }
 
     //Exit the Debugger
-    bool isInDebugger(dynamic_pointer_cast<ApplicationPlayer>(MainApplication::the()->getPlayerMode())->isDebugging());
+    bool isInDebugger(dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->isDebugging());
     if(isInDebugger)
     {
-        dynamic_pointer_cast<ApplicationPlayer>(MainApplication::the()->getPlayerMode())->enableDebug(false);
+        dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->enableDebug(false);
     }
 
     //Get the extionsion of the file
@@ -114,7 +114,7 @@ void SaveProjectCommand::execute(void)
     //Reenter the Debugger
     if(isInDebugger)
     {
-        dynamic_pointer_cast<ApplicationPlayer>(MainApplication::the()->getPlayerMode())->enableDebug(true);
+        dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->enableDebug(true);
     }
 }
 

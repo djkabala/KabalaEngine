@@ -39,33 +39,4 @@
 
 OSG_BEGIN_NAMESPACE
 
-inline
-ApplicationStartScreen::StartScreenKeyListener::StartScreenKeyListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) :
-        _ApplicationStartScreen(TheApplicationStartScreen)
-{
-}
-
-inline
-ApplicationStartScreen::BuilderButtonActionListener::BuilderButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) :
-        _ApplicationStartScreen(TheApplicationStartScreen)
-{
-}
-
-inline
-ApplicationStartScreen::PlayerButtonActionListener::PlayerButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) :
-        _ApplicationStartScreen(TheApplicationStartScreen)
-{
-}
-
-inline
-ApplicationStartScreen::ExitButtonActionListener::ExitButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) :
-        _ApplicationStartScreen(TheApplicationStartScreen)
-{
-}
-
-inline 
-ApplicationStartScreen::ScreenUpdateListener::ScreenUpdateListener(ApplicationStartScreenRefPtr TheApplicationStartScreen) : _ApplicationStartScreen(TheApplicationStartScreen)
-{
-}
-
 OSG_END_NAMESPACE

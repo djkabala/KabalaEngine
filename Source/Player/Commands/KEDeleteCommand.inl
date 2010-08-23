@@ -36,9 +36,9 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-DeleteCommand::DeleteCommand(ApplicationPlayerRefPtr ApplicationPlayer,
-                             HierarchyPanelRefPtr HierarchyPanel,
-                             NodeRefPtr DeleteNode) : Inherited(),
+DeleteCommand::DeleteCommand(ApplicationPlayer* const ApplicationPlayer,
+                             HierarchyPanel* const HierarchyPanel,
+                             Node* const DeleteNode) : Inherited(),
     _ApplicationPlayer(ApplicationPlayer),
     _HierarchyPanel(HierarchyPanel),
     _DeletedNode(DeleteNode),

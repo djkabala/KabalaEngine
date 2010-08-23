@@ -89,8 +89,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
 
   protected:
 
-	  void InitializeAll();
-	  void InitializeBehaviors();
+	  void InitializeAll(void);
+	  void InitializeBehaviors(void);
 
     // Variables should all be in SceneObjectBase.
 

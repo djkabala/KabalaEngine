@@ -36,7 +36,7 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-ShowHideCommand::ShowHideCommand(NodeRefPtr SelectedNode, bool Show,bool Recursive) : Inherited(),
+ShowHideCommand::ShowHideCommand(Node* const SelectedNode, bool Show,bool Recursive) : Inherited(),
     _SelectedNode(SelectedNode),
     _Show(Show),
     _Recursive(Recursive)

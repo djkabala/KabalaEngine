@@ -49,6 +49,12 @@
 OSG_BEGIN_NAMESPACE
 
 inline
+Project* Scene::getParentProject(void) const
+{
+    return dynamic_cast<Project*>(_sfParentProject.getValue());
+}
+
+inline
 void Scene::blockInput(bool block)
 {
     _BlockInput = block;
@@ -67,197 +73,192 @@ bool Scene::isStarted(void) const
 }
 
 inline
-Scene::SceneUpdateListener::SceneUpdateListener(SceneRefPtr TheScene) : _Scene(TheScene)
+void Scene::handleUpdate(UpdateEventDetails* const details)
 {
-}
-
-inline
-void Scene::SceneUpdateListener::update(const UpdateEventUnrecPtr e)
-{
-    if(!_Scene->_BlockInput && e->getElapsedTime() < 1.0)
+    if(!_BlockInput && details->getElapsedTime() < 1.0)
     {
-        _Scene->_Producer.produceEvent(UpdateMethodId,e);
+        produceUpdate(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::mouseClicked(const MouseEventUnrecPtr e)
+void Scene::handleMouseClicked(MouseEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(MouseClickedMethodId,e);
+        produceMouseClicked(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::mouseEntered(const MouseEventUnrecPtr e)
+void Scene::handleMouseEntered(MouseEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(MouseEnteredMethodId,e);
+        produceMouseEntered(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::mouseExited(const MouseEventUnrecPtr e)
+void Scene::handleMouseExited(MouseEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(MouseExitedMethodId,e);
+        produceMouseExited(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::mousePressed(const MouseEventUnrecPtr e)
+void Scene::handleMousePressed(MouseEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(MousePressedMethodId,e);
+        produceMousePressed(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::mouseReleased(const MouseEventUnrecPtr e)
+void Scene::handleMouseReleased(MouseEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(MouseReleasedMethodId,e);
+        produceMouseReleased(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::mouseMoved(const MouseEventUnrecPtr e)
+void Scene::handleMouseMoved(MouseEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(MouseMovedMethodId,e);
+        produceMouseMoved(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::mouseDragged(const MouseEventUnrecPtr e)
+void Scene::handleMouseDragged(MouseEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(MouseDraggedMethodId,e);
+        produceMouseDragged(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::mouseWheelMoved(const MouseWheelEventUnrecPtr e)
+void Scene::handleMouseWheelMoved(MouseWheelEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(MouseWheelMovedMethodId,e);
+        produceMouseWheelMoved(details);
     }
 }
 
 
 inline
-void Scene::SceneUpdateListener::keyPressed(const KeyEventUnrecPtr e)
+void Scene::handleKeyPressed(KeyEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(KeyPressedMethodId,e);
+        produceKeyPressed(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::keyReleased(const KeyEventUnrecPtr e)
+void Scene::handleKeyReleased(KeyEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(KeyReleasedMethodId,e);
+        produceKeyReleased(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::keyTyped(const KeyEventUnrecPtr e)
+void Scene::handleKeyTyped(KeyEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(KeyTypedMethodId,e);
+        produceKeyTyped(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowOpened(const WindowEventUnrecPtr e)
+void Scene::handleWindowOpened(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowOpenedMethodId,e);
+        produceWindowOpened(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowClosing(const WindowEventUnrecPtr e)
+void Scene::handleWindowClosing(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowClosingMethodId,e);
+        produceWindowClosing(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowClosed(const WindowEventUnrecPtr e)
+void Scene::handleWindowClosed(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowClosedMethodId,e);
+        produceWindowClosed(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowIconified(const WindowEventUnrecPtr e)
+void Scene::handleWindowIconified(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowIconifiedMethodId,e);
+        produceWindowIconified(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowDeiconified(const WindowEventUnrecPtr e)
+void Scene::handleWindowDeiconified(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowDeiconifiedMethodId,e);
+        produceWindowDeiconified(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowActivated(const WindowEventUnrecPtr e)
+void Scene::handleWindowActivated(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowActivatedMethodId,e);
+        produceWindowActivated(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowDeactivated(const WindowEventUnrecPtr e)
+void Scene::handleWindowDeactivated(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowDeactivatedMethodId,e);
+        produceWindowDeactivated(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowEntered(const WindowEventUnrecPtr e)
+void Scene::handleWindowEntered(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowEnteredMethodId,e);
+        produceWindowEntered(details);
     }
 }
 
 inline
-void Scene::SceneUpdateListener::windowExited(const WindowEventUnrecPtr e)
+void Scene::handleWindowExited(WindowEventDetails* const details)
 {
-    if(!_Scene->_BlockInput)
+    if(!_BlockInput)
     {
-        _Scene->_Producer.produceEvent(WindowExitedMethodId,e);
+        produceWindowExited(details);
     }
 }
 

@@ -84,14 +84,14 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
 
     // Variables should all be in LuaBehaviorBase.
 
-	void depBehaviorProducedMethod(EventUnrecPtr e, UInt32 ID);
-    void depFieldContainerProducedMethod(EventUnrecPtr e, UInt32 ID);
+	void depBehaviorProducedEvent(EventDetails* const e, UInt32 ID);
+    void depFieldContainerProducedEvent(EventDetails* const e, UInt32 ID);
 
     void callLuaFunctionForEvent(UInt64 MapId,
-                                 EventUnrecPtr e,
-                                 UInt32 ProducedMethodID);
+                                 EventDetails* const e,
+                                 UInt32 ProducedEventID);
 
-    void initialize(SceneObjectUnrecPtr rootSceneObject);
+    void initialize(SceneObject* const rootSceneObject);
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */

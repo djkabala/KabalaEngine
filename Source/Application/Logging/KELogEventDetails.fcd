@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="LogEventDetails"
+	parent="EventDetails"
+	library="KabalaEngine"
+	pointerfieldtypes="single"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+	supportUnregisteredCreate="true"
+    authors="David Kabala (djkabala@gmail.com)                             "
+>
+	<Field
+		name="Value"
+		type="std::string"
+		category="data"
+		cardinality="single"
+		visibility="internal"
+		access="protected"
+		defaultValue=""
+        publicRead="true"
+	>
+	</Field>
+</FieldContainer>

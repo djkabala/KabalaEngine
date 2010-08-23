@@ -40,8 +40,7 @@
 #endif
 
 #include "KEEffectBase.h"
-#include "KEEffectEvent.h"
-#include "KEEffectListener.h"
+#include "KEEffectEventDetails.h"
 #include "Project/SceneObject/KESceneObject.h"
 
 OSG_BEGIN_NAMESPACE
@@ -81,16 +80,11 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     //Stop handler for an effect
     void stop(void);
 
-    //Add/Remove listeners
-    EventConnection addEffectListener(EffectListenerPtr Listener);
-    bool isEffectListenerAttached(EffectListenerPtr Listener) const;
-    void removeEffectListener(EffectListenerPtr Listener);
-
     /*---------------------------------------------------------------------*/
     /*! \name                      Get                                     */
     /*! \{                                                                 */
     
-    const SceneObject* getParentSceneObject(void) const;
+    SceneObject* getParentSceneObject(void) const;
     virtual void setParentSceneObject(SceneObject* newParent);
 
 
@@ -147,10 +141,11 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     * Play,pause,unpause,and end, as expected. They are thus
     * 'invisible' to the effect interface.
     */
-    void producerEffectBegan   (const EffectEventUnrecPtr e);
-    void producerEffectPaused  (const EffectEventUnrecPtr e);
-    void producerEffectUnpaused(const EffectEventUnrecPtr e);
-    void producerEffectStopped (const EffectEventUnrecPtr e);
+    void produceEffectBegan   (void);
+    void produceEffectPaused  (void);
+    void produceEffectUnpaused(void);
+    void produceEffectStopped (void);
+    void produceEffectFinished(void);
     
     /*
     * This function is not. Individual effects have different
@@ -167,14 +162,6 @@ class KE_KABALAENGINE_DLLMAPPING Effect : public EffectBase
     * and calls producerEffectFinished();
     */
     virtual void finished      (void);
-    void producerEffectFinished(const EffectEventUnrecPtr e);
-    
-    //Typedefs for easily adding/removing event listeners.
-    //
-    typedef std::set<EffectListenerPtr> EffectListenerSet;
-    typedef EffectListenerSet::iterator EffectListenerSetItor;
-    typedef EffectListenerSet::const_iterator EffectListenerSetConstItor;
-    EffectListenerSet _EffectListeners;
 
     // Variables should all be in EffectBase.
 

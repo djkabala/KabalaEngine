@@ -82,12 +82,12 @@
 #include "KE@!Classname!@.h"
 
 #include <boost/bind.hpp>
-@@if hasProducedMethods
+@@if hasProducedEvents
 
 @@if useLocalIncludes
-#include "@!HeaderPrefix!@OSGEvent.h"
+#include "@!HeaderPrefix!@OSGEventDetails.h"
 @@else // useLocalIncludes
-#include <@!HeaderPrefix!@OSGEvent.h>
+#include <@!HeaderPrefix!@OSGEventDetails.h>
 @@endif // useLocalIncludes
 @@endif // hasProducedMethods
 
@@ -216,10 +216,10 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
     Inherited::classDescInserter(oType);
 
 @@endif
-    @@if hasFieldsOrIsRootProducer
+    @@if hasFields
     FieldDescriptionBase *pDesc = NULL;
 
-    @@endif // hasFieldsOrIsRootProducer
+    @@endif // hasFields
     @@if isDecorator
     pDesc = new SFUnrec@!Parent!@Ptr::Description(
         SFUnrec@!Parent!@Ptr::getClassType(),
@@ -232,19 +232,6 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
         static_cast<FieldGetMethodSig >(&@!Classname!@::getHandleDecoratee ));
 
     oType.addInitialDesc(pDesc);
-        @@if isRootProducer
-    pDesc = new SFEventProducerPtr::Description(
-        SFEventProducerPtr::getClassType(),
-        "@!Classname!@EventProducer",
-        "Event Producer",
-        EventProducerFieldId,EventProducerFieldMask,
-        false,
-        (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&@!Classname!@::editHandleEventProducer),
-        static_cast     <FieldGetMethodSig >(&@!Classname!@::getHandleEventProducer));
-
-    oType.addInitialDesc(pDesc);
-        @@endif // isRootProducer
     @@else // isDecorator
         @@BeginFieldLoop@@
 
@@ -265,19 +252,6 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
 
     oType.addInitialDesc(pDesc);
         @@EndFieldLoop@@
-        @@if isRootProducer
-    pDesc = new SFEventProducerPtr::Description(
-        SFEventProducerPtr::getClassType(),
-        "EventProducer",
-        "Event Producer",
-        EventProducerFieldId,EventProducerFieldMask,
-        true,
-        (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast     <FieldEditMethodSig>(&@!Classname!@::editHandleEventProducer),
-        static_cast     <FieldGetMethodSig >(&@!Classname!@::getHandleEventProducer));
-
-    oType.addInitialDesc(pDesc);
-        @@endif // isRootProducer
     @@endif // isDecorator
 }
 
@@ -288,7 +262,7 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
     "@!Group!@",
     @!Namespace!@,
 @@if isAbstract
-    "",
+    NULL,
 @@else // isAbstract
     reinterpret_cast<PrototypeCreateF>(&@!Classname!@Base::createEmptyLocal),
 @@endif // isAbstract
@@ -300,19 +274,25 @@ void @!Classname!@Base::classDescInserter(TypeObject &oType)
     @!Fcdxml!@,
     @!SafeDescription!@
     );
-@@if hasProducedMethods
+@@if hasProducedEvents
 
-//! @!Classname!@ Produced Methods
+//! @!Classname!@ Produced Events
 
-MethodDescription *@!Classname!@Base::_methodDesc[] =
+EventDescription *@!Classname!@Base::_eventDesc[] =
 {
-@@BeginProducedMethodLoop@@
-    new MethodDescription("@!producedMethod.Name!@", 
-                    "@!producedMethod.Description!@",
-                     @!producedMethod.Name!@MethodId, 
-                     SFUnrecEventPtr::getClassType(),
-                     FunctorAccessMethod())@!producedMethod.Separator!@
-@@EndProducedMethodLoop@@
+@@BeginProducedEventLoop@@
+    new EventDescription("@!producedEvent.Name!@", 
+                          "@!producedEvent.Description!@",
+                          @!producedEvent.Name!@EventId, 
+                          FieldTraits<@!producedEvent.TypeRaw!@ *>::getType(),
+    @@if producedEvent.consumable
+                          true,
+    @@else 
+                          false,
+    @@endif 
+                          static_cast<EventGetMethod>(&@!Classname!@Base::getHandle@!producedEvent.Name!@Signal))@!producedEvent.Separator!@
+
+@@EndProducedEventLoop@@
 };
 
 EventProducerType @!Classname!@Base::_producerType(
@@ -324,8 +304,8 @@ EventProducerType @!Classname!@Base::_producerType(
 @@endif 
     "",
     InitEventProducerFunctor(),
-    _methodDesc,
-    sizeof(_methodDesc));
+    _eventDesc,
+    sizeof(_eventDesc));
 @@endif 
 
 /*------------------------------ get -----------------------------------*/
@@ -340,7 +320,7 @@ const FieldContainerType &@!Classname!@Base::getType(void) const
     return _type;
 }
 
-@@if hasProducedMethods 
+@@if hasProducedEvents 
 const EventProducerType &@!Classname!@Base::getProducerType(void) const
 {
     return _producerType;
@@ -651,12 +631,6 @@ UInt32 @!Classname!@Base::getBinSize(ConstFieldMaskArg whichField)
         returnValue += _@!field.VarName!@.getBinSize();
     }
     @@EndFieldLoop@@
-@@if isRootProducer 
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        returnValue += _sfEventProducer.getBinSize();
-    }
-@@endif
 @@endif // isDecorator
 
     return returnValue;
@@ -679,12 +653,6 @@ void @!Classname!@Base::copyToBin(BinaryDataHandler &pMem,
         _@!field.VarName!@.copyToBin(pMem);
     }
     @@EndFieldLoop@@
-@@if isRootProducer 
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        _sfEventProducer.copyToBin(pMem);
-    }
-@@endif
 @@endif // isDecorator
 }
 
@@ -705,12 +673,6 @@ void @!Classname!@Base::copyFromBin(BinaryDataHandler &pMem,
         _@!field.VarName!@.copyFromBin(pMem);
     }
     @@EndFieldLoop@@
-@@if isRootProducer 
-    if(FieldBits::NoField != (EventProducerFieldMask & whichField))
-    {
-        _sfEventProducer.copyFromBin(pMem);
-    }
-@@endif
 @@endif // isDecorator
 }
 
@@ -796,6 +758,26 @@ void @!Classname!@Base::copyFromBin(BinaryDataHandler &pMem,
     return createEmptyLocal();
 @@endif
 }
+@@if supportUnregisteredCreate
+
+@!Classname!@ *@!Classname!@Base::createUnregistered(void)
+{
+    @!Classname!@ *returnValue = new @!Classname!@;
+
+#ifdef OSG_MT_CPTR_ASPECT
+    returnValue->setupAspectStore();
+#endif
+    //Do not register with the FieldContainer Factory
+
+    returnValue->onCreate      (      );
+    returnValue->onCreateAspect(returnValue);
+    
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+    
+    return returnValue;
+}
+@@endif
 
 
 FieldContainerTransitPtr @!Classname!@Base::shallowCopyLocal(
@@ -848,16 +830,167 @@ FieldContainerTransitPtr @!Classname!@Base::shallowCopy(void) const
 
 @@endif // !isAbstract
 
+@@if hasProducedEvents
+/*------------------------- event producers ----------------------------------*/
+void @!Classname!@Base::produceEvent(UInt32 eventId, EventDetails* const e)
+{
+    switch(eventId)
+    {
+@@BeginProducedEventLoop@@
+    case @!producedEvent.Name!@EventId:
+        OSG_ASSERT(dynamic_cast<@!producedEvent.Name!@EventDetailsType* const>(e));
 
+    @@if producedEvent.consumable 
+        _@!producedEvent.Name!@Event.set_combiner(ConsumableEventCombiner(e));
+    @@endif // producedEvent.consumable
+        _@!producedEvent.Name!@Event(dynamic_cast<@!producedEvent.Name!@EventDetailsType* const>(e), @!producedEvent.Name!@EventId);
+        break;
+@@EndProducedEventLoop@@
+    default:
+    @@if isRootProducer 
+        SWARNING << "No event defined with that ID";
+    @@else
+        Inherited::produceEvent(eventId, e);
+    @@endif // !isRootProducer
+        break;
+    }
+}
+
+boost::signals2::connection @!Classname!@Base::connectEvent(UInt32 eventId, 
+                                                             const BaseEventType::slot_type &listener, 
+                                                             boost::signals2::connect_position at)
+{
+    switch(eventId)
+    {
+@@BeginProducedEventLoop@@
+    case @!producedEvent.Name!@EventId:
+        return _@!producedEvent.Name!@Event.connect(listener, at);
+        break;
+@@EndProducedEventLoop@@
+    default:
+    @@if isRootProducer 
+        SWARNING << "No event defined with that ID";
+        return boost::signals2::connection();
+    @@else
+        return Inherited::connectEvent(eventId, listener, at);
+    @@endif // !isRootProducer
+        break;
+    }
+
+    return boost::signals2::connection();
+}
+
+boost::signals2::connection  @!Classname!@Base::connectEvent(UInt32 eventId, 
+                                                              const BaseEventType::group_type &group,
+                                                              const BaseEventType::slot_type &listener,
+                                                              boost::signals2::connect_position at)
+{
+    switch(eventId)
+    {
+@@BeginProducedEventLoop@@
+    case @!producedEvent.Name!@EventId:
+        return _@!producedEvent.Name!@Event.connect(group, listener, at);
+        break;
+@@EndProducedEventLoop@@
+    default:
+    @@if isRootProducer 
+        SWARNING << "No event defined with that ID";
+        return boost::signals2::connection();
+    @@else
+        return Inherited::connectEvent(eventId, group, listener, at);
+    @@endif // !isRootProducer
+        break;
+    }
+
+    return boost::signals2::connection();
+}
+    
+void  @!Classname!@Base::disconnectEvent(UInt32 eventId, const BaseEventType::group_type &group)
+{
+    switch(eventId)
+    {
+@@BeginProducedEventLoop@@
+    case @!producedEvent.Name!@EventId:
+        _@!producedEvent.Name!@Event.disconnect(group);
+        break;
+@@EndProducedEventLoop@@
+    default:
+    @@if isRootProducer 
+        SWARNING << "No event defined with that ID";
+    @@else
+        return Inherited::disconnectEvent(eventId, group);
+    @@endif // !isRootProducer
+        break;
+    }
+}
+
+void  @!Classname!@Base::disconnectAllSlotsEvent(UInt32 eventId)
+{
+    switch(eventId)
+    {
+@@BeginProducedEventLoop@@
+    case @!producedEvent.Name!@EventId:
+        _@!producedEvent.Name!@Event.disconnect_all_slots();
+        break;
+@@EndProducedEventLoop@@
+    default:
+    @@if isRootProducer 
+        SWARNING << "No event defined with that ID";
+    @@else
+        Inherited::disconnectAllSlotsEvent(eventId);
+    @@endif // !isRootProducer
+        break;
+    }
+}
+
+bool  @!Classname!@Base::isEmptyEvent(UInt32 eventId) const
+{
+    switch(eventId)
+    {
+@@BeginProducedEventLoop@@
+    case @!producedEvent.Name!@EventId:
+        return _@!producedEvent.Name!@Event.empty();
+        break;
+@@EndProducedEventLoop@@
+    default:
+    @@if isRootProducer 
+        SWARNING << "No event defined with that ID";
+        return true;
+    @@else
+        return Inherited::isEmptyEvent(eventId);
+    @@endif // !isRootProducer
+        break;
+    }
+}
+
+UInt32  @!Classname!@Base::numSlotsEvent(UInt32 eventId) const
+{
+    switch(eventId)
+    {
+@@BeginProducedEventLoop@@
+    case @!producedEvent.Name!@EventId:
+        return _@!producedEvent.Name!@Event.num_slots();
+        break;
+@@EndProducedEventLoop@@
+    default:
+    @@if isRootProducer 
+        SWARNING << "No event defined with that ID";
+        return 0;
+    @@else
+        return Inherited::numSlotsEvent(eventId);
+    @@endif // !isRootProducer
+        break;
+    }
+}
+
+
+@@endif  // hasProducedEvents
 /*------------------------- constructors ----------------------------------*/
 
 @!Classname!@Base::@!Classname!@Base(void) :
-@@if isRootProducer 
-    _Producer(&getProducerType()),
-@@endif
-@@if !hasFieldsOrIsRootProducer
+@@if !hasFields
     Inherited()
-@@else // !hasFieldsOrIsRootProducer
+@@else // !hasFields
     Inherited(),
     @@if hasFields
         @@if isDecorator
@@ -874,29 +1007,14 @@ FieldContainerTransitPtr @!Classname!@Base::shallowCopy(void) const
             @@EndFieldLoop@@
         @@endif // isDecorator
     @@endif // hasFields
-    @@if isRootProducer 
-        @@if hasFields
-    ,_sfEventProducer(&_Producer)
-        @@else // hasFields
-    _sfEventProducer(&_Producer)
-        @@endif // hasFields
-    @@endif
-@@endif // !hasFieldsOrIsRootProducer
+@@endif // !hasFields
 {
-@@if hasProducedMethods 
-@@if !isRootProducer 
-    _Producer.setType(&_producerType);
-@@endif
-@@endif
 }
 
 @!Classname!@Base::@!Classname!@Base(const @!Classname!@Base &source) :
-@@if isRootProducer 
-    _Producer(&source.getProducerType()),
-@@endif
-@@if !hasFieldsOrIsRootProducer
+@@if !hasFields
     Inherited(source)
-@@else // !hasFieldsOrIsRootProducer
+@@else // !hasFields
     Inherited(source),
     @@if hasFields
     @@if isDecorator
@@ -921,14 +1039,7 @@ FieldContainerTransitPtr @!Classname!@Base::shallowCopy(void) const
         @@EndFieldLoop@@
     @@endif // isDecorator
     @@endif // hasFields
-    @@if isRootProducer 
-        @@if hasFields
-    ,_sfEventProducer(&_Producer)
-        @@else // hasFields
-    _sfEventProducer(&_Producer)
-        @@endif // hasFields
-    @@endif
-@@endif // !hasFieldsOrIsRootProducer
+@@endif // !hasFields
 {
 }
 
@@ -1243,34 +1354,22 @@ EditFieldHandlePtr @!Classname!@Base::editHandle@!field.Name:15!@(void)
 }
 
 @@EndFieldLoop@@
-@@if isRootProducer 
 
-GetFieldHandlePtr @!Classname!@Base::getHandleEventProducer        (void) const
+@@if hasProducedEvents
+@@BeginProducedEventLoop@@
+GetEventHandlePtr @!Classname!@Base::getHandle@!producedEvent.Name!@Signal(void) const
 {
-    SFEventProducerPtr::GetHandlePtr returnValue(
-        new  SFEventProducerPtr::GetHandle(
-             &_sfEventProducer,
-             this->getType().getFieldDesc(EventProducerFieldId),
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<@!producedEvent.Name!@EventType>(
+             const_cast<@!producedEvent.Name!@EventType *>(&_@!producedEvent.Name!@Event),
+             _producerType.getEventDescription(@!producedEvent.Name!@EventId),
              const_cast<@!Classname!@Base *>(this)));
 
     return returnValue;
 }
 
-EditFieldHandlePtr @!Classname!@Base::editHandleEventProducer       (void)
-{
-    SFEventProducerPtr::EditHandlePtr returnValue(
-        new  SFEventProducerPtr::EditHandle(
-             &_sfEventProducer,
-             this->getType().getFieldDesc(EventProducerFieldId),
-             this));
-
-
-    editSField(EventProducerFieldMask);
-
-    return returnValue;
-}
-
-@@endif 
+@@EndProducedEventLoop@@
+@@endif  // hasProducedEvents
 
 #ifdef OSG_MT_CPTR_ASPECT
 void @!Classname!@Base::execSyncV(      FieldContainer    &oFrom,

@@ -44,6 +44,7 @@
 #include "KEPasteCommand.h"
 
 #include <OpenSG/OSGNameAttachment.h>
+#include <OpenSG/OSGSceneGraphTreeModel.h>
 
 OSG_USING_NAMESPACE
 
@@ -65,9 +66,9 @@ CommandType PasteCommand::_Type("PasteCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-PasteCommandPtr PasteCommand::create(ApplicationPlayerRefPtr ApplicationPlayer,
-                                     HierarchyPanelRefPtr HierarchyPanel,
-                                     NodeRefPtr ParentNode,
+PasteCommandPtr PasteCommand::create(ApplicationPlayer* const ApplicationPlayer,
+                                     HierarchyPanel* const HierarchyPanel,
+                                     Node* const ParentNode,
                                      bool DeepClone)
 {
 	return RefPtr(new PasteCommand(ApplicationPlayer,HierarchyPanel,ParentNode,DeepClone));

@@ -44,6 +44,7 @@
 #include "KENewCommand.h"
 
 #include <OpenSG/OSGNameAttachment.h>
+#include <OpenSG/OSGSceneGraphTreeModel.h>
 
 OSG_USING_NAMESPACE
 
@@ -65,7 +66,7 @@ CommandType NewCommand::_Type("NewCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-NewCommandPtr NewCommand::create(HierarchyPanelRefPtr HierarchyPanel,FieldContainerType* FCType)
+NewCommandPtr NewCommand::create(HierarchyPanel* const HierarchyPanel,FieldContainerType* FCType)
 {
 	return RefPtr(new NewCommand(HierarchyPanel,FCType));
 }

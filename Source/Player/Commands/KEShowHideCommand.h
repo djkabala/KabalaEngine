@@ -57,7 +57,7 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef ShowHideCommandPtr RefPtr;
 
-	ShowHideCommand(NodeRefPtr SelectedNode, bool Show, bool Recursive);
+	ShowHideCommand(Node* const SelectedNode, bool Show, bool Recursive);
 
 	ShowHideCommand(const ShowHideCommand& source);
 
@@ -85,7 +85,7 @@ public:
 
 	virtual ~ShowHideCommand(void);
 	
-	static ShowHideCommandPtr create(NodeRefPtr SelectedNode, bool Show,bool Recursive);
+	static ShowHideCommandPtr create(Node* const SelectedNode, bool Show,bool Recursive);
 };
 
 OSG_END_NAMESPACE

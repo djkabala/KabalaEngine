@@ -53,6 +53,7 @@
 #include "Project/Scene/KEScene.h"
 
 #include <OpenSG/OSGTransform.h>
+#include <OpenSG/OSGNameAttachment.h> // FOR ATTACHING NAMES TO NODES ETC.
 
 #include "Application/KEMainApplication.h"
 
@@ -61,7 +62,15 @@
 #include "boost/filesystem.hpp"
 
 #include <OpenSG/OSGComboBox.h>
+#include <OpenSG/OSGMatrixUtility.h>
+#include <OpenSG/OSGTree.h>
 #include <OpenSG/OSGDerivedFieldContainerComboBoxModel.h>
+#include <OpenSG/OSGBorderLayoutConstraints.h>
+#include <OpenSG/OSGScrollPanel.h>
+#include <OpenSG/OSGMenuButton.h>
+#include <OpenSG/OSGBorderLayout.h>
+#include <OpenSG/OSGCardLayout.h>
+#include "Player/LuaGraphTreeModel/KELuaGraphTreeModel.h"
 
 #include "Player/Commands/KEShowHideCommand.h"
 #include "Player/Commands/KEDeleteCommand.h"
@@ -110,10 +119,10 @@ void HierarchyPanel::createSceneGraphTree(void)
     _TheSceneGraphTree->setModel(_TheSceneGraphTreeModel);
 
 	
-    _TheSceneGraphTree->getSelectionModel()->addTreeSelectionListener(&_SceneGraphTreeSelectionListener);
-    _TheSceneGraphTree->addKeyListener(&_SceneGraphTreeSelectionListener);
-	
-	
+    _SceneGraphTreeKeyTypedConnection = _TheSceneGraphTree->connectKeyTyped(boost::bind(&HierarchyPanel::handleSceneGraphTreeKeyTyped, this, _1));
+    _SceneGraphTreeSelectionAddedConnection = _TheSceneGraphTree->getSelectionModel()->connectSelectionAdded(boost::bind(&HierarchyPanel::handleSceneGraphTreeSelectionAdded, this, _1));
+    _SceneGraphTreeSelectionRemovedConnection = _TheSceneGraphTree->getSelectionModel()->connectSelectionRemoved(boost::bind(&HierarchyPanel::handleSceneGraphTreeSelectionRemoved, this, _1));
+
     BorderLayoutConstraintsRefPtr SceneTreeConstraints = OSG::BorderLayoutConstraints::create();
 	SceneTreeConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
 
@@ -121,9 +130,6 @@ void HierarchyPanel::createSceneGraphTree(void)
     _TheSceneGraphTreeScrollPanel->setPreferredSize(Vec2f(350,300));
     _TheSceneGraphTreeScrollPanel->setConstraints(SceneTreeConstraints);
     _TheSceneGraphTreeScrollPanel->setViewComponent(_TheSceneGraphTree);
-
-	
-	_SceneGraphTreeSelectionListener.setParams(_TheSceneGraphTree,_ApplicationPlayer);
 
 	_NewNodeMenuModel = DerivedFieldContainerComboBoxModel::create();
 	_NewNodeMenuModel->editMFDerivedFieldContainerTypes()->push_back(std::string(OSG::NodeCore::getClassType().getCName()));
@@ -139,7 +145,7 @@ void HierarchyPanel::createSceneGraphTree(void)
     _CreateNewNodeMenuButton->setModel(_NewNodeMenuModel);
 	_CreateNewNodeMenuButton->setConstraints(_CreateNewButtonConstraints);
     
-	_CreateNewNodeMenuButton->addMenuActionListener(&_TheMenuButtonActionListener);
+    _NewNodeMenuButtonActionConnection = _CreateNewNodeMenuButton->connectMenuActionPerformed(boost::bind(&HierarchyPanel::handleNewNodeMenuButtonAction, this, _1));
 
 	BorderLayoutRefPtr SceneGraphTreeLayout = OSG::BorderLayout::create();
 
@@ -149,40 +155,8 @@ void HierarchyPanel::createSceneGraphTree(void)
 	_SceneGraphPanel->pushToChildren(_TheSceneGraphTreeScrollPanel);
 	_SceneGraphPanel->pushToChildren(_CreateNewNodeMenuButton);
 	_SceneGraphPanel->setLayout(SceneGraphTreeLayout);
-
-
-
-/*	UInt32 NumFieldContainersFound(0);
-    FieldContainerType* FoundType = NULL;
-    FieldContainerEditorRefPtr DefaultEditor;
-    for(UInt32 j(0) ; NumFieldContainersFound<FieldContainerFactory::the()->getNumTypes(); ++j)
-    {
-        FoundType = FieldContainerFactory::the()->findType(j);
-        if(FoundType != NULL)
-        {
-			if(FoundType->isDerivedFrom(OSG::NodeCore::getClassType())  && !FoundType->isAbstract())
-            {
-                //Add Editor
-
-				std::string ftname = (FoundType->getName()).str();
-				NodeCoreRefPtr core = FieldContainerFactory::the()->createNodeCore(ftname.c_str());
-				NodeRefPtr _Temp = Node::create();
-				_Temp->setCore(core);	
-			
-				setName(_Temp,ftname);
-			
-            }
-            ++NumFieldContainersFound;
-        }
-
-
-
-    }
-
-*/
-//	_TheSceneGraphTree->addMouseListener(&_PlayerMouseListener2);
-
 }
+
 void HierarchyPanel::createPopUpMenu(void)
 {
 
@@ -219,16 +193,16 @@ void HierarchyPanel::createPopUpMenu(void)
 
     _FocusCamera->setText("Focus Camera All");
 
-	_ShowHideItem->addActionListener(&_BasicListener);
-	_ShowRecursiveItem->addActionListener(&_BasicListener);
-	_DeleteItem->addActionListener(&_BasicListener);
-	_ImportItem->addActionListener(&_BasicListener);
-	_ExportItem->addActionListener(&_BasicListener);
-	_CutItem->addActionListener(&_BasicListener);
-	_CopyItem->addActionListener(&_BasicListener);
-	_PasteItem->addActionListener(&_BasicListener);
-	_PasteInstanceItem->addActionListener(&_BasicListener);
-	_FocusCamera->addActionListener(&_BasicListener);
+	_ShowHideItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_ShowRecursiveItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_DeleteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_ImportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_ExportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_CutItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_CopyItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_PasteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_PasteInstanceItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_FocusCamera->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
@@ -245,9 +219,9 @@ void HierarchyPanel::createPopUpMenu(void)
         _HierarchyPanelPopupMenu->addItem(_ExportItem);	
         _HierarchyPanelPopupMenu->addSeparator();
         _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
-    _HierarchyPanelPopupMenu->addPopupMenuListener(&_TheSceneGraphPopupListener);
+	_SceneGraphPopupMenuWillBecomeVisibleConnection = _HierarchyPanelPopupMenu->connectPopupMenuWillBecomeVisible(boost::bind(&HierarchyPanel::handleSceneGraphPopupMenuWillBecomeVisible, this, _1));
 
-	this->setPopupMenu(_HierarchyPanelPopupMenu);
+	setPopupMenu(_HierarchyPanelPopupMenu);
 
 }
 
@@ -259,15 +233,15 @@ void HierarchyPanel::setView(UInt32 Index)
 void HierarchyPanel::sgShowHideToggleSelectedNode(void)
 {
 	 CommandPtr ShowHideItemCommand =
-         ShowHideCommand::create(_SceneGraphTreeSelectionListener._SelectedNode,
-                                 (_SceneGraphTreeSelectionListener._SelectedNode->getTravMask() ==0),
+         ShowHideCommand::create(_SelectedNode,
+                                 (_SelectedNode->getTravMask() ==0),
                                  false);
     _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
 }
 
 void HierarchyPanel::sgImportIntoSelectedNode(void)
 {
-    NodeUnrecPtr NodeToAddTo = _ApplicationPlayer->getSelectedNode();
+    NodeRecPtr NodeToAddTo = _ApplicationPlayer->getSelectedNode();
     if(NodeToAddTo == NULL)
     {
         NodeToAddTo =  getSceneGraphTreeModel()->getRootNode();
@@ -278,7 +252,7 @@ void HierarchyPanel::sgImportIntoSelectedNode(void)
 
 void HierarchyPanel::sgExportSelectedNode(void)
 {
-    NodeUnrecPtr NodeToExport = _ApplicationPlayer->getSelectedNode();
+    NodeRecPtr NodeToExport = _ApplicationPlayer->getSelectedNode();
     if(NodeToExport == NULL)
     {
         NodeToExport =  getSceneGraphTreeModel()->getRootNode();
@@ -366,7 +340,7 @@ void HierarchyPanel::sgPasteInstOntoSelectedNode(void)
 void HierarchyPanel::sgShowHideSelectedNodeRecursize(void)
 {
 	 CommandPtr ShowHideItemCommand =
-         ShowHideCommand::create(_SceneGraphTreeSelectionListener._SelectedNode,
+         ShowHideCommand::create(_SelectedNode,
                                  true,
                                  true);
     _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
@@ -392,46 +366,46 @@ void HierarchyPanel::sgDeleteSelectedNode(void)
     _TheSceneGraphTree->setSelectionRow(NewSelectedRow);
 }
 
-void HierarchyPanel::actionPerformed(const ActionEventUnrecPtr e)
+void HierarchyPanel::handleBasicAction(ActionEventDetails* const details)
 {
-	if(e->getSource() == _ShowHideItem)
+	if(details->getSource() == _ShowHideItem)
 	{
         sgShowHideToggleSelectedNode();
 	}
-    else if(e->getSource() == _ShowRecursiveItem)
+    else if(details->getSource() == _ShowRecursiveItem)
 	{
         sgShowHideSelectedNodeRecursize();
 	}
-	else if(e->getSource() == _DeleteItem)
+	else if(details->getSource() == _DeleteItem)
 	{
         sgDeleteSelectedNode();
 	}
-	else if(e->getSource() == _ImportItem)
+	else if(details->getSource() == _ImportItem)
 	{
         sgImportIntoSelectedNode();
 	}
-	else if(e->getSource() == _ExportItem)
+	else if(details->getSource() == _ExportItem)
 	{
         sgExportSelectedNode();
 	}
-	else if(e->getSource() == _FocusCamera)
+	else if(details->getSource() == _FocusCamera)
 	{
         sgFocusCameraOnSelectedNode();
 	}
-	else if(e->getSource() == _CutItem)
+	else if(details->getSource() == _CutItem)
 	{
         sgCutSelectedNode();
 	}
 
-	else if(e->getSource() == _CopyItem)
+	else if(details->getSource() == _CopyItem)
 	{
         sgCopySelectedNode();
 	}
-	else if(e->getSource() == _PasteItem)
+	else if(details->getSource() == _PasteItem)
 	{
         sgPasteOntoSelectedNode();
 	}
-	else if(e->getSource() == _PasteInstanceItem)
+	else if(details->getSource() == _PasteInstanceItem)
 	{
         sgPasteInstOntoSelectedNode();
 	}
@@ -447,22 +421,17 @@ void HierarchyPanel::createLuaGraphTree()
         _TheLuaGraphTree->setPreferredSize(Vec2f(100, 500));
         _TheLuaGraphTree->setModel(_TheLuaGraphTreeModel);
 
-	_TheLuaGraphTree->getSelectionModel()->addTreeSelectionListener(&_LuaGraphTreeSelectionListener);
+	_LuaGraphTreeSelectionAddedConnection = _TheLuaGraphTree->getSelectionModel()->connectSelectionAdded(boost::bind(&HierarchyPanel::handleLuaGraphTreeSelectionAdded, this, _1));
 
 	BorderLayoutConstraintsRefPtr SceneTreeConstraints2 = OSG::BorderLayoutConstraints::create();
-        SceneTreeConstraints2->setRegion(BorderLayoutConstraints::BORDER_WEST);
+    SceneTreeConstraints2->setRegion(BorderLayoutConstraints::BORDER_WEST);
 
     _TheLuaGraphTreeScrollPanel = ScrollPanel::create();
         _TheLuaGraphTreeScrollPanel->setPreferredSize(Vec2f(350,300));
         _TheLuaGraphTreeScrollPanel->setConstraints(SceneTreeConstraints2);
     _TheLuaGraphTreeScrollPanel->setViewComponent(_TheLuaGraphTree);
 
-	
-	_LuaGraphTreeSelectionListener.setParams(_TheLuaGraphTree,_ApplicationPlayer);
-
-	//_PlayerMouseListener2.setParams(_ApplicationPlayer);
-
-	_TheLuaGraphTree->addMouseListener(&_PlayerMouseListener2);
+	_LuaGraphTreeMouseClickedConnection = _TheLuaGraphTree->connectMouseClicked(boost::bind(&HierarchyPanel::handleLuaGraphTreeMouseClicked, this, _1));
 }
 
 void HierarchyPanel::createPanel()
@@ -486,7 +455,7 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 	_TabsAddedItr = _TabsAdded.find(tabno);
 	if(_TabsAddedItr == _TabsAdded.end())
 	{
-		if(tabno == SCENEGRAPH)
+		if(tabno == SCENEGRAPH_TAB)
 		{
 			if (_TheSceneGraphTreeScrollPanel == NULL)
 			{
@@ -494,10 +463,10 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 			}
 				this->pushToChildren(_SceneGraphPanel);
 
-			_TabsAdded.insert(SCENEGRAPH);
+			_TabsAdded.insert(SCENEGRAPH_TAB);
 
 		}
-		else if(tabno == LUA)
+		else if(tabno == LUA_TAB)
 		{
 			if (_TheLuaGraphTreeScrollPanel == NULL)
 			{
@@ -505,7 +474,7 @@ void HierarchyPanel::addTab(UInt32 tabno) // tabno defined by the enum variable
 			}
 				this->pushToChildren(_TheLuaGraphTreeScrollPanel);
 
-			_TabsAdded.insert(LUA);
+			_TabsAdded.insert(LUA_TAB);
 		}
 	}
 }
@@ -520,10 +489,10 @@ void HierarchyPanel::removeTab(UInt32 tabno)
 		switch(*_TabsAddedItr)
 		{
 
-			case SCENEGRAPH:	
+			case SCENEGRAPH_TAB:	
 				this->removeObjFromChildren(dynamic_pointer_cast<Component>(_SceneGraphPanel));
 				break;
-			case LUA:
+			case LUA_TAB:
 				this->removeObjFromChildren(dynamic_pointer_cast<Component>(_TheLuaGraphTreeScrollPanel));
 				break;
 		}
@@ -532,11 +501,11 @@ void HierarchyPanel::removeTab(UInt32 tabno)
 
 }
 
-void HierarchyPanel::createDefaultHierarchyPanel() // creates the panel with the LUA and SCENEGRAPH trees
+void HierarchyPanel::createDefaultHierarchyPanel() // creates the panel with the LUA_TAB and SCENEGRAPH_TAB trees
 {
 	createPanel();
-	addTab(SCENEGRAPH);
-	addTab(LUA);
+	addTab(SCENEGRAPH_TAB);
+	addTab(LUA_TAB);
 	createPopUpMenu();
 }
 
@@ -544,10 +513,10 @@ void HierarchyPanel::updatePopupMenu(void)
 {
 	changeShowHideMenuItem();
     //Update Show/Hide
-		_ShowHideItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NULL);
+		_ShowHideItem->setEnabled(_SelectedNode != NULL);
 
     //Update Show Recursive
-		_ShowRecursiveItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NULL);
+		_ShowRecursiveItem->setEnabled(_SelectedNode != NULL);
 
 	//Update Paste
 		_PasteItem->setEnabled(_ApplicationPlayer->getClonedNodeInCopyClipboard() != NULL);
@@ -556,16 +525,16 @@ void HierarchyPanel::updatePopupMenu(void)
 		_PasteInstanceItem->setEnabled(_ApplicationPlayer->getClonedNodeInCopyClipboard() != NULL);
 
 	//Update Copy
-		_CopyItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NULL);
+		_CopyItem->setEnabled(_SelectedNode != NULL);
 
 	//Update Cut
-		_CutItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NULL);
+		_CutItem->setEnabled(_SelectedNode != NULL);
 
 	//Update Delete
-		_DeleteItem->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NULL);
+		_DeleteItem->setEnabled(_SelectedNode != NULL);
 
     //Update Camera Focusing
-        if(_SceneGraphTreeSelectionListener._SelectedNode != NULL)
+        if(_SelectedNode != NULL)
         {
             _FocusCamera->setText("Focus Camera Here");
         }
@@ -578,9 +547,9 @@ void HierarchyPanel::updatePopupMenu(void)
 
 void HierarchyPanel::changeShowHideMenuItem(void)
 {
-	if(_ApplicationPlayer!=NULL && _SceneGraphTreeSelectionListener._SelectedNode!=NULL && _ShowHideItem!=NULL)
+	if(_ApplicationPlayer!=NULL && _SelectedNode!=NULL && _ShowHideItem!=NULL)
 	{
-		UInt32 maskval = _SceneGraphTreeSelectionListener._SelectedNode->getTravMask();
+		UInt32 maskval = _SelectedNode->getTravMask();
 		if(!maskval && (_ShowHideItem->getText()== "Hide"))
         {
                 _ShowHideItem->setText("Show");
@@ -592,110 +561,62 @@ void HierarchyPanel::changeShowHideMenuItem(void)
 	}
 }
 
-HierarchyPanel::LuaGraphTreeSelectionListener::LuaGraphTreeSelectionListener(HierarchyPanelRefPtr TheHierarchyPanel)
-{
-	_HierarchyPanel = TheHierarchyPanel;
-	_ApplicationPlayer = NULL;
-	_TheTree=NULL;
-}
-
-HierarchyPanel::SceneGraphTreeSelectionListener::SceneGraphTreeSelectionListener(HierarchyPanelRefPtr TheHierarchyPanel)
-{
-	_HierarchyPanel = TheHierarchyPanel;
-	_ApplicationPlayer = NULL;
-	_TheTree=NULL;
-}
-
-void HierarchyPanel::SceneGraphTreeSelectionListener::setParams(TreeRefPtr TheTree,ApplicationPlayerRefPtr TheApplicationPlayer)//,NodeRefPtr  _SelectedNode)
-{
-	_TheTree=TheTree;
-	_ApplicationPlayer = TheApplicationPlayer;
-}
-
-void HierarchyPanel::LuaGraphTreeSelectionListener::setParams(TreeRefPtr TheTree,ApplicationPlayerRefPtr TheApplicationPlayer)//,NodeRefPtr  _SelectedNode)
-{
-	_TheTree=TheTree;
-	_ApplicationPlayer = TheApplicationPlayer;
-}
-
 void HierarchyPanel::changeDebugCameraPosition(void)
 {
     _ApplicationPlayer->focusSelectedNode();
 }
 
-void HierarchyPanel::setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer)
+void HierarchyPanel::setApplicationPlayer(ApplicationPlayer* const TheApplicationPlayer)
 {
 	_ApplicationPlayer = TheApplicationPlayer;
 }
 
-void HierarchyPanel::SceneGraphTreeSelectionListener::selectedNodeChanged(void)
+void HierarchyPanel::selectedNodeChanged(void)
 {
     //Update Details Panel
     _ApplicationPlayer->setSelectedNode(_SelectedNode);
     _ApplicationPlayer->getHelperPanel()->updateSelectedNode();
 }
 
-void HierarchyPanel::SceneGraphPopupListener::popupMenuCanceled            (const  PopupMenuEventUnrecPtr e)
+void HierarchyPanel::handleSceneGraphPopupMenuWillBecomeVisible(PopupMenuEventDetails* const details)
 {
+    updatePopupMenu();
 }
 
-void HierarchyPanel::SceneGraphPopupListener::popupMenuWillBecomeInvisible (const  PopupMenuEventUnrecPtr e)
+void HierarchyPanel::handleLuaGraphTreeMouseClicked(MouseEventDetails* const details)
 {
-}
-
-void HierarchyPanel::SceneGraphPopupListener::popupMenuWillBecomeVisible   (const  PopupMenuEventUnrecPtr e)
-{
-    _HierarchyPanel->updatePopupMenu();
-}
-
-void HierarchyPanel::SceneGraphPopupListener::popupMenuContentsChanged     (const  PopupMenuEventUnrecPtr e)
-{
-}
-
-HierarchyPanel::PlayerMouseListener2::PlayerMouseListener2(HierarchyPanelRefPtr TheHierarchyPanel)
-{
-	_HierarchyPanel=TheHierarchyPanel;
-}
-
-HierarchyPanel::MenuButtonActionListener::MenuButtonActionListener(HierarchyPanelRefPtr TheHierarchyPanel)
-{
-	_HierarchyPanel=TheHierarchyPanel;
-}
-
-void HierarchyPanel::PlayerMouseListener2::mouseClicked(const MouseEventUnrecPtr e)
-{
-   if(e->getClickCount() == 2)
+   if(details->getClickCount() == 2)
    {
-		BoostPath path = boost::any_cast<BoostPath>(_HierarchyPanel->_TheLuaGraphTree->getLastSelectedPathComponent());
+		BoostPath path = boost::any_cast<BoostPath>(_TheLuaGraphTree->getLastSelectedPathComponent());
 		
 		if(boost::filesystem::exists(path) && boost::filesystem::is_regular_file(path))
 		{
 			std::string filename(path.string());
-			_HierarchyPanel->_ApplicationPlayer->getContentPanel()->addTabWithText(path);
+			_ApplicationPlayer->getContentPanel()->addTabWithText(path);
 			//_ApplicationPlayer->_ContentPanel->addTabWithText(path);
 		}
    }
 }
 
-void HierarchyPanel::MenuButtonActionListener::createNewNode(const ActionEventUnrecPtr e)
+void HierarchyPanel::handleNewNodeMenuButtonAction(ActionEventDetails* const details)
 {
-	MenuButtonRefPtr TheMenuButton(dynamic_cast<MenuButton*>(e->getSource()));
+	MenuButtonRefPtr TheMenuButton(dynamic_cast<MenuButton*>(details->getSource()));
 	if(TheMenuButton != NULL)
 	{
 		try
 		{	
-			NodeRefPtr SelectedNode(_HierarchyPanel->_ApplicationPlayer->getSelectedNode());
+			NodeRefPtr SelectedNode(_ApplicationPlayer->getSelectedNode());
 			if(SelectedNode == NULL)
 			{
-				SelectedNode = _HierarchyPanel->_TheSceneGraphTreeModel->getRootNode();
+				SelectedNode = _TheSceneGraphTreeModel->getRootNode();
 			}
 
 			FieldContainerType* FCType;
 
 			FCType = boost::any_cast<FieldContainerType*>(TheMenuButton->getSelectionValue());
 			
-			CommandPtr NewCommandPtr = NewCommand::create(_HierarchyPanel,FCType);
-			_HierarchyPanel->_ApplicationPlayer->getCommandManager()->executeCommand(NewCommandPtr);
+			CommandPtr NewCommandPtr = NewCommand::create(this,FCType);
+			_ApplicationPlayer->getCommandManager()->executeCommand(NewCommandPtr);
 		}	
 		catch(boost::bad_any_cast &ex)
 		{
@@ -708,24 +629,15 @@ void HierarchyPanel::MenuButtonActionListener::createNewNode(const ActionEventUn
 	}
 }
 
-void HierarchyPanel::LuaGraphTreeSelectionListener::selectionAdded(const TreeSelectionEventUnrecPtr e)
-{
-	//Get the selected Node
-	try
-	{
-		_SelectedPath = boost::any_cast<BoostPath>(_TheTree->getLastSelectedPathComponent());
-	}
-	catch (boost::bad_any_cast &)
-	{
-	}
-	
+void HierarchyPanel::handleLuaGraphTreeSelectionAdded(TreeSelectionEventDetails* const details)
+{	
 }
-void HierarchyPanel::SceneGraphTreeSelectionListener::selectionAdded(const TreeSelectionEventUnrecPtr e)
+void HierarchyPanel::handleSceneGraphTreeSelectionAdded(TreeSelectionEventDetails* const details)
 {
 	//Get the selected Node
 	try
 	{
-		_SelectedNode = boost::any_cast<NodeUnrecPtr>(_TheTree->getLastSelectedPathComponent());
+		_SelectedNode = boost::any_cast<NodeUnrecPtr>(_TheSceneGraphTree->getLastSelectedPathComponent());
 	}
 	catch (boost::bad_any_cast &ex)
 	{
@@ -735,103 +647,103 @@ void HierarchyPanel::SceneGraphTreeSelectionListener::selectionAdded(const TreeS
 	selectedNodeChanged();
 }
 
-void HierarchyPanel::SceneGraphTreeSelectionListener::selectionRemoved(const TreeSelectionEventUnrecPtr e)
+void HierarchyPanel::handleSceneGraphTreeSelectionRemoved(TreeSelectionEventDetails* const details)
 {
 	_SelectedNode = NULL;
 	selectedNodeChanged();
 }
         
-void HierarchyPanel::SceneGraphTreeSelectionListener::keyPressed (const KeyEventUnrecPtr e)
+void HierarchyPanel::handleSceneGraphTreeKeyTyped(KeyEventDetails* const details)
 {
-    if(e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND)
+    if(details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND)
     {
-        switch(e->getKey())
+        switch(details->getKey())
         {
-        case KeyEvent::KEY_C:
-            _HierarchyPanel->sgCopySelectedNode();
+        case KeyEventDetails::KEY_C:
+            sgCopySelectedNode();
             break;
-        case KeyEvent::KEY_V:
-            _HierarchyPanel->sgPasteOntoSelectedNode();
+        case KeyEventDetails::KEY_V:
+            sgPasteOntoSelectedNode();
             break;
-        case KeyEvent::KEY_I:
-            _HierarchyPanel->sgImportIntoSelectedNode();
+        case KeyEventDetails::KEY_I:
+            sgImportIntoSelectedNode();
             break;
-        case KeyEvent::KEY_H:
-            _HierarchyPanel->sgShowHideToggleSelectedNode();
+        case KeyEventDetails::KEY_H:
+            sgShowHideToggleSelectedNode();
             break;
-        case KeyEvent::KEY_X:
-            _HierarchyPanel->sgCutSelectedNode();
+        case KeyEventDetails::KEY_X:
+            sgCutSelectedNode();
             break;
         }
     }
     else
     {
-        switch(e->getKey())
+        switch(details->getKey())
         {
-        case KeyEvent::KEY_BACK_SPACE:
-        case KeyEvent::KEY_DELETE:
-            _HierarchyPanel->sgDeleteSelectedNode();
+        case KeyEventDetails::KEY_BACK_SPACE:
+        case KeyEventDetails::KEY_DELETE:
+            sgDeleteSelectedNode();
             break;
-        case KeyEvent::KEY_F:
-            _HierarchyPanel->sgFocusCameraOnSelectedNode();
+        case KeyEventDetails::KEY_F:
+            sgFocusCameraOnSelectedNode();
             break;
         }
     }
-}
-
-void HierarchyPanel::SceneGraphTreeSelectionListener::keyReleased(const KeyEventUnrecPtr e)
-{
-}
-
-void HierarchyPanel::SceneGraphTreeSelectionListener::keyTyped   (const KeyEventUnrecPtr e)
-{
-}
-
-void HierarchyPanel::MenuButtonActionListener::actionPerformed(const ActionEventUnrecPtr e)
-{
-	createNewNode(e);
-}
-
-void HierarchyPanel::BasicListener::actionPerformed(const ActionEventUnrecPtr e)
-{
-    _HierarchyPanel->actionPerformed(e);
-}
-
-HierarchyPanel::BasicListener::~BasicListener()
-{
-}
-
-HierarchyPanel::BasicListener::BasicListener(HierarchyPanelRefPtr TheHierarchyPanel)
-{
-	_HierarchyPanel = TheHierarchyPanel;
 }
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
+void HierarchyPanel::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    _TheSceneGraphTreeModel = NULL;
+    _TheLuaGraphTreeModel = NULL;
+    _TheSceneGraphTree = NULL;
+    _TheLuaGraphTree = NULL;
+    _SelectedNode = NULL;
+    _TheSceneGraphTreeScrollPanel = NULL;
+    _TheLuaGraphTreeScrollPanel = NULL;
+    _HighlightNode = NULL;
+    _CardLayout = NULL;
+    _LayoutConstraints = NULL;
+    _ApplicationPlayer = NULL;
+    _NewNodeMenuModel = NULL;
+    _CreateNewNodeMenuButton = NULL;
+    _SceneGraphPanel = NULL;
+    _CreateNewButtonConstraints = NULL;
+    _HierarchyPanelPopupMenu = NULL;
+    _ShowHideItem  = NULL;
+    _ShowRecursiveItem  = NULL;
+    _CutItem  = NULL;
+    _CopyItem  = NULL;
+    _PasteItem  = NULL;
+    _PasteInstanceItem  = NULL;
+    _DeleteItem  = NULL;
+    _ImportItem  = NULL;
+    _ExportItem  = NULL;
+    _FocusCamera  = NULL;
+
+    _LuaGraphTreeSelectionAddedConnection.disconnect();
+    _SceneGraphTreeSelectionAddedConnection.disconnect();
+    _SceneGraphTreeSelectionRemovedConnection.disconnect();
+    _SceneGraphTreeKeyTypedConnection.disconnect();
+    _LuaGraphTreeMouseClickedConnection.disconnect();
+    _NewNodeMenuButtonActionConnection.disconnect();
+    _SceneGraphPopupMenuWillBecomeVisibleConnection.disconnect();
+}
 /*----------------------- constructors & destructors ----------------------*/
 
 HierarchyPanel::HierarchyPanel(void) :
-    Inherited(),
-	_SceneGraphTreeSelectionListener(HierarchyPanelRefPtr(this)),
-	_LuaGraphTreeSelectionListener(HierarchyPanelRefPtr(this)),
-	_PlayerMouseListener2(HierarchyPanelRefPtr(this)),
-	_TheMenuButtonActionListener(HierarchyPanelRefPtr(this)),
-	_BasicListener(HierarchyPanelRefPtr(this)),
-	_TheSceneGraphPopupListener(HierarchyPanelRefPtr(this))
+    Inherited()
 {
 	_ApplicationPlayer = NULL;
 }
 
 HierarchyPanel::HierarchyPanel(const HierarchyPanel &source) :
-    Inherited(source),
-	_SceneGraphTreeSelectionListener(HierarchyPanelRefPtr(this)),
-	_LuaGraphTreeSelectionListener(HierarchyPanelRefPtr(this)),
-	_PlayerMouseListener2(HierarchyPanelRefPtr(this)),
-	_TheMenuButtonActionListener(HierarchyPanelRefPtr(this)),
-	_BasicListener(HierarchyPanelRefPtr(this)),
-	_TheSceneGraphPopupListener(HierarchyPanelRefPtr(this))
+    Inherited(source)
 {
 }
 

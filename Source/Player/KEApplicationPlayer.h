@@ -42,72 +42,68 @@
 #include "KEApplicationPlayerBase.h"
 #include "Project/KEProject.h"
 
-#include <OpenSG/OSGViewport.h>
-#include <OpenSG/OSGTransform.h>
-#include <OpenSG/OSGLineChunk.h>
-#include <OpenSG/OSGMaterialChunk.h>
+#include <OpenSG/OSGViewportFields.h>
+#include <OpenSG/OSGTransformFields.h>
+#include <OpenSG/OSGLineChunkFields.h>
+#include <OpenSG/OSGMaterialChunkFields.h>
 #include <OpenSG/OSGNavigator.h>
-#include <OpenSG/OSGEventListener.h>
 
-#include <OpenSG/OSGKeyAdapter.h>
-#include <OpenSG/OSGSimpleStatisticsForeground.h>
-#include <OpenSG/OSGMenu.h>
-#include <OpenSG/OSGMenuItem.h>
-#include <OpenSG/OSGMenuBar.h>
-#include <OpenSG/OSGTextArea.h>
+#include <OpenSG/OSGSimpleStatisticsForegroundFields.h>
+#include <OpenSG/OSGMenuFields.h>
+#include <OpenSG/OSGMenuItemFields.h>
+#include <OpenSG/OSGMenuBarFields.h>
+#include <OpenSG/OSGTextAreaFields.h>
 #include <OpenSG/OSGLuaManager.h>
-#include <OpenSG/OSGTabPanel.h>
-#include <OpenSG/OSGButton.h>
-#include <OpenSG/OSGColorLayer.h>
-#include <OpenSG/OSGBorderLayout.h>
-#include <OpenSG/OSGBorderLayoutConstraints.h>
+#include <OpenSG/OSGTabPanelFields.h>
+#include <OpenSG/OSGButtonFields.h>
+#include <OpenSG/OSGColorLayerFields.h>
+#include <OpenSG/OSGBorderLayoutFields.h>
+#include <OpenSG/OSGBorderLayoutConstraintsFields.h>
 //text area
-#include <OpenSG/OSGScrollPanel.h>
+#include <OpenSG/OSGScrollPanelFields.h>
 
 //split panel 
-#include <OpenSG/OSGSplitPanel.h>
+#include <OpenSG/OSGSplitPanelFields.h>
 
 //spring layout
-#include <OpenSG/OSGSpringLayout.h>
-#include <OpenSG/OSGSpringLayoutConstraints.h>
-#include <OpenSG/OSGLabel.h>
-#include <OpenSG/OSGBoxLayout.h>
-#include <OpenSG/OSGComponentContainer.h>
-#include <OpenSG/OSGPanel.h>
-#include <OpenSG/OSGColorLayer.h>
+#include <OpenSG/OSGSpringLayoutFields.h>
+#include <OpenSG/OSGSpringLayoutConstraintsFields.h>
+#include <OpenSG/OSGLabelFields.h>
+#include <OpenSG/OSGBoxLayoutFields.h>
+#include <OpenSG/OSGComponentContainerFields.h>
+#include <OpenSG/OSGPanelFields.h>
 
 // UserInterface Headers
-#include <OpenSG/OSGUIForeground.h>
-#include <OpenSG/OSGInternalWindow.h>
-#include <OpenSG/OSGUIDrawingSurface.h>
-#include <OpenSG/OSGGraphics2D.h>
+#include <OpenSG/OSGUIForegroundFields.h>
+#include <OpenSG/OSGInternalWindowFields.h>
+#include <OpenSG/OSGUIDrawingSurfaceFields.h>
+#include <OpenSG/OSGGraphics2DFields.h>
 #include <OpenSG/OSGLookAndFeelManager.h>
 
 
 #include <OpenSG/OSGPhysicsCharacteristicsDrawable.h>
-#include <OpenSG/OSGNode.h>
+#include <OpenSG/OSGNodeFields.h>
 
 // tree headers
 
-#include <OpenSG/OSGTree.h>
-#include <OpenSG/OSGSceneGraphTreeModel.h>
-#include <OpenSG/OSGFixedHeightTreeModelLayout.h>
-#include <OpenSG/OSGGridLayout.h>
-#include <OpenSG/OSGTreeSelectionListener.h>
+#include <OpenSG/OSGTreeFields.h>
+#include <OpenSG/OSGSceneGraphTreeModelFields.h>
+#include <OpenSG/OSGFixedHeightTreeModelLayoutFields.h>
+#include <OpenSG/OSGGridLayoutFields.h>
 
 
 // List header files
-#include <OpenSG/OSGList.h>
-#include <OpenSG/OSGDefaultListModel.h>
-#include <OpenSG/OSGDefaultListSelectionModel.h>
-#include <OpenSG/OSGFlowLayout.h>
+#include <OpenSG/OSGListFields.h>
+#include <OpenSG/OSGDefaultListModelFields.h>
+#include <OpenSG/OSGDefaultListSelectionModelFields.h>
+#include <OpenSG/OSGFlowLayoutFields.h>
 
 //Combobox
-#include <OpenSG/OSGComboBox.h>
-#include <OpenSG/OSGDefaultMutableComboBoxModel.h>
+#include <OpenSG/OSGComboBoxFields.h>
+#include <OpenSG/OSGDefaultMutableComboBoxModelFields.h>
 
 //cardlayout
-#include <OpenSG/OSGCardLayout.h>
+#include <OpenSG/OSGCardLayoutFields.h>
 
 #include <OpenSG/OSGCommand.h>
 #include <OpenSG/OSGUndoManager.h>
@@ -116,19 +112,21 @@
 #include "Player/HierarchyPanel/KEHierarchyPanelFields.h"
 #include "Player/HelperPanel/KEHelperPanelFields.h"
 #include "Player/ContentPanel/KEContentPanelFields.h"
+#include <OpenSG/OSGDialogWindowFields.h>
 
-#include "Player/Commands/KECommandActionListenerForPlayer.h"
+#include <OpenSG/OSGComboBoxSelectionEventDetailsFields.h>
+#include <OpenSG/OSGStatisticsForegroundFields.h>
 
 //Animation
 #include <OpenSG/OSGKeyframeSequences.h>
-#include <OpenSG/OSGKeyframeAnimator.h>
-#include <OpenSG/OSGFieldAnimation.h>
-#include <OpenSG/OSGAnimationGroup.h>
+#include <OpenSG/OSGKeyframeAnimatorFields.h>
+#include <OpenSG/OSGFieldAnimationFields.h>
+#include <OpenSG/OSGAnimationGroupFields.h>
 
 
 //XForm Manipulator
 #include <OpenSG/OSGManipulatorManager.h>
-#include <OpenSG/OSGReplicateTransform.h>
+#include <OpenSG/OSGReplicateTransformFields.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -174,7 +172,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 	virtual void attachApplication(void);
 	virtual void dettachApplication(void);
 	virtual void attachInterface(void);
-	virtual void attachListeners(void);
+	virtual void attachHandlers(void);
 	virtual void start(void);
 	virtual void stop(void);
     virtual void reset(void);
@@ -186,18 +184,18 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 	void setCurrentAction(UInt32 action);
 	UInt32 getCurrentAction(void);
 	void setClonedNodeInCopyClipboard(NodeRefPtr node);
-	NodeRefPtr getClonedNodeInCopyClipboard(void);
+	Node* getClonedNodeInCopyClipboard(void);
 	UndoManagerPtr getUndoManager(void);
-	NodeRefPtr getHighlightNode(void);
+	Node* getHighlightNode(void);
 	void setHighlightNode(NodeRefPtr);
-	ViewportRefPtr getDebugViewport(void);
+	Viewport* getDebugViewport(void);
 	void setDebugViewport(ViewportRefPtr);
-	HelperPanelRefPtr getHelperPanel(void);
+	HelperPanel* getHelperPanel(void);
 	void setHelperPanel(HelperPanelRefPtr);
-	NodeRefPtr getSelectedNode(void);
+	Node* getSelectedNode(void);
 	void setSelectedNode(NodeRefPtr);
 	void selectNode(const Pnt2f& ViewportPoint);
-	ContentPanelRefPtr getContentPanel(void);
+	ContentPanel* getContentPanel(void);
 	void setContentPanel(ContentPanelRefPtr);
 
     Navigator& getDebugSceneNavigator(void);
@@ -213,7 +211,10 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     const ManipulatorManager& getXFormManipMgr(void) const;
     ManipulatorManager& editXFormManipMgr(void);
     
+    void openEditor(void);
+
     void openEditor(FieldContainer* FCToEdit);
+
     void focusSelectedNode(void);
     void showAll(CameraRefPtr TheCameraOrig,
                  NodeRefPtr Scene,
@@ -247,113 +248,30 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     /*! \}                                                                 */
 
-    class CommandManagerListener: public ChangeListener
-    {
-      public:
-        CommandManagerListener(ApplicationPlayerRefPtr ApplicationPlayer);
+    void handleCommandManagerStateChanged(ChangeEventDetails* const details);
 
-        virtual void stateChanged(const ChangeEventUnrecPtr e);
+    void handlePlayerKeyTyped(KeyEventDetails* const details);
+    boost::signals2::connection _PlayerKeyTypedConnection;
 
-        void setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer);
+    void handleBasicAction(ActionEventDetails* const details);
 
-      protected :
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-    };
-    friend class CommandManagerListener;
-    CommandManagerListener _CommandManagerListener;
+    void handleComboBoxSelectionChanged(ComboBoxSelectionEventDetails* const details);
 
+    void handleGotoSceneItemAction(ActionEventDetails* const details);
 
-    class PlayerKeyListener : public KeyAdapter
-    {
-      public:
-        PlayerKeyListener(ApplicationPlayerRefPtr TheApplicationPlayer);
+    void handleProjectSceneChanged(ProjectEventDetails* const details);
+    boost::signals2::connection _ProjectSceneChangedConnection;
+    
+    void handleUndoButtonAction(ActionEventDetails* const details);
+    void handleRedoButtonAction(ActionEventDetails* const details);
 
-        virtual void keyTyped(const KeyEventUnrecPtr e);
-      protected :
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-    };
-    friend class PlayerKeyListener;
-    PlayerKeyListener _PlayerKeyListener;
-
-
-    class BasicListener : public ActionListener
-    {
-      public:
-        BasicListener(ApplicationPlayerRefPtr TheApplicationPlayer);
-        ~BasicListener();
-
-        virtual void actionPerformed(const ActionEventUnrecPtr e);
-      protected :
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-
-    };
-    friend class BasicListener;
-    BasicListener _BasicListener;
-
-
-
-    class ComboBoxListener: public ComboBoxSelectionListener
-    {
-      public:
-        void selectionChanged(const ComboBoxSelectionEventUnrecPtr e);
-
-        ComboBoxListener(ApplicationPlayerRefPtr TheApplicationPlayer);
-      protected:
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-    };
-    friend class ComboBoxListener;
-    ComboBoxListener _ComboBoxListener;
-
-
-
-    class GotoSceneItemListener : public ActionListener
-    {
-      public:
-        GotoSceneItemListener(ApplicationPlayerRefPtr TheApplicationPlayer);
-        ~GotoSceneItemListener();
-
-        virtual void actionPerformed(const ActionEventUnrecPtr e);
-      protected :
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-
-    };
-    friend class GotoSceneItemListener;
-    GotoSceneItemListener _GotoSceneItemListener;
-
-
-
-    class ProjectListener : public EventListener
-    {
-      public:
-        ProjectListener(ApplicationPlayerRefPtr TheApplicationPlayer);
-        ~ProjectListener();
-
-        virtual void eventProduced(const EventUnrecPtr e, UInt32 EventProducedId);
-      protected :
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-
-    };
-    friend class ProjectListener;
-    ProjectListener _ProjectListener;
-
-
-
-    class highlightNodeListener : public UpdateListener
-    {
-      public:
-        highlightNodeListener(ApplicationPlayerRefPtr TheApplicationPlayer);
-        ~highlightNodeListener();
-
-        virtual void update(const UpdateEventUnrecPtr e);
-      protected :
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-
-    };
-    friend class highlightNodeListener;
-    highlightNodeListener _highlightNodeListener;
+    void handleHighlightNodeUpdate(UpdateEventDetails* const details);
+    boost::signals2::connection _HighlightNodeUpdateConnection;
 
     //Selected Node
     NodeRefPtr _SelectedNode;
+
+    void createGenericEditor(void);
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Visual Annotations                          */
@@ -396,14 +314,14 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     ViewportRefPtr _DebugViewport;
 
+    DialogWindowRecPtr _GenericEditorDialog;
+
     enum cActions{NONE,CUT,COPY};
 
     NodeRefPtr _ClonedNodeInCopyClipboard;
 
     CommandManagerPtr				_TheCommandManager;
     UndoManagerPtr					_TheUndoManager;
-    CommandActionListenerForPlayer	_UndoActionListener;
-    CommandActionListenerForPlayer	_RedoActionListener;
 
 
     PanelRefPtr					_ToolbarAndContentPanel;
@@ -493,9 +411,6 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void setupPopupMenu();
     void invertShowHideCaption();
 
-    void keyTyped(const KeyEventUnrecPtr e);
-    void actionPerformed(const ActionEventUnrecPtr e);
-
     ViewportRefPtr createDebugViewport(void);
     void attachDebugViewport(void);
     void detachDebugViewport(void);
@@ -514,14 +429,14 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     void initDebugStatForegrounds(void);
     void hideAllStatForegrounds(void);
-    void toggleStatForeground(StatisticsForegroundRefPtr TheForeground);
+    void toggleStatForeground(StatisticsForeground* const TheForeground);
     void toggleDrawBoundingVolumes(void);
     void toggleFrustumCulling(void);
     void toggleDrawPhysicsCharacteristics(void);
     void toggleSceneInputBlocking(void);
     void setSceneInputBlocking(bool block);
 
-    NodeRefPtr getPhysicsDrawableNode(void);
+    Node* getPhysicsDrawableNode(void);
     void updateDebugSceneChange(void);
 
     void createHighlightNode(void);

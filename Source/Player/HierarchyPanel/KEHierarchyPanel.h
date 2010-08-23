@@ -40,40 +40,41 @@
 #endif
 
 #include "KEHierarchyPanelBase.h"
-#include <OpenSG/OSGTree.h>
-#include <OpenSG/OSGSceneGraphTreeModel.h>
-#include "Player/LuaGraphTreeModel/KELuaGraphTreeModel.h"
-#include <OpenSG/OSGFixedHeightTreeModelLayout.h>
-#include <OpenSG/OSGTreeSelectionListener.h>
+#include <OpenSG/OSGTreeFields.h>
+#include <OpenSG/OSGSceneGraphTreeModelFields.h>
+#include "Player/LuaGraphTreeModel/KELuaGraphTreeModelFields.h"
+#include <OpenSG/OSGFixedHeightTreeModelLayoutFields.h>
 
-#include <OpenSG/OSGPanel.h>
+#include <OpenSG/OSGPanelFields.h>
 
-#include <OpenSG/OSGCardLayout.h>
-#include <OpenSG/OSGGridLayout.h>
+#include <OpenSG/OSGCardLayoutFields.h>
+#include <OpenSG/OSGGridLayoutFields.h>
 
-#include <OpenSG/OSGSimpleMaterial.h>
-#include <OpenSG/OSGNameAttachment.h> // FOR ATTACHING NAMES TO NODES ETC.
+#include <OpenSG/OSGSimpleMaterialFields.h>
 
 #include <set>
 
-#include <OpenSG/OSGScrollPanel.h>
-#include <OpenSG/OSGBorderLayout.h>
-#include <OpenSG/OSGBorderLayoutConstraints.h>
+#include <OpenSG/OSGScrollPanelFields.h>
+#include <OpenSG/OSGBorderLayoutFields.h>
+#include <OpenSG/OSGBorderLayoutConstraintsFields.h>
 
-#include "Project/KEProject.h"
+#include "Project/KEProjectFields.h"
 
 #include "Application/KEMainApplication.h"
 
-#include <OpenSG/OSGDerivedFieldContainerComboBoxModel.h>
-#include <OpenSG/OSGFlowLayout.h>
-#include <OpenSG/OSGMenuButton.h>
+#include <OpenSG/OSGDerivedFieldContainerComboBoxModelFields.h>
+#include <OpenSG/OSGFlowLayoutFields.h>
+#include <OpenSG/OSGMenuButtonFields.h>
+#include <OpenSG/OSGMenuItemFields.h>
 
 
-#include <OpenSG/OSGCamera.h>
-#include <OpenSG/OSGPerspectiveCamera.h>
-#include <OpenSG/OSGMatrixUtility.h>
+#include <OpenSG/OSGCameraFields.h>
+#include <OpenSG/OSGPerspectiveCameraFields.h>
+#include <OpenSG/OSGActionEventDetailsFields.h>
+#include <OpenSG/OSGPopupMenuEventDetailsFields.h>
+#include <OpenSG/OSGTreeSelectionEventDetailsFields.h>
 
-#include "Player/KEApplicationPlayer.h"
+#include "Player/KEApplicationPlayerFields.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -110,9 +111,9 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
     /*! \}                                                                 */
 	
-	SceneGraphTreeModelRefPtr getSceneGraphTreeModel(void);
-	TreeRefPtr getSceneGraphTree(void);
-	ApplicationPlayerRefPtr getApplicationPlayer(void);
+	SceneGraphTreeModel* getSceneGraphTreeModel(void);
+	Tree* getSceneGraphTree(void);
+	ApplicationPlayer* getApplicationPlayer(void);
 
 	void createSceneGraphTree(void);
 	void createLuaGraphTree(void);
@@ -120,7 +121,7 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	void addTab(UInt32 tabno);
 	void removeTab(UInt32 tabno);
 	void createDefaultHierarchyPanel();
-	void setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer);
+	void setApplicationPlayer(ApplicationPlayer* const TheApplicationPlayer);
 
     void setView(UInt32 Index);
     /*=========================  PROTECTED  ===============================*/
@@ -151,8 +152,19 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     static void initMethod(InitPhase ePhase);
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
 
-    enum tabs{LUA=1,SCENEGRAPH};
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
+
+    enum Tabs
+    {
+        SCENEGRAPH_TAB = 0,
+        LUA_TAB = 1
+    };
 
     std::set<UInt32>			_TabsAdded;
     std::set<UInt32>::iterator	_TabsAddedItr;
@@ -191,114 +203,28 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     void createPopUpMenu(void);
     void updatePopupMenu(void);
     void changeShowHideMenuItem(void);
-    void actionPerformed(const ActionEventUnrecPtr e);
 
-    class BasicListener : public ActionListener
-    {
-      public:
-        BasicListener(HierarchyPanelRefPtr TheHierarchyPanel);
-        ~BasicListener();
+    virtual void handleBasicAction(ActionEventDetails* const details);
+    //boost::signals2::connection _BasicActionConnection;
 
-        virtual void actionPerformed(const ActionEventUnrecPtr e);
-      protected :
-        HierarchyPanelRefPtr _HierarchyPanel;
+    void handleLuaGraphTreeSelectionAdded(TreeSelectionEventDetails* const details);
+    boost::signals2::connection _LuaGraphTreeSelectionAddedConnection;
 
-    };
-    friend class BasicListener;
-    BasicListener _BasicListener;
+    void handleSceneGraphTreeSelectionAdded(TreeSelectionEventDetails* const details);
+    void handleSceneGraphTreeSelectionRemoved(TreeSelectionEventDetails* const details);
+    void selectedNodeChanged(void);
+    boost::signals2::connection _SceneGraphTreeSelectionAddedConnection,
+                                _SceneGraphTreeSelectionRemovedConnection;
 
-    class LuaGraphTreeSelectionListener : public TreeSelectionListener
-    {
-      public:
+    void handleSceneGraphTreeKeyTyped(KeyEventDetails* const details);
+    boost::signals2::connection _SceneGraphTreeKeyTypedConnection;
 
-        LuaGraphTreeSelectionListener(HierarchyPanelRefPtr TheHierarchyPanel);
-
-        void selectionAdded(const TreeSelectionEventUnrecPtr e);
-        void selectionRemoved(const TreeSelectionEventUnrecPtr e){};
-        void setParams(TreeRefPtr,ApplicationPlayerRefPtr);
-
-      protected:
-        HierarchyPanelRefPtr _HierarchyPanel;
-        TreeRefPtr _TheTree;
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-        BoostPath _SelectedPath;
-    };
-
-    friend class LuaGraphTreeSelectionListener;
-    LuaGraphTreeSelectionListener _LuaGraphTreeSelectionListener;
-
-    class SceneGraphTreeSelectionListener : public TreeSelectionListener, public KeyListener
-    {
-      public:
-        SceneGraphTreeSelectionListener(HierarchyPanelRefPtr TheHierarchyPanel);
-
-        void selectionAdded(const TreeSelectionEventUnrecPtr e);
-        void selectionRemoved(const TreeSelectionEventUnrecPtr e);
-        void selectedNodeChanged(void);
-        void setParams(TreeRefPtr,ApplicationPlayerRefPtr);
-        
-        void keyPressed (const KeyEventUnrecPtr e);
-        void keyReleased(const KeyEventUnrecPtr e);
-        void keyTyped   (const KeyEventUnrecPtr e);
-
-        friend class ShowHideCommand;
-
-        NodeRefPtr _SelectedNode;
-      protected:
-        HierarchyPanelRefPtr _HierarchyPanel;
-        TreeRefPtr _TheTree;
-        ApplicationPlayerRefPtr _ApplicationPlayer;
-    };
-
-    friend class SceneGraphTreeSelectionListener;
-    SceneGraphTreeSelectionListener _SceneGraphTreeSelectionListener;
-
-
-
-    class PlayerMouseListener2 : public MouseAdapter
-    {
-      public:
-        PlayerMouseListener2(HierarchyPanelRefPtr TheHierarchyPanel);
-
-        virtual void mouseClicked(const MouseEventUnrecPtr e);
-      protected :
-        HierarchyPanelRefPtr _HierarchyPanel;
-    };
-
-    friend class PlayerMouseListener2;
-    PlayerMouseListener2 _PlayerMouseListener2;
-
-
-    class MenuButtonActionListener : public ActionListener
-    {
-      public:
-        MenuButtonActionListener(HierarchyPanelRefPtr TheHierearchyPanel);
-
-        void actionPerformed(const ActionEventUnrecPtr e);
-      protected:
-        void createNewNode(const ActionEventUnrecPtr e);
-        HierarchyPanelRefPtr _HierarchyPanel;
-    };
-
-    friend class MenuButtonActionListener;
-    MenuButtonActionListener _TheMenuButtonActionListener;
-
-    class SceneGraphPopupListener : public PopupMenuListener
-    {
-      public:
-        SceneGraphPopupListener(HierarchyPanelRefPtr TheHierearchyPanel);
-
-        void popupMenuCanceled            (const  PopupMenuEventUnrecPtr e);
-        void popupMenuWillBecomeInvisible (const  PopupMenuEventUnrecPtr e);
-        void popupMenuWillBecomeVisible   (const  PopupMenuEventUnrecPtr e);
-        void popupMenuContentsChanged     (const  PopupMenuEventUnrecPtr e);
-
-      protected:
-        HierarchyPanelRefPtr _HierarchyPanel;
-    };
-
-    friend class SceneGraphPopupListener;
-    SceneGraphPopupListener _TheSceneGraphPopupListener;
+    void handleLuaGraphTreeMouseClicked(MouseEventDetails* const details);
+    void handleNewNodeMenuButtonAction(ActionEventDetails* const details);
+    void handleSceneGraphPopupMenuWillBecomeVisible   (PopupMenuEventDetails* const details);
+    boost::signals2::connection _LuaGraphTreeMouseClickedConnection,
+                                _NewNodeMenuButtonActionConnection,
+                                _SceneGraphPopupMenuWillBecomeVisibleConnection;
 
     void changeDebugCameraPosition(void);
 

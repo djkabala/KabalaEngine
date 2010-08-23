@@ -65,7 +65,7 @@ CommandType CopyCommand::_Type("CopyCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-CopyCommandPtr CopyCommand::create(ApplicationPlayerRefPtr ApplicationPlayer, NodeRefPtr CopyNode)
+CopyCommandPtr CopyCommand::create(ApplicationPlayer* const ApplicationPlayer, Node* const CopyNode)
 {
 	return RefPtr(new CopyCommand(ApplicationPlayer, CopyNode));
 }

@@ -47,7 +47,7 @@
 
 #include "KEAnimationEffect.h"
 #include "Project/SceneObject/KESceneObject.h"
-#include "KEEffectEvent.h"
+#include "KEEffectEventDetails.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -84,18 +84,16 @@ void AnimationEffect::initMethod(InitPhase ePhase)
 
 void AnimationEffect::initEffect()
 {
-    theUpdateProducer = getEventProducer(dynamic_cast<FieldContainer *>(const_cast<Scene *>(getParentSceneObject()->getParentScene())));
-    theInternalAnimationListener = InternalAnimationListener(this);
 }
 
 void AnimationEffect::inheritedBegin()
 {
-    AnimationUnrecPtr anim = getAnimation();
-    if(anim != NULL)
+    if(getAnimation() != NULL)
     { 
-        anim->attachUpdateProducer(theUpdateProducer);
-        anim->start();
-        anim->addAnimationListener(&theInternalAnimationListener);
+        getAnimation()->attachUpdateProducer(getParentSceneObject()->getParentScene());
+        getAnimation()->start();
+        _AnimationStoppedConnection = getAnimation()->connectAnimationStopped(boost::bind(&AnimationEffect::handleAnimationStopped, this, _1));
+        _AnimationEndedConnection = getAnimation()->connectAnimationEnded(boost::bind(&AnimationEffect::handleAnimationEnded, this, _1));
     }
     else
     {
@@ -130,52 +128,35 @@ void AnimationEffect::inheritedStop()
 
 void AnimationEffect::finished()
 {
-    AnimationUnrecPtr anim = getAnimation();
-    anim->detachUpdateProducer();
-    anim->removeAnimationListener(&theInternalAnimationListener);
+    getAnimation()->detachUpdateProducer();
+    _AnimationStoppedConnection.disconnect();
+    _AnimationEndedConnection.disconnect();
     Inherited::finished();
+}
+
+void AnimationEffect::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    _AnimationStoppedConnection.disconnect();
+    _AnimationEndedConnection.disconnect();
 }
 
 /*----------------------- Internal Listener methods -----------------------*/
 
-AnimationEffect::InternalAnimationListener::InternalAnimationListener(AnimationEffect* parent)
+void AnimationEffect::handleAnimationEnded(AnimationEventDetails* const details)
 {
-    fx = parent;
+    finished();
 }
 
-void AnimationEffect::InternalAnimationListener::animationEnded(const AnimationEventUnrecPtr e)
+void AnimationEffect::handleAnimationStopped(AnimationEventDetails* const details)
 {
-    fx->finished();
-}
-
-void AnimationEffect::InternalAnimationListener::animationStopped(const AnimationEventUnrecPtr e)
-{
-    fx->finished();
-}
-
-void AnimationEffect::InternalAnimationListener::animationPaused(const AnimationEventUnrecPtr e)
-{
-
-}
-void AnimationEffect::InternalAnimationListener::animationUnpaused(const AnimationEventUnrecPtr e)
-{
-
-}
-
-void AnimationEffect::InternalAnimationListener::animationStarted(const AnimationEventUnrecPtr e)
-{
-
-}
-
-void AnimationEffect::InternalAnimationListener::animationCycled(const AnimationEventUnrecPtr e)
-{
-
+    finished();
 }
 
 /*----------------------- constructors & destructors ----------------------*/
 
 AnimationEffect::AnimationEffect(void) :
-    theUpdateProducer(NULL),
     Inherited()
 {
 }

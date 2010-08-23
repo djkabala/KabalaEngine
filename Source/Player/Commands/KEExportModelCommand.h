@@ -43,9 +43,7 @@
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGCommand.h>
-
-#include "Player/KEApplicationPlayer.h"
-#include "Player/HierarchyPanel/KEHierarchyPanel.h"
+#include <OpenSG/OSGNodeFields.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -58,7 +56,7 @@ protected:
 	typedef Command Inherited;
 	typedef ExportModelCommandPtr RefPtr;
 
-	ExportModelCommand(NodeUnrecPtr ExportNode);
+	ExportModelCommand(Node* const ExportNode);
 
 	ExportModelCommand(const ExportModelCommand& source);
 
@@ -81,7 +79,7 @@ public:
 
 	virtual ~ExportModelCommand(void);
 	
-	static ExportModelCommandPtr create(NodeUnrecPtr ExportNode);
+	static ExportModelCommandPtr create(Node* const ExportNode);
 };
 
 OSG_END_NAMESPACE

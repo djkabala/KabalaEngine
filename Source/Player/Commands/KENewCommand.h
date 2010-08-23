@@ -58,7 +58,7 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef NewCommandPtr RefPtr;
 
-	NewCommand(HierarchyPanelRefPtr HierarchyPanel,FieldContainerType* FCType);
+	NewCommand(HierarchyPanel* const HierarchyPanel,FieldContainerType* FCType);
 
 	NewCommand(const NewCommand& source);
 
@@ -73,7 +73,7 @@ protected:
 
 	HierarchyPanelRefPtr _HierarchyPanel;
 	NodeRefPtr _NewNode;
-    NodeUnrecPtr _NodeToAddTo;
+    NodeRecPtr _NodeToAddTo;
 	FieldContainerType* _FCType;
 	std::string _Name;
 
@@ -88,7 +88,7 @@ public:
 
 	virtual ~NewCommand(void);
 	
-	static NewCommandPtr create(HierarchyPanelRefPtr HierarchyPanel,FieldContainerType* FCType);
+	static NewCommandPtr create(HierarchyPanel* const HierarchyPanel,FieldContainerType* FCType);
 };
 
 OSG_END_NAMESPACE

@@ -36,9 +36,9 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-CutCommand::CutCommand(ApplicationPlayerRefPtr ApplicationPlayer,
-                       SceneGraphTreeModelRefPtr SceneGraphTreeModel,
-                       NodeRefPtr CutNode) : Inherited(),
+CutCommand::CutCommand(ApplicationPlayer* const ApplicationPlayer,
+                       SceneGraphTreeModel* const SceneGraphTreeModel,
+                       Node* const CutNode) : Inherited(),
     _ApplicationPlayer(ApplicationPlayer),
     _SceneGraphTreeModel(SceneGraphTreeModel),
     _CutNode(CutNode),

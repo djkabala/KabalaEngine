@@ -75,23 +75,6 @@ void Effect::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-EventConnection Effect::addEffectListener(EffectListenerPtr Listener)
-{
-    _EffectListeners.insert(Listener);
-
-    return EventConnection(boost::bind(&Effect::isEffectListenerAttached, this, Listener),
-                           boost::bind(&Effect::removeEffectListener, this, Listener));
-}
-
-void Effect::removeEffectListener(EffectListenerPtr Listener)
-{
-    EffectListenerSetItor EraseIter(_EffectListeners.find(Listener));
-    if(EraseIter != _EffectListeners.end())
-    {
-        _EffectListeners.erase(EraseIter);
-    }
-}
-
 void Effect::begin()
 {
     if(!effectIsInitialized)
@@ -114,7 +97,7 @@ void Effect::begin()
     else if(effectIsInitialized)
     {
         inheritedBegin();
-        producerEffectBegan(EffectEvent::create(EffectUnrecPtr(this), getTimeStamp()));
+        produceEffectBegan();
         isPlayingFlag = true;
     }
     else
@@ -148,7 +131,7 @@ void Effect::pause()
 
         isPausedFlag = true;
         inheritedPause();
-        producerEffectPaused(EffectEvent::create(EffectUnrecPtr(this), getTimeStamp()));
+        produceEffectPaused();
     }
 }
 void Effect::unpause()
@@ -162,7 +145,7 @@ void Effect::unpause()
         isPausedFlag = false;
         inheritedUnpause();
         
-        producerEffectUnpaused(EffectEvent::create(EffectUnrecPtr(this), getTimeStamp()));
+        produceEffectUnpaused();
     }
 }
 
@@ -170,7 +153,7 @@ void Effect::stop()
 {
     isPlayingFlag = false;
     inheritedStop();
-    producerEffectStopped(EffectEvent::create(EffectUnrecPtr(this), getTimeStamp()));
+    produceEffectStopped();
 }
 
 //
@@ -181,58 +164,42 @@ void Effect::stop()
 void Effect::finished()
 {
     isPlayingFlag = false;
-    EffectEventUnrecPtr fxe = EffectEvent::create(EffectUnrecPtr(this),getTimeStamp());
-    producerEffectFinished(fxe);
+    produceEffectFinished();
 }
 
-void Effect::producerEffectBegan(const EffectEventUnrecPtr e)
+void Effect::produceEffectBegan(void)
 {
-    EffectListenerSet ListenerSet(_EffectListeners);
-    for(EffectListenerSetConstItor SetItor(ListenerSet.begin()) ; SetItor != ListenerSet.end() ; ++SetItor)
-    {
-        (*SetItor)->effectBegan(e);
-    }
-    _Producer.produceEvent(EffectBeganMethodId, e);
+    EffectEventDetailsUnrecPtr details = EffectEventDetails::create(this, getTimeStamp());
+
+    Inherited::produceEffectBegan(details);
 }
 
-void Effect::producerEffectPaused(const EffectEventUnrecPtr e)
+void Effect::produceEffectPaused(void)
 {
-    EffectListenerSet ListenerSet(_EffectListeners);
-    for(EffectListenerSetConstItor SetItor(ListenerSet.begin()) ; SetItor != ListenerSet.end() ; ++SetItor)
-    {
-        (*SetItor)->effectPaused(e);
-    }
-    _Producer.produceEvent(EffectPausedMethodId, e);
+    EffectEventDetailsUnrecPtr details = EffectEventDetails::create(this, getTimeStamp());
+
+    Inherited::produceEffectPaused(details);
 }
 
-void Effect::producerEffectUnpaused(const EffectEventUnrecPtr e)
+void Effect::produceEffectUnpaused(void)
 {
-    EffectListenerSet ListenerSet(_EffectListeners);
-    for(EffectListenerSetConstItor SetItor(ListenerSet.begin()) ; SetItor != ListenerSet.end() ; ++SetItor)
-    {
-        (*SetItor)->effectUnpaused(e);
-    }
-    _Producer.produceEvent(EffectUnpausedMethodId, e);
+    EffectEventDetailsUnrecPtr details = EffectEventDetails::create(this, getTimeStamp());
+
+    Inherited::produceEffectUnpaused(details);
 }
 
-void Effect::producerEffectFinished(const EffectEventUnrecPtr e)
+void Effect::produceEffectFinished(void)
 {
-    EffectListenerSet ListenerSet(_EffectListeners);
-    for(EffectListenerSetConstItor SetItor(ListenerSet.begin()) ; SetItor != ListenerSet.end() ; ++SetItor)
-    {
-        (*SetItor)->effectFinished(e);
-    }
-    _Producer.produceEvent(EffectFinishedMethodId, e);
+    EffectEventDetailsUnrecPtr details = EffectEventDetails::create(this, getTimeStamp());
+
+    Inherited::produceEffectFinished(details);
 }
 
-void Effect::producerEffectStopped(const EffectEventUnrecPtr e)
+void Effect::produceEffectStopped(void)
 {
-    EffectListenerSet ListenerSet(_EffectListeners);
-    for(EffectListenerSetConstItor SetItor(ListenerSet.begin()) ; SetItor != ListenerSet.end() ; ++SetItor)
-    {
-        (*SetItor)->effectStopped(e);
-    }
-    _Producer.produceEvent(EffectStoppedMethodId, e);
+    EffectEventDetailsUnrecPtr details = EffectEventDetails::create(this, getTimeStamp());
+
+    Inherited::produceEffectStopped(details);
 }
 
 /*----------------------- constructors & destructors ----------------------*/

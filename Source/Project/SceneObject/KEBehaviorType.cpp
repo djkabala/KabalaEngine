@@ -52,7 +52,6 @@
 #include "KEBehaviorFactory.h"
 #include "Project/Scene/KEScene.h"
 
-#include "OSGMethodDescription.h"
 #include "OSGLog.h"
 #include "OSGTypeBase.h"
 
@@ -182,7 +181,7 @@ void BehaviorType::registerWithScene(Scene* scene)
         _bActiveEventIDs.clear();
 		for(UInt32 i = 0; i < _bEvents.size(); i++)
 		{
-            _bActiveEventIDs.push_back(scene->registerNewGenericMethod(_bEvents[i]));
+            _bActiveEventIDs.push_back(scene->registerNewGenericEvent(_bEvents[i]));
 		}
 		attachedScene = scene;
 	}

@@ -77,7 +77,6 @@ void SequentialEffectGroup::initMethod(InitPhase ePhase)
 
 void SequentialEffectGroup::initEffect()
 {
-    theInternalEffectListener = InternalEffectListener(this);
 }
 
 void SequentialEffectGroup::inheritedBegin()
@@ -86,7 +85,7 @@ void SequentialEffectGroup::inheritedBegin()
     
     activeEffectIndex = UInt32(0);
     
-    getEffectList(activeEffectIndex)->addEffectListener(&theInternalEffectListener);
+    _EffectFinishedConnection = getEffectList(activeEffectIndex)->connectEffectFinished(boost::bind(&SequentialEffectGroup::handleEffectFinished, this, _1));
 
     getEffectList(activeEffectIndex)->begin();//effect begin.
 }
@@ -114,7 +113,7 @@ void SequentialEffectGroup::inheritedUnpause()
 void SequentialEffectGroup::inheritedStop()
 {
     getEffectList(activeEffectIndex)->stop();
-    getEffectList(activeEffectIndex)->removeEffectListener(&theInternalEffectListener);
+    _EffectFinishedConnection.disconnect();
     activeEffectIndex = getMFEffectList()->size();//put this at the end.
 }
 
@@ -123,13 +122,13 @@ void SequentialEffectGroup::finished()
     Inherited::finished();
 }
 
-void SequentialEffectGroup::handleEffectFinished()
+void SequentialEffectGroup::handleEffectFinished(EffectEventDetails* const details)
 {
     activeEffectIndex++;
     if(activeEffectIndex < getMFEffectList()->size())
     {
-        getEffectList(activeEffectIndex-1)->removeEffectListener(&theInternalEffectListener);
-        getEffectList(activeEffectIndex)->addEffectListener(&theInternalEffectListener);
+        _EffectFinishedConnection.disconnect();
+        _EffectFinishedConnection = getEffectList(activeEffectIndex)->connectEffectFinished(boost::bind(&SequentialEffectGroup::handleEffectFinished, this, _1));
         getEffectList(activeEffectIndex)->begin();
     }
     else
@@ -141,6 +140,13 @@ void SequentialEffectGroup::handleEffectFinished()
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
+
+void SequentialEffectGroup::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    _EffectFinishedConnection.disconnect();
+}
 
 /*----------------------- constructors & destructors ----------------------*/
 

@@ -48,6 +48,7 @@
 
 #include <boost/filesystem/convenience.hpp>
 #include <boost/algorithm/string.hpp>
+#include "Application/KEMainApplication.h"
 
 OSG_USING_NAMESPACE
 
@@ -69,7 +70,7 @@ CommandType ExportModelCommand::_Type("ExportModelCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-ExportModelCommandPtr ExportModelCommand::create(NodeUnrecPtr ExportNode)
+ExportModelCommandPtr ExportModelCommand::create(Node* const ExportNode)
 {
 	return RefPtr(new ExportModelCommand(ExportNode));
 }

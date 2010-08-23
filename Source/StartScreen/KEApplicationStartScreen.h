@@ -41,12 +41,11 @@
 
 #include "KEApplicationStartScreenBase.h"
 #include <OpenSG/OSGForegroundFields.h>
-#include <OpenSG/OSGKeyAdapter.h>
-#include <OpenSG/OSGAnimator.h>
-#include <OpenSG/OSGActionListener.h>
+#include <OpenSG/OSGAnimatorFields.h>
 #include <OpenSG/OSGUIDrawingSurfaceFields.h>
-#include <OpenSG/OSGFieldAnimation.h>
-#include <OpenSG/OSGUpdateListener.h>
+#include <OpenSG/OSGFieldAnimationFields.h>
+#include <OpenSG/OSGKeyEventDetailsFields.h>
+#include <OpenSG/OSGActionEventDetailsFields.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -116,83 +115,25 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationStartScreen : public ApplicationStar
     static void initMethod(InitPhase ePhase);
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
 
-    class StartScreenKeyListener : public KeyAdapter
-    {
-      public:
-        StartScreenKeyListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
+    virtual void resolveLinks(void);
 
-        virtual void keyTyped(const KeyEventUnrecPtr e);
-      protected :
-        ApplicationStartScreenRefPtr _ApplicationStartScreen;
-    };
+    /*! \}                                                                 */
+    void handleKeyTyped(KeyEventDetails* const details);
+    void handleBuilderButtonAction(ActionEventDetails* const details);
+    void handlePlayerButtonAction(ActionEventDetails* const details);
+    void handleExitButtonAction(ActionEventDetails* const details);
 
-    friend class StartScreenKeyListener;
-
-    StartScreenKeyListener _StartScreenKeyListener;
-
-    //Builder ::OSG::Button Action Listener
-    class BuilderButtonActionListener : public ActionListener
-    {
-      public:
-        BuilderButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
-
-        virtual void actionPerformed(const ActionEventUnrecPtr e);
-      protected :
-        ApplicationStartScreenRefPtr _ApplicationStartScreen;
-    };
-
-    friend class BuilderButtonActionListener;
-
-    BuilderButtonActionListener _BuilderButtonActionListener;
-
-    //Player ::OSG::Button Action Listener
-    class PlayerButtonActionListener : public ActionListener
-    {
-      public:
-        PlayerButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
-
-        virtual void actionPerformed(const ActionEventUnrecPtr e);
-      protected :
-        ApplicationStartScreenRefPtr _ApplicationStartScreen;
-    };
-
-    friend class PlayerButtonActionListener;
-
-    PlayerButtonActionListener _PlayerButtonActionListener;
-
-    //Exit ::OSG::Button Action Listener
-    class ExitButtonActionListener : public ActionListener
-    {
-      public:
-        ExitButtonActionListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
-
-        virtual void actionPerformed(const ActionEventUnrecPtr e);
-      protected :
-        ApplicationStartScreenRefPtr _ApplicationStartScreen;
-    };
-
-    friend class ExitButtonActionListener;
-
-    ExitButtonActionListener _ExitButtonActionListener;
-
-    class ScreenUpdateListener : public UpdateListener
-    {
-      public:
-        ScreenUpdateListener(ApplicationStartScreenRefPtr TheApplicationStartScreen);
-        virtual void update(const UpdateEventUnrecPtr e);
-      private:
-        ApplicationStartScreenRefPtr _ApplicationStartScreen;
-    };
-
-    friend class ScreenUpdateListener;
-
-    ScreenUpdateListener _ScreenUpdateListener;
+    boost::signals2::connection _KeyTypedConnection,
+                                _BuilderButtonActionConnection,
+                                _PlayerButtonActionConnection,
+                                _ExitButtonActionConnection;
 
     UIDrawingSurfaceRefPtr _TheUIDrawingSurface;
     FieldAnimationRefPtr _TorusAnimation;
-
-    void updateAnimation(const Time& Elps);
     /*==========================  PRIVATE  ================================*/
 
   private:
