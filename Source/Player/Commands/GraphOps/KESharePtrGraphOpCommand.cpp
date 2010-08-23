@@ -81,12 +81,30 @@ SharePtrGraphOpCommandPtr SharePtrGraphOpCommand::create(NodeUnrecPtr RootNode)
 
 void SharePtrGraphOpCommand::execute(void)
 {
-	
+	OSG::SharePtrGraphOpRefPtr TheGraphOp = OSG::SharePtrGraphOp::create();
+
+	std::string includes(MainApplication::the()->getSettings().get<std::string>("player.debugger.share_ptr_graph_op.includes")), 
+				excludes(MainApplication::the()->getSettings().get<std::string>("player.debugger.share_ptr_graph_op.excludes"));
+
+	if((includes.length() > 0) && (excludes.length() > 0))
+	{
+		SLOG << "SharePtrGraphOpCommand::execute: Settings given for both includes and excludes. Excludes will be ignored!";
+	}
+	if(includes.length() > 0)
+	{
+		TheGraphOp->setIncludes(includes);
+	}
+	else if(excludes.length() > 0)
+	{
+		TheGraphOp->setExcludes(excludes);
+	}
+
+	TheGraphOp->traverse(_RootNode);
 }
 
 std::string SharePtrGraphOpCommand::getCommandDescription(void) const
 {
-	std::string Description("Sets up level of detail nodes in the scene");
+	std::string Description("Tries to save memory by sharing fields between field containers.");
 	
 	return Description;
 }

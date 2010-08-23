@@ -81,12 +81,16 @@ SplitGraphOpCommandPtr SplitGraphOpCommand::create(NodeUnrecPtr RootNode)
 
 void SplitGraphOpCommand::execute(void)
 {
-	
+	OSG::SplitGraphOpRefPtr TheGraphOp = OSG::SplitGraphOp::create();
+
+	TheGraphOp->setMaxPolygons(MainApplication::the()->getSettings().get<UInt16>("player.debugger.split_graph_op.max_polygons"));
+
+	TheGraphOp->traverse(_RootNode);
 }
 
 std::string SplitGraphOpCommand::getCommandDescription(void) const
 {
-	std::string Description("Sets up level of detail nodes in the scene");
+	std::string Description("Optimizes geometry by reducing the number of polygons.");
 	
 	return Description;
 }

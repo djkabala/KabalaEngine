@@ -81,12 +81,20 @@ GeoMergeGraphOpCommandPtr GeoMergeGraphOpCommand::create(NodeUnrecPtr RootNode)
 
 void GeoMergeGraphOpCommand::execute(void)
 {
-	
+	std::string maxMerge = MainApplication::the()->getSettings().get<std::string>
+							("player.debugger.geo_merge_graph_op.max_geos_to_merge");
+
+	OSG::GeometryMergeGraphOpRefPtr TheGraphOp = OSG::GeometryMergeGraphOp::create();
+
+	std::string params = std::string("mergeThreshold=") + maxMerge;
+	TheGraphOp->setParams(params);
+
+	TheGraphOp->traverse(_RootNode);
 }
 
 std::string GeoMergeGraphOpCommand::getCommandDescription(void) const
 {
-	std::string Description("Sets up level of detail nodes in the scene");
+	std::string Description("Attempts to merge sibling geometries");
 	
 	return Description;
 }

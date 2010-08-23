@@ -81,12 +81,21 @@ PruneGraphOpCommandPtr PruneGraphOpCommand::create(NodeUnrecPtr RootNode)
 
 void PruneGraphOpCommand::execute(void)
 {
-	
+	std::string sMethod(MainApplication::the()->getSettings().get<std::string>("player.debugger.prune_graph_op.method")),
+				sSize(MainApplication::the()->getSettings().get<std::string>("player.debugger.prune_graph_op.size"));
+
+	OSG::PruneGraphOpRefPtr TheGraphOp = OSG::PruneGraphOp::create();
+
+	std::string params = std::string("size=") + sSize + std::string(" method=")  + sMethod;
+	TheGraphOp->setParams(params);
+
+	TheGraphOp->traverse(_RootNode);
+
 }
 
 std::string PruneGraphOpCommand::getCommandDescription(void) const
 {
-	std::string Description("Sets up level of detail nodes in the scene");
+	std::string Description("Removes nodes smaller than a given size.");
 	
 	return Description;
 }

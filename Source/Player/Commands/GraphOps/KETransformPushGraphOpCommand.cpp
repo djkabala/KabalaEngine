@@ -81,12 +81,16 @@ TransformPushGraphOpCommandPtr TransformPushGraphOpCommand::create(NodeUnrecPtr 
 
 void TransformPushGraphOpCommand::execute(void)
 {
-	
+	OSG::TransformPushGraphOpRefPtr TheGraphOp = OSG::TransformPushGraphOp::create();
+
+	// no settings for this graph op...
+
+	TheGraphOp->traverse(_RootNode);
 }
 
 std::string TransformPushGraphOpCommand::getCommandDescription(void) const
 {
-	std::string Description("Sets up level of detail nodes in the scene");
+	std::string Description("Attempts to push transforms towards leaf nodes.");
 	
 	return Description;
 }

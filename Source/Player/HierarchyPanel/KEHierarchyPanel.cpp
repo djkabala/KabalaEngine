@@ -240,7 +240,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_GeoMergeGraphOpItem->setText("Geo Merge Graph Op");
 	_SplitGraphOpItem->setText("Split Graph Op");
 	_PruneGraphOpItem->setText("Prune Graph Op");
-	_XformPushGraphOpItem->setText("Transform Graph Op");
+	_XformPushGraphOpItem->setText("Transform Push Graph Op");
 	_MaterialGroupGraphOpItem->setText("Material Group Graph Op");
 	_SharePtrGraphOpItem->setText("Share Ptr Graph Op");
 
@@ -255,6 +255,12 @@ void HierarchyPanel::createPopUpMenu(void)
 	_PasteInstanceItem->addActionListener(&_BasicListener);
 	_FocusCamera->addActionListener(&_BasicListener);
 	_LodGraphOpItem->addActionListener(&_BasicListener);
+	_GeoMergeGraphOpItem->addActionListener(&_BasicListener);
+	_SplitGraphOpItem->addActionListener(&_BasicListener);
+	_PruneGraphOpItem->addActionListener(&_BasicListener);
+	_XformPushGraphOpItem->addActionListener(&_BasicListener);
+	_MaterialGroupGraphOpItem->addActionListener(&_BasicListener);
+	_SharePtrGraphOpItem->addActionListener(&_BasicListener);
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 

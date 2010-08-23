@@ -45,7 +45,7 @@
 #include <OpenSG/OSGSceneFileHandler.h>
 #include <OpenSG/OSGFCFileHandler.h>
 #include <OpenSG/OSGWindowEventProducer.h>
-#include <OpenSG/OSGMaterialMergeGraphOp.h>
+#include <OpenSG/OSGMaterialGroupPushGraphOp.h>
 
 #include <boost/filesystem/convenience.hpp>
 #include <boost/algorithm/string.hpp>
@@ -81,12 +81,15 @@ MaterialGroupGraphOpCommandPtr MaterialGroupGraphOpCommand::create(NodeUnrecPtr 
 
 void MaterialGroupGraphOpCommand::execute(void)
 {
-	
+	OSG::MaterialGroupPushGraphOpRefPtr TheGraphOp = OSG::MaterialGroupPushGraphOp::create();
+
+	TheGraphOp->traverse(_RootNode);
 }
 
 std::string MaterialGroupGraphOpCommand::getCommandDescription(void) const
 {
-	std::string Description("Sets up level of detail nodes in the scene");
+	std::string Description("Moves the Materials form MaterialGroups to the MaterialDrawables below" 
+							" them and replaces the obsolete MaterialGroups with Groups.");
 	
 	return Description;
 }
