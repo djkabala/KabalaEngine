@@ -40,8 +40,6 @@
 #endif
 
 #include "KEParticleSystemEffectBase.h"
-#include <OpenSG/OSGEventProducer.h>
-#include <OpenSG/OSGUpdateListener.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -118,6 +116,13 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
     static void initMethod(InitPhase ePhase);
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
 
   private:
@@ -125,11 +130,8 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
     friend class FieldContainer;
     friend class ParticleSystemEffectBase;
 
-    Real32 lifetime;
+    Time _Age;
 
-    EventProducerPtr theUpdateProducer;
-
-    void updateLifetime(Time elps);
     void endSystem();
     void killSystem();
     bool checkTimeoutEndCondition();
@@ -140,49 +142,16 @@ class KE_KABALAENGINE_DLLMAPPING ParticleSystemEffect : public ParticleSystemEff
     /************************************************************
     *   Internal listener for getting time since last frame.
     *************************************************************/
-    class InternalUpdateListener : public EventListener
-    {
-      public:
-        InternalUpdateListener(ParticleSystemEffect* parent);
-        InternalUpdateListener(){};
-        ~InternalUpdateListener(){};
 
-        void eventProduced(const EventUnrecPtr EventDetails, UInt32 ProducedEventId);
-
-      protected:
-
-        ParticleSystemEffect* fx;
-    };
-
-    InternalUpdateListener theInternalUpdateListener;
+    void handleUpdate(UpdateEventDetails* const EventDetails);
+    boost::signals2::connection _UpdateConnection;
 
     /************************************************************
     *   Internal listener for checking end conditions. Has a 
     *   reference to the "parent" particlesystemeffect.
     *************************************************************/
-    class InternalParticleSystemListener : public ParticleSystemListener
-    {
-      public:
-
-        InternalParticleSystemListener(ParticleSystemEffect* parent);
-        InternalParticleSystemListener(){};
-        ~InternalParticleSystemListener(){};
-
-        void systemUpdated(const ParticleSystemEventUnrecPtr e);
-
-        void volumeChanged(const ParticleSystemEventUnrecPtr e);
-
-        void particleKilled(const ParticleEventUnrecPtr e);
-
-        void particleStolen(const ParticleEventUnrecPtr e);
-
-        void particleGenerated(const ParticleEventUnrecPtr e);
-      protected:
-        
-        ParticleSystemEffect* fx;
-    };
-
-    InternalParticleSystemListener theInternalParticleSystemListener;
+    void handleSystemUpdated(ParticleSystemEventDetails* const details);
+    boost::signals2::connection _SystemUpdatedConnection;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const ParticleSystemEffect &source);

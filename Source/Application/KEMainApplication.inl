@@ -37,15 +37,9 @@
 //  Includes
 //---------------------------------------------------------------------------
 
-#include <OpenSG/OSGConfig.h>
+#include "Application/Logging/KELogEventDetails.h"
 
 OSG_BEGIN_NAMESPACE
-
-inline
-MainApplication::MainWindowListener::MainWindowListener(MainApplication* TheMainApplication) :
-        _MainApplication(TheMainApplication)
-{
-}
 
 inline
 ApplicationSettings &MainApplication::getSettings(void)
@@ -72,81 +66,164 @@ const BoostPath  &MainApplication::getSettingsLoadFile(void) const
 }
 
 inline
-WindowEventProducerRefPtr &MainApplication::getMainWindow(void)
+WindowEventProducer* MainApplication::getMainWindow(void)
 {
     return _MainWindow;
 }
 
 inline
-const WindowEventProducerRefPtr &MainApplication::getMainWindow(void) const
+const WindowEventProducer* MainApplication::getMainWindow(void) const
 {
     return _MainWindow;
 }
 
 inline
-ProjectRefPtr &MainApplication::getProject(void)
+Project* MainApplication::getProject(void)
 {
     return _Project;
 }
 
 inline
-const ProjectRefPtr &MainApplication::getProject(void) const
+const Project* MainApplication::getProject(void) const
 {
     return _Project;
 }
 
 inline
-ApplicationModeRefPtr &MainApplication::getBuilderMode(void)
+ApplicationMode* MainApplication::getBuilderMode(void)
 {
     return _BuilderMode;
 }
 
 inline
-const ApplicationModeRefPtr  &MainApplication::getBuilderMode(void) const
+const ApplicationMode*  MainApplication::getBuilderMode(void) const
 {
     return _BuilderMode;
 }
 
 inline
-ApplicationModeRefPtr &MainApplication::getPlayerMode(void)
+ApplicationMode* MainApplication::getPlayerMode(void)
 {
     return _PlayerMode;
 }
 
 inline
-const ApplicationModeRefPtr &MainApplication::getPlayerMode(void) const
+const ApplicationMode* MainApplication::getPlayerMode(void) const
 {
     return _PlayerMode;
 }
 
 inline
-ApplicationModeRefPtr &MainApplication::getStartScreenMode(void)
+ApplicationMode* MainApplication::getStartScreenMode(void)
 {
     return _StartScreenMode;
 }
 
 inline
-const ApplicationModeRefPtr &MainApplication::getStartScreenMode(void) const
+const ApplicationMode* MainApplication::getStartScreenMode(void) const
 {
     return _StartScreenMode;
 }
 
 inline
-ApplicationModeRefPtr &MainApplication::getCurrentMode(void)
+ApplicationMode* MainApplication::getCurrentMode(void)
 {
     return _CurrentMode;
 }
 
 inline
-const ApplicationModeRefPtr &MainApplication::getCurrentMode(void) const
+const ApplicationMode* MainApplication::getCurrentMode(void) const
 {
     return _CurrentMode;
 }
 
+//! access the producer type of the class
 inline
-bool MainApplication::isLogListenerAttached(LogListenerPtr Listener) const
+const EventProducerType &MainApplication::getProducerClassType(void)
 {
-    return _LogListeners.find(Listener) != _LogListeners.end();
+    return _producerType;
+}
+
+//! access the producer type id of the class
+inline
+UInt32 MainApplication::getProducerClassTypeId(void)
+{
+    return _producerType.getId();
+}
+inline
+boost::signals2::connection MainApplication::attachActivity(UInt32 eventId,
+                                           Activity* TheActivity)
+{
+    return connectLog(eventId, boost::bind(&Activity::eventProduced, TheActivity, _1, _2) );
+}
+
+inline
+UInt32 MainApplication::getNumProducedEvents(void) const
+{
+    return getProducerType().getNumEventDescs();
+}
+
+inline
+const EventDescription *MainApplication::getProducedEventDescription(const Char8 *ProducedEventName) const
+{
+    return getProducerType().findEventDescription(ProducedEventName);
+}
+
+inline
+const EventDescription *MainApplication::getProducedEventDescription(UInt32 ProducedEventId) const
+{
+    return getProducerType().getEventDescription(ProducedEventId);
+}
+
+inline
+UInt32 MainApplication::getProducedEventId(const Char8 *ProducedEventName) const
+{
+    return getProducerType().getProducedEventId(ProducedEventName);
+}
+
+inline
+boost::signals2::connection  MainApplication::connectLog(const LogEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _LogEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  MainApplication::connectLog(const LogEventType::group_type &group,
+                                                    const LogEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _LogEvent.connect(group, listener, at);
+}
+
+inline
+void  MainApplication::disconnectLog(const LogEventType::group_type &group)
+{
+    _LogEvent.disconnect(group);
+}
+
+inline
+void  MainApplication::disconnectAllSlotsLog(void)
+{
+    _LogEvent.disconnect_all_slots();
+}
+
+inline
+bool  MainApplication::isEmptyLog(void) const
+{
+    return _LogEvent.empty();
+}
+
+inline
+UInt32  MainApplication::numSlotsLog(void) const
+{
+    return _LogEvent.num_slots();
+}
+
+inline
+void MainApplication::produceLog(LogEventDetailsType* const e)
+{
+    _LogEvent.set_combiner(ConsumableEventCombiner(e));
+    _LogEvent(dynamic_cast<LogEventDetailsType* const>(e), LogEventId);
 }
 
 OSG_END_NAMESPACE

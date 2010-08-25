@@ -66,7 +66,7 @@ CommandType ShowHideCommand::_Type("ShowHideCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-ShowHideCommandPtr ShowHideCommand::create(NodeRefPtr SelectedNode, bool Show, bool Recursive)
+ShowHideCommandPtr ShowHideCommand::create(Node* const SelectedNode, bool Show, bool Recursive)
 {
 	return RefPtr(new ShowHideCommand(SelectedNode,Show,Recursive));
 }

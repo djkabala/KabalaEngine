@@ -66,7 +66,7 @@
 #include <OpenSG/OSGAttachmentContainer.h> // Parent
 
 #include "Project/SceneObject/KESceneObjectFields.h" // SceneObjects type
-#include "Project/KEProjectFields.h"    // InternalParentProject type
+#include "Project/KEProjectFields.h"    // ParentProject type
 #include <OpenSG/OSGViewportFields.h>   // Viewports type
 #include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
 #include <OpenSG/OSGUIDrawingSurfaceFields.h> // UIDrawingSurfaces type
@@ -84,10 +84,15 @@
 #include "KESceneFields.h"
 
 //Event Producer Headers
-#include <OpenSG/OSGEventProducer.h>
-#include <OpenSG/OSGEventProducerType.h>
-#include <OpenSG/OSGMethodDescription.h>
-#include <OpenSG/OSGEventProducerPtrType.h>
+#include <OpenSG/OSGActivity.h>
+#include <OpenSG/OSGConsumableEventCombiner.h>
+
+#include "Project/Scene/KESceneEventDetailsFields.h"
+#include <OpenSG/OSGWindowEventDetailsFields.h>
+#include <OpenSG/OSGMouseEventDetailsFields.h>
+#include <OpenSG/OSGMouseWheelEventDetailsFields.h>
+#include <OpenSG/OSGKeyEventDetailsFields.h>
+#include <OpenSG/OSGUpdateEventDetailsFields.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -106,6 +111,62 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     typedef TypeObject::InitPhase InitPhase;
 
     OSG_GEN_INTERNALPTR(Scene);
+    
+    
+    typedef SceneEventDetails  SceneEnteredEventDetailsType;
+    typedef SceneEventDetails  SceneExitedEventDetailsType;
+    typedef SceneEventDetails  SceneStartedEventDetailsType;
+    typedef SceneEventDetails  SceneEndedEventDetailsType;
+    typedef SceneEventDetails  SceneResetEventDetailsType;
+    typedef WindowEventDetails WindowOpenedEventDetailsType;
+    typedef WindowEventDetails WindowClosingEventDetailsType;
+    typedef WindowEventDetails WindowClosedEventDetailsType;
+    typedef WindowEventDetails WindowIconifiedEventDetailsType;
+    typedef WindowEventDetails WindowDeiconifiedEventDetailsType;
+    typedef WindowEventDetails WindowActivatedEventDetailsType;
+    typedef WindowEventDetails WindowDeactivatedEventDetailsType;
+    typedef WindowEventDetails WindowEnteredEventDetailsType;
+    typedef WindowEventDetails WindowExitedEventDetailsType;
+    typedef MouseEventDetails  MouseClickedEventDetailsType;
+    typedef MouseEventDetails  MouseEnteredEventDetailsType;
+    typedef MouseEventDetails  MouseExitedEventDetailsType;
+    typedef MouseEventDetails  MousePressedEventDetailsType;
+    typedef MouseEventDetails  MouseReleasedEventDetailsType;
+    typedef MouseEventDetails  MouseMovedEventDetailsType;
+    typedef MouseEventDetails  MouseDraggedEventDetailsType;
+    typedef MouseWheelEventDetails MouseWheelMovedEventDetailsType;
+    typedef KeyEventDetails    KeyPressedEventDetailsType;
+    typedef KeyEventDetails    KeyReleasedEventDetailsType;
+    typedef KeyEventDetails    KeyTypedEventDetailsType;
+    typedef UpdateEventDetails UpdateEventDetailsType;
+
+    typedef boost::signals2::signal<void (EventDetails* const            , UInt32)> BaseEventType;
+    typedef boost::signals2::signal<void (SceneEventDetails* const, UInt32), ConsumableEventCombiner> SceneEnteredEventType;
+    typedef boost::signals2::signal<void (SceneEventDetails* const, UInt32), ConsumableEventCombiner> SceneExitedEventType;
+    typedef boost::signals2::signal<void (SceneEventDetails* const, UInt32), ConsumableEventCombiner> SceneStartedEventType;
+    typedef boost::signals2::signal<void (SceneEventDetails* const, UInt32), ConsumableEventCombiner> SceneEndedEventType;
+    typedef boost::signals2::signal<void (SceneEventDetails* const, UInt32), ConsumableEventCombiner> SceneResetEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowOpenedEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowClosingEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowClosedEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowIconifiedEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowDeiconifiedEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowActivatedEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowDeactivatedEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowEnteredEventType;
+    typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowExitedEventType;
+    typedef boost::signals2::signal<void (MouseEventDetails* const, UInt32), ConsumableEventCombiner> MouseClickedEventType;
+    typedef boost::signals2::signal<void (MouseEventDetails* const, UInt32), ConsumableEventCombiner> MouseEnteredEventType;
+    typedef boost::signals2::signal<void (MouseEventDetails* const, UInt32), ConsumableEventCombiner> MouseExitedEventType;
+    typedef boost::signals2::signal<void (MouseEventDetails* const, UInt32), ConsumableEventCombiner> MousePressedEventType;
+    typedef boost::signals2::signal<void (MouseEventDetails* const, UInt32), ConsumableEventCombiner> MouseReleasedEventType;
+    typedef boost::signals2::signal<void (MouseEventDetails* const, UInt32), ConsumableEventCombiner> MouseMovedEventType;
+    typedef boost::signals2::signal<void (MouseEventDetails* const, UInt32), ConsumableEventCombiner> MouseDraggedEventType;
+    typedef boost::signals2::signal<void (MouseWheelEventDetails* const, UInt32), ConsumableEventCombiner> MouseWheelMovedEventType;
+    typedef boost::signals2::signal<void (KeyEventDetails* const  , UInt32), ConsumableEventCombiner> KeyPressedEventType;
+    typedef boost::signals2::signal<void (KeyEventDetails* const  , UInt32), ConsumableEventCombiner> KeyReleasedEventType;
+    typedef boost::signals2::signal<void (KeyEventDetails* const  , UInt32), ConsumableEventCombiner> KeyTypedEventType;
+    typedef boost::signals2::signal<void (UpdateEventDetails* const, UInt32), ConsumableEventCombiner> UpdateEventType;
 
     /*==========================  PUBLIC  =================================*/
 
@@ -114,8 +175,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     enum
     {
         SceneObjectsFieldId = Inherited::NextFieldId,
-        InternalParentProjectFieldId = SceneObjectsFieldId + 1,
-        ViewportsFieldId = InternalParentProjectFieldId + 1,
+        ParentProjectFieldId = SceneObjectsFieldId + 1,
+        ViewportsFieldId = ParentProjectFieldId + 1,
         BackgroundsFieldId = ViewportsFieldId + 1,
         UIDrawingSurfacesFieldId = BackgroundsFieldId + 1,
         InitialBackgroundFieldId = UIDrawingSurfacesFieldId + 1,
@@ -137,14 +198,13 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
         PhysicsHandlerFieldId = LuaModuleFieldId + 1,
         PhysicsWorldFieldId = PhysicsHandlerFieldId + 1,
         GenericMethodIDsFieldId = PhysicsWorldFieldId + 1,
-        EventProducerFieldId = GenericMethodIDsFieldId + 1,
-        NextFieldId = EventProducerFieldId + 1
+        NextFieldId = GenericMethodIDsFieldId + 1
     };
 
     static const OSG::BitVector SceneObjectsFieldMask =
         (TypeTraits<BitVector>::One << SceneObjectsFieldId);
-    static const OSG::BitVector InternalParentProjectFieldMask =
-        (TypeTraits<BitVector>::One << InternalParentProjectFieldId);
+    static const OSG::BitVector ParentProjectFieldMask =
+        (TypeTraits<BitVector>::One << ParentProjectFieldId);
     static const OSG::BitVector ViewportsFieldMask =
         (TypeTraits<BitVector>::One << ViewportsFieldId);
     static const OSG::BitVector BackgroundsFieldMask =
@@ -189,13 +249,11 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
         (TypeTraits<BitVector>::One << PhysicsWorldFieldId);
     static const OSG::BitVector GenericMethodIDsFieldMask =
         (TypeTraits<BitVector>::One << GenericMethodIDsFieldId);
-    static const OSG::BitVector EventProducerFieldMask =
-        (TypeTraits<BitVector>::One << EventProducerFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
     typedef MFUnrecChildSceneObjectPtr MFSceneObjectsType;
-    typedef SFUnrecProjectPtr SFInternalParentProjectType;
+    typedef SFParentFieldContainerPtr SFParentProjectType;
     typedef MFUnrecViewportPtr MFViewportsType;
     typedef MFUnrecBackgroundPtr MFBackgroundsType;
     typedef MFUnrecUIDrawingSurfacePtr MFUIDrawingSurfacesType;
@@ -218,37 +276,36 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     typedef SFUnrecPhysicsHandlerPtr SFPhysicsHandlerType;
     typedef SFUnrecPhysicsWorldPtr SFPhysicsWorldType;
     typedef SFUInt32          SFGenericMethodIDsType;
-    typedef SFEventProducerPtr          SFEventProducerType;
 
     enum
     {
-        SceneEnteredMethodId = 1,
-        SceneExitedMethodId = SceneEnteredMethodId + 1,
-        SceneStartedMethodId = SceneExitedMethodId + 1,
-        SceneEndedMethodId = SceneStartedMethodId + 1,
-        SceneResetMethodId = SceneEndedMethodId + 1,
-        WindowOpenedMethodId = SceneResetMethodId + 1,
-        WindowClosingMethodId = WindowOpenedMethodId + 1,
-        WindowClosedMethodId = WindowClosingMethodId + 1,
-        WindowIconifiedMethodId = WindowClosedMethodId + 1,
-        WindowDeiconifiedMethodId = WindowIconifiedMethodId + 1,
-        WindowActivatedMethodId = WindowDeiconifiedMethodId + 1,
-        WindowDeactivatedMethodId = WindowActivatedMethodId + 1,
-        WindowEnteredMethodId = WindowDeactivatedMethodId + 1,
-        WindowExitedMethodId = WindowEnteredMethodId + 1,
-        MouseClickedMethodId = WindowExitedMethodId + 1,
-        MouseEnteredMethodId = MouseClickedMethodId + 1,
-        MouseExitedMethodId = MouseEnteredMethodId + 1,
-        MousePressedMethodId = MouseExitedMethodId + 1,
-        MouseReleasedMethodId = MousePressedMethodId + 1,
-        MouseMovedMethodId = MouseReleasedMethodId + 1,
-        MouseDraggedMethodId = MouseMovedMethodId + 1,
-        MouseWheelMovedMethodId = MouseDraggedMethodId + 1,
-        KeyPressedMethodId = MouseWheelMovedMethodId + 1,
-        KeyReleasedMethodId = KeyPressedMethodId + 1,
-        KeyTypedMethodId = KeyReleasedMethodId + 1,
-        UpdateMethodId = KeyTypedMethodId + 1,
-        NextProducedMethodId = UpdateMethodId + 1
+        SceneEnteredEventId = 1,
+        SceneExitedEventId = SceneEnteredEventId + 1,
+        SceneStartedEventId = SceneExitedEventId + 1,
+        SceneEndedEventId = SceneStartedEventId + 1,
+        SceneResetEventId = SceneEndedEventId + 1,
+        WindowOpenedEventId = SceneResetEventId + 1,
+        WindowClosingEventId = WindowOpenedEventId + 1,
+        WindowClosedEventId = WindowClosingEventId + 1,
+        WindowIconifiedEventId = WindowClosedEventId + 1,
+        WindowDeiconifiedEventId = WindowIconifiedEventId + 1,
+        WindowActivatedEventId = WindowDeiconifiedEventId + 1,
+        WindowDeactivatedEventId = WindowActivatedEventId + 1,
+        WindowEnteredEventId = WindowDeactivatedEventId + 1,
+        WindowExitedEventId = WindowEnteredEventId + 1,
+        MouseClickedEventId = WindowExitedEventId + 1,
+        MouseEnteredEventId = MouseClickedEventId + 1,
+        MouseExitedEventId = MouseEnteredEventId + 1,
+        MousePressedEventId = MouseExitedEventId + 1,
+        MouseReleasedEventId = MousePressedEventId + 1,
+        MouseMovedEventId = MouseReleasedEventId + 1,
+        MouseDraggedEventId = MouseMovedEventId + 1,
+        MouseWheelMovedEventId = MouseDraggedEventId + 1,
+        KeyPressedEventId = MouseWheelMovedEventId + 1,
+        KeyReleasedEventId = KeyPressedEventId + 1,
+        KeyTypedEventId = KeyReleasedEventId + 1,
+        UpdateEventId = KeyTypedEventId + 1,
+        NextProducedEventId = UpdateEventId + 1
     };
 
     /*---------------------------------------------------------------------*/
@@ -465,28 +522,324 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                Method Produced Get                           */
+    /*! \name                Event Produced Get                           */
     /*! \{                                                                 */
 
     virtual const EventProducerType &getProducerType(void) const; 
 
-    EventConnection          attachActivity             (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId);
-    bool                     isActivityAttached         (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId) const;
-    UInt32                   getNumActivitiesAttached   (UInt32 ProducedEventId) const;
-    ActivityRefPtr           getAttachedActivity        (UInt32 ProducedEventId,
-                                                         UInt32 ActivityIndex) const;
-    void                     detachActivity             (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId);
-    UInt32                   getNumProducedEvents       (void) const;
-    const MethodDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
-    const MethodDescription *getProducedEventDescription(UInt32 ProducedEventId) const;
-    UInt32                   getProducedEventId         (const std::string &ProducedEventName) const;
+    virtual boost::signals2::connection attachActivity(UInt32 eventId,
+                                                       Activity* TheActivity);
+                                                         
+    virtual UInt32                   getNumProducedEvents       (void                                ) const;
+    virtual const EventDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
+    virtual const EventDescription *getProducedEventDescription(UInt32 ProducedEventId              ) const;
+    virtual UInt32                   getProducedEventId         (const std::string &ProducedEventName) const;
+    
+    virtual boost::signals2::connection connectEvent(UInt32 eventId, 
+                                              const BaseEventType::slot_type &listener,
+                                              boost::signals2::connect_position at= boost::signals2::at_back);
+                                              
+    virtual boost::signals2::connection connectEvent(UInt32 eventId, 
+                                              const BaseEventType::group_type &group,
+                                              const BaseEventType::slot_type &listener,
+                                              boost::signals2::connect_position at= boost::signals2::at_back);
+    
+    virtual void   disconnectEvent        (UInt32 eventId, const BaseEventType::group_type &group);
+    virtual void   disconnectAllSlotsEvent(UInt32 eventId);
+    virtual bool   isEmptyEvent           (UInt32 eventId) const;
+    virtual UInt32 numSlotsEvent          (UInt32 eventId) const;
 
-    SFEventProducerPtr *editSFEventProducer(void);
-    EventProducerPtr   &editEventProducer  (void);
-
+    /*! \}                                                                 */
+    /*! \name                Event Access                                 */
+    /*! \{                                                                 */
+    
+    //SceneEntered
+    boost::signals2::connection connectSceneEntered   (const SceneEnteredEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectSceneEntered   (const SceneEnteredEventType::group_type &group,
+                                                       const SceneEnteredEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectSceneEntered           (const SceneEnteredEventType::group_type &group);
+    void   disconnectAllSlotsSceneEntered   (void);
+    bool   isEmptySceneEntered              (void) const;
+    UInt32 numSlotsSceneEntered             (void) const;
+    
+    //SceneExited
+    boost::signals2::connection connectSceneExited    (const SceneExitedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectSceneExited    (const SceneExitedEventType::group_type &group,
+                                                       const SceneExitedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectSceneExited            (const SceneExitedEventType::group_type &group);
+    void   disconnectAllSlotsSceneExited    (void);
+    bool   isEmptySceneExited               (void) const;
+    UInt32 numSlotsSceneExited              (void) const;
+    
+    //SceneStarted
+    boost::signals2::connection connectSceneStarted   (const SceneStartedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectSceneStarted   (const SceneStartedEventType::group_type &group,
+                                                       const SceneStartedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectSceneStarted           (const SceneStartedEventType::group_type &group);
+    void   disconnectAllSlotsSceneStarted   (void);
+    bool   isEmptySceneStarted              (void) const;
+    UInt32 numSlotsSceneStarted             (void) const;
+    
+    //SceneEnded
+    boost::signals2::connection connectSceneEnded     (const SceneEndedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectSceneEnded     (const SceneEndedEventType::group_type &group,
+                                                       const SceneEndedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectSceneEnded             (const SceneEndedEventType::group_type &group);
+    void   disconnectAllSlotsSceneEnded     (void);
+    bool   isEmptySceneEnded                (void) const;
+    UInt32 numSlotsSceneEnded               (void) const;
+    
+    //SceneReset
+    boost::signals2::connection connectSceneReset     (const SceneResetEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectSceneReset     (const SceneResetEventType::group_type &group,
+                                                       const SceneResetEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectSceneReset             (const SceneResetEventType::group_type &group);
+    void   disconnectAllSlotsSceneReset     (void);
+    bool   isEmptySceneReset                (void) const;
+    UInt32 numSlotsSceneReset               (void) const;
+    
+    //WindowOpened
+    boost::signals2::connection connectWindowOpened   (const WindowOpenedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowOpened   (const WindowOpenedEventType::group_type &group,
+                                                       const WindowOpenedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowOpened           (const WindowOpenedEventType::group_type &group);
+    void   disconnectAllSlotsWindowOpened   (void);
+    bool   isEmptyWindowOpened              (void) const;
+    UInt32 numSlotsWindowOpened             (void) const;
+    
+    //WindowClosing
+    boost::signals2::connection connectWindowClosing  (const WindowClosingEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowClosing  (const WindowClosingEventType::group_type &group,
+                                                       const WindowClosingEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowClosing          (const WindowClosingEventType::group_type &group);
+    void   disconnectAllSlotsWindowClosing  (void);
+    bool   isEmptyWindowClosing             (void) const;
+    UInt32 numSlotsWindowClosing            (void) const;
+    
+    //WindowClosed
+    boost::signals2::connection connectWindowClosed   (const WindowClosedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowClosed   (const WindowClosedEventType::group_type &group,
+                                                       const WindowClosedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowClosed           (const WindowClosedEventType::group_type &group);
+    void   disconnectAllSlotsWindowClosed   (void);
+    bool   isEmptyWindowClosed              (void) const;
+    UInt32 numSlotsWindowClosed             (void) const;
+    
+    //WindowIconified
+    boost::signals2::connection connectWindowIconified(const WindowIconifiedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowIconified(const WindowIconifiedEventType::group_type &group,
+                                                       const WindowIconifiedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowIconified        (const WindowIconifiedEventType::group_type &group);
+    void   disconnectAllSlotsWindowIconified(void);
+    bool   isEmptyWindowIconified           (void) const;
+    UInt32 numSlotsWindowIconified          (void) const;
+    
+    //WindowDeiconified
+    boost::signals2::connection connectWindowDeiconified(const WindowDeiconifiedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowDeiconified(const WindowDeiconifiedEventType::group_type &group,
+                                                       const WindowDeiconifiedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowDeiconified      (const WindowDeiconifiedEventType::group_type &group);
+    void   disconnectAllSlotsWindowDeiconified(void);
+    bool   isEmptyWindowDeiconified         (void) const;
+    UInt32 numSlotsWindowDeiconified        (void) const;
+    
+    //WindowActivated
+    boost::signals2::connection connectWindowActivated(const WindowActivatedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowActivated(const WindowActivatedEventType::group_type &group,
+                                                       const WindowActivatedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowActivated        (const WindowActivatedEventType::group_type &group);
+    void   disconnectAllSlotsWindowActivated(void);
+    bool   isEmptyWindowActivated           (void) const;
+    UInt32 numSlotsWindowActivated          (void) const;
+    
+    //WindowDeactivated
+    boost::signals2::connection connectWindowDeactivated(const WindowDeactivatedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowDeactivated(const WindowDeactivatedEventType::group_type &group,
+                                                       const WindowDeactivatedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowDeactivated      (const WindowDeactivatedEventType::group_type &group);
+    void   disconnectAllSlotsWindowDeactivated(void);
+    bool   isEmptyWindowDeactivated         (void) const;
+    UInt32 numSlotsWindowDeactivated        (void) const;
+    
+    //WindowEntered
+    boost::signals2::connection connectWindowEntered  (const WindowEnteredEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowEntered  (const WindowEnteredEventType::group_type &group,
+                                                       const WindowEnteredEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowEntered          (const WindowEnteredEventType::group_type &group);
+    void   disconnectAllSlotsWindowEntered  (void);
+    bool   isEmptyWindowEntered             (void) const;
+    UInt32 numSlotsWindowEntered            (void) const;
+    
+    //WindowExited
+    boost::signals2::connection connectWindowExited   (const WindowExitedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectWindowExited   (const WindowExitedEventType::group_type &group,
+                                                       const WindowExitedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectWindowExited           (const WindowExitedEventType::group_type &group);
+    void   disconnectAllSlotsWindowExited   (void);
+    bool   isEmptyWindowExited              (void) const;
+    UInt32 numSlotsWindowExited             (void) const;
+    
+    //MouseClicked
+    boost::signals2::connection connectMouseClicked   (const MouseClickedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectMouseClicked   (const MouseClickedEventType::group_type &group,
+                                                       const MouseClickedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectMouseClicked           (const MouseClickedEventType::group_type &group);
+    void   disconnectAllSlotsMouseClicked   (void);
+    bool   isEmptyMouseClicked              (void) const;
+    UInt32 numSlotsMouseClicked             (void) const;
+    
+    //MouseEntered
+    boost::signals2::connection connectMouseEntered   (const MouseEnteredEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectMouseEntered   (const MouseEnteredEventType::group_type &group,
+                                                       const MouseEnteredEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectMouseEntered           (const MouseEnteredEventType::group_type &group);
+    void   disconnectAllSlotsMouseEntered   (void);
+    bool   isEmptyMouseEntered              (void) const;
+    UInt32 numSlotsMouseEntered             (void) const;
+    
+    //MouseExited
+    boost::signals2::connection connectMouseExited    (const MouseExitedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectMouseExited    (const MouseExitedEventType::group_type &group,
+                                                       const MouseExitedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectMouseExited            (const MouseExitedEventType::group_type &group);
+    void   disconnectAllSlotsMouseExited    (void);
+    bool   isEmptyMouseExited               (void) const;
+    UInt32 numSlotsMouseExited              (void) const;
+    
+    //MousePressed
+    boost::signals2::connection connectMousePressed   (const MousePressedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectMousePressed   (const MousePressedEventType::group_type &group,
+                                                       const MousePressedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectMousePressed           (const MousePressedEventType::group_type &group);
+    void   disconnectAllSlotsMousePressed   (void);
+    bool   isEmptyMousePressed              (void) const;
+    UInt32 numSlotsMousePressed             (void) const;
+    
+    //MouseReleased
+    boost::signals2::connection connectMouseReleased  (const MouseReleasedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectMouseReleased  (const MouseReleasedEventType::group_type &group,
+                                                       const MouseReleasedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectMouseReleased          (const MouseReleasedEventType::group_type &group);
+    void   disconnectAllSlotsMouseReleased  (void);
+    bool   isEmptyMouseReleased             (void) const;
+    UInt32 numSlotsMouseReleased            (void) const;
+    
+    //MouseMoved
+    boost::signals2::connection connectMouseMoved     (const MouseMovedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectMouseMoved     (const MouseMovedEventType::group_type &group,
+                                                       const MouseMovedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectMouseMoved             (const MouseMovedEventType::group_type &group);
+    void   disconnectAllSlotsMouseMoved     (void);
+    bool   isEmptyMouseMoved                (void) const;
+    UInt32 numSlotsMouseMoved               (void) const;
+    
+    //MouseDragged
+    boost::signals2::connection connectMouseDragged   (const MouseDraggedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectMouseDragged   (const MouseDraggedEventType::group_type &group,
+                                                       const MouseDraggedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectMouseDragged           (const MouseDraggedEventType::group_type &group);
+    void   disconnectAllSlotsMouseDragged   (void);
+    bool   isEmptyMouseDragged              (void) const;
+    UInt32 numSlotsMouseDragged             (void) const;
+    
+    //MouseWheelMoved
+    boost::signals2::connection connectMouseWheelMoved(const MouseWheelMovedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectMouseWheelMoved(const MouseWheelMovedEventType::group_type &group,
+                                                       const MouseWheelMovedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectMouseWheelMoved        (const MouseWheelMovedEventType::group_type &group);
+    void   disconnectAllSlotsMouseWheelMoved(void);
+    bool   isEmptyMouseWheelMoved           (void) const;
+    UInt32 numSlotsMouseWheelMoved          (void) const;
+    
+    //KeyPressed
+    boost::signals2::connection connectKeyPressed     (const KeyPressedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectKeyPressed     (const KeyPressedEventType::group_type &group,
+                                                       const KeyPressedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectKeyPressed             (const KeyPressedEventType::group_type &group);
+    void   disconnectAllSlotsKeyPressed     (void);
+    bool   isEmptyKeyPressed                (void) const;
+    UInt32 numSlotsKeyPressed               (void) const;
+    
+    //KeyReleased
+    boost::signals2::connection connectKeyReleased    (const KeyReleasedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectKeyReleased    (const KeyReleasedEventType::group_type &group,
+                                                       const KeyReleasedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectKeyReleased            (const KeyReleasedEventType::group_type &group);
+    void   disconnectAllSlotsKeyReleased    (void);
+    bool   isEmptyKeyReleased               (void) const;
+    UInt32 numSlotsKeyReleased              (void) const;
+    
+    //KeyTyped
+    boost::signals2::connection connectKeyTyped       (const KeyTypedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectKeyTyped       (const KeyTypedEventType::group_type &group,
+                                                       const KeyTypedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectKeyTyped               (const KeyTypedEventType::group_type &group);
+    void   disconnectAllSlotsKeyTyped       (void);
+    bool   isEmptyKeyTyped                  (void) const;
+    UInt32 numSlotsKeyTyped                 (void) const;
+    
+    //Update
+    boost::signals2::connection connectUpdate         (const UpdateEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectUpdate         (const UpdateEventType::group_type &group,
+                                                       const UpdateEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectUpdate                 (const UpdateEventType::group_type &group);
+    void   disconnectAllSlotsUpdate         (void);
+    bool   isEmptyUpdate                    (void) const;
+    UInt32 numSlotsUpdate                   (void) const;
+    
+    
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                   Construction                               */
@@ -519,13 +872,36 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
   protected:
     /*---------------------------------------------------------------------*/
-    /*! \name                    Event Producer                            */
+    /*! \name                    Produced Event Signals                   */
     /*! \{                                                                 */
-    EventProducer _Producer;
-    
-    GetFieldHandlePtr  getHandleEventProducer        (void) const;
-    EditFieldHandlePtr editHandleEventProducer       (void);
 
+    //Event Event producers
+    SceneEnteredEventType _SceneEnteredEvent;
+    SceneExitedEventType _SceneExitedEvent;
+    SceneStartedEventType _SceneStartedEvent;
+    SceneEndedEventType _SceneEndedEvent;
+    SceneResetEventType _SceneResetEvent;
+    WindowOpenedEventType _WindowOpenedEvent;
+    WindowClosingEventType _WindowClosingEvent;
+    WindowClosedEventType _WindowClosedEvent;
+    WindowIconifiedEventType _WindowIconifiedEvent;
+    WindowDeiconifiedEventType _WindowDeiconifiedEvent;
+    WindowActivatedEventType _WindowActivatedEvent;
+    WindowDeactivatedEventType _WindowDeactivatedEvent;
+    WindowEnteredEventType _WindowEnteredEvent;
+    WindowExitedEventType _WindowExitedEvent;
+    MouseClickedEventType _MouseClickedEvent;
+    MouseEnteredEventType _MouseEnteredEvent;
+    MouseExitedEventType _MouseExitedEvent;
+    MousePressedEventType _MousePressedEvent;
+    MouseReleasedEventType _MouseReleasedEvent;
+    MouseMovedEventType _MouseMovedEvent;
+    MouseDraggedEventType _MouseDraggedEvent;
+    MouseWheelMovedEventType _MouseWheelMovedEvent;
+    KeyPressedEventType _KeyPressedEvent;
+    KeyReleasedEventType _KeyReleasedEvent;
+    KeyTypedEventType _KeyTypedEvent;
+    UpdateEventType _UpdateEvent;
     /*! \}                                                                 */
 
     static TypeObject _type;
@@ -538,7 +914,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \{                                                                 */
 
     MFUnrecChildSceneObjectPtr _mfSceneObjects;
-    SFUnrecProjectPtr _sfInternalParentProject;
+    SFParentFieldContainerPtr _sfParentProject;
     MFUnrecViewportPtr _mfViewports;
     MFUnrecBackgroundPtr _mfBackgrounds;
     MFUnrecUIDrawingSurfacePtr _mfUIDrawingSurfaces;
@@ -561,7 +937,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     SFUnrecPhysicsHandlerPtr _sfPhysicsHandler;
     SFUnrecPhysicsWorldPtr _sfPhysicsWorld;
     SFUInt32          _sfGenericMethodIDs;
-    SFEventProducerPtr _sfEventProducer;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -587,6 +962,17 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
+    /*! \name Parent linking                                               */
+    /*! \{                                                                 */
+
+    virtual bool linkParent  (FieldContainer * const pParent,
+                              UInt16           const childFieldId,
+                              UInt16           const parentFieldId);
+    virtual bool unlinkParent(FieldContainer * const pParent,
+                              UInt16           const parentFieldId);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
     /*! \name Child linking                                                */
     /*! \{                                                                 */
 
@@ -600,8 +986,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
     GetFieldHandlePtr  getHandleSceneObjects    (void) const;
     EditFieldHandlePtr editHandleSceneObjects   (void);
-    GetFieldHandlePtr  getHandleInternalParentProject (void) const;
-    EditFieldHandlePtr editHandleInternalParentProject(void);
+    GetFieldHandlePtr  getHandleParentProject   (void) const;
+    EditFieldHandlePtr editHandleParentProject  (void);
     GetFieldHandlePtr  getHandleViewports       (void) const;
     EditFieldHandlePtr editHandleViewports      (void);
     GetFieldHandlePtr  getHandleBackgrounds     (void) const;
@@ -649,11 +1035,40 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Event Access                     */
+    /*! \{                                                                 */
+
+    GetEventHandlePtr getHandleSceneEnteredSignal(void) const;
+    GetEventHandlePtr getHandleSceneExitedSignal(void) const;
+    GetEventHandlePtr getHandleSceneStartedSignal(void) const;
+    GetEventHandlePtr getHandleSceneEndedSignal(void) const;
+    GetEventHandlePtr getHandleSceneResetSignal(void) const;
+    GetEventHandlePtr getHandleWindowOpenedSignal(void) const;
+    GetEventHandlePtr getHandleWindowClosingSignal(void) const;
+    GetEventHandlePtr getHandleWindowClosedSignal(void) const;
+    GetEventHandlePtr getHandleWindowIconifiedSignal(void) const;
+    GetEventHandlePtr getHandleWindowDeiconifiedSignal(void) const;
+    GetEventHandlePtr getHandleWindowActivatedSignal(void) const;
+    GetEventHandlePtr getHandleWindowDeactivatedSignal(void) const;
+    GetEventHandlePtr getHandleWindowEnteredSignal(void) const;
+    GetEventHandlePtr getHandleWindowExitedSignal(void) const;
+    GetEventHandlePtr getHandleMouseClickedSignal(void) const;
+    GetEventHandlePtr getHandleMouseEnteredSignal(void) const;
+    GetEventHandlePtr getHandleMouseExitedSignal(void) const;
+    GetEventHandlePtr getHandleMousePressedSignal(void) const;
+    GetEventHandlePtr getHandleMouseReleasedSignal(void) const;
+    GetEventHandlePtr getHandleMouseMovedSignal(void) const;
+    GetEventHandlePtr getHandleMouseDraggedSignal(void) const;
+    GetEventHandlePtr getHandleMouseWheelMovedSignal(void) const;
+    GetEventHandlePtr getHandleKeyPressedSignal(void) const;
+    GetEventHandlePtr getHandleKeyReleasedSignal(void) const;
+    GetEventHandlePtr getHandleKeyTypedSignal(void) const;
+    GetEventHandlePtr getHandleUpdateSignal(void) const;
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-            const SFUnrecProjectPtr   *getSFInternalParentProject (void) const;
-                  SFUnrecProjectPtr   *editSFInternalParentProject(void);
             const SFUnrecNodePtr      *getSFRoot            (void) const;
                   SFUnrecNodePtr      *editSFRoot           (void);
             const SFUnrecTransformPtr *getSFRootCore        (void) const;
@@ -666,8 +1081,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
                   SFUInt32            *editSFGenericMethodIDs(void);
             const SFUInt32            *getSFGenericMethodIDs (void) const;
 
-
-                  Project * getInternalParentProject(void) const;
 
                   Node * getRoot           (void) const;
 
@@ -685,7 +1098,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-            void setInternalParentProject(Project * const value);
             void setRoot           (Node * const value);
             void setRootCore       (Transform * const value);
             void setDefaultCameraBeacon(Node * const value);
@@ -697,6 +1109,39 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
 
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Event Producer Firing                    */
+    /*! \{                                                                 */
+
+    virtual void produceEvent       (UInt32 eventId, EventDetails* const e);
+    
+    void produceSceneEntered        (SceneEnteredEventDetailsType* const e);
+    void produceSceneExited         (SceneExitedEventDetailsType* const e);
+    void produceSceneStarted        (SceneStartedEventDetailsType* const e);
+    void produceSceneEnded          (SceneEndedEventDetailsType* const e);
+    void produceSceneReset          (SceneResetEventDetailsType* const e);
+    void produceWindowOpened        (WindowOpenedEventDetailsType* const e);
+    void produceWindowClosing       (WindowClosingEventDetailsType* const e);
+    void produceWindowClosed        (WindowClosedEventDetailsType* const e);
+    void produceWindowIconified     (WindowIconifiedEventDetailsType* const e);
+    void produceWindowDeiconified   (WindowDeiconifiedEventDetailsType* const e);
+    void produceWindowActivated     (WindowActivatedEventDetailsType* const e);
+    void produceWindowDeactivated   (WindowDeactivatedEventDetailsType* const e);
+    void produceWindowEntered       (WindowEnteredEventDetailsType* const e);
+    void produceWindowExited        (WindowExitedEventDetailsType* const e);
+    void produceMouseClicked        (MouseClickedEventDetailsType* const e);
+    void produceMouseEntered        (MouseEnteredEventDetailsType* const e);
+    void produceMouseExited         (MouseExitedEventDetailsType* const e);
+    void produceMousePressed        (MousePressedEventDetailsType* const e);
+    void produceMouseReleased       (MouseReleasedEventDetailsType* const e);
+    void produceMouseMoved          (MouseMovedEventDetailsType* const e);
+    void produceMouseDragged        (MouseDraggedEventDetailsType* const e);
+    void produceMouseWheelMoved     (MouseWheelMovedEventDetailsType* const e);
+    void produceKeyPressed          (KeyPressedEventDetailsType* const e);
+    void produceKeyReleased         (KeyReleasedEventDetailsType* const e);
+    void produceKeyTyped            (KeyTypedEventDetailsType* const e);
+    void produceUpdate              (UpdateEventDetailsType* const e);
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
@@ -747,7 +1192,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
   private:
     /*---------------------------------------------------------------------*/
-    static MethodDescription   *_methodDesc[];
+    static EventDescription   *_eventDesc[];
     static EventProducerType _producerType;
 
 

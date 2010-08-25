@@ -40,26 +40,20 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-SceneGraphTreeModelRefPtr HierarchyPanel::getSceneGraphTreeModel(void)
+SceneGraphTreeModel* HierarchyPanel::getSceneGraphTreeModel(void)
 {
 	return _TheSceneGraphTreeModel;
 }
 inline
-TreeRefPtr HierarchyPanel::getSceneGraphTree(void)
+Tree* HierarchyPanel::getSceneGraphTree(void)
 {
 	return _TheSceneGraphTree;
 }
 
 inline
-ApplicationPlayerRefPtr HierarchyPanel::getApplicationPlayer(void)
+ApplicationPlayer* HierarchyPanel::getApplicationPlayer(void)
 {
 	return _ApplicationPlayer;
-}
-
-inline
-HierarchyPanel::SceneGraphPopupListener::SceneGraphPopupListener(HierarchyPanelRefPtr TheHierarchyPanel)
-    : _HierarchyPanel(TheHierarchyPanel)
-{
 }
 
 OSG_END_NAMESPACE

@@ -49,16 +49,6 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-Behavior::DepBehaviorListener::DepBehaviorListener(BehaviorUnrecPtr TheBehavior) : _Behavior(TheBehavior)
-{
-}
-
-inline
-Behavior::DepFieldContainerListener::DepFieldContainerListener(BehaviorUnrecPtr TheBehavior) : _Behavior(TheBehavior)
-{
-}
-
-inline
 bool Behavior::eventsAreInitted()
 {
 	return Behavior::eventsInitted;

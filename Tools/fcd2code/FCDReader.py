@@ -5,7 +5,7 @@ import logging;
 from ListStack import ListStack;
 from FieldContainer import FieldContainer;
 from Field import Field;
-from ProducedMethod import ProducedMethod;
+from ProducedEvent import ProducedEvent;
 
 class FCDContentHandler(xml.sax.handler.ContentHandler):
     """A SAX-parser content handler class for .fcd files
@@ -36,10 +36,10 @@ class FCDContentHandler(xml.sax.handler.ContentHandler):
             field = Field();
             self.m_elemStack.top().addField(field);
             self.m_elemStack.push(field);
-        elif name == "ProducedMethod":
-            producedMethod = ProducedMethod();
-            self.m_elemStack.top().addProducedMethod(producedMethod);
-            self.m_elemStack.push(producedMethod);
+        elif name == "ProducedEvent":
+            producedEvent = ProducedEvent();
+            self.m_elemStack.top().addProducedEvent(producedEvent);
+            self.m_elemStack.push(producedEvent);
         else:
             self.m_log.error("startElement: unknown element: %s", name);
             return;

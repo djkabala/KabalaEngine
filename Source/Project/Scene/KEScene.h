@@ -49,27 +49,21 @@
 #endif
 
 #include "KESceneBase.h"
-#include <OpenSG/OSGViewport.h>         // Viewports Class
-#include <OpenSG/OSGBackground.h>       // Backgrounds Class
-#include <OpenSG/OSGUIDrawingSurface.h> // UIDrawingSurfaces Class
-#include <OpenSG/OSGForeground.h>       // Foregrounds Class
-#include <OpenSG/OSGNode.h>             // ModelNodes Class
-#include <OpenSG/OSGTransform.h>        // RootCore Class
-#include <OpenSG/OSGCamera.h>           // Cameras Class
-#include <OpenSG/OSGAnimation.h>        // Animations Class
-#include <OpenSG/OSGParticleSystem.h>   // ParticleSystems Class
-#include <OpenSG/OSGPhysicsHandler.h>   // PhysicsHandler Class
-#include <OpenSG/OSGPhysicsWorld.h>     // PhysicsWorld Class
+#include <OpenSG/OSGViewportFields.h>         // Viewports Class
+#include <OpenSG/OSGBackgroundFields.h>       // Backgrounds Class
+#include <OpenSG/OSGUIDrawingSurfaceFields.h> // UIDrawingSurfaces Class
+#include <OpenSG/OSGForegroundFields.h>       // Foregrounds Class
+#include <OpenSG/OSGNodeFields.h>             // ModelNodes Class
+#include <OpenSG/OSGTransformFields.h>        // RootCore Class
+#include <OpenSG/OSGCameraFields.h>           // Cameras Class
+#include <OpenSG/OSGAnimationFields.h>        // Animations Class
+#include <OpenSG/OSGParticleSystemFields.h>   // ParticleSystems Class
+#include <OpenSG/OSGPhysicsHandlerFields.h>   // PhysicsHandler Class
+#include <OpenSG/OSGPhysicsWorldFields.h>     // PhysicsWorld Class
 
-#include "KESceneEvent.h"
-#include <OpenSG/OSGUpdateListener.h>
-#include <OpenSG/OSGMouseListener.h>
-#include <OpenSG/OSGMouseMotionListener.h>
-#include <OpenSG/OSGMouseWheelListener.h>
-#include <OpenSG/OSGKeyListener.h>
-#include <OpenSG/OSGWindowListener.h>
-#include <OpenSG/OSGGenericEvent.h>
-#include "Project/SceneObject/KESceneObject.h"
+#include "KESceneEventDetailsFields.h"
+#include <OpenSG/OSGGenericEventDetailsFields.h>
+#include "Project/SceneObject/KESceneObjectFields.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -87,6 +81,9 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
 
     typedef SceneBase Inherited;
     typedef Scene     Self;
+    typedef GenericEventDetails GenericEventDetailsType;
+    typedef boost::signals2::signal<void (GenericEventDetails* const, UInt32), ConsumableEventCombiner> GenericEventSignalType;
+    typedef std::map<UInt32, boost::shared_ptr<GenericEventSignalType> > GenericEventSignalMap;
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Sync                                    */
@@ -110,23 +107,48 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
     void        blockInput(bool block);
     bool        isInputBlocked(void) const;
 	
-	UInt32      registerNewGenericMethod(const std::string& MethodName,
-                                    const std::string& MethodDescriptionText = std::string(""));
+	UInt32      registerNewGenericEvent(const std::string& EventName,
+                                         const std::string& EventDescriptionText = std::string(""));
 
-	bool        unregisterNewGenericMethod(UInt32 Id);
-	bool        unregisterNewGenericMethod(const std::string& MethodName);
+	bool        unregisterNewGenericEvent(UInt32 Id);
+	bool        unregisterNewGenericEvent(const std::string& EventName);
 
-	bool        isGenericMethodDefined(      UInt32       Id        ) const;
-	bool        isGenericMethodDefined(const std::string& MethodName) const;
-	UInt32      getGenericMethodId    (const std::string& MethodName) const;
-    std::string getGenericMethodName  (      UInt32       Id        ) const;
+	bool        isGenericEventDefined(      UInt32       Id        ) const;
+	bool        isGenericEventDefined(const std::string& EventName) const;
+	UInt32      getGenericEventId    (const std::string& EventName) const;
+    std::string getGenericEventName  (      UInt32       Id        ) const;
 	void        addSceneObject        (	   	SceneObject* so		    );
 	void        removeSceneObject     (		SceneObject* so		    );
 
-	void        produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e);
-    void        produceGenericEvent(std::string GenericEventName, GenericEventUnrecPtr e);
+	void        produceGenericEvent(UInt32 GenericEventId, GenericEventDetails* const e);
+    void        produceGenericEvent(std::string GenericEventName, GenericEventDetails* const e);
+
+    boost::signals2::connection connectGenericEvent(UInt32 genericEventId, 
+                                                    const BaseEventType::slot_type &listener,
+                                                    boost::signals2::connect_position at= boost::signals2::at_back);
+
+    boost::signals2::connection connectGenericEvent(UInt32 genericEventId, 
+                                                    const BaseEventType::group_type &group,
+                                                    const BaseEventType::slot_type &listener,
+                                                    boost::signals2::connect_position at= boost::signals2::at_back);
+    
+    virtual boost::signals2::connection connectEvent(UInt32 eventId, 
+                                              const BaseEventType::slot_type &listener,
+                                              boost::signals2::connect_position at= boost::signals2::at_back);
+                                              
+    virtual boost::signals2::connection connectEvent(UInt32 eventId, 
+                                              const BaseEventType::group_type &group,
+                                              const BaseEventType::slot_type &listener,
+                                              boost::signals2::connect_position at= boost::signals2::at_back);
+    
+    virtual void   disconnectEvent        (UInt32 eventId, const BaseEventType::group_type &group);
+    virtual void   disconnectAllSlotsEvent(UInt32 eventId);
+    virtual bool   isEmptyEvent           (UInt32 eventId) const;
+    virtual UInt32 numSlotsEvent          (UInt32 eventId) const;
 
 	void        checkBehaviorInitialization();
+
+    Project* getParentProject(void) const;
 
     /*=========================  PROTECTED  ===============================*/
 
@@ -156,6 +178,13 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
     static void initMethod(InitPhase ePhase);
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
 
     void enter(void);
     void exit(void);
@@ -171,60 +200,66 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
     void attachNames(void);
 
 
-    void producerSceneEntered(const SceneEventUnrecPtr e);
-    void producerSceneExited(const SceneEventUnrecPtr e);
-    void producerSceneStarted(const SceneEventUnrecPtr e);
-    void producerSceneEnded(const SceneEventUnrecPtr e);
-    void producerSceneReset(const SceneEventUnrecPtr e);
+    void produceSceneEntered(void);
+    void produceSceneExited(void);
+    void produceSceneStarted(void);
+    void produceSceneEnded(void);
+    void produceSceneReset(void);
 
-    class SceneUpdateListener : public UpdateListener,
-                                public MouseListener,
-                                public MouseMotionListener,
-                                public MouseWheelListener,
-                                public KeyListener,
-                                public WindowListener
-    {
-      public:
-        SceneUpdateListener(SceneRefPtr TheScene);
 
-        virtual void update(const UpdateEventUnrecPtr e);
+    void handleUpdate(UpdateEventDetails* const details);
 
-        virtual void mouseClicked(const MouseEventUnrecPtr e);
-        virtual void mouseEntered(const MouseEventUnrecPtr e);
-        virtual void mouseExited(const MouseEventUnrecPtr e);
-        virtual void mousePressed(const MouseEventUnrecPtr e);
-        virtual void mouseReleased(const MouseEventUnrecPtr e);
+    void handleMouseClicked(MouseEventDetails* const details);
+    void handleMouseEntered(MouseEventDetails* const details);
+    void handleMouseExited(MouseEventDetails* const details);
+    void handleMousePressed(MouseEventDetails* const details);
+    void handleMouseReleased(MouseEventDetails* const details);
 
-        virtual void mouseMoved(const MouseEventUnrecPtr e);
-        virtual void mouseDragged(const MouseEventUnrecPtr e);
+    void handleMouseMoved(MouseEventDetails* const details);
+    void handleMouseDragged(MouseEventDetails* const details);
 
-        virtual void mouseWheelMoved(const MouseWheelEventUnrecPtr e);
+    void handleMouseWheelMoved(MouseWheelEventDetails* const details);
 
-        virtual void keyPressed(const KeyEventUnrecPtr e);
-        virtual void keyReleased(const KeyEventUnrecPtr e);
-        virtual void keyTyped(const KeyEventUnrecPtr e);
+    void handleKeyPressed(KeyEventDetails* const details);
+    void handleKeyReleased(KeyEventDetails* const details);
+    void handleKeyTyped(KeyEventDetails* const details);
 
-        virtual void windowOpened(const WindowEventUnrecPtr e);
-        virtual void windowClosing(const WindowEventUnrecPtr e);
-        virtual void windowClosed(const WindowEventUnrecPtr e);
-        virtual void windowIconified(const WindowEventUnrecPtr e);
-        virtual void windowDeiconified(const WindowEventUnrecPtr e);
-        virtual void windowActivated(const WindowEventUnrecPtr e);
-        virtual void windowDeactivated(const WindowEventUnrecPtr e);
-        virtual void windowEntered(const WindowEventUnrecPtr e);
-        virtual void windowExited(const WindowEventUnrecPtr e);
-      protected :
-        SceneRefPtr _Scene;
-    };
-
-    friend class SceneUpdateListener;
-
-    SceneUpdateListener _SceneUpdateListener;
+    void handleWindowOpened(WindowEventDetails* const details);
+    void handleWindowClosing(WindowEventDetails* const details);
+    void handleWindowClosed(WindowEventDetails* const details);
+    void handleWindowIconified(WindowEventDetails* const details);
+    void handleWindowDeiconified(WindowEventDetails* const details);
+    void handleWindowActivated(WindowEventDetails* const details);
+    void handleWindowDeactivated(WindowEventDetails* const details);
+    void handleWindowEntered(WindowEventDetails* const details);
+    void handleWindowExited(WindowEventDetails* const details);
+    boost::signals2::connection _UpdateConnection,
+                                _MouseClickedConnection,
+                                _MouseEnteredConnection,
+                                _MouseExitedConnection,
+                                _MousePressedConnection,
+                                _MouseReleasedConnection,
+                                _MouseMovedConnection,
+                                _MouseDraggedConnection,
+                                _MouseWheelMovedConnection,
+                                _KeyPressedConnection,
+                                _KeyReleasedConnection,
+                                _KeyTypedConnection,
+                                _WindowOpenedConnection,
+                                _WindowClosingConnection,
+                                _WindowClosedConnection,
+                                _WindowIconifiedConnection,
+                                _WindowDeiconifiedConnection,
+                                _WindowActivatedConnection,
+                                _WindowDeactivatedConnection,
+                                _WindowEnteredConnection,
+                                _WindowExitedConnection;
 
     bool _IsStarted;
     bool _BlockInput;
 
-    UInt32 _GenericMethodIDCount;
+    GenericEventSignalMap _GenericEventSignalMap;
+    UInt32 _GenericEventIDCount;
 
     /*==========================  PRIVATE  ================================*/
 
@@ -241,7 +276,15 @@ typedef Scene *SceneP;
 
 OSG_END_NAMESPACE
 
-#include "Project/KEProject.h"    // InternalParentProject Class
+#include <OpenSG/OSGUIDrawingSurface.h>
+#include <OpenSG/OSGAnimation.h>
+#include <OpenSG/OSGParticleSystem.h>
+#include <OpenSG/OSGTransform.h>
+#include <OpenSG/OSGPhysicsWorld.h>
+#include <OpenSG/OSGPhysicsHandler.h>
+#include "Project/KEProject.h"
+#include "Project/SceneObject/KESceneObject.h"
+
 #include "KESceneBase.inl"
 #include "KEScene.inl"
 

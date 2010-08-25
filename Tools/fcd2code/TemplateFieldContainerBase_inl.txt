@@ -51,6 +51,12 @@
  *****************************************************************************
 \*****************************************************************************/
 
+@@BeginProducedEventLoop@@
+    @@if producedEvent.needTypeInclude
+#include @!producedEvent.TypeInclude!@
+    @@endif // producedEvent.needTypeInclude
+@@EndProducedEventLoop@@
+
 OSG_BEGIN_NAMESPACE
 
 
@@ -67,7 +73,7 @@ OSG::UInt32 @!Classname!@Base::getClassTypeId(void)
 {
     return _type.getId();
 }
-@@if hasProducedMethods 
+@@if hasProducedEvents 
 //! access the producer type of the class
 inline
 const EventProducerType &@!Classname!@Base::getProducerClassType(void)
@@ -232,76 +238,81 @@ const Char8 *@!Classname!@Base::getClassname(void)
 {
     return "@!Classname!@";
 }
+@@if hasProducedEvents 
 @@if isRootProducer 
-
-inline
-EventConnection @!Classname!@Base::attachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
-{
-    return _Producer.attachActivity(TheActivity, ProducedEventId);
-}
-
-inline
-bool @!Classname!@Base::isActivityAttached(ActivityRefPtr TheActivity, UInt32 ProducedEventId) const
-{
-    return _Producer.isActivityAttached(TheActivity, ProducedEventId);
-}
-
-inline
-UInt32 @!Classname!@Base::getNumActivitiesAttached(UInt32 ProducedEventId) const
-{
-    return _Producer.getNumActivitiesAttached(ProducedEventId);
-}
-
-inline
-ActivityRefPtr @!Classname!@Base::getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const
-{
-    return _Producer.getAttachedActivity(ProducedEventId,ActivityIndex);
-}
-
-inline
-void @!Classname!@Base::detachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
-{
-    _Producer.detachActivity(TheActivity, ProducedEventId);
-}
 
 inline
 UInt32 @!Classname!@Base::getNumProducedEvents(void) const
 {
-    return _Producer.getNumProducedEvents();
+    return getProducerType().getNumEventDescs();
 }
 
 inline
-const MethodDescription *@!Classname!@Base::getProducedEventDescription(const std::string &ProducedEventName) const
+const EventDescription *@!Classname!@Base::getProducedEventDescription(const std::string &ProducedEventName) const
 {
-    return _Producer.getProducedEventDescription(ProducedEventName);
+    return getProducerType().findEventDescription(ProducedEventName);
 }
 
 inline
-const MethodDescription *@!Classname!@Base::getProducedEventDescription(UInt32 ProducedEventId) const
+const EventDescription *@!Classname!@Base::getProducedEventDescription(UInt32 ProducedEventId) const
 {
-    return _Producer.getProducedEventDescription(ProducedEventId);
+    return getProducerType().getEventDescription(ProducedEventId);
 }
 
 inline
 UInt32 @!Classname!@Base::getProducedEventId(const std::string &ProducedEventName) const
 {
-    return _Producer.getProducedEventId(ProducedEventName);
+    return getProducerType().getProducedEventId(ProducedEventName);
+}
+
+@@endif  // isRootProducer
+@@BeginProducedEventLoop@@
+inline
+boost::signals2::connection  @!Classname!@Base::connect@!producedEvent.Name!@(const @!producedEvent.Name!@EventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _@!producedEvent.Name!@Event.connect(listener, at);
 }
 
 inline
-SFEventProducerPtr *@!Classname!@Base::editSFEventProducer(void)
+boost::signals2::connection  @!Classname!@Base::connect@!producedEvent.Name!@(const @!producedEvent.Name!@EventType::group_type &group,
+                                                    const @!producedEvent.Name!@EventType::slot_type &listener, boost::signals2::connect_position at)
 {
-    return &_sfEventProducer;
+    return _@!producedEvent.Name!@Event.connect(group, listener, at);
 }
 
-//! Get the value of the @!Classname!@::_sfEventProducer field.
 inline
-EventProducerPtr &@!Classname!@Base::editEventProducer(void)
+void  @!Classname!@Base::disconnect@!producedEvent.Name!@(const @!producedEvent.Name!@EventType::group_type &group)
 {
-    return _sfEventProducer.getValue();
+    _@!producedEvent.Name!@Event.disconnect(group);
 }
 
-@@endif 
+inline
+void  @!Classname!@Base::disconnectAllSlots@!producedEvent.Name!@(void)
+{
+    _@!producedEvent.Name!@Event.disconnect_all_slots();
+}
+
+inline
+bool  @!Classname!@Base::isEmpty@!producedEvent.Name!@(void) const
+{
+    return _@!producedEvent.Name!@Event.empty();
+}
+
+inline
+UInt32  @!Classname!@Base::numSlots@!producedEvent.Name!@(void) const
+{
+    return _@!producedEvent.Name!@Event.num_slots();
+}
+
+inline
+void @!Classname!@Base::produce@!producedEvent.Name!@(@!producedEvent.Name!@EventDetailsType* const e)
+{
+    produceEvent(@!producedEvent.Name!@EventId, e);
+}
+
+@@EndProducedEventLoop@@
+@@endif  // hasProducedEvents
 OSG_GEN_CONTAINERPTR(@!Classname!@);
 
 OSG_END_NAMESPACE

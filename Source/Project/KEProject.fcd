@@ -46,12 +46,15 @@ The Project.
 	<Field
 		name="Scenes"
 		type="Scene"
-		category="pointer"
 		cardinality="multi"
+        category="childpointer"
+        childParentType="FieldContainer"
 		visibility="external"
+		access="public"
+        ptrFieldAccess = "nullCheck"
+        linkParentField="ParentProject"
 		fieldHeader="Project/Scene/KESceneFields.h"
 		typeHeader="Project/Scene/KEScene.h"
-		access="public"
 	>
 	</Field>
 	<Field
@@ -207,134 +210,170 @@ The Project.
         defaultValue="./lua"
 	>
 	</Field>
-	<ProducedMethod
+	<ProducedEvent
 		name="ProjectStarted"
-		type="ProjectEvent"
+		detailsType="ProjectEventDetails"
+		fieldHeader="Project/KEProjectEventDetailsFields.h"
+		typeHeader="Project/KEProjectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="ProjectStopping"
-		type="ProjectEvent"
+		detailsType="ProjectEventDetails"
+		fieldHeader="Project/KEProjectEventDetailsFields.h"
+		typeHeader="Project/KEProjectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="ProjectStopped"
-		type="ProjectEvent"
+		detailsType="ProjectEventDetails"
+		fieldHeader="Project/KEProjectEventDetailsFields.h"
+		typeHeader="Project/KEProjectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="ProjectReset"
-		type="ProjectEvent"
+		detailsType="ProjectEventDetails"
+		fieldHeader="Project/KEProjectEventDetailsFields.h"
+		typeHeader="Project/KEProjectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="SceneChanged"
-		type="ProjectEvent"
+		detailsType="ProjectEventDetails"
+		fieldHeader="Project/KEProjectEventDetailsFields.h"
+		typeHeader="Project/KEProjectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowOpened"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowClosing"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowClosed"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowIconified"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowDeiconified"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowActivated"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowDeactivated"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowEntered"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowExited"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseClicked"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseEntered"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseExited"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MousePressed"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseReleased"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseMoved"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseDragged"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseWheelMoved"
-		type="MouseWheelEvent"
+		detailsType="MouseWheelEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="KeyPressed"
-		type="KeyEvent"
+		detailsType="KeyEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="KeyReleased"
-		type="KeyEvent"
+		detailsType="KeyEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="KeyTyped"
-		type="KeyEvent"
+		detailsType="KeyEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="Update"
-		type="UpdateEvent"
+		detailsType="UpdateEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
+	</ProducedEvent>
 </FieldContainer>

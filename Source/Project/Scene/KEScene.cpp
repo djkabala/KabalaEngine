@@ -59,6 +59,8 @@
 #include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGNode.h>
 #include <OpenSG/OSGViewport.h>
+#include <OpenSG/OSGAnimation.h>
+#include <OpenSG/OSGParticleSystem.h>
 #include <OpenSG/OSGCamera.h>
 #include <OpenSG/OSGBackground.h>
 #include <OpenSG/OSGForeground.h>
@@ -68,7 +70,7 @@
 #include <OpenSG/OSGPhysicsWorld.h>
 #include <OpenSG/OSGPhysicsHandler.h>
 #include <OpenSG/OSGPhysicsUtils.h>
-#include <OpenSG/OSGGenericEvent.h>
+#include <OpenSG/OSGGenericEventDetails.h>
 #include "Project/SceneObject/KESceneObject.h"
 
 #include <boost/filesystem/operations.hpp>
@@ -115,12 +117,27 @@ void Scene::enter(void)
     }
 
     //Attach the listeners
-    MainApplication::the()->getMainWindow()->addUpdateListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->addMouseListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->addMouseMotionListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->addMouseWheelListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->addKeyListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->addWindowListener(&_SceneUpdateListener);
+   _UpdateConnection = MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&Scene::handleUpdate, this, _1));
+   _MouseClickedConnection = MainApplication::the()->getMainWindow()->connectMouseClicked(boost::bind(&Scene::handleMouseClicked, this, _1));
+   _MouseEnteredConnection = MainApplication::the()->getMainWindow()->connectMouseEntered(boost::bind(&Scene::handleMouseEntered, this, _1));
+   _MouseExitedConnection = MainApplication::the()->getMainWindow()->connectMouseExited(boost::bind(&Scene::handleMouseExited, this, _1));
+   _MousePressedConnection = MainApplication::the()->getMainWindow()->connectMousePressed(boost::bind(&Scene::handleMousePressed, this, _1));
+   _MouseReleasedConnection = MainApplication::the()->getMainWindow()->connectMouseReleased(boost::bind(&Scene::handleMouseReleased, this, _1));
+   _MouseMovedConnection = MainApplication::the()->getMainWindow()->connectMouseMoved(boost::bind(&Scene::handleMouseMoved, this, _1));
+   _MouseDraggedConnection = MainApplication::the()->getMainWindow()->connectMouseDragged(boost::bind(&Scene::handleMouseDragged, this, _1));
+   _MouseWheelMovedConnection = MainApplication::the()->getMainWindow()->connectMouseWheelMoved(boost::bind(&Scene::handleMouseWheelMoved, this, _1));
+   _KeyPressedConnection = MainApplication::the()->getMainWindow()->connectKeyPressed(boost::bind(&Scene::handleKeyPressed, this, _1));
+   _KeyReleasedConnection = MainApplication::the()->getMainWindow()->connectKeyReleased(boost::bind(&Scene::handleKeyReleased, this, _1));
+   _KeyTypedConnection = MainApplication::the()->getMainWindow()->connectKeyTyped(boost::bind(&Scene::handleKeyTyped, this, _1));
+   _WindowOpenedConnection = MainApplication::the()->getMainWindow()->connectWindowOpened(boost::bind(&Scene::handleWindowOpened, this, _1));
+   _WindowClosingConnection = MainApplication::the()->getMainWindow()->connectWindowClosing(boost::bind(&Scene::handleWindowClosing, this, _1));
+   _WindowClosedConnection = MainApplication::the()->getMainWindow()->connectWindowClosed(boost::bind(&Scene::handleWindowClosed, this, _1));
+   _WindowIconifiedConnection = MainApplication::the()->getMainWindow()->connectWindowIconified(boost::bind(&Scene::handleWindowIconified, this, _1));
+   _WindowDeiconifiedConnection = MainApplication::the()->getMainWindow()->connectWindowDeiconified(boost::bind(&Scene::handleWindowDeiconified, this, _1));
+   _WindowActivatedConnection = MainApplication::the()->getMainWindow()->connectWindowActivated(boost::bind(&Scene::handleWindowActivated, this, _1));
+   _WindowDeactivatedConnection = MainApplication::the()->getMainWindow()->connectWindowDeactivated(boost::bind(&Scene::handleWindowDeactivated, this, _1));
+   _WindowEnteredConnection = MainApplication::the()->getMainWindow()->connectWindowEntered(boost::bind(&Scene::handleWindowEntered, this, _1));
+   _WindowExitedConnection = MainApplication::the()->getMainWindow()->connectWindowExited(boost::bind(&Scene::handleWindowExited, this, _1));
 
     //Set up Initial Model Nodes
     for(::OSG::UInt32 i(0) ; i<getMFInitialModelNodes()->size() ; ++i)
@@ -129,34 +146,34 @@ void Scene::enter(void)
     }
 
     //Root Node
-    getInternalParentProject()->setActiveNode(getRoot());
+    getParentProject()->setActiveNode(getRoot());
 
     //Attach the User Interface Drawing Surfaces to the Window Event Producer
     for(::OSG::UInt32 i(0) ; i<getMFUIDrawingSurfaces()->size() ; ++i)
     {
-        getUIDrawingSurfaces(i)->setEventProducer(getInternalParentProject()->getEventProducer());
+        getUIDrawingSurfaces(i)->setEventProducer(getParentProject()->getEventProducer());
     }
 
     //Attach the viewports
     for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
     {
-        getInternalParentProject()->addViewport(getViewports(i));
+        getParentProject()->addViewport(getViewports(i));
     }
 
     //Attach the initial animations
     for(::OSG::UInt32 i(0) ; i<getMFInitialAnimations()->size() ; ++i)
     {
-        getInitialAnimations(i)->attachUpdateProducer(editEventProducer());
+        getInitialAnimations(i)->attachUpdateProducer(this);
         getInitialAnimations(i)->start();
     }
 
     //Attach the initial particle systems
     for(::OSG::UInt32 i(0) ; i<getMFInitialParticleSystems()->size() ; ++i)
     {
-        getInitialParticleSystems(i)->attachUpdateProducer(editEventProducer());
+        getInitialParticleSystems(i)->attachUpdateProducer(this);
     }
 
-    producerSceneEntered(SceneEvent::create(SceneRefPtr(this), getTimeStamp()));
+    produceSceneEntered();
 
     //If There is a physics World then update it's contents
     if(getPhysicsWorld() != NULL && getPhysicsHandler()->getUpdateNode() == NULL)
@@ -182,7 +199,7 @@ void Scene::enter(void)
         if(getPhysicsHandler() != NULL)
         {
 
-            getPhysicsHandler()->attachUpdateProducer(editEventProducer());
+            getPhysicsHandler()->attachUpdateProducer(this);
 
             //Attach all Physics spaces without a parent space to the Physics handler
             getPhysicsHandler()->setUpdateNode(getRoot());
@@ -230,7 +247,7 @@ void Scene::start(void)
         }
     }
 
-    producerSceneStarted(SceneEvent::create(SceneRefPtr(this), getTimeStamp()));
+    produceSceneStarted();
 
     _IsStarted = true;
 }
@@ -239,7 +256,7 @@ void Scene::end(void)
 {
     _IsStarted = false;
 
-    producerSceneEnded(SceneEvent::create(SceneRefPtr(this), getTimeStamp()));
+    produceSceneEnded();
 
     SLOG << "Ending Scene: "
         << (getName(SceneRefPtr(this)) ? getName(SceneRefPtr(this)) : "UNNAMED SCENE")
@@ -252,7 +269,7 @@ void Scene::reset(void)
         << (getName(SceneRefPtr(this)) ? getName(SceneRefPtr(this)) : "UNNAMED SCENE")
         << "." << std::endl;
 
-    producerSceneReset(SceneEvent::create(SceneRefPtr(this), getTimeStamp()));
+    produceSceneReset();
 }
 
 
@@ -261,7 +278,7 @@ void Scene::exit(void)
     //Dettach the viewports
     for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
     {
-        getInternalParentProject()->removeViewport(getViewports(i));
+        getParentProject()->removeViewport(getViewports(i));
     }
 
     //Dettach the initial animations
@@ -284,12 +301,27 @@ void Scene::exit(void)
     }
 
     //Detach the listeners
-    MainApplication::the()->getMainWindow()->removeUpdateListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->removeMouseListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->removeMouseMotionListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->removeMouseWheelListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->removeKeyListener(&_SceneUpdateListener);
-    MainApplication::the()->getMainWindow()->removeWindowListener(&_SceneUpdateListener);
+    _UpdateConnection.disconnect();
+    _MouseClickedConnection.disconnect();
+    _MouseEnteredConnection.disconnect();
+    _MouseExitedConnection.disconnect();
+    _MousePressedConnection.disconnect();
+    _MouseReleasedConnection.disconnect();
+    _MouseMovedConnection.disconnect();
+    _MouseDraggedConnection.disconnect();
+    _MouseWheelMovedConnection.disconnect();
+    _KeyPressedConnection.disconnect();
+    _KeyReleasedConnection.disconnect();
+    _KeyTypedConnection.disconnect();
+    _WindowOpenedConnection.disconnect();
+    _WindowClosingConnection.disconnect();
+    _WindowClosedConnection.disconnect();
+    _WindowIconifiedConnection.disconnect();
+    _WindowDeiconifiedConnection.disconnect();
+    _WindowActivatedConnection.disconnect();
+    _WindowDeactivatedConnection.disconnect();
+    _WindowEnteredConnection.disconnect();
+    _WindowExitedConnection.disconnect();
 
     //If There is a physics Handler then detach it
     if(getPhysicsHandler() != NULL)
@@ -302,7 +334,7 @@ void Scene::exit(void)
         //getPhysicsHandler()->setWorld(NULL);
     }
 
-    producerSceneExited(SceneEvent::create(SceneRefPtr(this), getTimeStamp()));
+    produceSceneExited();
 
     SLOG << "Exited Scene: "
         << (getName(SceneRefPtr(this)) ? getName(SceneRefPtr(this)) : "UNNAMED SCENE")
@@ -397,79 +429,113 @@ void Scene::attachNames(void)
     }
 }
 
-UInt32 Scene::registerNewGenericMethod(const std::string& MethodName,
-                                       const std::string& MethodDescriptionText)
+UInt32 Scene::registerNewGenericEvent(const std::string& EventName,
+                                       const std::string& EventDescriptionText)
 {
-    if(!isGenericMethodDefined(MethodName))
+    if(!isGenericEventDefined(EventName))
     {
-        UInt32 Id = SceneBase::NextProducedMethodId + _GenericMethodIDCount;
-        _GenericMethodIDCount++;
+        UInt32 Id = SceneBase::NextProducedEventId + _GenericEventIDCount;
+        _GenericEventIDCount++;
 
-        MethodDescription newGenericDescription(MethodName,
-                                                MethodDescriptionText,
-                                                Id,
-                                                SFRecEventPtr::getClassType(),
-                                                FunctorAccessMethod());
+        EventDescription newGenericDescription(EventName,
+                                               EventDescriptionText,
+                                               Id,
+                                               FieldTraits<GenericEventDetails *>::getType(),
+                                               true,
+                                               NULL/*static_cast<EventGetMethod>(&Scene::getHandleGenericEventSignal)*/);
 
-        const_cast<EventProducerType&>(_Producer.getProducerType()).addDescription(newGenericDescription);
+        _GenericEventSignalMap[Id] = boost::shared_ptr<GenericEventSignalType>(new GenericEventSignalType());
+        const_cast<EventProducerType&>(getProducerType()).addDescription(newGenericDescription);
 
         return Id;
     }
     else
     {
-        SWARNING << "Scene::registerNewGenericMethod(): Attempted to reregister Method with name : " << MethodName << std::endl;
-        return getGenericMethodId(MethodName);
+        SWARNING << "Scene::registerNewGenericEvent(): Attempted to reregister Event with name : " << EventName << std::endl;
+        return getGenericEventId(EventName);
     }
 }
 
-bool Scene::unregisterNewGenericMethod(UInt32 Id)
+bool Scene::unregisterNewGenericEvent(UInt32 Id)
 {
-    if(SceneBase::NextProducedMethodId > Id)
+    if(SceneBase::NextProducedEventId > Id)
     {
-        SWARNING << "Scene::unregisterNewGenericMethod(): Attempted to unregister Method Id : " << Id 
-                                                          << ".  Can only unregister Methods with Ids > " << SceneBase::NextProducedMethodId << "." << std::endl;
+        SWARNING << "Scene::unregisterNewGenericEvent(): Attempted to unregister Event Id : " << Id 
+                 << ".  Can only unregister Events with Ids > " << SceneBase::NextProducedEventId << "." << std::endl;
         return false;
     }
 
-    if(!isGenericMethodDefined(Id))
+    if(!isGenericEventDefined(Id))
     {
-        SWARNING << "Scene::unregisterNewGenericMethod(): Attempted to unregister Method Id : " << Id 
-                                                          << ". That Id has not been registered."<< std::endl;
+        SWARNING << "Scene::unregisterNewGenericEvent(): Attempted to unregister Event Id : " << Id 
+                 << ". That Id has not been registered." << std::endl;
         return false;
     }
-    return const_cast<EventProducerType&>(_Producer.getProducerType()).subDescription(Id);
+
+    _GenericEventSignalMap.erase(_GenericEventSignalMap.find(Id));
+    return const_cast<EventProducerType&>(getProducerType()).subDescription(Id);
 }
 
-bool Scene::unregisterNewGenericMethod(const std::string& MethodName)
+bool Scene::unregisterNewGenericEvent(const std::string& EventName)
 {
-    UInt32 Id = getGenericMethodId(MethodName);
+    UInt32 Id = getGenericEventId(EventName);
     if(Id == 0)
     {
-        SWARNING << "Scene::unregisterNewGenericMethod(): Attempted to unregister Method Id : " << Id 
+        SWARNING << "Scene::unregisterNewGenericEvent(): Attempted to unregister Event Id : " << Id 
                                                           << ". That Id has not been registered."<< std::endl;
         return false;
     }
-    return unregisterNewGenericMethod(Id);
+    return unregisterNewGenericEvent(Id);
 }
 
-bool Scene::isGenericMethodDefined(UInt32 Id) const
+bool Scene::isGenericEventDefined(UInt32 Id) const
 {
-    return(_Producer.getProducerType().getMethodDescription(Id) != NULL);
+    return (Id >= Scene::NextProducedEventId && Id <= getProducerType().getNumEventDescs());
 }
 
-bool Scene::isGenericMethodDefined(const std::string& MethodName) const
+bool Scene::isGenericEventDefined(const std::string& EventName) const
 {
-    UInt32 Id = getGenericMethodId(MethodName);
+    UInt32 Id = getGenericEventId(EventName);
     return Id != 0;
 }
 
-
-UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
+boost::signals2::connection Scene::connectGenericEvent(UInt32 genericEventId, 
+                                                       const BaseEventType::slot_type &listener, 
+                                                       boost::signals2::connect_position at)
 {
-    const MethodDescription* desc = _Producer.getProducerType().findMethodDescription(MethodName.c_str());
+    if(isGenericEventDefined(genericEventId))
+    {
+        return _GenericEventSignalMap[genericEventId]->connect(listener, at);
+    }
+    else
+    {
+        SWARNING << "Generic Event ID " << genericEventId << " Not Found.";
+        return boost::signals2::connection();
+    }
+}
+
+boost::signals2::connection Scene::connectGenericEvent(UInt32 genericEventId, 
+                                                        const BaseEventType::group_type &group,
+                                                        const BaseEventType::slot_type &listener,
+                                                        boost::signals2::connect_position at)
+{
+    if(isGenericEventDefined(genericEventId))
+    {
+        return _GenericEventSignalMap[genericEventId]->connect(group, listener, at);
+    }
+    else
+    {
+        SWARNING << "Generic Event ID " << genericEventId << " Not Found.";
+        return boost::signals2::connection();
+    }
+}
+
+UInt32 Scene::getGenericEventId(const std::string& EventName) const
+{
+    const EventDescription* desc = getProducerType().findEventDescription(EventName.c_str());
     if(desc != NULL)
     {
-        return desc->getMethodId();
+        return desc->getEventId();
     }
     else
     {
@@ -477,9 +543,9 @@ UInt32 Scene::getGenericMethodId(const std::string& MethodName) const
     }
 }
 
-std::string Scene::getGenericMethodName  (      UInt32       Id        ) const
+std::string Scene::getGenericEventName  (      UInt32       Id        ) const
 {
-    const MethodDescription* desc = _Producer.getProducerType().getMethodDescription(Id);
+    const EventDescription* desc = getProducerType().getEventDescription(Id);
     if(desc != NULL)
     {
         return desc->getName();
@@ -490,11 +556,13 @@ std::string Scene::getGenericMethodName  (      UInt32       Id        ) const
     }
 }
 
-void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e)
+void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventDetails* const e)
 {
-    if(isGenericMethodDefined(GenericEventId))
+    if(isGenericEventDefined(GenericEventId))
     {
-        _Producer.produceEvent(GenericEventId, e);
+        _GenericEventSignalMap[GenericEventId]->set_combiner(ConsumableEventCombiner(e));
+
+        (*_GenericEventSignalMap[GenericEventId])(e, GenericEventId);
     }
     else
     {
@@ -502,9 +570,9 @@ void Scene::produceGenericEvent(UInt32 GenericEventId, GenericEventUnrecPtr e)
     }
 }
 
-void Scene::produceGenericEvent(std::string GenericEventName, GenericEventUnrecPtr e)
+void Scene::produceGenericEvent(std::string GenericEventName, GenericEventDetails* const e)
 {
-    produceGenericEvent(getGenericMethodId(GenericEventName),e);
+    produceGenericEvent(getGenericEventId(GenericEventName),e);
 }
 
 void Scene::checkBehaviorInitialization()
@@ -520,52 +588,167 @@ void Scene::checkBehaviorInitialization()
 	}
 }
 
+boost::signals2::connection Scene::connectEvent(UInt32 eventId, 
+                                                             const BaseEventType::slot_type &listener, 
+                                                             boost::signals2::connect_position at)
+{
+    if(isGenericEventDefined(eventId))
+    {
+        return connectGenericEvent(eventId, listener, at);
+    }
+    else
+    {
+        return Inherited::connectEvent(eventId, listener, at);
+    }
+}
+                                  
+boost::signals2::connection Scene::connectEvent(UInt32 eventId, 
+                                  const BaseEventType::group_type &group,
+                                  const BaseEventType::slot_type &listener,
+                                  boost::signals2::connect_position at)
+{
+    if(isGenericEventDefined(eventId))
+    {
+        return connectGenericEvent(eventId, group, listener, at);
+    }
+    else
+    {
+        return Inherited::connectEvent(eventId, group, listener, at);
+    }
+}
+
+void   Scene::disconnectEvent        (UInt32 eventId, const BaseEventType::group_type &group)
+{
+    if(isGenericEventDefined(eventId))
+    {
+        _GenericEventSignalMap[eventId]->disconnect(group);
+    }
+    else
+    {
+        Inherited::disconnectEvent(eventId, group);
+    }
+}
+
+void   Scene::disconnectAllSlotsEvent(UInt32 eventId)
+{
+    if(isGenericEventDefined(eventId))
+    {
+        _GenericEventSignalMap[eventId]->disconnect_all_slots();
+    }
+    else
+    {
+        Inherited::disconnectAllSlotsEvent(eventId);
+    }
+}
+
+bool   Scene::isEmptyEvent           (UInt32 eventId) const
+{
+    if(isGenericEventDefined(eventId))
+    {
+        return (*_GenericEventSignalMap.find(eventId)).second->empty();
+    }
+    else
+    {
+        return Inherited::isEmptyEvent(eventId);
+    }
+}
+
+UInt32 Scene::numSlotsEvent          (UInt32 eventId) const
+{
+    if(isGenericEventDefined(eventId))
+    {
+        return (*_GenericEventSignalMap.find(eventId)).second->num_slots();
+    }
+    else
+    {
+        return Inherited::numSlotsEvent(eventId);
+    }
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-void Scene::producerSceneEntered(const SceneEventUnrecPtr e)
+void Scene::produceSceneEntered(void)
 {
-    _Producer.produceEvent(SceneEnteredMethodId, e);
+    SceneEventDetailsUnrecPtr details = SceneEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceSceneEntered(details);
 }
 
-void Scene::producerSceneExited(const SceneEventUnrecPtr e)
+void Scene::produceSceneExited(void)
 {
-    _Producer.produceEvent(SceneExitedMethodId, e);
+    SceneEventDetailsUnrecPtr details = SceneEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceSceneExited(details);
 }
 
-void Scene::producerSceneStarted(const SceneEventUnrecPtr e)
+void Scene::produceSceneStarted(void)
 {
-    _Producer.produceEvent(SceneStartedMethodId, e);
+    SceneEventDetailsUnrecPtr details = SceneEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceSceneStarted(details);
 }
 
-void Scene::producerSceneEnded(const SceneEventUnrecPtr e)
+void Scene::produceSceneEnded(void)
 {
-    _Producer.produceEvent(SceneEndedMethodId, e);
+    SceneEventDetailsUnrecPtr details = SceneEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceSceneEnded(details);
 }
 
-void Scene::producerSceneReset(const SceneEventUnrecPtr e)
+void Scene::produceSceneReset(void)
 {
-    _Producer.produceEvent(SceneResetMethodId, e);
+    SceneEventDetailsUnrecPtr details = SceneEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceSceneReset(details);
+}
+
+void Scene::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+        
+    _UpdateConnection.disconnect();
+    _MouseClickedConnection.disconnect();
+    _MouseEnteredConnection.disconnect();
+    _MouseExitedConnection.disconnect();
+    _MousePressedConnection.disconnect();
+    _MouseReleasedConnection.disconnect();
+    _MouseMovedConnection.disconnect();
+    _MouseDraggedConnection.disconnect();
+    _MouseWheelMovedConnection.disconnect();
+    _KeyPressedConnection.disconnect();
+    _KeyReleasedConnection.disconnect();
+    _KeyTypedConnection.disconnect();
+    _WindowOpenedConnection.disconnect();
+    _WindowClosingConnection.disconnect();
+    _WindowClosedConnection.disconnect();
+    _WindowIconifiedConnection.disconnect();
+    _WindowDeiconifiedConnection.disconnect();
+    _WindowActivatedConnection.disconnect();
+    _WindowDeactivatedConnection.disconnect();
+    _WindowEnteredConnection.disconnect();
+    _WindowExitedConnection.disconnect();
+
 }
 
 /*----------------------- constructors & destructors ----------------------*/
 
 Scene::Scene(void) :
     Inherited(),
-    _SceneUpdateListener(SceneRefPtr(this)),
     _IsStarted(false),
     _BlockInput(false),
-    _GenericMethodIDCount(0)
+    _GenericEventSignalMap(),
+    _GenericEventIDCount(0)
 {
 }
 
 Scene::Scene(const Scene &source) :
     Inherited(source),
-    _SceneUpdateListener(SceneRefPtr(this)),
     _IsStarted(false),
     _BlockInput(source._BlockInput),
-    _GenericMethodIDCount(source._GenericMethodIDCount)
+    _GenericEventSignalMap(),
+    _GenericEventIDCount(source._GenericEventIDCount)
 {
 }
 
@@ -582,15 +765,15 @@ void Scene::changed(ConstFieldMaskArg whichField,
     Inherited::changed(whichField, origin, details);
 
     if((whichField & ViewportsFieldMask) &&
-       getInternalParentProject() != NULL &&
-       getInternalParentProject()->getActiveScene() == this)
+       getParentProject() != NULL &&
+       getParentProject()->getActiveScene() == this)
     {
-        //getInternalParentProject()->clearViewports();
+        //getParentProject()->clearViewports();
 
         //Add The Viewports
         for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
         {
-            getInternalParentProject()->addViewport(getViewports(i));
+            getParentProject()->addViewport(getViewports(i));
         }
     }
 }

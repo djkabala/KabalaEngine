@@ -47,6 +47,8 @@
  *****************************************************************************
 \*****************************************************************************/
 
+#include "Project/Effect/KEEffectEventDetails.h"
+
 OSG_BEGIN_NAMESPACE
 
 
@@ -110,70 +112,254 @@ const Char8 *EffectBase::getClassname(void)
 }
 
 inline
-EventConnection EffectBase::attachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
+boost::signals2::connection EffectBase::attachActivity(UInt32 eventId,
+                                                              Activity* TheActivity)
 {
-    return _Producer.attachActivity(TheActivity, ProducedEventId);
-}
-
-inline
-bool EffectBase::isActivityAttached(ActivityRefPtr TheActivity, UInt32 ProducedEventId) const
-{
-    return _Producer.isActivityAttached(TheActivity, ProducedEventId);
-}
-
-inline
-UInt32 EffectBase::getNumActivitiesAttached(UInt32 ProducedEventId) const
-{
-    return _Producer.getNumActivitiesAttached(ProducedEventId);
-}
-
-inline
-ActivityRefPtr EffectBase::getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const
-{
-    return _Producer.getAttachedActivity(ProducedEventId,ActivityIndex);
-}
-
-inline
-void EffectBase::detachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
-{
-    _Producer.detachActivity(TheActivity, ProducedEventId);
+    return connectEvent(eventId, boost::bind(&Activity::eventProduced, ActivityUnrecPtr(TheActivity), _1, _2) );
 }
 
 inline
 UInt32 EffectBase::getNumProducedEvents(void) const
 {
-    return _Producer.getNumProducedEvents();
+    return getProducerType().getNumEventDescs();
 }
 
 inline
-const MethodDescription *EffectBase::getProducedEventDescription(const std::string &ProducedEventName) const
+const EventDescription *EffectBase::getProducedEventDescription(const std::string &ProducedEventName) const
 {
-    return _Producer.getProducedEventDescription(ProducedEventName);
+    return getProducerType().findEventDescription(ProducedEventName);
 }
 
 inline
-const MethodDescription *EffectBase::getProducedEventDescription(UInt32 ProducedEventId) const
+const EventDescription *EffectBase::getProducedEventDescription(UInt32 ProducedEventId) const
 {
-    return _Producer.getProducedEventDescription(ProducedEventId);
+    return getProducerType().getEventDescription(ProducedEventId);
 }
 
 inline
 UInt32 EffectBase::getProducedEventId(const std::string &ProducedEventName) const
 {
-    return _Producer.getProducedEventId(ProducedEventName);
+    return getProducerType().getProducedEventId(ProducedEventName);
 }
 
 inline
-SFEventProducerPtr *EffectBase::editSFEventProducer(void)
+boost::signals2::connection  EffectBase::connectEffectBegan(const EffectBeganEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
 {
-    return &_sfEventProducer;
+    return _EffectBeganEvent.connect(listener, at);
 }
 
-//! Get the value of the Effect::_sfEventProducer field.
 inline
-EventProducerPtr &EffectBase::editEventProducer(void)
+boost::signals2::connection  EffectBase::connectEffectBegan(const EffectBeganEventType::group_type &group,
+                                                    const EffectBeganEventType::slot_type &listener, boost::signals2::connect_position at)
 {
-    return _sfEventProducer.getValue();
+    return _EffectBeganEvent.connect(group, listener, at);
+}
+
+inline
+void  EffectBase::disconnectEffectBegan(const EffectBeganEventType::group_type &group)
+{
+    _EffectBeganEvent.disconnect(group);
+}
+
+inline
+void  EffectBase::disconnectAllSlotsEffectBegan(void)
+{
+    _EffectBeganEvent.disconnect_all_slots();
+}
+
+inline
+bool  EffectBase::isEmptyEffectBegan(void) const
+{
+    return _EffectBeganEvent.empty();
+}
+
+inline
+UInt32  EffectBase::numSlotsEffectBegan(void) const
+{
+    return _EffectBeganEvent.num_slots();
+}
+
+inline
+void EffectBase::produceEffectBegan(EffectBeganEventDetailsType* const e)
+{
+    produceEvent(EffectBeganEventId, e);
+}
+
+inline
+boost::signals2::connection  EffectBase::connectEffectPaused(const EffectPausedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _EffectPausedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  EffectBase::connectEffectPaused(const EffectPausedEventType::group_type &group,
+                                                    const EffectPausedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _EffectPausedEvent.connect(group, listener, at);
+}
+
+inline
+void  EffectBase::disconnectEffectPaused(const EffectPausedEventType::group_type &group)
+{
+    _EffectPausedEvent.disconnect(group);
+}
+
+inline
+void  EffectBase::disconnectAllSlotsEffectPaused(void)
+{
+    _EffectPausedEvent.disconnect_all_slots();
+}
+
+inline
+bool  EffectBase::isEmptyEffectPaused(void) const
+{
+    return _EffectPausedEvent.empty();
+}
+
+inline
+UInt32  EffectBase::numSlotsEffectPaused(void) const
+{
+    return _EffectPausedEvent.num_slots();
+}
+
+inline
+void EffectBase::produceEffectPaused(EffectPausedEventDetailsType* const e)
+{
+    produceEvent(EffectPausedEventId, e);
+}
+
+inline
+boost::signals2::connection  EffectBase::connectEffectUnpaused(const EffectUnpausedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _EffectUnpausedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  EffectBase::connectEffectUnpaused(const EffectUnpausedEventType::group_type &group,
+                                                    const EffectUnpausedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _EffectUnpausedEvent.connect(group, listener, at);
+}
+
+inline
+void  EffectBase::disconnectEffectUnpaused(const EffectUnpausedEventType::group_type &group)
+{
+    _EffectUnpausedEvent.disconnect(group);
+}
+
+inline
+void  EffectBase::disconnectAllSlotsEffectUnpaused(void)
+{
+    _EffectUnpausedEvent.disconnect_all_slots();
+}
+
+inline
+bool  EffectBase::isEmptyEffectUnpaused(void) const
+{
+    return _EffectUnpausedEvent.empty();
+}
+
+inline
+UInt32  EffectBase::numSlotsEffectUnpaused(void) const
+{
+    return _EffectUnpausedEvent.num_slots();
+}
+
+inline
+void EffectBase::produceEffectUnpaused(EffectUnpausedEventDetailsType* const e)
+{
+    produceEvent(EffectUnpausedEventId, e);
+}
+
+inline
+boost::signals2::connection  EffectBase::connectEffectFinished(const EffectFinishedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _EffectFinishedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  EffectBase::connectEffectFinished(const EffectFinishedEventType::group_type &group,
+                                                    const EffectFinishedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _EffectFinishedEvent.connect(group, listener, at);
+}
+
+inline
+void  EffectBase::disconnectEffectFinished(const EffectFinishedEventType::group_type &group)
+{
+    _EffectFinishedEvent.disconnect(group);
+}
+
+inline
+void  EffectBase::disconnectAllSlotsEffectFinished(void)
+{
+    _EffectFinishedEvent.disconnect_all_slots();
+}
+
+inline
+bool  EffectBase::isEmptyEffectFinished(void) const
+{
+    return _EffectFinishedEvent.empty();
+}
+
+inline
+UInt32  EffectBase::numSlotsEffectFinished(void) const
+{
+    return _EffectFinishedEvent.num_slots();
+}
+
+inline
+void EffectBase::produceEffectFinished(EffectFinishedEventDetailsType* const e)
+{
+    produceEvent(EffectFinishedEventId, e);
+}
+
+inline
+boost::signals2::connection  EffectBase::connectEffectStopped(const EffectStoppedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _EffectStoppedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  EffectBase::connectEffectStopped(const EffectStoppedEventType::group_type &group,
+                                                    const EffectStoppedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _EffectStoppedEvent.connect(group, listener, at);
+}
+
+inline
+void  EffectBase::disconnectEffectStopped(const EffectStoppedEventType::group_type &group)
+{
+    _EffectStoppedEvent.disconnect(group);
+}
+
+inline
+void  EffectBase::disconnectAllSlotsEffectStopped(void)
+{
+    _EffectStoppedEvent.disconnect_all_slots();
+}
+
+inline
+bool  EffectBase::isEmptyEffectStopped(void) const
+{
+    return _EffectStoppedEvent.empty();
+}
+
+inline
+UInt32  EffectBase::numSlotsEffectStopped(void) const
+{
+    return _EffectStoppedEvent.num_slots();
+}
+
+inline
+void EffectBase::produceEffectStopped(EffectStoppedEventDetailsType* const e)
+{
+    produceEvent(EffectStoppedEventId, e);
 }
 
 OSG_GEN_CONTAINERPTR(Effect);

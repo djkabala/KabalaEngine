@@ -12,6 +12,7 @@
 	useLocalIncludes="false"
 	libnamespace="KE"
     authors="David Kabala (djkabala@gmail.com)                             "
+    childFields="multi"
 >
 The Scene.
     <Field
@@ -28,16 +29,18 @@ The Scene.
 	>
 	</Field>
 	<Field
-		name="InternalParentProject"
-		type="Project"
-		category="pointer"
-		cardinality="single"
-		visibility="external"
-		defaultValue="NULL"
-		fieldHeader="Project/KEProjectFields.h"
-		typeHeader="Project/KEProjectFields.h"
-		access="protected"
-	>
+	   name="ParentProject"
+	   type="FieldContainer"
+	   cardinality="single"
+	   visibility="external"
+	   access="none"
+       doRefCount="false"
+       passFieldMask="true"
+       category="parentpointer"
+	   fieldHeader="Project/KEProjectFields.h"
+	   typeHeader="Project/KEProjectFields.h"
+	   >
+	  The Project this Scene is contained in.
 	</Field>
 	<Field
 		name="Viewports"
@@ -244,134 +247,170 @@ The Scene.
 	>
 	</Field>
 	
-	<ProducedMethod
+	<ProducedEvent
 		name="SceneEntered"
-		type="SceneEvent"
+		detailsType="SceneEventDetails"
+		fieldHeader="Project/Scene/KESceneEventDetailsFields.h"
+		typeHeader="Project/Scene/KESceneEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="SceneExited"
-		type="SceneEvent"
+		detailsType="SceneEventDetails"
+		fieldHeader="Project/Scene/KESceneEventDetailsFields.h"
+		typeHeader="Project/Scene/KESceneEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="SceneStarted"
-		type="SceneEvent"
+		detailsType="SceneEventDetails"
+		fieldHeader="Project/Scene/KESceneEventDetailsFields.h"
+		typeHeader="Project/Scene/KESceneEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="SceneEnded"
-		type="SceneEvent"
+		detailsType="SceneEventDetails"
+		fieldHeader="Project/Scene/KESceneEventDetailsFields.h"
+		typeHeader="Project/Scene/KESceneEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="SceneReset"
-		type="SceneEvent"
+		detailsType="SceneEventDetails"
+		fieldHeader="Project/Scene/KESceneEventDetailsFields.h"
+		typeHeader="Project/Scene/KESceneEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowOpened"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowClosing"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowClosed"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowIconified"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowDeiconified"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowActivated"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowDeactivated"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowEntered"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowExited"
-		type="WindowEvent"
+		detailsType="WindowEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseClicked"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseEntered"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseExited"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MousePressed"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseReleased"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseMoved"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseDragged"
-		type="MouseEvent"
+		detailsType="MouseEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="MouseWheelMoved"
-		type="MouseWheelEvent"
+		detailsType="MouseWheelEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="KeyPressed"
-		type="KeyEvent"
+		detailsType="KeyEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="KeyReleased"
-		type="KeyEvent"
+		detailsType="KeyEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="KeyTyped"
-		type="KeyEvent"
+		detailsType="KeyEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="Update"
-		type="UpdateEvent"
+		detailsType="UpdateEventDetails"
+		consumable="true"
 	>
-	</ProducedMethod>
+	</ProducedEvent>
 </FieldContainer>

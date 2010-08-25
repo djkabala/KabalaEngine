@@ -40,42 +40,6 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-ApplicationPlayer::PlayerKeyListener::PlayerKeyListener(ApplicationPlayerRefPtr TheApplicationPlayer) :
-        _ApplicationPlayer(TheApplicationPlayer)
-{
-}
-
-inline
-ApplicationPlayer::BasicListener::BasicListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
-{
-}
-
-inline
-ApplicationPlayer::BasicListener::~BasicListener()
-{
-}
-
-inline
-ApplicationPlayer::GotoSceneItemListener::GotoSceneItemListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
-{
-}
-
-inline
-ApplicationPlayer::GotoSceneItemListener::~GotoSceneItemListener()
-{
-}
-
-inline
-ApplicationPlayer::ProjectListener::ProjectListener(ApplicationPlayerRefPtr TheApplicationPlayer) : _ApplicationPlayer(TheApplicationPlayer)
-{
-}
-
-inline
-ApplicationPlayer::ProjectListener::~ProjectListener()
-{
-}
-
-inline
 bool ApplicationPlayer::isDebugging(void) const
 {
     return _IsDebugActive;
@@ -94,7 +58,7 @@ void ApplicationPlayer::setClonedNodeInCopyClipboard(NodeRefPtr node)
 }
 
 inline
-NodeRefPtr ApplicationPlayer::getClonedNodeInCopyClipboard(void)
+Node* ApplicationPlayer::getClonedNodeInCopyClipboard(void)
 {
 	return _ClonedNodeInCopyClipboard;
 }
@@ -106,7 +70,7 @@ UndoManagerPtr ApplicationPlayer::getUndoManager(void)
 }
 
 inline 
-NodeRefPtr ApplicationPlayer::getHighlightNode(void)
+Node* ApplicationPlayer::getHighlightNode(void)
 {
 	return _HighlightNode;
 }
@@ -118,7 +82,7 @@ void ApplicationPlayer::setHighlightNode(NodeRefPtr selectedNode)
 }
 
 inline 
-ViewportRefPtr ApplicationPlayer::getDebugViewport(void)
+Viewport* ApplicationPlayer::getDebugViewport(void)
 {
 	return _DebugViewport;
 }
@@ -130,7 +94,7 @@ void ApplicationPlayer::setDebugViewport(ViewportRefPtr viewport)
 }
 
 inline 
-HelperPanelRefPtr ApplicationPlayer::getHelperPanel(void)
+HelperPanel* ApplicationPlayer::getHelperPanel(void)
 {
 	return _HelperPanel;
 }
@@ -142,7 +106,7 @@ void ApplicationPlayer::setHelperPanel(HelperPanelRefPtr helperPanel)
 }
 
 inline 
-NodeRefPtr ApplicationPlayer::getSelectedNode(void)
+Node* ApplicationPlayer::getSelectedNode(void)
 {
 	return _SelectedNode;
 }
@@ -160,7 +124,7 @@ void ApplicationPlayer::setSelectedNode(NodeRefPtr selectedNode)
 }
 
 inline 
-ContentPanelRefPtr ApplicationPlayer::getContentPanel(void)
+ContentPanel* ApplicationPlayer::getContentPanel(void)
 {
 	return _ContentPanel;
 }

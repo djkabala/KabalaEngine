@@ -45,6 +45,8 @@
 #include <OpenSG/OSGSceneFileHandler.h>
 #include <OpenSG/OSGFCFileHandler.h>
 #include <OpenSG/OSGWindowEventProducer.h>
+#include "Application/KEMainApplication.h"
+#include <OpenSG/OSGSceneGraphTreeModel.h>
 
 OSG_USING_NAMESPACE
 
@@ -66,7 +68,7 @@ CommandType ImportModelCommand::_Type("ImportModelCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-ImportModelCommandPtr ImportModelCommand::create(HierarchyPanelRefPtr HierarchyPanel,NodeUnrecPtr NodeToAddTo)
+ImportModelCommandPtr ImportModelCommand::create(HierarchyPanel* const HierarchyPanel,Node* const NodeToAddTo)
 {
 	return RefPtr(new ImportModelCommand(HierarchyPanel,NodeToAddTo));
 }

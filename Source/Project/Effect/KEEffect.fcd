@@ -27,29 +27,44 @@ The SceneObject.
         passFieldMask="true"
 	>
 	</Field>
-    <ProducedMethod
+    <ProducedEvent
 		name="EffectBegan"
-		type="EffectEvent"
+		detailsType="EffectEventDetails"
+		fieldHeader="Project/Effect/KEEffectEventDetailsFields.h"
+		typeHeader="Project/Effect/KEEffectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="EffectPaused"
-		type="EffectEvent"
+		detailsType="EffectEventDetails"
+		fieldHeader="Project/Effect/KEEffectEventDetailsFields.h"
+		typeHeader="Project/Effect/KEEffectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="EffectUnpaused"
-		type="EffectEvent"
+		detailsType="EffectEventDetails"
+		fieldHeader="Project/Effect/KEEffectEventDetailsFields.h"
+		typeHeader="Project/Effect/KEEffectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="EffectFinished"
-		type="EffectEvent"
+		detailsType="EffectEventDetails"
+		fieldHeader="Project/Effect/KEEffectEventDetailsFields.h"
+		typeHeader="Project/Effect/KEEffectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
-	<ProducedMethod
+	</ProducedEvent>
+	<ProducedEvent
 		name="EffectStopped"
-		type="EffectEvent"
+		detailsType="EffectEventDetails"
+		fieldHeader="Project/Effect/KEEffectEventDetailsFields.h"
+		typeHeader="Project/Effect/KEEffectEventDetails.h"
+		consumable="true"
 	>
-	</ProducedMethod>
+	</ProducedEvent>
 </FieldContainer>

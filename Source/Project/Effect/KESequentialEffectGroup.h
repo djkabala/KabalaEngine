@@ -75,13 +75,21 @@ class KE_KABALAENGINE_DLLMAPPING SequentialEffectGroup : public SequentialEffect
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
 
   protected:
 
      // Variables should all be in SequentialEffectGroupBase.
 
-    void handleEffectFinished(void);
+    void handleEffectFinished(EffectEventDetails* const details);
+    boost::signals2::connection _EffectFinishedConnection;
     
     void initEffect        (void);
     void inheritedBegin    (void);

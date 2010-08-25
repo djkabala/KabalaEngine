@@ -40,7 +40,6 @@
 #endif
 
 #include "KEAnimationEffectBase.h"
-#include <OpenSG/OSGEventProducer.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -114,6 +113,13 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
     static void initMethod(InitPhase ePhase);
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
 
   private:
@@ -121,33 +127,10 @@ class KE_KABALAENGINE_DLLMAPPING AnimationEffect : public AnimationEffectBase
     friend class FieldContainer;
     friend class AnimationEffectBase;
 
-    EventProducerPtr theUpdateProducer;
-
-    class InternalAnimationListener : public AnimationListener
-    {
-        public:
-
-            InternalAnimationListener(AnimationEffect* parent);
-            InternalAnimationListener(){};
-            ~InternalAnimationListener(){};
-
-            void animationStarted(const AnimationEventUnrecPtr e);
-
-            void animationStopped(const AnimationEventUnrecPtr e);
-
-            void animationPaused(const AnimationEventUnrecPtr e);
-            void animationUnpaused(const AnimationEventUnrecPtr e);
-
-            void animationEnded(const AnimationEventUnrecPtr e);
-            
-            void animationCycled(const AnimationEventUnrecPtr e);
-
-        private:
-
-            AnimationEffect* fx;
-    };
-
-    InternalAnimationListener theInternalAnimationListener;
+    void handleAnimationStopped(AnimationEventDetails* const details);
+    void handleAnimationEnded(AnimationEventDetails* const details);
+    boost::signals2::connection _AnimationStoppedConnection,
+                                _AnimationEndedConnection;
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const AnimationEffect &source);

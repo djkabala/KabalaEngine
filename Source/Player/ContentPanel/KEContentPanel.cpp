@@ -50,6 +50,13 @@
 #include "Player/KEApplicationPlayer.h"
 #include <OpenSG/OSGSetFieldValueCommand.h>
 #include <OpenSG/OSGMathFieldTraits.h>
+#include <OpenSG/OSGSplitPanel.h>
+#include <OpenSG/OSGSpringLayout.h>
+#include <OpenSG/OSGSpringLayoutConstraints.h>
+#include <OpenSG/OSGScrollPanel.h>
+#include <OpenSG/OSGTextArea.h>
+#include <OpenSG/OSGCardLayout.h>
+#include <OpenSG/OSGTabPanel.h>
 #include <sstream>
 
 OSG_BEGIN_NAMESPACE
@@ -94,14 +101,14 @@ void ContentPanel::addTabWithText(BoostPath file)
     _NewLeftTabLabelCloseButtonRefPtr->setPreferredSize(Vec2f(100,20));
     _NewLeftTabLabelCloseButtonRefPtr->setText("X");
 
-    _NewLeftTabLabelCloseButtonRefPtr->addActionListener(&_CloseButtonListener);
+    _CloseLeftButtonActionConnection = _NewLeftTabLabelCloseButtonRefPtr->connectActionPerformed(boost::bind(&ContentPanel::handleCloseButtonAction, this, _1));
 
     LabelRefPtr _NewLeftTabLabelLabel=Label::create();
     _NewLeftTabLabelLabel->setText(file.leaf());
     _NewLeftTabLabelLabel->setBorders(NULL);
     _NewLeftTabLabelLabel->setBackgrounds(NULL);
 
-    SpringLayoutRefPtr _NewLeftTabLabelPanelSpringLayout = OSG::SpringLayout::create();
+    SpringLayoutRefPtr _NewLeftTabLabelPanelSpringLayout = SpringLayout::create();
 
     _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelCloseButtonRefPtr, 2, SpringLayoutConstraints::NORTH_EDGE, _NewLeftTabLabelPanel);  
     _NewLeftTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelCloseButtonRefPtr, -2, SpringLayoutConstraints::EAST_EDGE, _NewLeftTabLabelPanel);
@@ -127,7 +134,7 @@ void ContentPanel::addTabWithText(BoostPath file)
     while(std::getline(inputFile,sent))para+=sent+"\n";
     inputFile.close();
 
-    TextAreaRefPtr _NewLeftTabTextArea = OSG::TextArea::create();
+    TextAreaRefPtr _NewLeftTabTextArea = TextArea::create();
     _NewLeftTabTextArea->setText(para);
     _NewLeftTabTextArea->setEditable(true);
 
@@ -144,14 +151,14 @@ void ContentPanel::addTabWithText(BoostPath file)
     _RightTabLabelCloseButtonRefPtr->setPreferredSize(Vec2f(20,10));
     _RightTabLabelCloseButtonRefPtr->setText("X");
 
-    _RightTabLabelCloseButtonRefPtr->addActionListener(&_CloseButtonListener);
+    _CloseRightButtonActionConnection = _RightTabLabelCloseButtonRefPtr->connectActionPerformed(boost::bind(&ContentPanel::handleCloseButtonAction, this, _1));
 
     LabelRefPtr _NewRightTabLabel=Label::create();
     _NewRightTabLabel->setText(file.leaf());
     _NewRightTabLabel->setBorders(NULL);
     _NewRightTabLabel->setBackgrounds(NULL);
 
-    SpringLayoutRefPtr _NewRightTabLabelPanelSpringLayout = OSG::SpringLayout::create();
+    SpringLayoutRefPtr _NewRightTabLabelPanelSpringLayout = SpringLayout::create();
 
     _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _RightTabLabelCloseButtonRefPtr, 2, SpringLayoutConstraints::NORTH_EDGE, _NewRightTabLabelPanel);  
     _NewRightTabLabelPanelSpringLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _RightTabLabelCloseButtonRefPtr, -2, SpringLayoutConstraints::EAST_EDGE, _NewRightTabLabelPanel);
@@ -171,7 +178,7 @@ void ContentPanel::addTabWithText(BoostPath file)
 
 
 
-    TextAreaRefPtr _NewRightTabTextArea = OSG::TextArea::create();
+    TextAreaRefPtr _NewRightTabTextArea = TextArea::create();
     _NewRightTabTextArea->setText(para);
     _NewRightTabTextArea->setEditable(true);
 
@@ -214,7 +221,7 @@ void ContentPanel::closeCurrentWindow()
 
 void ContentPanel::createRightTabPanel()
 {
-    _RightTabPanel= OSG::TabPanel::create();
+    _RightTabPanel= TabPanel::create();
     _RightTabPanel->setPreferredSize(Vec2f(1200,1200));
     _RightTabPanel->addTab(_RightTabPanelLabel, _RightTabPanelContent);
     _RightTabPanel->setTabAlignment(0.5f);
@@ -224,7 +231,7 @@ void ContentPanel::createRightTabPanel()
 
 void ContentPanel::createLeftTabPanel()
 {
-    _LeftTabPanel= OSG::TabPanel::create();
+    _LeftTabPanel= TabPanel::create();
     _LeftTabPanel->setPreferredSize(Vec2f(1200,1200));
     _LeftTabPanel->addTab(_LeftTabPanelLabel, _LeftTabPanelContent);
     _LeftTabPanel->setTabAlignment(0.5f);
@@ -234,7 +241,7 @@ void ContentPanel::createLeftTabPanel()
 
 void ContentPanel::createDefaultTabs()
 {
-    _LeftTabPanelLabel = OSG::Label::create();
+    _LeftTabPanelLabel = Label::create();
 
     // set the fields of the labels
     _LeftTabPanelLabel->setPreferredSize(Vec2f(120,20));
@@ -243,7 +250,7 @@ void ContentPanel::createDefaultTabs()
     _LeftTabPanelLabel->setBackgrounds(NULL);
 
     // Create a _StackTraceTextArea
-    _LeftTabPanelTextArea = OSG::TextArea::create();
+    _LeftTabPanelTextArea = TextArea::create();
     _LeftTabPanelTextArea->setText("Hey Programmer!\n\n\n The following shortcuts also exists \n Ctrl+X\t-\t to execute Lua code \n Ctrl+1\t-\t To Focus on Lua Console TextArea \n Ctrl+T\t-\t for splitting the Content Panel \n\n You can now save/open files using the Debugging Interface\n Please DO NOT open files greater than 5KB.It is not efficiently coded and hence would take years to load.\n\n\n\t\tThank you!\n\n");
     _LeftTabPanelTextArea->setEditable(false);
 
@@ -254,7 +261,7 @@ void ContentPanel::createDefaultTabs()
     _LeftTabPanelContent->setViewComponent(_LeftTabPanelTextArea);
 
 
-    _RightTabPanelLabel = OSG::Label::create();
+    _RightTabPanelLabel = Label::create();
 
     // set the fields of the labels
     _RightTabPanelLabel->setText("Screen2");
@@ -262,7 +269,7 @@ void ContentPanel::createDefaultTabs()
     _RightTabPanelLabel->setBackgrounds(NULL);
 
     // Create a _StackTraceTextArea
-    _RightTabPanelTextArea = OSG::TextArea::create();
+    _RightTabPanelTextArea = TextArea::create();
     _RightTabPanelTextArea->setText("This is the Second screen.\n\n Opening files now will open them in both screens.\n\n Pressing the \"Save file\" would only save the currently selected file in the left screen.\n\n\t\tThank you!\n\n");
     _RightTabPanelTextArea->setEditable(false);
 
@@ -327,10 +334,10 @@ void ContentPanel::createSceneEditorPanel()
 {
     //Scene Editing Panel
     _SceneEditorPanel = Panel::createEmpty();
-    _SceneEditorPanel->addMouseListener(&_SceneEditorPanelListener);
-    _SceneEditorPanel->addKeyListener(&_SceneEditorPanelListener);
-    _SceneEditorPanel->addMouseMotionListener(&_SceneEditorPanelListener);
-    _SceneEditorPanel->addMouseWheelListener(&_SceneEditorPanelListener);
+    _SceneEditorPanelMouseClickedConnection = _SceneEditorPanel->connectMouseClicked(boost::bind(&ContentPanel::handleSceneEditorPanelMouseClicked, this, _1));
+    _SceneEditorPanelMousePressedConnection = _SceneEditorPanel->connectMousePressed(boost::bind(&ContentPanel::handleSceneEditorPanelMousePressed, this, _1));
+    _SceneEditorPanelMouseWheelMovedConnection = _SceneEditorPanel->connectMouseWheelMoved(boost::bind(&ContentPanel::handleSceneEditorPanelMouseWheelMoved, this, _1));
+    _SceneEditorPanelKeyTypedConnection = _SceneEditorPanel->connectKeyTyped(boost::bind(&ContentPanel::handleSceneEditorPanelKeyTyped, this, _1));
 }
 
 void ContentPanel::init()
@@ -366,10 +373,10 @@ void ContentPanel::removeTab(UInt32 tabno)
 {
 
 }
-void ContentPanel::actionPerformed(const OSG::ActionEventUnrecPtr e)
+void ContentPanel::handleCloseButtonAction(ActionEventDetails* const details)
 {
 
-    ButtonRefPtr _TempCloseButton = dynamic_cast<Button*>(e->getSource());
+    ButtonRefPtr _TempCloseButton = dynamic_cast<Button*>(details->getSource());
     PanelRefPtr _TempPanel = dynamic_cast<Panel*>(_TempCloseButton->getParentContainer());
     TabPanelRefPtr _TempTabPanel = dynamic_cast<TabPanel*>(_TempPanel->getParentContainer());
     UInt32 _ChildIndex = (_TempTabPanel->getChildIndex(_TempPanel))/2;
@@ -380,58 +387,49 @@ void ContentPanel::actionPerformed(const OSG::ActionEventUnrecPtr e)
 
 }
 
-void ContentPanel::CloseButtonListener::actionPerformed(const OSG::ActionEventUnrecPtr e)
+void ContentPanel::handleSceneEditorPanelMouseDragged(MouseEventDetails* const details)
 {
-    _ContentPanel->actionPerformed(e);
-}
+    _ApplicationPlayer->getDebugSceneNavigator().moveTo(details->getX(),details->getY());
 
-void ContentPanel::SceneEditorPanelListener::mouseMoved(const MouseEventUnrecPtr e)
-{
-}
-
-void ContentPanel::SceneEditorPanelListener::mouseDragged(const MouseEventUnrecPtr e)
-{
-    _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().moveTo(e->getX(),e->getY());
-
-    if( _ContentPanel->_ApplicationPlayer->editXFormManipMgr().isManipulating() )
+    if( _ApplicationPlayer->editXFormManipMgr().isManipulating() )
     {
-        _ContentPanel->_ApplicationPlayer->editXFormManipMgr().mouseMove(e->getX(),
-                                                                         e->getViewport()->getPixelHeight() - e->getY());
+        _ApplicationPlayer->editXFormManipMgr().mouseMove(details->getX(),
+                                                                         details->getViewport()->getPixelHeight() - details->getY());
     }
 }
 
 
-void ContentPanel::SceneEditorPanelListener::mouseClicked(const MouseEventUnrecPtr e)
+void ContentPanel::handleSceneEditorPanelMouseClicked(MouseEventDetails* const details)
 {
-    switch (e->getButton())
+    switch (details->getButton())
     {
-        case MouseEvent::BUTTON1: 
+        case MouseEventDetails::BUTTON1: 
             //Cast a ray into the scene and select the closest node
-            _ContentPanel->_ApplicationPlayer->selectNode(e->getLocation());
+            _ApplicationPlayer->selectNode(details->getLocation());
             break;
     }
 }
 
-void ContentPanel::SceneEditorPanelListener::keyTyped(const KeyEventUnrecPtr e)
+void ContentPanel::handleSceneEditorPanelKeyTyped(KeyEventDetails* const details)
 {
-    switch(e->getKey())
+    switch(details->getKey())
     {
-        case KeyEvent::KEY_F:
-            _ContentPanel->_ApplicationPlayer->focusSelectedNode();
+        case KeyEventDetails::KEY_F:
+            _ApplicationPlayer->focusSelectedNode();
             break;
-        case KeyEvent::KEY_T:
-            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::TRANSLATE);
+        case KeyEventDetails::KEY_T:
+            _ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::TRANSLATE);
             break;
-        case KeyEvent::KEY_S:
-            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::SCALE);
+        case KeyEventDetails::KEY_S:
+            _ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::SCALE);
             break;
-        case KeyEvent::KEY_R:
-            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::ROTATE);
+        case KeyEventDetails::KEY_R:
+            _ApplicationPlayer->editXFormManipMgr().changeManipulator(ManipulatorManager::ROTATE);
             break;
-        case KeyEvent::KEY_ESCAPE:
-            if( _ContentPanel->_ApplicationPlayer->editXFormManipMgr().isManipulating() )
+        case KeyEventDetails::KEY_ESCAPE:
+            if( _ApplicationPlayer->editXFormManipMgr().isManipulating() )
             {
-                _ContentPanel->_ApplicationPlayer->editXFormManipMgr().cancelManip();
+                _ApplicationPlayer->editXFormManipMgr().cancelManip();
             }
             else
             {
@@ -441,37 +439,32 @@ void ContentPanel::SceneEditorPanelListener::keyTyped(const KeyEventUnrecPtr e)
 
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseEntered(const MouseEventUnrecPtr e)
+void ContentPanel::handleSceneEditorPanelMousePressed(MouseEventDetails* const details)
 {
-}
-
-void ContentPanel::SceneEditorPanelListener::mouseExited(const MouseEventUnrecPtr e)
-{
-}
-
-void ContentPanel::SceneEditorPanelListener::mousePressed(const MouseEventUnrecPtr e)
-{
-    if(dynamic_cast<WindowEventProducer*>(e->getSource())->getKeyModifiers() & KeyEvent::KEY_MODIFIER_ALT)
+    if(dynamic_cast<WindowEventProducer*>(details->getSource())->getKeyModifiers() & KeyEventDetails::KEY_MODIFIER_ALT)
     {
-        switch (e->getButton())
+        switch (details->getButton())
         {
-            case MouseEvent::BUTTON1: 
-                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::LEFT_MOUSE,e->getX(),e->getY());
+            case MouseEventDetails::BUTTON1: 
+                _ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::LEFT_MOUSE,details->getX(),details->getY());
                 break;
-            case MouseEvent::BUTTON2:
-                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::RIGHT_MOUSE,e->getX(),e->getY());
+            case MouseEventDetails::BUTTON2:
+                _ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::RIGHT_MOUSE,details->getX(),details->getY());
                 break;
-            case MouseEvent::BUTTON3:
-                _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
+            case MouseEventDetails::BUTTON3:
+                _ApplicationPlayer->getDebugSceneNavigator().buttonPress(Navigator::MIDDLE_MOUSE,details->getX(),details->getY());
                 break;
+
         }
+        _SceneEditorPanelMouseDraggedConnection = dynamic_cast<WindowEventProducer*>(details->getSource())->connectMouseDragged(boost::bind(&ContentPanel::handleSceneEditorPanelMouseDragged, this, _1));
+        _SceneEditorPanelMouseReleasedConnection = dynamic_cast<WindowEventProducer*>(details->getSource())->connectMouseReleased(boost::bind(&ContentPanel::handleSceneEditorPanelMouseReleased, this, _1));
     }
-    else if(e->getButton() == MouseEvent::BUTTON1)
+    else if(details->getButton() == MouseEventDetails::BUTTON1)
     {
         Line ViewRay;
         ViewportRefPtr
-            TheViewport(_ContentPanel->_ApplicationPlayer->getDebugViewport());
-        TheViewport->getCamera()->calcViewRay( ViewRay, e->getX(),e->getY(), *TheViewport);
+            TheViewport(_ApplicationPlayer->getDebugViewport());
+        TheViewport->getCamera()->calcViewRay( ViewRay, details->getX(),details->getY(), *TheViewport);
 
         IntersectAction *CastRayAction = IntersectAction::create();
 
@@ -480,42 +473,44 @@ void ContentPanel::SceneEditorPanelListener::mousePressed(const MouseEventUnrecP
         CastRayAction->apply( TheViewport->getRoot() );             
 
         if ( (CastRayAction->didHit()) &&
-             (_ContentPanel->_ApplicationPlayer->editXFormManipMgr().startManip( CastRayAction->getHitObject()) ) )
+             (_ApplicationPlayer->editXFormManipMgr().startManip( CastRayAction->getHitObject()) ) )
         {
-            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().mouseButtonPress(e->getButton(), e->getX(),e->getViewport()->getPixelHeight() - e->getY());
+            _ApplicationPlayer->editXFormManipMgr().mouseButtonPress(details->getButton(), details->getX(),details->getViewport()->getPixelHeight() - details->getY());
         }
+        _SceneEditorPanelMouseDraggedConnection = dynamic_cast<WindowEventProducer*>(details->getSource())->connectMouseDragged(boost::bind(&ContentPanel::handleSceneEditorPanelMouseDragged, this, _1));
+        _SceneEditorPanelMouseReleasedConnection = dynamic_cast<WindowEventProducer*>(details->getSource())->connectMouseReleased(boost::bind(&ContentPanel::handleSceneEditorPanelMouseReleased, this, _1));
     }
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseReleased(const MouseEventUnrecPtr e)
+void ContentPanel::handleSceneEditorPanelMouseReleased(MouseEventDetails* const details)
 {
-    switch (e->getButton())
+    switch (details->getButton())
     {
-        case MouseEvent::BUTTON1: 
-            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::LEFT_MOUSE,e->getX(),e->getY());
+        case MouseEventDetails::BUTTON1: 
+            _ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::LEFT_MOUSE,details->getX(),details->getY());
             break;
-        case MouseEvent::BUTTON2:
-            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::RIGHT_MOUSE,e->getX(),e->getY());
+        case MouseEventDetails::BUTTON2:
+            _ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::RIGHT_MOUSE,details->getX(),details->getY());
             break;
-        case MouseEvent::BUTTON3:
-            _ContentPanel->_ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::MIDDLE_MOUSE,e->getX(),e->getY());
+        case MouseEventDetails::BUTTON3:
+            _ApplicationPlayer->getDebugSceneNavigator().buttonRelease(Navigator::MIDDLE_MOUSE,details->getX(),details->getY());
             break;
     }
-    if(e->getButton() == MouseEvent::BUTTON1)
+    if(details->getButton() == MouseEventDetails::BUTTON1)
     {
-        if(_ContentPanel->_ApplicationPlayer->editXFormManipMgr().isManipulating() )
+        if(_ApplicationPlayer->editXFormManipMgr().isManipulating() )
         {
-            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().mouseButtonRelease(e->getButton(), e->getX(),e->getViewport()->getPixelHeight() - e->getY());
-            _ContentPanel->_ApplicationPlayer->editXFormManipMgr().endManip();
+            _ApplicationPlayer->editXFormManipMgr().mouseButtonRelease(details->getButton(), details->getX(),details->getViewport()->getPixelHeight() - details->getY());
+            _ApplicationPlayer->editXFormManipMgr().endManip();
 
-            Node* target(_ContentPanel->_ApplicationPlayer->editXFormManipMgr().getTarget());
+            Node* target(_ApplicationPlayer->editXFormManipMgr().getTarget());
             if(target &&
                target->getCore() &&
                target->getCore()->getType().isDerivedFrom(Transform::getClassType()))
             {
                 std::ostringstream initMatStrStream;
                 OutStream theinitMatOutStream(initMatStrStream);
-                FieldTraits<Matrix>::putToStream(_ContentPanel->_ApplicationPlayer->editXFormManipMgr().getManipulator()->getInitialXForm(),theinitMatOutStream);
+                FieldTraits<Matrix>::putToStream(_ApplicationPlayer->editXFormManipMgr().getManipulator()->getInitialXForm(),theinitMatOutStream);
 
 
                 std::ostringstream matStrStream;
@@ -528,37 +523,48 @@ void ContentPanel::SceneEditorPanelListener::mouseReleased(const MouseEventUnrec
                                                  matStrStream.str(),
                                                  initMatStrStream.str());
 
-                _ContentPanel->_ApplicationPlayer->getCommandManager()->executeCommand(SetCommand);
+                _ApplicationPlayer->getCommandManager()->executeCommand(SetCommand);
             }
         }
     }
+    _SceneEditorPanelMouseDraggedConnection.disconnect();
+    _SceneEditorPanelMouseReleasedConnection.disconnect();
 }
 
-void ContentPanel::SceneEditorPanelListener::mouseWheelMoved(const MouseWheelEventUnrecPtr e)
+void ContentPanel::handleSceneEditorPanelMouseWheelMoved(MouseWheelEventDetails* const details)
 {
-    Navigator& TheNav(_ContentPanel->_ApplicationPlayer->getDebugSceneNavigator());
-    TheNav.setDistance(TheNav.getDistance() + e->getUnitsToScroll() * TheNav.getMotionFactor());
+    Navigator& TheNav(_ApplicationPlayer->getDebugSceneNavigator());
+    TheNav.setDistance(TheNav.getDistance() + details->getUnitsToScroll() * TheNav.getMotionFactor());
 }
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
+
+void ContentPanel::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    _CloseRightButtonActionConnection.disconnect();
+    _CloseLeftButtonActionConnection.disconnect();
+    _SceneEditorPanelMouseDraggedConnection.disconnect();
+    _SceneEditorPanelMouseClickedConnection.disconnect();
+    _SceneEditorPanelMousePressedConnection.disconnect();
+    _SceneEditorPanelMouseReleasedConnection.disconnect();
+    _SceneEditorPanelMouseWheelMovedConnection.disconnect();
+    _SceneEditorPanelKeyTypedConnection.disconnect();
+}
+
 /*----------------------- constructors & destructors ----------------------*/
 
 ContentPanel::ContentPanel(void) :
-    Inherited(),
-	_CloseButtonListener(ContentPanelRefPtr(this)),
-	_SceneEditorPanelListener(ContentPanelRefPtr(this))
-
+    Inherited()
 {
 }
 
 ContentPanel::ContentPanel(const ContentPanel &source) :
-    Inherited(source),
-	_CloseButtonListener(ContentPanelRefPtr(this)),
-	_SceneEditorPanelListener(ContentPanelRefPtr(this))
-
+    Inherited(source)
 {
 }
 

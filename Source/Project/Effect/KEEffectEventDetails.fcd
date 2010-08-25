@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="EffectEventDetails"
+	parent="EventDetails"
+	library="KabalaEngine"
+	pointerfieldtypes="single"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+	supportUnregisteredCreate="true"
+    authors="David Kabala (djkabala@gmail.com)                             "
+>
+</FieldContainer>

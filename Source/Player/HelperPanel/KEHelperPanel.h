@@ -45,30 +45,30 @@
 #include <OpenSG/OSGLuaManager.h>
 
 // for tab panel contents
-#include <OpenSG/OSGTabPanel.h>
-#include <OpenSG/OSGTextArea.h>
+#include <OpenSG/OSGTabPanelFields.h>
+#include <OpenSG/OSGTextAreaFields.h>
 #include <sstream>
-#include <OpenSG/OSGScrollPanel.h>
-#include <OpenSG/OSGPanel.h>
+#include <OpenSG/OSGScrollPanelFields.h>
+#include <OpenSG/OSGPanelFields.h>
 
 // for the buttons
-#include <OpenSG/OSGButton.h>
+#include <OpenSG/OSGButtonFields.h>
 
 // spring layout
-#include <OpenSG/OSGSpringLayout.h>
-#include <OpenSG/OSGSpringLayoutConstraints.h>
+#include <OpenSG/OSGSpringLayoutFields.h>
+#include <OpenSG/OSGSpringLayoutConstraintsFields.h>
 
 // for labels
 #include <OpenSG/OSGLabel.h>
 
 // List header files
-#include <OpenSG/OSGList.h>
-#include <OpenSG/OSGDefaultListModel.h>
-#include <OpenSG/OSGDefaultListSelectionModel.h>
-#include <OpenSG/OSGFlowLayout.h>
+#include <OpenSG/OSGListFields.h>
+#include <OpenSG/OSGDefaultListModelFields.h>
+#include <OpenSG/OSGFlowLayoutFields.h>
 
-#include <OpenSG/OSGGridLayout.h>
+#include <OpenSG/OSGGridLayoutFields.h>
 #include <OpenSG/OSGFieldContainerEditorFactory.h>
+#include <OpenSG/OSGActionEventDetailsFields.h>
 
 #include "Application/KEMainApplication.h"
 
@@ -110,75 +110,6 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
-	  	   /////////////////// Lua Listener - begin///////////////////
-	class LuaErrorListener : public LuaListener
-    {
-
-        public:
-            LuaErrorListener(HelperPanelRefPtr TheHelperPanel);
-
-        protected :
-            HelperPanelRefPtr _HelperPanel;
-
-        public:
-
-            virtual void error(const LuaErrorEventUnrecPtr e);
-    };
-    friend class LuaErrorListener;
-	LuaErrorListener  _LuaErrorListener;
-	/////////////////// Lua listener - end///////////////////
-
-
-	/////////////////// Basic Listener - begin///////////////////
-	class BasicListener : public ActionListener
-	{
-	public:
-		BasicListener(HelperPanelRefPtr TheHelperPanel);
-
-		virtual void actionPerformed(const ActionEventUnrecPtr e);
-	protected :
-		HelperPanelRefPtr _HelperPanel;
-	
-	};
-
-	friend class BasicListener;
-	BasicListener _BasicListener;
-	/////////////////// Basic Listener - end///////////////////
-
-
-
-	/////////////////// Key Listener - begin///////////////////
-	class PlayerKeyListener2 : public KeyAdapter
-	{
-	public:
-		PlayerKeyListener2(HelperPanelRefPtr TheHelperPanel);
-
-		virtual void keyTyped(const KeyEventUnrecPtr e);
-	protected :
-		HelperPanelRefPtr _HelperPanel;
-	};
-	
-    friend class PlayerKeyListener2;
-	PlayerKeyListener2 _PlayerKeyListener2;
-	/////////////////// Key Listener - end///////////////////
-	
-	/////////////////// Key Listener - begin///////////////////
-	class PlayerMouseListener : public MouseAdapter
-	{
-	public:
-		PlayerMouseListener(HelperPanelRefPtr TheHelperPanel);
-
-		virtual void mouseClicked(const MouseEventUnrecPtr e);
-	protected :
-		HelperPanelRefPtr _HelperPanel;
-	};
-	
-    friend class PlayerMouseListener;
-	PlayerMouseListener _PlayerMouseListener;
-	/////////////////// Key Listener - end///////////////////
-	
-
-	/////////////////// other function definitions - begin///////////////////
 	void viewTab(UInt32);
 	void hideTab(UInt32);
 
@@ -186,10 +117,7 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
 	void setupHistoryList(void);
 	void setupRest(void);
 
-	void actionPerformed(const ActionEventUnrecPtr e);
-	void keyTyped2(const KeyEventUnrecPtr e);
-	/////////////////// other function definitions - end///////////////////
-    void setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer);
+    void setApplicationPlayer(ApplicationPlayer* const TheApplicationPlayer);
 
     void updateSelectedNode(void);
 
@@ -221,18 +149,28 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
     static void initMethod(InitPhase ePhase);
 
     /*! \}                                                                 */
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
+    void handleLuaError(LuaErrorEventDetails* const details);
+    void handleExecuteScriptAction(ActionEventDetails* const details);
+	void handleHistoryListMouseClicked(MouseEventDetails* const details);
+
+    boost::signals2::connection _LuaErrorConnection,
+                                _ExecuteScriptActionConnection,
+                                _HistoryListMouseClickedConnection;
 
 	SpringLayoutRefPtr _Layout;
-
-	enum tab{LUA=1,ERR,CONSOLE,PROPERTIES};
 
     ApplicationPlayerRefPtr _ApplicationPlayer;
 
 	LabelRefPtr					_HistoryLabel;
-	ListSelectionModelPtr		_HistoryListSelectionModel;
-	ListRefPtr						_HistoryList;
-	DefaultListModelRefPtr			_HistoryListModel;
-	ScrollPanelRefPtr				_HistoryScrollPanel;
+	ListRefPtr					_HistoryList;
+	DefaultListModelRefPtr		_HistoryListModel;
+	ScrollPanelRefPtr			_HistoryScrollPanel;
 	std::vector<std::string>	_ListOfCommands;
 
 	ButtonRefPtr _ExecuteBtn;

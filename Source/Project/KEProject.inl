@@ -37,6 +37,7 @@
 //  Includes
 //---------------------------------------------------------------------------
 #include "Application/KEMainApplication.h"
+#include <OpenSG/OSGWindowEventProducer.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -71,7 +72,7 @@ UInt32 Project::numViewports(void) const
 }
 
 inline
-ViewportRefPtr Project::getViewport(UInt32 index) const
+Viewport* Project::getViewport(UInt32 index) const
 {
     return MainApplication::the()->getMainWindow()->getPort(index);
 }
@@ -90,20 +91,15 @@ bool Project::isInputBlocked(void) const
 }
 
 inline
-SceneRefPtr Project::getActiveScene(void) const
+Scene* Project::getActiveScene(void) const
 {
 	return getInternalActiveScene();
 }
 
 inline
-SceneRefPtr Project::getLastActiveScene(void) const
+Scene* Project::getLastActiveScene(void) const
 {
 	return _LastActiveScene;
-}
-
-inline
-Project::ProjectUpdateListener::ProjectUpdateListener(ProjectRefPtr TheProject) : _Project(TheProject)
-{
 }
 
 inline
@@ -131,194 +127,192 @@ void Project::togglePauseActiveUpdates(void)
 }
 
 inline
-void Project::ProjectUpdateListener::update(const UpdateEventUnrecPtr e)
+void Project::handleUpdate(UpdateEventDetails* const details)
 {
-    if(e->getElapsedTime() < 1.0)
+    if(!_BlockInput && details->getElapsedTime() < 1.0)
     {
-        if(!_Project->_BlockInput)
-        {
-            _Project->_Producer.produceEvent(UpdateMethodId,e);
-        }
+        produceUpdate(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::mouseClicked(const MouseEventUnrecPtr e)
+void Project::handleMouseClicked(MouseEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(MouseClickedMethodId,e);
+        produceMouseClicked(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::mouseEntered(const MouseEventUnrecPtr e)
+void Project::handleMouseEntered(MouseEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(MouseEnteredMethodId,e);
+        produceMouseEntered(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::mouseExited(const MouseEventUnrecPtr e)
+void Project::handleMouseExited(MouseEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(MouseExitedMethodId,e);
+        produceMouseExited(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::mousePressed(const MouseEventUnrecPtr e)
+void Project::handleMousePressed(MouseEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(MousePressedMethodId,e);
-    }
-}
-inline
-void Project::ProjectUpdateListener::mouseReleased(const MouseEventUnrecPtr e)
-{
-    if(!_Project->_BlockInput)
-    {
-        _Project->_Producer.produceEvent(MouseReleasedMethodId,e);
+        produceMousePressed(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::mouseMoved(const MouseEventUnrecPtr e)
+void Project::handleMouseReleased(MouseEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(MouseMovedMethodId,e);
+        produceMouseReleased(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::mouseDragged(const MouseEventUnrecPtr e)
+void Project::handleMouseMoved(MouseEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(MouseDraggedMethodId,e);
+        produceMouseMoved(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::mouseWheelMoved(const MouseWheelEventUnrecPtr e)
+void Project::handleMouseDragged(MouseEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(MouseWheelMovedMethodId,e);
+        produceMouseDragged(details);
+    }
+}
+
+inline
+void Project::handleMouseWheelMoved(MouseWheelEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        produceMouseWheelMoved(details);
     }
 }
 
 
 inline
-void Project::ProjectUpdateListener::keyPressed(const KeyEventUnrecPtr e)
+void Project::handleKeyPressed(KeyEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(KeyPressedMethodId,e);
+        produceKeyPressed(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::keyReleased(const KeyEventUnrecPtr e)
+void Project::handleKeyReleased(KeyEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(KeyReleasedMethodId,e);
+        produceKeyReleased(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::keyTyped(const KeyEventUnrecPtr e)
+void Project::handleKeyTyped(KeyEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(KeyTypedMethodId,e);
+        produceKeyTyped(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowOpened(const WindowEventUnrecPtr e)
+void Project::handleWindowOpened(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowOpenedMethodId,e);
+        produceWindowOpened(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowClosing(const WindowEventUnrecPtr e)
+void Project::handleWindowClosing(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowClosingMethodId,e);
+        produceWindowClosing(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowClosed(const WindowEventUnrecPtr e)
+void Project::handleWindowClosed(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowClosedMethodId,e);
+        produceWindowClosed(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowIconified(const WindowEventUnrecPtr e)
+void Project::handleWindowIconified(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowIconifiedMethodId,e);
+        produceWindowIconified(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowDeiconified(const WindowEventUnrecPtr e)
+void Project::handleWindowDeiconified(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowDeiconifiedMethodId,e);
+        produceWindowDeiconified(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowActivated(const WindowEventUnrecPtr e)
+void Project::handleWindowActivated(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowActivatedMethodId,e);
+        produceWindowActivated(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowDeactivated(const WindowEventUnrecPtr e)
+void Project::handleWindowDeactivated(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowDeactivatedMethodId,e);
+        produceWindowDeactivated(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowEntered(const WindowEventUnrecPtr e)
+void Project::handleWindowEntered(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowEnteredMethodId,e);
+        produceWindowEntered(details);
     }
 }
 
 inline
-void Project::ProjectUpdateListener::windowExited(const WindowEventUnrecPtr e)
+void Project::handleWindowExited(WindowEventDetails* const details)
 {
-    if(!_Project->_BlockInput)
+    if(!_BlockInput)
     {
-        _Project->_Producer.produceEvent(WindowExitedMethodId,e);
+        produceWindowExited(details);
     }
 }
 

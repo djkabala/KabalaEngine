@@ -58,9 +58,9 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef DeleteCommandPtr RefPtr;
 
-    DeleteCommand(ApplicationPlayerRefPtr ApplicationPlayer,
-                  HierarchyPanelRefPtr HierarchyPanel,
-                  NodeRefPtr DeleteNode);
+    DeleteCommand(ApplicationPlayer* const ApplicationPlayer,
+                  HierarchyPanel* const HierarchyPanel,
+                  Node* const DeleteNode);
 
 	DeleteCommand(const DeleteCommand& source);
 
@@ -90,9 +90,9 @@ public:
 
 	virtual ~DeleteCommand(void);
 	
-    static DeleteCommandPtr create(ApplicationPlayerRefPtr ApplicationPlayer,
-                                   HierarchyPanelRefPtr HierarchyPanel,
-                                   NodeRefPtr DeleteNode);
+    static DeleteCommandPtr create(ApplicationPlayer* const ApplicationPlayer,
+                                   HierarchyPanel* const HierarchyPanel,
+                                   Node* const DeleteNode);
 };
 
 OSG_END_NAMESPACE

@@ -99,23 +99,23 @@
 #include "@!MixinHeader!@"
 @@endif
 
-@@if hasProducedMethods 
+@@if hasProducedEvents 
+    @@if isRootProducer
 //Event Producer Headers
-    @@if useLocalIncludes
-#include "@!HeaderPrefix!@OSGEventProducer.h"
-#include "@!HeaderPrefix!@OSGEventProducerType.h"
-#include "@!HeaderPrefix!@OSGMethodDescription.h"
-        @@if isRootProducer
-#include "@!HeaderPrefix!@OSGEventProducerPtrType.h"
-        @@endif
-    @@else // useLocalIncludes
-#include <@!HeaderPrefix!@OSGEventProducer.h>
-#include <@!HeaderPrefix!@OSGEventProducerType.h>
-#include <@!HeaderPrefix!@OSGMethodDescription.h>
-        @@if isRootProducer
-#include <@!HeaderPrefix!@OSGEventProducerPtrType.h>
-        @@endif
-    @@endif // useLocalIncludes
+       @@if useLocalIncludes
+#include "@!HeaderPrefix!@OSGActivity.h"
+#include "@!HeaderPrefix!@OSGConsumableEventCombiner.h"
+       @@else // useLocalIncludes
+#include <@!HeaderPrefix!@OSGActivity.h>
+#include <@!HeaderPrefix!@OSGConsumableEventCombiner.h>
+       @@endif // useLocalIncludes
+
+    @@endif
+@@BeginProducedEventLoop@@
+    @@if producedEvent.needFieldInclude
+#include @!producedEvent.FieldInclude!@
+    @@endif // producedEvent.needFieldInclude
+@@EndProducedEventLoop@@
 
 @@endif
 OSG_BEGIN_NAMESPACE
@@ -151,6 +151,24 @@ class @!Classname!@Base : public @!Parent!@
     typedef TypeObject::InitPhase InitPhase;
 
     OSG_GEN_INTERNALPTR(@!Classname!@);
+    
+    
+@@if hasProducedEvents 
+@@BeginProducedEventLoop@@
+    typedef @!producedEvent.TypeRaw:18!@ @!producedEvent.Name!@EventDetailsType;
+@@EndProducedEventLoop@@
+
+    @@if isRootProducer
+    typedef boost::signals2::signal<void (EventDetails* const            , UInt32)> BaseEventType;
+    @@endif
+@@BeginProducedEventLoop@@
+    @@if producedEvent.consumable
+    typedef boost::signals2::signal<void (@!producedEvent.EventDetailsType:24!@, UInt32), ConsumableEventCombiner> @!producedEvent.Name!@EventType;
+    @@else
+    typedef boost::signals2::signal<void (@!producedEvent.EventDetailsType:24!@, UInt32)> @!producedEvent.Name!@EventType;
+    @@endif //producedEvent.consumable
+@@EndProducedEventLoop@@
+@@endif
 
     /*==========================  PUBLIC  =================================*/
 
@@ -166,80 +184,59 @@ class @!Classname!@Base : public @!Parent!@
     static const OSG::BitVector DecorateeFieldMask =
         (TypeTraits<BitVector>::One << DecorateeFieldId);
 @@else // isDecorator
-    @@if hasFieldsOrIsRootProducer
+    @@if hasFields
     enum
     {
         @@BeginFieldLoop
             @@if field.isFirstField
         @!field.Name!@FieldId = Inherited::NextFieldId,
                 @@if field.isLastField
-                    @@if isRootProducer
-        EventProducerFieldId = @!field.Name!@FieldId + 1,
-        NextFieldId = EventProducerFieldId + 1
-                    @@else // isRootProducer
         NextFieldId = @!field.Name!@FieldId + 1
-                    @@endif // isRootProducer
                 @@endif // field.isLastField
             @@else // field.isFirstField
         @!field.Name!@FieldId = @!field.prevField.Name!@FieldId + 1,
                 @@if field.isLastField
-                    @@if isRootProducer
-        EventProducerFieldId = @!field.Name!@FieldId + 1,
-        NextFieldId = EventProducerFieldId + 1
-                    @@else // isRootProducer
         NextFieldId = @!field.Name!@FieldId + 1
-                    @@endif // isRootProducer
                 @@endif // field.isLastField
             @@endif // field.isFirstField
         @@EndFieldLoop
-        @@if !hasFields
-        EventProducerFieldId = Inherited::NextFieldId,
-        NextFieldId = EventProducerFieldId + 1
-        @@endif // hasFields
     };
 
         @@BeginFieldLoop
     static const OSG::BitVector @!field.Name!@FieldMask =
         (TypeTraits<BitVector>::One << @!field.Name!@FieldId);
         @@EndFieldLoop
-        @@if isRootProducer
-    static const OSG::BitVector EventProducerFieldMask =
-        (TypeTraits<BitVector>::One << EventProducerFieldId);
-        @@endif // isRootProducer
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
         @@BeginFieldLoop
     typedef @!field.FieldTypeNS!@@!field.CARD!@@!field.FieldTypeCaps:15!@ @!field.CARD!@@!field.Name!@Type;
         @@EndFieldLoop
-        @@if isRootProducer
-    typedef SFEventProducerPtr          SFEventProducerType;
-        @@endif // isRootProducer
-    @@endif // hasFieldsOrIsRootProducer
+    @@endif // hasFields
 @@endif // isDecorator
-@@if hasProducedMethods 
+@@if hasProducedEvents 
 
     enum
     {
-    @@BeginProducedMethodLoop
-        @@if producedMethod.isFirstProducedMethod
+    @@BeginProducedEventLoop
+        @@if producedEvent.isFirstProducedEvent
             @@if isRootProducer
-        @!producedMethod.Name!@MethodId = 1,
+        @!producedEvent.Name!@EventId = 1,
             @@else // isRootProducer
-        @!producedMethod.Name!@MethodId = Inherited::NextProducedMethodId,
+        @!producedEvent.Name!@EventId = Inherited::NextProducedEventId,
             @@endif // isRootProducer
-            @@if producedMethod.isLastProducedMethod
-        NextProducedMethodId = @!producedMethod.Name!@MethodId + 1
-            @@endif // producedMethod.isLastProducedMethod
-        @@else // producedMethod.isFirstProducedMethod
-        @!producedMethod.Name!@MethodId = @!producedMethod.prevProducedMethod.Name!@MethodId + 1,
-            @@if producedMethod.isLastProducedMethod
-        NextProducedMethodId = @!producedMethod.Name!@MethodId + 1
-            @@endif // producedMethod.isLastProducedMethod
-        @@endif // producedMethod.isFirstProducedMethod
-    @@EndProducedMethodLoop
+            @@if producedEvent.isLastProducedEvent
+        NextProducedEventId = @!producedEvent.Name!@EventId + 1
+            @@endif // producedEvent.isLastProducedEvent
+        @@else // producedEvent.isFirstProducedEvent
+        @!producedEvent.Name!@EventId = @!producedEvent.prevProducedEvent.Name!@EventId + 1,
+            @@if producedEvent.isLastProducedEvent
+        NextProducedEventId = @!producedEvent.Name!@EventId + 1
+            @@endif // producedEvent.isLastProducedEvent
+        @@endif // producedEvent.isFirstProducedEvent
+    @@EndProducedEventLoop
     };
-@@endif // hasProducedMethods
+@@endif // hasProducedEvents
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
@@ -248,7 +245,7 @@ class @!Classname!@Base : public @!Parent!@
     static FieldContainerType &getClassType   (void);
     static UInt32              getClassTypeId (void);
     static UInt16              getClassGroupId(void);
-@@if hasProducedMethods
+@@if hasProducedEvents
     static const  EventProducerType  &getProducerClassType  (void);
     static        UInt32              getProducerClassTypeId(void);
 @@endif
@@ -406,32 +403,52 @@ class @!Classname!@Base : public @!Parent!@
 
 
     /*! \}                                                                 */
-@@if hasProducedMethods 
+@@if hasProducedEvents 
     /*---------------------------------------------------------------------*/
-    /*! \name                Method Produced Get                           */
+    /*! \name                Event Produced Get                           */
     /*! \{                                                                 */
 
     virtual const EventProducerType &getProducerType(void) const; 
 
-    @@if isRootProducer 
-    EventConnection          attachActivity             (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId);
-    bool                     isActivityAttached         (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId) const;
-    UInt32                   getNumActivitiesAttached   (UInt32 ProducedEventId) const;
-    ActivityRefPtr           getAttachedActivity        (UInt32 ProducedEventId,
-                                                         UInt32 ActivityIndex) const;
-    void                     detachActivity             (ActivityRefPtr TheActivity,
-                                                         UInt32 ProducedEventId);
-    UInt32                   getNumProducedEvents       (void) const;
-    const MethodDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
-    const MethodDescription *getProducedEventDescription(UInt32 ProducedEventId) const;
-    UInt32                   getProducedEventId         (const std::string &ProducedEventName) const;
-
-    SFEventProducerPtr *editSFEventProducer(void);
-    EventProducerPtr   &editEventProducer  (void);
+    @@if isRootProducer
+    virtual UInt32                   getNumProducedEvents       (void                                ) const;
+    virtual const EventDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
+    virtual const EventDescription *getProducedEventDescription(UInt32 ProducedEventId              ) const;
+    virtual UInt32                   getProducedEventId         (const std::string &ProducedEventName) const;
     @@endif 
+    
+    virtual boost::signals2::connection connectEvent(UInt32 eventId, 
+                                              const BaseEventType::slot_type &listener,
+                                              boost::signals2::connect_position at= boost::signals2::at_back);
+                                              
+    virtual boost::signals2::connection connectEvent(UInt32 eventId, 
+                                              const BaseEventType::group_type &group,
+                                              const BaseEventType::slot_type &listener,
+                                              boost::signals2::connect_position at= boost::signals2::at_back);
+    
+    virtual void   disconnectEvent        (UInt32 eventId, const BaseEventType::group_type &group);
+    virtual void   disconnectAllSlotsEvent(UInt32 eventId);
+    virtual bool   isEmptyEvent           (UInt32 eventId) const;
+    virtual UInt32 numSlotsEvent          (UInt32 eventId) const;
 
+    /*! \}                                                                 */
+    /*! \name                Event Access                                 */
+    /*! \{                                                                 */
+    
+@@BeginProducedEventLoop@@
+    //@!producedEvent.Name!@
+    boost::signals2::connection connect@!producedEvent.Name:15!@(const @!producedEvent.Name!@EventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connect@!producedEvent.Name:15!@(const @!producedEvent.Name!@EventType::group_type &group,
+                                                       const @!producedEvent.Name!@EventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnect@!producedEvent.Name:23!@(const @!producedEvent.Name!@EventType::group_type &group);
+    void   disconnectAllSlots@!producedEvent.Name:15!@(void);
+    bool   isEmpty@!producedEvent.Name:26!@(void) const;
+    UInt32 numSlots@!producedEvent.Name:25!@(void) const;
+    
+@@EndProducedEventLoop@@
+    
     /*! \}                                                                 */
 @@endif 
 @@if !isAbstract
@@ -449,6 +466,10 @@ class @!Classname!@Base : public @!Parent!@
                                               BitVector bFlags = FCLocal::All);
 
     static  @!Classname!@TransitPtr  createDependent  (BitVector bFlags);
+@@if supportUnregisteredCreate
+
+    static  @!Classname!@           *createUnregistered(void);
+@@endif
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -466,24 +487,24 @@ class @!Classname!@Base : public @!Parent!@
     /*=========================  PROTECTED  ===============================*/
 
   protected:
-@@if isRootProducer 
+@@if hasProducedEvents 
     /*---------------------------------------------------------------------*/
-    /*! \name                    Event Producer                            */
+    /*! \name                    Produced Event Signals                   */
     /*! \{                                                                 */
-    EventProducer _Producer;
-    
-    GetFieldHandlePtr  getHandleEventProducer        (void) const;
-    EditFieldHandlePtr editHandleEventProducer       (void);
 
+    //Event Event producers
+@@BeginProducedEventLoop@@
+    @!producedEvent.Name!@EventType _@!producedEvent.Name!@Event;
+@@EndProducedEventLoop@@
     /*! \}                                                                 */
-@@endif 
+@@endif  // !hasProducedEvents
 
     static TypeObject _type;
 
     static       void   classDescInserter(TypeObject &oType);
     static const Char8 *getClassname     (void             );
 
-@@if hasFieldsOrIsRootProducer
+@@if hasFields
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
@@ -495,9 +516,6 @@ class @!Classname!@Base : public @!Parent!@
     @!field.FieldTypeNS!@@!field.CARD!@@!field.FieldTypeCaps:15!@ _@!field.VarName!@;
         @@EndFieldLoop@@
     @@endif // isDecorator
-@@if isRootProducer 
-    SFEventProducerPtr _sfEventProducer;
-@@endif 
 
     /*! \}                                                                 */
 @@endif // hasFields
@@ -563,6 +581,16 @@ class @!Classname!@Base : public @!Parent!@
     @@EndFieldLoop@@
 
     /*! \}                                                                 */
+@@if hasProducedEvents 
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Event Access                     */
+    /*! \{                                                                 */
+
+@@BeginProducedEventLoop@@
+    GetEventHandlePtr getHandle@!producedEvent.Name!@Signal(void) const;
+@@EndProducedEventLoop@@
+    /*! \}                                                                 */
+@@endif  // !hasProducedEvents
 @@if hasProtectedFields
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Get                                 */
@@ -674,6 +702,18 @@ class @!Classname!@Base : public @!Parent!@
     @@EndMFFieldLoop@@
     /*! \}                                                                 */
 @@endif // hasProtectedFields
+@@if hasProducedEvents 
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Event Producer Firing                    */
+    /*! \{                                                                 */
+
+    virtual void produceEvent       (UInt32 eventId, EventDetails* const e);
+    
+@@BeginProducedEventLoop@@
+    void produce@!producedEvent.Name:18!@  (@!producedEvent.Name!@EventDetailsType* const e);
+@@EndProducedEventLoop@@
+    /*! \}                                                                 */
+@@endif  // !hasProducedEvents
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
     /*! \{                                                                 */
@@ -725,8 +765,8 @@ class @!Classname!@Base : public @!Parent!@
 
   private:
     /*---------------------------------------------------------------------*/
-@@if hasProducedMethods 
-    static MethodDescription   *_methodDesc[];
+@@if hasProducedEvents 
+    static EventDescription   *_eventDesc[];
     static EventProducerType _producerType;
 
 @@endif 

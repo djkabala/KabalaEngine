@@ -44,7 +44,6 @@
 
 #include <OpenSG/OSGUndoableCommand.h>
 
-#include "Player/KEApplicationPlayer.h"
 #include "Player/HierarchyPanel/KEHierarchyPanel.h"
 
 OSG_BEGIN_NAMESPACE
@@ -58,7 +57,7 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef ImportModelCommandPtr RefPtr;
 
-	ImportModelCommand(HierarchyPanelRefPtr HierarchyPanel,NodeUnrecPtr NodeToAddTo);
+	ImportModelCommand(HierarchyPanel* const HierarchyPanel, Node* const NodeToAddTo);
 
 	ImportModelCommand(const ImportModelCommand& source);
 
@@ -73,7 +72,7 @@ protected:
 
 	HierarchyPanelRefPtr _HierarchyPanel;
 	NodeRefPtr _NewNode;
-    NodeUnrecPtr _NodeToAddTo;
+    NodeRecPtr _NodeToAddTo;
 
 
 public:
@@ -86,7 +85,7 @@ public:
 
 	virtual ~ImportModelCommand(void);
 	
-	static ImportModelCommandPtr create(HierarchyPanelRefPtr HierarchyPanel,NodeUnrecPtr NodeToAddTo);
+	static ImportModelCommandPtr create(HierarchyPanel* const HierarchyPanel,Node* const NodeToAddTo);
 };
 
 OSG_END_NAMESPACE

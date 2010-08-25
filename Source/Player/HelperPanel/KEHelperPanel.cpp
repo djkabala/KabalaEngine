@@ -52,6 +52,13 @@
 
 #include "Application/KEMainApplication.h"
 #include <OpenSG/OSGNameAttachment.h>
+#include <OpenSG/OSGTextArea.h>
+#include <OpenSG/OSGList.h>
+#include <OpenSG/OSGSpringLayout.h>
+#include <OpenSG/OSGSpringLayoutConstraints.h>
+#include <OpenSG/OSGDefaultListModel.h>
+#include <OpenSG/OSGTabPanel.h>
+#include <OpenSG/OSGScrollPanel.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -85,7 +92,7 @@ void HelperPanel::initMethod(InitPhase ePhase)
 void HelperPanel::setupLuaTab()
 {
     // Create a _CodeTextArea
-    _CodeTextArea = OSG::TextArea::create();
+    _CodeTextArea = TextArea::create();
     _CodeTextArea->setText("");
     setName(_CodeTextArea,"__KABALA_ENGINE_PLAYER_CODE_TEXT_AREA");
 
@@ -101,8 +108,7 @@ void HelperPanel::setupLuaTab()
     _HistoryList->setOrientation(List::VERTICAL_ORIENTATION);
     _HistoryList->setModel(_HistoryListModel);
 
-    _HistoryList->setSelectionModel(_HistoryListSelectionModel);
-    _HistoryList->addMouseListener(&_PlayerMouseListener);
+    _HistoryListMouseClickedConnection = _HistoryList->connectMouseClicked(boost::bind(&HelperPanel::handleHistoryListMouseClicked, this, _1));
 
 
     _HistoryScrollPanel = ScrollPanel::create();
@@ -111,21 +117,21 @@ void HelperPanel::setupLuaTab()
     _HistoryScrollPanel->setViewComponent(_HistoryList);
 
 
-    _HistoryLabel = OSG::Label::create();
+    _HistoryLabel = Label::create();
 
     _HistoryLabel->setText("History");
 
     // the execute button
-    _ExecuteBtn=OSG::Button::create();
+    _ExecuteBtn=Button::create();
 
-    _ExecuteBtn->setText("EXECUTE");
+    _ExecuteBtn->setText("Execute");
     _ExecuteBtn->setPreferredSize(Vec2f(90,25));
 
-    _ExecuteBtn->addActionListener(&_BasicListener);
+    _ExecuteScriptActionConnection = _ExecuteBtn->connectActionPerformed(boost::bind(&HelperPanel::handleExecuteScriptAction, this, _1));
     //Content Panel
-    _LuaConsoleContent = OSG::Panel::createEmpty();
+    _LuaConsoleContent = Panel::createEmpty();
 
-    SpringLayoutRefPtr LuaConsoleContentLayout = OSG::SpringLayout::create();
+    SpringLayoutRefPtr LuaConsoleContentLayout = SpringLayout::create();
 
     LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleScrollPanel, 0, SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleContent);  
     LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _LuaConsoleScrollPanel, 0, SpringLayoutConstraints::SOUTH_EDGE, _LuaConsoleContent); 
@@ -153,7 +159,7 @@ void HelperPanel::setupLuaTab()
 void HelperPanel::setupErrorTab()
 {
     // Create an _ErrorTextArea	
-    _ErrorTextArea = OSG::TextArea::create();
+    _ErrorTextArea = TextArea::create();
     _ErrorTextArea->setText("Error List");
     _ErrorTextArea->setEditable(false);
     setName(_ErrorTextArea,"__KABALA_ENGINE_PLAYER_ERROR_TEXT_AREA");
@@ -169,7 +175,7 @@ void HelperPanel::setupErrorTab()
 void HelperPanel::setupTraceTab()
 {
     // Create a _StackTraceTextArea
-    _StackTraceTextArea = OSG::TextArea::create();
+    _StackTraceTextArea = TextArea::create();
     _StackTraceTextArea->setText("Stack Trace");
     _StackTraceTextArea->setEditable(false);
 
@@ -183,20 +189,20 @@ void HelperPanel::setupTraceTab()
 void HelperPanel::createLoggingTab()
 {
     //Text Area
-    _LoggingArea = OSG::TextArea::create();
+    _LoggingArea = TextArea::create();
     _LoggingArea->setEditable(false);
     _LoggingArea->setText("Logging Area\n");
     setName(_LoggingArea,"__KABALA_ENGINE_PLAYER_LOGGING_TEXT_AREA");
 
     //Scroll Panel
-    _LoggingScrollPanel = OSG::ScrollPanel::create();
+    _LoggingScrollPanel = ScrollPanel::create();
     _LoggingScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
     _LoggingScrollPanel->setViewComponent(_LoggingArea);
 
     //Content Panel
-    _LoggingContent = OSG::Panel::createEmpty();
+    _LoggingContent = Panel::createEmpty();
 
-    SpringLayoutRefPtr LoggingContentLayout = OSG::SpringLayout::create();
+    SpringLayoutRefPtr LoggingContentLayout = SpringLayout::create();
 
     LoggingContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _LoggingScrollPanel, 5, SpringLayoutConstraints::NORTH_EDGE, _LoggingContent);  
     LoggingContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _LoggingScrollPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, _LoggingContent); 
@@ -209,9 +215,9 @@ void HelperPanel::createLoggingTab()
 
 void HelperPanel::setupPropertiesTab()
 {
-    _TabPanel4Content = OSG::Panel::create();
+    _TabPanel4Content = Panel::create();
 
-    SpringLayoutRefPtr TabPanel4ContentLayout = OSG::SpringLayout::create();
+    SpringLayoutRefPtr TabPanel4ContentLayout = SpringLayout::create();
 
     _NodeEditor = FieldContainerEditorFactory::the()->createDefaultEditor(_TabPanel4Content, _ApplicationPlayer->getCommandManager());
     ScrollPanelRefPtr NodeEditorScrollPanel = ScrollPanel::create();
@@ -241,11 +247,11 @@ void HelperPanel::setupPropertiesTab()
 
 void HelperPanel::setupInfoTabLabels()
 {
-    _TabPanel1Label = OSG::Label::create();
-    _TabPanel2Label = OSG::Label::create();
-    _TabPanel3Label = OSG::Label::create();
-    _TabPanel4Label = OSG::Label::create();
-    _LoggingContentLabel = OSG::Label::create();
+    _TabPanel1Label = Label::create();
+    _TabPanel2Label = Label::create();
+    _TabPanel3Label = Label::create();
+    _TabPanel4Label = Label::create();
+    _LoggingContentLabel = Label::create();
 
     // set the fields of the labels
     _TabPanel1Label->setText("Lua Console");
@@ -256,7 +262,7 @@ void HelperPanel::setupInfoTabLabels()
     _TabPanel2Label->setBorders(NULL);
     _TabPanel2Label->setBackgrounds(NULL);
 
-    LuaManager::the()->addLuaListener(&_LuaErrorListener);
+    _LuaErrorConnection = LuaManager::the()->connectLuaError(boost::bind(&HelperPanel::handleLuaError, this, _1));
 
     _TabPanel3Label->setText("Stack");
     _TabPanel3Label->setBorders(NULL);
@@ -280,7 +286,7 @@ void HelperPanel::setupInfoTabPanel()
     setupPropertiesTab();	//_TabPanel4Content
     createLoggingTab();     //LoggingTab
 
-    _InfoTabPanel= OSG::TabPanel::create();
+    _InfoTabPanel= TabPanel::create();
     _InfoTabPanel->setPreferredSize(Vec2f(1200,200));
     _InfoTabPanel->addTab(_TabPanel1Label, _LuaConsoleContent);
     _InfoTabPanel->addTab(_TabPanel2Label, _TabPanel2Content);
@@ -305,9 +311,6 @@ void HelperPanel::updateListBox(void)
 
 void HelperPanel::setupHistoryList()
 {
-    ListSelectionModelPtr _HistoryListSelectionModel(new DefaultListSelectionModel);
-
-
     _HistoryListModel = DefaultListModel::create();
 
     updateListBox();
@@ -316,18 +319,16 @@ void HelperPanel::setupHistoryList()
 
 void HelperPanel::setupRest()
 {
-    _Layout = OSG::SpringLayout::create();
+    _Layout = SpringLayout::create();
 
-    _Layout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, HelperPanelRefPtr(this));  
-    _Layout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, HelperPanelRefPtr(this)); 
-    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::EAST_EDGE, HelperPanelRefPtr(this));
-    _Layout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, HelperPanelRefPtr(this));  
+    _Layout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _InfoTabPanel, 5, SpringLayoutConstraints::NORTH_EDGE, this);  
+    _Layout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::SOUTH_EDGE, this); 
+    _Layout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _InfoTabPanel, -5, SpringLayoutConstraints::EAST_EDGE, this);
+    _Layout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _InfoTabPanel, 5, SpringLayoutConstraints::WEST_EDGE, this);  
 
-    this->pushToChildren(_InfoTabPanel);
-    this->setLayout(_Layout);
-    this->setBorders(NULL);
-
-    MainApplication::the()->getMainWindow()->addKeyListener(&_PlayerKeyListener2);
+    pushToChildren(_InfoTabPanel);
+    setLayout(_Layout);
+    setBorders(NULL);
 }
 
 void HelperPanel::viewTab(UInt32)
@@ -343,31 +344,57 @@ void HelperPanel::hideTab(UInt32)
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
+
+void HelperPanel::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+	SpringLayoutRefPtr _Layout;
+
+    _ApplicationPlayer = NULL;
+	_HistoryLabel = NULL;
+	_HistoryList = NULL;
+	_HistoryListModel = NULL;
+	_HistoryScrollPanel = NULL;
+	_ExecuteBtn = NULL;
+	_InfoTabPanel = NULL;
+	_CodeTextArea = NULL;
+	_ErrorTextArea = NULL;
+	_StackTraceTextArea = NULL;
+	_TabPanel1Label = NULL;
+	_TabPanel2Label = NULL;
+	_TabPanel3Label = NULL;
+	_TabPanel4Label = NULL;
+	_LuaConsoleContent = NULL;
+	_LuaConsoleScrollPanel = NULL;
+	_TabPanel2Content = NULL;
+	_TabPanel3Content = NULL;
+	_TabPanel4Content = NULL;
+    _NodeEditor = NULL;
+    _CoreEditor = NULL;
+	_LoggingContentLabel = NULL;
+	_LoggingContent = NULL;
+	_LoggingArea = NULL;
+	_LoggingScrollPanel = NULL;
+
+    _LuaErrorConnection.disconnect();
+    _ExecuteScriptActionConnection.disconnect();
+    _HistoryListMouseClickedConnection.disconnect();
+}
+
 /*----------------------- constructors & destructors ----------------------*/
 
 HelperPanel::HelperPanel(void) :
-    Inherited(),
-    _BasicListener(HelperPanelRefPtr(this)),
-    _PlayerKeyListener2(HelperPanelRefPtr(this)),
-    _PlayerMouseListener(HelperPanelRefPtr(this)),
-    _LuaErrorListener(HelperPanelRefPtr(this))
-
+    Inherited()
 {
 }
 
 HelperPanel::HelperPanel(const HelperPanel &source) :
-    Inherited(source),
-    _BasicListener(HelperPanelRefPtr(this)),
-    _PlayerKeyListener2(HelperPanelRefPtr(this)),
-    _PlayerMouseListener(HelperPanelRefPtr(this)),
-    _LuaErrorListener(HelperPanelRefPtr(this))
-
+    Inherited(source)
 {
 }
 
 HelperPanel::~HelperPanel(void)
 {
-    MainApplication::the()->getMainWindow()->removeKeyListener(&_PlayerKeyListener2);
 }
 
 /*----------------------------- class specific ----------------------------*/
@@ -385,14 +412,9 @@ void HelperPanel::dump(      UInt32    ,
     SLOG << "Dump HelperPanel NI" << std::endl;
 }
 
-void HelperPanel::BasicListener::actionPerformed(const ActionEventUnrecPtr e)
+void HelperPanel::handleExecuteScriptAction(ActionEventDetails* const details)
 {
-    _HelperPanel->actionPerformed(e);
-}
-
-void HelperPanel::actionPerformed(const ActionEventUnrecPtr e)
-{
-    if(e->getSource() == _ExecuteBtn)
+    if(details->getSource() == _ExecuteBtn)
     {
         LuaManager::the()->runScript(std::string(_CodeTextArea->getText()));
         _ListOfCommands.push_back(std::string(_CodeTextArea->getText()));
@@ -400,68 +422,26 @@ void HelperPanel::actionPerformed(const ActionEventUnrecPtr e)
     }
 }
 
-void HelperPanel::PlayerKeyListener2::keyTyped(const KeyEventUnrecPtr e)
+void HelperPanel::handleHistoryListMouseClicked(MouseEventDetails* const details)
 {
-    _HelperPanel->keyTyped2(e);
-}
-
-void HelperPanel::PlayerMouseListener::mouseClicked(const MouseEventUnrecPtr e)
-{
-    if(e->getClickCount() == 2)
+    if(details->getClickCount() == 2)
     {
-        if(_HelperPanel->_HistoryListModel->getSize()>0 && !_HelperPanel->_HistoryList->getSelectionModel()->isSelectionEmpty())
+        if(_HistoryListModel->getSize()>0 && !_HistoryList->getSelectionModel()->isSelectionEmpty())
         {
 
-            UInt32 _SelectedItemIndex(_HelperPanel->_HistoryList->getSelectionModel()->getMinSelectionIndex());
-            std::string _Temp = std::string(_HelperPanel->_CodeTextArea->getText());
-            _Temp+="\n"+boost::any_cast<std::string>(_HelperPanel->_HistoryListModel->getElementAt(_SelectedItemIndex));
-            _HelperPanel->_CodeTextArea->setText(_Temp);
+            UInt32 _SelectedItemIndex(_HistoryList->getSelectionModel()->getMinSelectionIndex());
+            std::string _Temp = std::string(_CodeTextArea->getText());
+            _Temp+="\n"+boost::any_cast<std::string>(_HistoryListModel->getElementAt(_SelectedItemIndex));
+            _CodeTextArea->setText(_Temp);
 
         }
     }
 }
 
-void HelperPanel::keyTyped2(const KeyEventUnrecPtr e)
-{
-    if(e->getKey() == KeyEvent::KEY_X && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
-    {
-        LuaManager::the()->runScript(std::string(_CodeTextArea->getText()));
-        _ListOfCommands.push_back(std::string(_CodeTextArea->getText()));
-        updateListBox();
-    }
-    //if(e->getKey() == KeyEvent::KEY_C && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
-    //{
-    //	//MainInternalWindow->setFocusedComponent(_CodeTextArea); // need to get the access to the maininternal window.. 
-    //	_InfoTabPanel->setSelectedIndex(0);
-    //}
-}
-
-
-HelperPanel::LuaErrorListener::LuaErrorListener(HelperPanelRefPtr TheHelperPanel)
-{
-    _HelperPanel=TheHelperPanel;
-}
-
-HelperPanel::BasicListener::BasicListener(HelperPanelRefPtr TheHelperPanel)
-{
-    _HelperPanel=TheHelperPanel;
-}
-
-HelperPanel::PlayerKeyListener2::PlayerKeyListener2(HelperPanelRefPtr TheHelperPanel)
-{
-    _HelperPanel=TheHelperPanel;
-}
-
-HelperPanel::PlayerMouseListener::PlayerMouseListener(HelperPanelRefPtr TheHelperPanel)
-{
-    _HelperPanel=TheHelperPanel;
-}
-
-
-void HelperPanel::LuaErrorListener::error(const LuaErrorEventUnrecPtr e)
+void HelperPanel::handleLuaError(LuaErrorEventDetails* const details)
 {
     std::string ErrorType("");
-    switch(e->getStatus())
+    switch(details->getStatus())
     {
         case LUA_ERRSYNTAX:
             //Syntax Error
@@ -484,43 +464,43 @@ void HelperPanel::LuaErrorListener::error(const LuaErrorEventUnrecPtr e)
             ErrorType = "Lua Unknown Error";
             break;
     }
-    _HelperPanel->_ErrorTextArea->clear();
-    if(_HelperPanel->_ErrorTextArea->getText().size() != 0)
+    _ErrorTextArea->clear();
+    if(_ErrorTextArea->getText().size() != 0)
     {
-        _HelperPanel->_ErrorTextArea->write("\n");
+        _ErrorTextArea->write("\n");
     }
-    _HelperPanel->_ErrorTextArea->write(ErrorType + ":\n    " + e->getErrorString());
+    _ErrorTextArea->write(ErrorType + ":\n    " + details->getErrorString());
 
     //Select the Error Tab
-    _HelperPanel->_InfoTabPanel->setSelectedIndex(1);
+    _InfoTabPanel->setSelectedIndex(1);
 
     //Fill Stack Trace
-    if(e->getStackTraceEnabled() && 
-       (e->getStatus() == LUA_ERRMEM ||
-        e->getStatus() == LUA_ERRERR ||
-        e->getStatus() == LUA_ERRRUN))
+    if(details->getStackTraceEnabled() && 
+       (details->getStatus() == LUA_ERRMEM ||
+        details->getStatus() == LUA_ERRERR ||
+        details->getStatus() == LUA_ERRRUN))
     {
         std::stringstream ss;
         ss << "Lua Stack Trace: " << std::endl;
 
-        MFString::StorageType::const_iterator ListItor(e->getMFStackTrace()->begin());
-        for(; ListItor != e->getMFStackTrace()->end() ; ++ListItor)
+        MFString::StorageType::const_iterator ListItor(details->getMFStackTrace()->begin());
+        for(; ListItor != details->getMFStackTrace()->end() ; ++ListItor)
         {
             ss << "     " << (*ListItor) << std::endl;
         }
-        _HelperPanel->_StackTraceTextArea->clear();
-        _HelperPanel->_StackTraceTextArea->write(ss.str());
+        _StackTraceTextArea->clear();
+        _StackTraceTextArea->write(ss.str());
     }
 }
 
-void HelperPanel::setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer)
+void HelperPanel::setApplicationPlayer(ApplicationPlayer* const TheApplicationPlayer)
 {
 	_ApplicationPlayer = TheApplicationPlayer;
 }
 
 void HelperPanel::updateSelectedNode(void)
 {
-    NodeUnrecPtr SelNode(_ApplicationPlayer->getSelectedNode());
+    NodeRecPtr SelNode(_ApplicationPlayer->getSelectedNode());
     if(SelNode == NULL)
     {
         _NodeEditor->dettachFieldContainer();

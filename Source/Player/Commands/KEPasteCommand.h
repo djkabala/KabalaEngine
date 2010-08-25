@@ -59,9 +59,9 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef PasteCommandPtr RefPtr;
 
-    PasteCommand(ApplicationPlayerRefPtr ApplicationPlayer,
-                 HierarchyPanelRefPtr HierarchyPanel,
-                 NodeRefPtr ParentNode,
+    PasteCommand(ApplicationPlayer* const ApplicationPlayer,
+                 HierarchyPanel* const HierarchyPanel,
+                 Node* const ParentNode,
                  bool DeepClone);
 
 	PasteCommand(const PasteCommand& source);
@@ -93,9 +93,9 @@ public:
 
 	virtual ~PasteCommand(void);
 	
-    static PasteCommandPtr create(ApplicationPlayerRefPtr ApplicationPlayer,
-                                  HierarchyPanelRefPtr HierarchyPanel,
-                                  NodeRefPtr ParentNode,
+    static PasteCommandPtr create(ApplicationPlayer* const ApplicationPlayer,
+                                  HierarchyPanel* const HierarchyPanel,
+                                  Node* const ParentNode,
                                   bool DeepClone);
 };
 

@@ -36,9 +36,9 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-PasteCommand::PasteCommand(ApplicationPlayerRefPtr ApplicationPlayer,
-                           HierarchyPanelRefPtr HierarchyPanel,
-                           NodeRefPtr ParentNode,
+PasteCommand::PasteCommand(ApplicationPlayer* const ApplicationPlayer,
+                           HierarchyPanel* const HierarchyPanel,
+                           Node* const ParentNode,
                            bool DeepClone) : Inherited(),
     _ApplicationPlayer(ApplicationPlayer),
     _HierarchyPanel(HierarchyPanel),

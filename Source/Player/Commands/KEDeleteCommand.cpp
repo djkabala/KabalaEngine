@@ -44,6 +44,7 @@
 #include "KEDeleteCommand.h"
 
 #include <OpenSG/OSGNameAttachment.h>
+#include <OpenSG/OSGSceneGraphTreeModel.h>
 
 OSG_USING_NAMESPACE
 
@@ -65,8 +66,8 @@ CommandType DeleteCommand::_Type("DeleteCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-DeleteCommandPtr DeleteCommand::create(ApplicationPlayerRefPtr ApplicationPlayer,HierarchyPanelRefPtr HierarchyPanel,
-                                 NodeRefPtr DeleteNode)
+DeleteCommandPtr DeleteCommand::create(ApplicationPlayer* const ApplicationPlayer,HierarchyPanel* const HierarchyPanel,
+                                 Node* const DeleteNode)
 {
 	return RefPtr(new DeleteCommand(ApplicationPlayer,HierarchyPanel,DeleteNode));
 }

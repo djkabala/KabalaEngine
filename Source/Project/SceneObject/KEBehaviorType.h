@@ -108,7 +108,7 @@ class KE_KABALAENGINE_DLLMAPPING BehaviorType : public TypeBase
     const std::vector<std::string>      getEvents();
     const std::vector<std::string>      getEventLinks();
     const std::vector<BehaviorType*>	getDependencies();
-    const Scene*                        getAttachedScene();
+          Scene*                        getAttachedScene();
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

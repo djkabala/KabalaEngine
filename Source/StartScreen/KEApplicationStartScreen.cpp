@@ -43,6 +43,7 @@
 #define KE_COMPILEKABALAENGINELIB
 
 #include <OpenSG/OSGConfig.h>
+#include "KEVersion.h"
 
 #include "KEApplicationStartScreen.h"
 #include <OpenSG/OSGSimpleGeometry.h>
@@ -75,14 +76,12 @@
 #include <OpenSG/OSGLabel.h>
 
 //Animation
-#include <OpenSG/OSGTime.h>
 #include <OpenSG/OSGQuaternion.h>
 #include <OpenSG/OSGFieldAnimation.h>
 #include <OpenSG/OSGKeyframeAnimator.h>
 #include <OpenSG/OSGKeyframeSequences.h>
 
 #include <boost/filesystem/operations.hpp>
-#include "KEVersion.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -205,7 +204,7 @@ void ApplicationStartScreen::attachApplication(void)
     _TorusAnimation->setInterpolationType(Animator::LINEAR_INTERPOLATION);
     _TorusAnimation->setCycling(-1);
     _TorusAnimation->setAnimatedField(SceneTransformCore, std::string("matrix"));
-    _TorusAnimation->attachUpdateProducer(MainApplication::the()->getMainWindow()->editEventProducer());
+    _TorusAnimation->attachUpdateProducer(MainApplication::the()->getMainWindow());
     _TorusAnimation->start();
 
     //Foreground
@@ -231,8 +230,7 @@ void ApplicationStartScreen::attachApplication(void)
         MainApplication::the()->getMainWindow()->addPort(DefaultViewport);
     }
 
-    MainApplication::the()->getMainWindow()->addKeyListener(&_StartScreenKeyListener);
-    MainApplication::the()->getMainWindow()->addUpdateListener(&_ScreenUpdateListener);
+    _KeyTypedConnection = MainApplication::the()->getMainWindow()->connectKeyTyped(boost::bind(&ApplicationStartScreen::handleKeyTyped, this, _1)); 
 
 }
 
@@ -242,8 +240,10 @@ void ApplicationStartScreen::dettachApplication(void)
 
     _TheUIDrawingSurface->setEventProducer(NULL);
 
-    MainApplication::the()->getMainWindow()->removeKeyListener(&_StartScreenKeyListener);
-    MainApplication::the()->getMainWindow()->removeUpdateListener(&_ScreenUpdateListener);
+    _KeyTypedConnection.disconnect(); 
+    _BuilderButtonActionConnection.disconnect(); 
+    _PlayerButtonActionConnection.disconnect(); 
+    _ExitButtonActionConnection.disconnect(); 
 
     if(MainApplication::the()->getMainWindow() != NULL)
     {
@@ -262,8 +262,6 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
     // Create the Graphics
     GraphicsRefPtr StartScreenUIGraphics = OSG::Graphics2D::create();
 
-
-
     UIFontRefPtr ButtonFont = OSG::UIFont::create();
     ButtonFont->setSize(32);
 
@@ -271,19 +269,19 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
     BuilderButton->setPreferredSize(Vec2f(200, 75));
     BuilderButton->setText("Builder");
     BuilderButton->setFont(ButtonFont);
-    BuilderButton->addActionListener(&_BuilderButtonActionListener); 
+    _BuilderButtonActionConnection = BuilderButton->connectActionPerformed(boost::bind(&ApplicationStartScreen::handleBuilderButtonAction, this, _1)); 
 
     ButtonRefPtr PlayerButton = ::OSG::Button::create();
     PlayerButton->setPreferredSize(Vec2f(200, 75));
     PlayerButton->setText("Player");
     PlayerButton->setFont(ButtonFont);
-    PlayerButton->addActionListener(&_PlayerButtonActionListener); 
+    _PlayerButtonActionConnection = PlayerButton->connectActionPerformed(boost::bind(&ApplicationStartScreen::handlePlayerButtonAction, this, _1)); 
 
     ButtonRefPtr ExitButton = ::OSG::Button::create();
     ExitButton->setPreferredSize(Vec2f(200, 75));
     ExitButton->setText("Exit");
     ExitButton->setFont(ButtonFont);
-    ExitButton->addActionListener(&_ExitButtonActionListener); 
+    _ExitButtonActionConnection = ExitButton->connectActionPerformed(boost::bind(&ApplicationStartScreen::handleExitButtonAction, this, _1)); 
 
     //ButtonPanel
     PanelRefPtr ButtonPanel = Panel::createEmpty();
@@ -397,33 +395,32 @@ void ApplicationStartScreen::stop(void)
 {
 }
 
-void ApplicationStartScreen::updateAnimation(const Time& Elps)
-{
-}
-
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
+
+void ApplicationStartScreen::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    _TorusAnimation = NULL;
+    _TheUIDrawingSurface = NULL;
+
+    _KeyTypedConnection.disconnect();
+    _BuilderButtonActionConnection.disconnect();
+    _PlayerButtonActionConnection.disconnect();
+    _ExitButtonActionConnection.disconnect();
+}
 /*----------------------- constructors & destructors ----------------------*/
 
 ApplicationStartScreen::ApplicationStartScreen(void) :
-    Inherited(),
-	_StartScreenKeyListener(ApplicationStartScreenRefPtr(this)),
-	_BuilderButtonActionListener(ApplicationStartScreenRefPtr(this)),
-	_PlayerButtonActionListener(ApplicationStartScreenRefPtr(this)),
-	_ExitButtonActionListener(ApplicationStartScreenRefPtr(this)),
-    _ScreenUpdateListener(ApplicationStartScreenRefPtr(this))
+    Inherited()
 {
 }
 
 ApplicationStartScreen::ApplicationStartScreen(const ApplicationStartScreen &source) :
-    Inherited(source),
-	_StartScreenKeyListener(ApplicationStartScreenRefPtr(this)),
-	_BuilderButtonActionListener(ApplicationStartScreenRefPtr(this)),
-	_PlayerButtonActionListener(ApplicationStartScreenRefPtr(this)),
-	_ExitButtonActionListener(ApplicationStartScreenRefPtr(this)),
-    _ScreenUpdateListener(ApplicationStartScreenRefPtr(this))
+    Inherited(source)
 {
 }
 
@@ -446,32 +443,27 @@ void ApplicationStartScreen::dump(      UInt32    ,
     SLOG << "Dump ApplicationStartScreen NI" << std::endl;
 }
 
-void ApplicationStartScreen::StartScreenKeyListener::keyTyped(const KeyEventUnrecPtr e)
+void ApplicationStartScreen::handleKeyTyped(KeyEventDetails* const details)
 {
-   if(e->getKey() == KeyEvent::KEY_Q && e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND)
+   if(details->getKey() == KeyEventDetails::KEY_Q && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND)
    {
 		MainApplication::the()->exit();
    }
 }
 
-void ApplicationStartScreen::BuilderButtonActionListener::actionPerformed(const ActionEventUnrecPtr e)
+void ApplicationStartScreen::handleBuilderButtonAction(ActionEventDetails* const details)
 {
 	MainApplication::the()->attachBuilder();
 }
 
-void ApplicationStartScreen::PlayerButtonActionListener::actionPerformed(const ActionEventUnrecPtr e)
+void ApplicationStartScreen::handlePlayerButtonAction(ActionEventDetails* const details)
 {
 	MainApplication::the()->attachPlayer();
 }
 
-void ApplicationStartScreen::ExitButtonActionListener::actionPerformed(const ActionEventUnrecPtr e)
+void ApplicationStartScreen::handleExitButtonAction(ActionEventDetails* const details)
 {
 	MainApplication::the()->exit();
-}
-
-void ApplicationStartScreen::ScreenUpdateListener::update(const UpdateEventUnrecPtr e)
-{
-    _ApplicationStartScreen->updateAnimation(e->getElapsedTime());
 }
 
 OSG_END_NAMESPACE

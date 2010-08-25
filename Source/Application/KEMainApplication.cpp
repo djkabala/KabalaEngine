@@ -84,6 +84,7 @@
 #include "LuaBindings/KELuaBindings.h"
 #include "KEVersion.h"
 
+
 OSG_USING_NAMESPACE
 
 /***************************************************************************\
@@ -105,10 +106,32 @@ MainApplication *MainApplication::_Instance = NULL;
 
 const BoostPath MainApplication::EngineAppDataDirectory = BoostPath("./KabalaEngine/Data");
 
+EventDescription *MainApplication::_eventDesc[] =
+{
+    new EventDescription("Log", 
+                          "Log",
+                          LogEventId, 
+                          FieldTraits<LogEventDetailsType *>::getType(),
+                          true,
+                          NULL),
+};
+
+EventProducerType MainApplication::_producerType(
+                                            "MainApplicationProducerType",
+                                            "EventProducerType",
+                                            "",
+                                            InitEventProducerFunctor(),
+                                            _eventDesc,
+                                            sizeof(_eventDesc));
+
 /***************************************************************************\
  *                           Class methods                                 *
 \***************************************************************************/
 
+const EventProducerType &MainApplication::getProducerType(void) const
+{
+    return _producerType;
+}
 
 MainApplication *MainApplication::the(void)
 {
@@ -212,6 +235,11 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<bool>   ("player.debugger.selected_node.mesh.draw", true, overwriteIfDefined);
     TheSettings.put<Color4f>("player.debugger.selected_node.mesh.color", Color4f(1.0f,0.0f,1.0f,1.0f), overwriteIfDefined);
     TheSettings.put<Real32> ("player.debugger.selected_node.mesh.line_thickness", 1.0f, overwriteIfDefined);
+
+    
+    TheSettings.put<bool> ("player.debugger.auto_save_project.enabled", true, overwriteIfDefined);
+    TheSettings.put<Real32> ("player.debugger.auto_save_project.time_between", 120.0f, overwriteIfDefined);
+    TheSettings.put<BoostPath> ("player.debugger.auto_save_project.recovery_file", BoostPath("./KabalaEngineProject.xml.recovery"), overwriteIfDefined);
 }
 
 ApplicationSettings MainApplication::createDefaultSettings(void)
@@ -226,25 +254,6 @@ ApplicationSettings MainApplication::createDefaultSettings(void)
 /***************************************************************************\
  *                           Instance methods                              *
 \***************************************************************************/
-
-
-EventConnection MainApplication::addLogListener(LogListenerPtr Listener)
-{
-    _LogListeners.insert(Listener);
-
-    return EventConnection(
-                           boost::bind(&MainApplication::isLogListenerAttached, this, Listener),
-                           boost::bind(&MainApplication::removeLogListener, this, Listener));
-}
-
-void MainApplication::removeLogListener(LogListenerPtr Listener)
-{
-    LogListenerSetItor EraseIter(_LogListeners.find(Listener));
-    if(EraseIter != _LogListeners.end())
-    {
-        _LogListeners.erase(EraseIter);
-    }
-}
 
 void MainApplication::printCommandLineHelp(void) const
 {
@@ -387,14 +396,16 @@ Int32 MainApplication::run(int argc, char **argv)
     }
 
     // Set up Window
-    setMainWindow(createNativeWindow());
+    WindowEventProducerUnrecPtr MainWindow(createNativeWindow());
+    setMainWindow(MainWindow);
     setName(getMainWindow(),"__KABALA_ENGINE_WINDOW_EVENT_PRODUCER");
 
     getMainWindow()->initWindow();
 
     getMainWindow()->setFullscreen(getSettings().get<bool>("basic.window.fullscreen"));
 
-    getMainWindow()->addWindowListener(&_MainWindowListener);
+    _WindowClosingConnection = getMainWindow()->connectWindowClosing(boost::bind(&MainApplication::handleWindowClosing, this, _1));
+    _WindowClosedConnection = getMainWindow()->connectWindowClosed(boost::bind(&MainApplication::handleWindowClosed, this, _1));
 
     // Initialize the LookAndFeelManager to enable default settings
     LookAndFeelManager::the()->getLookAndFeel()->init();
@@ -453,7 +464,7 @@ Int32 MainApplication::run(int argc, char **argv)
         attachPlayer();
         if(OptionsVariableMap.count("debug"))
         {
-            dynamic_pointer_cast<ApplicationPlayer>(getPlayerMode())->enableDebug(true);
+            dynamic_cast<ApplicationPlayer*>(getPlayerMode())->enableDebug(true);
         }
     }
     else
@@ -467,7 +478,7 @@ Int32 MainApplication::run(int argc, char **argv)
             attachPlayer();
             if(OptionsVariableMap.count("debug") || getSettings().get<bool>("player.debugger.initially_active"))
             {
-                dynamic_pointer_cast<ApplicationPlayer>(getPlayerMode())->enableDebug(true);
+                dynamic_cast<ApplicationPlayer*>(getPlayerMode())->enableDebug(true);
             }
         }
         else
@@ -669,7 +680,8 @@ void MainApplication::createDefaultPlayerMode(void)
 {
     if(getPlayerMode() == NULL)
     {
-        setPlayerMode(ApplicationPlayer::create());
+        ApplicationPlayerUnrecPtr player = ApplicationPlayer::create();
+        setPlayerMode(player);
     }
 }
 
@@ -677,7 +689,8 @@ void MainApplication::createDefaultStartScreenMode(void)
 {
     if(getStartScreenMode() == NULL)
     {
-        setStartScreenMode(ApplicationStartScreen::create());
+        ApplicationStartScreenUnrecPtr startScreen = ApplicationStartScreen::create();
+        setStartScreenMode(startScreen);
     }
 }
 
@@ -849,12 +862,12 @@ void MainApplication::setSettingsLoadFile( const BoostPath &value )
     _SettingsPath = value;
 }
 
-void MainApplication::setMainWindow( const WindowEventProducerRefPtr &value )
+void MainApplication::setMainWindow( WindowEventProducer* const value )
 {
     _MainWindow = value;
 }
 
-void MainApplication::setProject ( const ProjectRefPtr &value )
+void MainApplication::setProject ( Project* const value )
 {
     _Project = value;
     if(getCurrentMode() != NULL)
@@ -867,22 +880,22 @@ void MainApplication::setProject ( const ProjectRefPtr &value )
     }
 }
 
-void MainApplication::setBuilderMode( const ApplicationModeRefPtr &value )
+void MainApplication::setBuilderMode( ApplicationMode* const value )
 {
     _BuilderMode = value;
 }
 
-void MainApplication::setPlayerMode( const ApplicationModeRefPtr &value )
+void MainApplication::setPlayerMode( ApplicationMode* const value )
 {
     _PlayerMode = value;
 }
 
-void MainApplication::setStartScreenMode( const ApplicationModeRefPtr &value )
+void MainApplication::setStartScreenMode( ApplicationMode* const value )
 {
     _StartScreenMode = value;
 }
 
-void MainApplication::setCurrentMode( const ApplicationModeRefPtr &value )
+void MainApplication::setCurrentMode( ApplicationMode* const value )
 {
     _CurrentMode = value;
 }
@@ -897,8 +910,8 @@ void MainApplication::KELogBufferCallback(const Char8 *data,
 {
 	//Send to the Log Listeners
     std::string value(data,size);
-    LogEventUnrecPtr e = LogEvent::create(NULL, getTimeStamp(),value);
-    MainApplication::the()->produceLog(e);
+    LogEventDetailsUnrecPtr details = LogEventDetails::create(NULL, getTimeStamp(),value);
+    MainApplication::the()->produceLog(details);
 }
 
 
@@ -934,24 +947,13 @@ void MainApplication::initializeLogging(LogType KELogType, BoostPath KELogFilePa
 	}
 }
 
-void MainApplication::produceLog(const LogEventUnrecPtr e)
-{
-    LogListenerSet ListenerSet(_LogListeners);
-    for(LogListenerSetConstItor SetItor(ListenerSet.begin()) ; SetItor != ListenerSet.end() ; ++SetItor)
-    {
-        (*SetItor)->log(e);
-    }
-}
-
 /*----------------------- constructors & destructors ----------------------*/
 
-MainApplication::MainApplication(void) :
-		_MainWindowListener(this)
+MainApplication::MainApplication(void)
 {
 }
 
-MainApplication::MainApplication(const MainApplication &source) :
-		_MainWindowListener(this)
+MainApplication::MainApplication(const MainApplication &source)
 {
 }
 
@@ -961,11 +963,13 @@ MainApplication::~MainApplication(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void MainApplication::MainWindowListener::windowClosing(const WindowEventUnrecPtr e)
+void MainApplication::handleWindowClosing(WindowEventDetails* const details)
 {
 }
 
-void MainApplication::MainWindowListener::windowClosed(const WindowEventUnrecPtr e)
+void MainApplication::handleWindowClosed(WindowEventDetails* const details)
 {
+    _WindowClosingConnection.disconnect();
+    _WindowClosedConnection.disconnect();
 }
 

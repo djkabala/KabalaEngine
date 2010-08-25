@@ -82,15 +82,16 @@ void SceneObject::initMethod(InitPhase ePhase)
     }
 }
 
-Scene* SceneObject::getParentScene () const
+/***************************************************************************\
+ *                           Instance methods                              *
+\***************************************************************************/
+
+
+Scene* SceneObject::getParentScene (void) const
 {
 	return dynamic_cast<Scene*>(_sfParentScene.getValue());
 }
 
-
-/***************************************************************************\
- *                           Instance methods                              *
-\***************************************************************************/
 
 Effect* SceneObject::getEffect(std::string name)
 {

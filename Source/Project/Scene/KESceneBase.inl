@@ -47,6 +47,13 @@
  *****************************************************************************
 \*****************************************************************************/
 
+#include "Project/Scene/KESceneEventDetails.h"
+#include <OpenSG/OSGWindowEventDetails.h>
+#include <OpenSG/OSGMouseEventDetails.h>
+#include <OpenSG/OSGMouseWheelEventDetails.h>
+#include <OpenSG/OSGKeyEventDetails.h>
+#include <OpenSG/OSGUpdateEventDetails.h>
+
 OSG_BEGIN_NAMESPACE
 
 
@@ -85,22 +92,6 @@ OSG::UInt16 SceneBase::getClassGroupId(void)
 
 /*------------------------------ get -----------------------------------*/
 
-
-//! Get the value of the Scene::_sfInternalParentProject field.
-inline
-Project * SceneBase::getInternalParentProject(void) const
-{
-    return _sfInternalParentProject.getValue();
-}
-
-//! Set the value of the Scene::_sfInternalParentProject field.
-inline
-void SceneBase::setInternalParentProject(Project * const value)
-{
-    editSField(InternalParentProjectFieldMask);
-
-    _sfInternalParentProject.setValue(value);
-}
 
 //! Get the value of the Scene::_sfInitialBackground field.
 inline
@@ -388,8 +379,8 @@ void SceneBase::execSync (      SceneBase *pFrom,
                                 uiSyncInfo,
                                 oOffsets);
 
-    if(FieldBits::NoField != (InternalParentProjectFieldMask & whichField))
-        _sfInternalParentProject.syncWith(pFrom->_sfInternalParentProject);
+    if(FieldBits::NoField != (ParentProjectFieldMask & whichField))
+        _sfParentProject.syncWith(pFrom->_sfParentProject);
 
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))
         _mfViewports.syncWith(pFrom->_mfViewports,
@@ -503,70 +494,1178 @@ const Char8 *SceneBase::getClassname(void)
 }
 
 inline
-EventConnection SceneBase::attachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
+boost::signals2::connection SceneBase::attachActivity(UInt32 eventId,
+                                                              Activity* TheActivity)
 {
-    return _Producer.attachActivity(TheActivity, ProducedEventId);
-}
-
-inline
-bool SceneBase::isActivityAttached(ActivityRefPtr TheActivity, UInt32 ProducedEventId) const
-{
-    return _Producer.isActivityAttached(TheActivity, ProducedEventId);
-}
-
-inline
-UInt32 SceneBase::getNumActivitiesAttached(UInt32 ProducedEventId) const
-{
-    return _Producer.getNumActivitiesAttached(ProducedEventId);
-}
-
-inline
-ActivityRefPtr SceneBase::getAttachedActivity(UInt32 ProducedEventId, UInt32 ActivityIndex) const
-{
-    return _Producer.getAttachedActivity(ProducedEventId,ActivityIndex);
-}
-
-inline
-void SceneBase::detachActivity(ActivityRefPtr TheActivity, UInt32 ProducedEventId)
-{
-    _Producer.detachActivity(TheActivity, ProducedEventId);
+    return connectEvent(eventId, boost::bind(&Activity::eventProduced, ActivityUnrecPtr(TheActivity), _1, _2) );
 }
 
 inline
 UInt32 SceneBase::getNumProducedEvents(void) const
 {
-    return _Producer.getNumProducedEvents();
+    return getProducerType().getNumEventDescs();
 }
 
 inline
-const MethodDescription *SceneBase::getProducedEventDescription(const std::string &ProducedEventName) const
+const EventDescription *SceneBase::getProducedEventDescription(const std::string &ProducedEventName) const
 {
-    return _Producer.getProducedEventDescription(ProducedEventName);
+    return getProducerType().findEventDescription(ProducedEventName);
 }
 
 inline
-const MethodDescription *SceneBase::getProducedEventDescription(UInt32 ProducedEventId) const
+const EventDescription *SceneBase::getProducedEventDescription(UInt32 ProducedEventId) const
 {
-    return _Producer.getProducedEventDescription(ProducedEventId);
+    return getProducerType().getEventDescription(ProducedEventId);
 }
 
 inline
 UInt32 SceneBase::getProducedEventId(const std::string &ProducedEventName) const
 {
-    return _Producer.getProducedEventId(ProducedEventName);
+    return getProducerType().getProducedEventId(ProducedEventName);
 }
 
 inline
-SFEventProducerPtr *SceneBase::editSFEventProducer(void)
+boost::signals2::connection  SceneBase::connectSceneEntered(const SceneEnteredEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
 {
-    return &_sfEventProducer;
+    return _SceneEnteredEvent.connect(listener, at);
 }
 
-//! Get the value of the Scene::_sfEventProducer field.
 inline
-EventProducerPtr &SceneBase::editEventProducer(void)
+boost::signals2::connection  SceneBase::connectSceneEntered(const SceneEnteredEventType::group_type &group,
+                                                    const SceneEnteredEventType::slot_type &listener, boost::signals2::connect_position at)
 {
-    return _sfEventProducer.getValue();
+    return _SceneEnteredEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectSceneEntered(const SceneEnteredEventType::group_type &group)
+{
+    _SceneEnteredEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsSceneEntered(void)
+{
+    _SceneEnteredEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptySceneEntered(void) const
+{
+    return _SceneEnteredEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsSceneEntered(void) const
+{
+    return _SceneEnteredEvent.num_slots();
+}
+
+inline
+void SceneBase::produceSceneEntered(SceneEnteredEventDetailsType* const e)
+{
+    produceEvent(SceneEnteredEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectSceneExited(const SceneExitedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _SceneExitedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectSceneExited(const SceneExitedEventType::group_type &group,
+                                                    const SceneExitedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _SceneExitedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectSceneExited(const SceneExitedEventType::group_type &group)
+{
+    _SceneExitedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsSceneExited(void)
+{
+    _SceneExitedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptySceneExited(void) const
+{
+    return _SceneExitedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsSceneExited(void) const
+{
+    return _SceneExitedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceSceneExited(SceneExitedEventDetailsType* const e)
+{
+    produceEvent(SceneExitedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectSceneStarted(const SceneStartedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _SceneStartedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectSceneStarted(const SceneStartedEventType::group_type &group,
+                                                    const SceneStartedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _SceneStartedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectSceneStarted(const SceneStartedEventType::group_type &group)
+{
+    _SceneStartedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsSceneStarted(void)
+{
+    _SceneStartedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptySceneStarted(void) const
+{
+    return _SceneStartedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsSceneStarted(void) const
+{
+    return _SceneStartedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceSceneStarted(SceneStartedEventDetailsType* const e)
+{
+    produceEvent(SceneStartedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectSceneEnded(const SceneEndedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _SceneEndedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectSceneEnded(const SceneEndedEventType::group_type &group,
+                                                    const SceneEndedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _SceneEndedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectSceneEnded(const SceneEndedEventType::group_type &group)
+{
+    _SceneEndedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsSceneEnded(void)
+{
+    _SceneEndedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptySceneEnded(void) const
+{
+    return _SceneEndedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsSceneEnded(void) const
+{
+    return _SceneEndedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceSceneEnded(SceneEndedEventDetailsType* const e)
+{
+    produceEvent(SceneEndedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectSceneReset(const SceneResetEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _SceneResetEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectSceneReset(const SceneResetEventType::group_type &group,
+                                                    const SceneResetEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _SceneResetEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectSceneReset(const SceneResetEventType::group_type &group)
+{
+    _SceneResetEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsSceneReset(void)
+{
+    _SceneResetEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptySceneReset(void) const
+{
+    return _SceneResetEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsSceneReset(void) const
+{
+    return _SceneResetEvent.num_slots();
+}
+
+inline
+void SceneBase::produceSceneReset(SceneResetEventDetailsType* const e)
+{
+    produceEvent(SceneResetEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowOpened(const WindowOpenedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowOpenedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowOpened(const WindowOpenedEventType::group_type &group,
+                                                    const WindowOpenedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowOpenedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowOpened(const WindowOpenedEventType::group_type &group)
+{
+    _WindowOpenedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowOpened(void)
+{
+    _WindowOpenedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowOpened(void) const
+{
+    return _WindowOpenedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowOpened(void) const
+{
+    return _WindowOpenedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowOpened(WindowOpenedEventDetailsType* const e)
+{
+    produceEvent(WindowOpenedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowClosing(const WindowClosingEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowClosingEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowClosing(const WindowClosingEventType::group_type &group,
+                                                    const WindowClosingEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowClosingEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowClosing(const WindowClosingEventType::group_type &group)
+{
+    _WindowClosingEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowClosing(void)
+{
+    _WindowClosingEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowClosing(void) const
+{
+    return _WindowClosingEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowClosing(void) const
+{
+    return _WindowClosingEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowClosing(WindowClosingEventDetailsType* const e)
+{
+    produceEvent(WindowClosingEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowClosed(const WindowClosedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowClosedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowClosed(const WindowClosedEventType::group_type &group,
+                                                    const WindowClosedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowClosedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowClosed(const WindowClosedEventType::group_type &group)
+{
+    _WindowClosedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowClosed(void)
+{
+    _WindowClosedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowClosed(void) const
+{
+    return _WindowClosedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowClosed(void) const
+{
+    return _WindowClosedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowClosed(WindowClosedEventDetailsType* const e)
+{
+    produceEvent(WindowClosedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowIconified(const WindowIconifiedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowIconifiedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowIconified(const WindowIconifiedEventType::group_type &group,
+                                                    const WindowIconifiedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowIconifiedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowIconified(const WindowIconifiedEventType::group_type &group)
+{
+    _WindowIconifiedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowIconified(void)
+{
+    _WindowIconifiedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowIconified(void) const
+{
+    return _WindowIconifiedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowIconified(void) const
+{
+    return _WindowIconifiedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowIconified(WindowIconifiedEventDetailsType* const e)
+{
+    produceEvent(WindowIconifiedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowDeiconified(const WindowDeiconifiedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowDeiconifiedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowDeiconified(const WindowDeiconifiedEventType::group_type &group,
+                                                    const WindowDeiconifiedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowDeiconifiedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowDeiconified(const WindowDeiconifiedEventType::group_type &group)
+{
+    _WindowDeiconifiedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowDeiconified(void)
+{
+    _WindowDeiconifiedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowDeiconified(void) const
+{
+    return _WindowDeiconifiedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowDeiconified(void) const
+{
+    return _WindowDeiconifiedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowDeiconified(WindowDeiconifiedEventDetailsType* const e)
+{
+    produceEvent(WindowDeiconifiedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowActivated(const WindowActivatedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowActivatedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowActivated(const WindowActivatedEventType::group_type &group,
+                                                    const WindowActivatedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowActivatedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowActivated(const WindowActivatedEventType::group_type &group)
+{
+    _WindowActivatedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowActivated(void)
+{
+    _WindowActivatedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowActivated(void) const
+{
+    return _WindowActivatedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowActivated(void) const
+{
+    return _WindowActivatedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowActivated(WindowActivatedEventDetailsType* const e)
+{
+    produceEvent(WindowActivatedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowDeactivated(const WindowDeactivatedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowDeactivatedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowDeactivated(const WindowDeactivatedEventType::group_type &group,
+                                                    const WindowDeactivatedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowDeactivatedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowDeactivated(const WindowDeactivatedEventType::group_type &group)
+{
+    _WindowDeactivatedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowDeactivated(void)
+{
+    _WindowDeactivatedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowDeactivated(void) const
+{
+    return _WindowDeactivatedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowDeactivated(void) const
+{
+    return _WindowDeactivatedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowDeactivated(WindowDeactivatedEventDetailsType* const e)
+{
+    produceEvent(WindowDeactivatedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowEntered(const WindowEnteredEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowEnteredEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowEntered(const WindowEnteredEventType::group_type &group,
+                                                    const WindowEnteredEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowEnteredEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowEntered(const WindowEnteredEventType::group_type &group)
+{
+    _WindowEnteredEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowEntered(void)
+{
+    _WindowEnteredEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowEntered(void) const
+{
+    return _WindowEnteredEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowEntered(void) const
+{
+    return _WindowEnteredEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowEntered(WindowEnteredEventDetailsType* const e)
+{
+    produceEvent(WindowEnteredEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowExited(const WindowExitedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _WindowExitedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectWindowExited(const WindowExitedEventType::group_type &group,
+                                                    const WindowExitedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _WindowExitedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectWindowExited(const WindowExitedEventType::group_type &group)
+{
+    _WindowExitedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsWindowExited(void)
+{
+    _WindowExitedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyWindowExited(void) const
+{
+    return _WindowExitedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsWindowExited(void) const
+{
+    return _WindowExitedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceWindowExited(WindowExitedEventDetailsType* const e)
+{
+    produceEvent(WindowExitedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseClicked(const MouseClickedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _MouseClickedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseClicked(const MouseClickedEventType::group_type &group,
+                                                    const MouseClickedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _MouseClickedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectMouseClicked(const MouseClickedEventType::group_type &group)
+{
+    _MouseClickedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsMouseClicked(void)
+{
+    _MouseClickedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyMouseClicked(void) const
+{
+    return _MouseClickedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsMouseClicked(void) const
+{
+    return _MouseClickedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceMouseClicked(MouseClickedEventDetailsType* const e)
+{
+    produceEvent(MouseClickedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseEntered(const MouseEnteredEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _MouseEnteredEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseEntered(const MouseEnteredEventType::group_type &group,
+                                                    const MouseEnteredEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _MouseEnteredEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectMouseEntered(const MouseEnteredEventType::group_type &group)
+{
+    _MouseEnteredEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsMouseEntered(void)
+{
+    _MouseEnteredEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyMouseEntered(void) const
+{
+    return _MouseEnteredEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsMouseEntered(void) const
+{
+    return _MouseEnteredEvent.num_slots();
+}
+
+inline
+void SceneBase::produceMouseEntered(MouseEnteredEventDetailsType* const e)
+{
+    produceEvent(MouseEnteredEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseExited(const MouseExitedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _MouseExitedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseExited(const MouseExitedEventType::group_type &group,
+                                                    const MouseExitedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _MouseExitedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectMouseExited(const MouseExitedEventType::group_type &group)
+{
+    _MouseExitedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsMouseExited(void)
+{
+    _MouseExitedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyMouseExited(void) const
+{
+    return _MouseExitedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsMouseExited(void) const
+{
+    return _MouseExitedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceMouseExited(MouseExitedEventDetailsType* const e)
+{
+    produceEvent(MouseExitedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMousePressed(const MousePressedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _MousePressedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMousePressed(const MousePressedEventType::group_type &group,
+                                                    const MousePressedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _MousePressedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectMousePressed(const MousePressedEventType::group_type &group)
+{
+    _MousePressedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsMousePressed(void)
+{
+    _MousePressedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyMousePressed(void) const
+{
+    return _MousePressedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsMousePressed(void) const
+{
+    return _MousePressedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceMousePressed(MousePressedEventDetailsType* const e)
+{
+    produceEvent(MousePressedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseReleased(const MouseReleasedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _MouseReleasedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseReleased(const MouseReleasedEventType::group_type &group,
+                                                    const MouseReleasedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _MouseReleasedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectMouseReleased(const MouseReleasedEventType::group_type &group)
+{
+    _MouseReleasedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsMouseReleased(void)
+{
+    _MouseReleasedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyMouseReleased(void) const
+{
+    return _MouseReleasedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsMouseReleased(void) const
+{
+    return _MouseReleasedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceMouseReleased(MouseReleasedEventDetailsType* const e)
+{
+    produceEvent(MouseReleasedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseMoved(const MouseMovedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _MouseMovedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseMoved(const MouseMovedEventType::group_type &group,
+                                                    const MouseMovedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _MouseMovedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectMouseMoved(const MouseMovedEventType::group_type &group)
+{
+    _MouseMovedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsMouseMoved(void)
+{
+    _MouseMovedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyMouseMoved(void) const
+{
+    return _MouseMovedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsMouseMoved(void) const
+{
+    return _MouseMovedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceMouseMoved(MouseMovedEventDetailsType* const e)
+{
+    produceEvent(MouseMovedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseDragged(const MouseDraggedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _MouseDraggedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseDragged(const MouseDraggedEventType::group_type &group,
+                                                    const MouseDraggedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _MouseDraggedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectMouseDragged(const MouseDraggedEventType::group_type &group)
+{
+    _MouseDraggedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsMouseDragged(void)
+{
+    _MouseDraggedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyMouseDragged(void) const
+{
+    return _MouseDraggedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsMouseDragged(void) const
+{
+    return _MouseDraggedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceMouseDragged(MouseDraggedEventDetailsType* const e)
+{
+    produceEvent(MouseDraggedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseWheelMoved(const MouseWheelMovedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _MouseWheelMovedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectMouseWheelMoved(const MouseWheelMovedEventType::group_type &group,
+                                                    const MouseWheelMovedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _MouseWheelMovedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectMouseWheelMoved(const MouseWheelMovedEventType::group_type &group)
+{
+    _MouseWheelMovedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsMouseWheelMoved(void)
+{
+    _MouseWheelMovedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyMouseWheelMoved(void) const
+{
+    return _MouseWheelMovedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsMouseWheelMoved(void) const
+{
+    return _MouseWheelMovedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceMouseWheelMoved(MouseWheelMovedEventDetailsType* const e)
+{
+    produceEvent(MouseWheelMovedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectKeyPressed(const KeyPressedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _KeyPressedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectKeyPressed(const KeyPressedEventType::group_type &group,
+                                                    const KeyPressedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _KeyPressedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectKeyPressed(const KeyPressedEventType::group_type &group)
+{
+    _KeyPressedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsKeyPressed(void)
+{
+    _KeyPressedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyKeyPressed(void) const
+{
+    return _KeyPressedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsKeyPressed(void) const
+{
+    return _KeyPressedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceKeyPressed(KeyPressedEventDetailsType* const e)
+{
+    produceEvent(KeyPressedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectKeyReleased(const KeyReleasedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _KeyReleasedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectKeyReleased(const KeyReleasedEventType::group_type &group,
+                                                    const KeyReleasedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _KeyReleasedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectKeyReleased(const KeyReleasedEventType::group_type &group)
+{
+    _KeyReleasedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsKeyReleased(void)
+{
+    _KeyReleasedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyKeyReleased(void) const
+{
+    return _KeyReleasedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsKeyReleased(void) const
+{
+    return _KeyReleasedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceKeyReleased(KeyReleasedEventDetailsType* const e)
+{
+    produceEvent(KeyReleasedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectKeyTyped(const KeyTypedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _KeyTypedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectKeyTyped(const KeyTypedEventType::group_type &group,
+                                                    const KeyTypedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _KeyTypedEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectKeyTyped(const KeyTypedEventType::group_type &group)
+{
+    _KeyTypedEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsKeyTyped(void)
+{
+    _KeyTypedEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyKeyTyped(void) const
+{
+    return _KeyTypedEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsKeyTyped(void) const
+{
+    return _KeyTypedEvent.num_slots();
+}
+
+inline
+void SceneBase::produceKeyTyped(KeyTypedEventDetailsType* const e)
+{
+    produceEvent(KeyTypedEventId, e);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectUpdate(const UpdateEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _UpdateEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  SceneBase::connectUpdate(const UpdateEventType::group_type &group,
+                                                    const UpdateEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _UpdateEvent.connect(group, listener, at);
+}
+
+inline
+void  SceneBase::disconnectUpdate(const UpdateEventType::group_type &group)
+{
+    _UpdateEvent.disconnect(group);
+}
+
+inline
+void  SceneBase::disconnectAllSlotsUpdate(void)
+{
+    _UpdateEvent.disconnect_all_slots();
+}
+
+inline
+bool  SceneBase::isEmptyUpdate(void) const
+{
+    return _UpdateEvent.empty();
+}
+
+inline
+UInt32  SceneBase::numSlotsUpdate(void) const
+{
+    return _UpdateEvent.num_slots();
+}
+
+inline
+void SceneBase::produceUpdate(UpdateEventDetailsType* const e)
+{
+    produceEvent(UpdateEventId, e);
 }
 
 OSG_GEN_CONTAINERPTR(Scene);

@@ -57,9 +57,14 @@
 #include <OpenSG/OSGFilePathAttachment.h>
 #include <OpenSG/OSGWindowEventProducer.h>
 
+#include <OpenSG/OSGAnimation.h>
+#include <OpenSG/OSGUIDrawingSurface.h>
+#include <OpenSG/OSGPhysicsHandler.h>
+#include <OpenSG/OSGPhysicsWorld.h>
 #include <OpenSG/OSGSoundManager.h>
 #include <OpenSG/OSGLuaManager.h>
 #include <OpenSG/OSGWindowUtils.h>
+#include <OpenSG/OSGParticleSystem.h>
 
 #include <boost/filesystem/operations.hpp>
 
@@ -123,7 +128,7 @@ ProjectRefPtr Project::create(const BoostPath& ProjectFile)
  *                           Instance methods                              *
 \***************************************************************************/
 
-SceneRefPtr Project::getSceneByName(const std::string& FindSceneName) const
+Scene* Project::getSceneByName(const std::string& FindSceneName) const
 {
     const Char8* SceneName;
     for(UInt32 i(0) ; i<getMFScenes()->size() ; ++i)
@@ -140,7 +145,7 @@ SceneRefPtr Project::getSceneByName(const std::string& FindSceneName) const
     return NULL;
 }
 
-WindowEventProducerRefPtr Project::getEventProducer(void) const
+WindowEventProducer* Project::getEventProducer(void) const
 {
     return MainApplication::the()->getMainWindow();
 }
@@ -171,12 +176,27 @@ void Project::start(void)
     //SLOG << "Finished validating all OpenGL Objects." << std::endl;
 
     //Attach the listeners
-    MainApplication::the()->getMainWindow()->addUpdateListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->addMouseListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->addMouseMotionListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->addMouseWheelListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->addKeyListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->addWindowListener(&_ProjectUpdateListener);
+   _UpdateConnection = MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&Project::handleUpdate, this, _1));
+   _MouseClickedConnection = MainApplication::the()->getMainWindow()->connectMouseClicked(boost::bind(&Project::handleMouseClicked, this, _1));
+   _MouseEnteredConnection = MainApplication::the()->getMainWindow()->connectMouseEntered(boost::bind(&Project::handleMouseEntered, this, _1));
+   _MouseExitedConnection = MainApplication::the()->getMainWindow()->connectMouseExited(boost::bind(&Project::handleMouseExited, this, _1));
+   _MousePressedConnection = MainApplication::the()->getMainWindow()->connectMousePressed(boost::bind(&Project::handleMousePressed, this, _1));
+   _MouseReleasedConnection = MainApplication::the()->getMainWindow()->connectMouseReleased(boost::bind(&Project::handleMouseReleased, this, _1));
+   _MouseMovedConnection = MainApplication::the()->getMainWindow()->connectMouseMoved(boost::bind(&Project::handleMouseMoved, this, _1));
+   _MouseDraggedConnection = MainApplication::the()->getMainWindow()->connectMouseDragged(boost::bind(&Project::handleMouseDragged, this, _1));
+   _MouseWheelMovedConnection = MainApplication::the()->getMainWindow()->connectMouseWheelMoved(boost::bind(&Project::handleMouseWheelMoved, this, _1));
+   _KeyPressedConnection = MainApplication::the()->getMainWindow()->connectKeyPressed(boost::bind(&Project::handleKeyPressed, this, _1));
+   _KeyReleasedConnection = MainApplication::the()->getMainWindow()->connectKeyReleased(boost::bind(&Project::handleKeyReleased, this, _1));
+   _KeyTypedConnection = MainApplication::the()->getMainWindow()->connectKeyTyped(boost::bind(&Project::handleKeyTyped, this, _1));
+   _WindowOpenedConnection = MainApplication::the()->getMainWindow()->connectWindowOpened(boost::bind(&Project::handleWindowOpened, this, _1));
+   _WindowClosingConnection = MainApplication::the()->getMainWindow()->connectWindowClosing(boost::bind(&Project::handleWindowClosing, this, _1));
+   _WindowClosedConnection = MainApplication::the()->getMainWindow()->connectWindowClosed(boost::bind(&Project::handleWindowClosed, this, _1));
+   _WindowIconifiedConnection = MainApplication::the()->getMainWindow()->connectWindowIconified(boost::bind(&Project::handleWindowIconified, this, _1));
+   _WindowDeiconifiedConnection = MainApplication::the()->getMainWindow()->connectWindowDeiconified(boost::bind(&Project::handleWindowDeiconified, this, _1));
+   _WindowActivatedConnection = MainApplication::the()->getMainWindow()->connectWindowActivated(boost::bind(&Project::handleWindowActivated, this, _1));
+   _WindowDeactivatedConnection = MainApplication::the()->getMainWindow()->connectWindowDeactivated(boost::bind(&Project::handleWindowDeactivated, this, _1));
+   _WindowEnteredConnection = MainApplication::the()->getMainWindow()->connectWindowEntered(boost::bind(&Project::handleWindowEntered, this, _1));
+   _WindowExitedConnection = MainApplication::the()->getMainWindow()->connectWindowExited(boost::bind(&Project::handleWindowExited, this, _1));
 
     //Attach the SoundManager
     SoundManager::the()->attachUpdateProducer(MainApplication::the()->getMainWindow());
@@ -194,7 +214,7 @@ void Project::start(void)
     loadScripts();
 
 
-    produceProjectStarted(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
+    produceProjectStarted();
 }
 
 void Project::reset(void)
@@ -235,25 +255,40 @@ void Project::reset(void)
         setActiveScene(getInitialScene());
     }
 
-    produceProjectReset(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
+    produceProjectReset();
 }
 
 void Project::stop(void)
 {
-    produceProjectStopping(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
+    produceProjectStopping();
 
     setActiveScene(NULL);
 
     //Detach the listeners
-    MainApplication::the()->getMainWindow()->removeUpdateListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->removeMouseListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->removeMouseMotionListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->removeMouseWheelListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->removeKeyListener(&_ProjectUpdateListener);
-    MainApplication::the()->getMainWindow()->removeWindowListener(&_ProjectUpdateListener);
+    _UpdateConnection.disconnect();
+    _MouseClickedConnection.disconnect();
+    _MouseEnteredConnection.disconnect();
+    _MouseExitedConnection.disconnect();
+    _MousePressedConnection.disconnect();
+    _MouseReleasedConnection.disconnect();
+    _MouseMovedConnection.disconnect();
+    _MouseDraggedConnection.disconnect();
+    _MouseWheelMovedConnection.disconnect();
+    _KeyPressedConnection.disconnect();
+    _KeyReleasedConnection.disconnect();
+    _KeyTypedConnection.disconnect();
+    _WindowOpenedConnection.disconnect();
+    _WindowClosingConnection.disconnect();
+    _WindowClosedConnection.disconnect();
+    _WindowIconifiedConnection.disconnect();
+    _WindowDeiconifiedConnection.disconnect();
+    _WindowActivatedConnection.disconnect();
+    _WindowDeactivatedConnection.disconnect();
+    _WindowEnteredConnection.disconnect();
+    _WindowExitedConnection.disconnect();
 
     //Detach the SoundManager
-    SoundManager::the()->detachUpdateProducer(MainApplication::the()->getMainWindow());
+    SoundManager::the()->detachUpdateProducer();
 
     //End all Scenes
     for(UInt32 i(0) ; i<getMFScenes()->size(); ++i)
@@ -261,7 +296,7 @@ void Project::stop(void)
         getScenes(i)->end();
     }
 
-    produceProjectStopped(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
+    produceProjectStopped();
 }
 
 BoostPath Project::getProjectFilePath(void) const
@@ -343,7 +378,7 @@ void Project::setActiveScene(SceneRefPtr TheScene)
             getInternalActiveScene()->enter();
         }
 
-        produceSceneChanged(ProjectEvent::create(ProjectRefPtr(this), getTimeStamp()));
+        produceSceneChanged();
     }
 }
 
@@ -352,7 +387,7 @@ void Project::setActiveNode(NodeRefPtr TheNode)
     //TODO: Implement
 }
 
-NodeRefPtr Project::getActiveNode(void)
+Node* Project::getActiveNode(void)
 {
     return NULL;
 }
@@ -414,7 +449,7 @@ void Project::addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem)
        editMFActiveParticleSystems()->end())
     {
         pushToActiveParticleSystems(TheParticleSystem);
-        TheParticleSystem->attachUpdateListener(MainApplication::the()->getMainWindow());
+        TheParticleSystem->attachUpdateProducer(this);
     }
 }
 
@@ -431,36 +466,73 @@ void Project::removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem)
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
-void Project::produceSceneChanged(const ProjectEventUnrecPtr e)
+void Project::produceSceneChanged(void)
 {
-    _Producer.produceEvent(SceneChangedMethodId, e);
+    ProjectEventDetailsUnrecPtr details = ProjectEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceSceneChanged(details);
 }
 
-void Project::produceProjectStarted(const ProjectEventUnrecPtr e)
+void Project::produceProjectStarted(void)
 {
-    _Producer.produceEvent(ProjectStartedMethodId, e);
+    ProjectEventDetailsUnrecPtr details = ProjectEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceProjectStarted(details);
 }
 
-void Project::produceProjectStopping(const ProjectEventUnrecPtr e)
+void Project::produceProjectStopping(void)
 {
-    _Producer.produceEvent(ProjectStoppingMethodId, e);
+    ProjectEventDetailsUnrecPtr details = ProjectEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceProjectStopping(details);
 }
 
-void Project::produceProjectStopped(const ProjectEventUnrecPtr e)
+void Project::produceProjectStopped(void)
 {
-    _Producer.produceEvent(ProjectStoppedMethodId, e);
+    ProjectEventDetailsUnrecPtr details = ProjectEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceProjectStopped(details);
 }
 
-void Project::produceProjectReset(const ProjectEventUnrecPtr e)
+void Project::produceProjectReset(void)
 {
-    _Producer.produceEvent(ProjectResetMethodId, e);
+    ProjectEventDetailsUnrecPtr details = ProjectEventDetails::create(this, getTimeStamp());
+   
+    Inherited::produceProjectReset(details);
+}
+
+void Project::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+        
+    _UpdateConnection.disconnect();
+    _MouseClickedConnection.disconnect();
+    _MouseEnteredConnection.disconnect();
+    _MouseExitedConnection.disconnect();
+    _MousePressedConnection.disconnect();
+    _MouseReleasedConnection.disconnect();
+    _MouseMovedConnection.disconnect();
+    _MouseDraggedConnection.disconnect();
+    _MouseWheelMovedConnection.disconnect();
+    _KeyPressedConnection.disconnect();
+    _KeyReleasedConnection.disconnect();
+    _KeyTypedConnection.disconnect();
+    _WindowOpenedConnection.disconnect();
+    _WindowClosingConnection.disconnect();
+    _WindowClosedConnection.disconnect();
+    _WindowIconifiedConnection.disconnect();
+    _WindowDeiconifiedConnection.disconnect();
+    _WindowActivatedConnection.disconnect();
+    _WindowDeactivatedConnection.disconnect();
+    _WindowEnteredConnection.disconnect();
+    _WindowExitedConnection.disconnect();
+
 }
 
 /*----------------------- constructors & destructors ----------------------*/
 
 Project::Project(void) :
     Inherited(),
-    _ProjectUpdateListener(ProjectRefPtr(this)),
     _PauseActiveUpdates(false),
     _LastActiveScene(NULL),
     _BlockInput(false)
@@ -469,7 +541,6 @@ Project::Project(void) :
 
 Project::Project(const Project &source) :
     Inherited(source),
-    _ProjectUpdateListener(ProjectRefPtr(this)),
     _PauseActiveUpdates(source._PauseActiveUpdates),
     _LastActiveScene(NULL),
     _BlockInput(source._BlockInput)
@@ -487,14 +558,6 @@ void Project::changed(ConstFieldMaskArg whichField,
                       BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
-
-    if((whichField & ScenesFieldMask))
-    {
-        for(::OSG::UInt32 i(0) ; i<getMFScenes()->size() ; ++i)
-        {
-            getScenes(i)->setInternalParentProject(ProjectRefPtr(this));
-        }
-    }
 }
 
 void Project::dump(      UInt32    ,

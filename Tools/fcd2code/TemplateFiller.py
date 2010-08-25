@@ -29,8 +29,8 @@ class TemplateFiller:
         self.m_EndMFFieldLoopRE       = re.compile(r"@@EndMFFieldLoop");
         self.m_AdditionIncludesRE     = re.compile(r"@@AdditionalIncludes");
         self.m_AdditionPrioIncludesRE = re.compile(r"@@AdditionalPriorityIncludes");
-        self.m_BeginProducedMethodLoopRE       = re.compile(r"@@BeginProducedMethodLoop");
-        self.m_EndProducedMethodLoopRE         = re.compile(r"@@EndProducedMethodLoop");
+        self.m_BeginProducedEventLoopRE       = re.compile(r"@@BeginProducedEventLoop");
+        self.m_EndProducedEventLoopRE         = re.compile(r"@@EndProducedEventLoop");
 
     def fill(self, dictList):
         """Fill in a template using the contents of the dictionaries in
@@ -70,10 +70,10 @@ class TemplateFiller:
                 inLoop = True;
                 continue;
             
-            # handle @@BeginProducedMethodLoop
-            matchBeginProducedMethodLoop = self.m_BeginProducedMethodLoopRE.search(line);
-            if (not skipCurrent) and (matchBeginProducedMethodLoop != None):
-                #self.m_log.debug("fill: line %d -> BeginProducedMethodLoop", lineNum);
+            # handle @@BeginProducedEventLoop
+            matchBeginProducedEventLoop = self.m_BeginProducedEventLoopRE.search(line);
+            if (not skipCurrent) and (matchBeginProducedEventLoop != None):
+                #self.m_log.debug("fill: line %d -> BeginProducedEventLoop", lineNum);
                 inLoop = True;
                 continue;
 
@@ -107,11 +107,11 @@ class TemplateFiller:
                     loopLines = [];
                     continue;
 
-                # handle @@EndProducedMethodLoop
-                matchEndProducedMethodLoop = self.m_EndProducedMethodLoopRE.search(line);
-                if matchEndProducedMethodLoop != None:
-                    #self.m_log.debug("fill: line %d -> EndProducedMethodLoop", lineNum);
-                    self._processLoop("ProducedMethods", loopLines, context);
+                # handle @@EndProducedEventLoop
+                matchEndProducedEventLoop = self.m_EndProducedEventLoopRE.search(line);
+                if matchEndProducedEventLoop != None:
+                    #self.m_log.debug("fill: line %d -> EndProducedEventLoop", lineNum);
+                    self._processLoop("ProducedEvents", loopLines, context);
                     inLoop    = False;
                     loopLines = [];
                     continue;
@@ -185,22 +185,22 @@ class TemplateFiller:
         for include in includeList:
             self.m_outLines.append("#include <" + include + ">\n");
     
-    def _processProducedMethodsLoop(self, loopType, loopLines, context):
-        """for loopType == "ProducedMethods"  repeat lines in loopLines for all ProducedMethods
+    def _processProducedEventsLoop(self, loopType, loopLines, context):
+        """for loopType == "ProducedEvents"  repeat lines in loopLines for all ProducedEvents
         """
-        if loopType == "ProducedMethods":
-            producedMethods = self._lookup(loopType, context);
+        if loopType == "ProducedEvents":
+            producedEvents = self._lookup(loopType, context);
         else:
             self.m_log.error("_processLoop: unknown loopType \"%s\"." % loopType);
             return;
         
-        localDict = dict([("producedMethod", None)]);
+        localDict = dict([("producedEvent", None)]);
         loopContext = [localDict];
         for c in context:
             loopContext.append(c);
         
-        for producedMethod in producedMethods:
-            localDict["producedMethod"] = producedMethod;
+        for producedEvent in producedEvents:
+            localDict["producedEvent"] = producedEvent;
             
             skipStack   = ListStack();
             skipCurrent = False;
@@ -246,8 +246,8 @@ class TemplateFiller:
            for loopType == "SFields" repeat lines in loopLines for all sfields
            for loopType == "MFields" repeat lines in loopLines for all mfields
         """
-        if loopType == "ProducedMethods":
-            self._processProducedMethodsLoop(loopType, loopLines, context)
+        if loopType == "ProducedEvents":
+            self._processProducedEventsLoop(loopType, loopLines, context)
             return;
 
         if loopType == "Fields" or loopType == "SFields" or loopType == "MFields":

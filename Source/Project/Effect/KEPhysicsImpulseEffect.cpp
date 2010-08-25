@@ -93,7 +93,7 @@ void PhysicsImpulseEffect::inheritedBegin()
         getPhysicsBodies(i)->addForce(getPhysicsWorld()->impulseToForce(getPhysicsHandler()->getStepSize(), Direction*Impulse*(1.0f/Distance)));
         //The bodies need to be enabled because they may be auto-disabled when they
         //come to rest
-        //The bodies are not re-enabled untill a new collision is detected
+        //The bodies are not re-enabled until a new collision is detected
         getPhysicsBodies(i)->setEnable(true);
     }
     

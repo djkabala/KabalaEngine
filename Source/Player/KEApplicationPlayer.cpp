@@ -84,11 +84,26 @@
 #include "Player/HelperPanel/KEHelperPanel.h"
 #include "Player/ContentPanel/KEContentPanel.h"
 
-#include "Player/Commands/KEUndoCommandOfPlayer.h"
-#include "Player/Commands/KERedoCommandOfPlayer.h"
-
 #include "Player/Commands/KELoadProjectCommand.h"
 #include "Player/Commands/KESaveProjectCommand.h"
+
+
+#include <OpenSG/OSGGraphics2D.h>
+#include <OpenSG/OSGComboBox.h>
+#include <OpenSG/OSGDefaultMutableComboBoxModel.h>
+#include <OpenSG/OSGUIForeground.h>
+#include <OpenSG/OSGSimpleStatisticsForeground.h>
+#include <OpenSG/OSGFieldAnimation.h>
+#include <OpenSG/OSGKeyframeAnimator.h>
+#include <OpenSG/OSGAnimationGroup.h>
+#include <OpenSG/OSGLineChunk.h>
+#include <OpenSG/OSGReplicateTransform.h>
+#include <OpenSG/OSGBorderLayoutConstraints.h>
+#include <OpenSG/OSGSplitPanel.h>
+#include <OpenSG/OSGTree.h>
+#include <OpenSG/OSGBorderLayout.h>
+#include <OpenSG/OSGTextArea.h>
+#include <OpenSG/OSGUIDrawUtils.h>
 
 
 OSG_BEGIN_NAMESPACE
@@ -133,15 +148,15 @@ void ApplicationPlayer::attachApplication(void)
     //Main Window Titlebar
     ProjectRefPtr TheProject(MainApplication::the()->getProject());
     updateWindowTitle();
-    MainApplication::the()->getMainWindow()->addKeyListener(&_PlayerKeyListener);
-    MainApplication::the()->getMainWindow()->addUpdateListener(&_highlightNodeListener);
+    _PlayerKeyTypedConnection = MainApplication::the()->getMainWindow()->connectKeyTyped(boost::bind(&ApplicationPlayer::handlePlayerKeyTyped, this, _1));
+    _HighlightNodeUpdateConnection = MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&ApplicationPlayer::handleHighlightNodeUpdate, this, _1));
 }
 
 
 void ApplicationPlayer::dettachApplication(void)
 {
-    MainApplication::the()->getMainWindow()->removeKeyListener(&_PlayerKeyListener);
-    MainApplication::the()->getMainWindow()->removeUpdateListener(&_highlightNodeListener);
+    _PlayerKeyTypedConnection.disconnect();
+    _HighlightNodeUpdateConnection.disconnect();
     Inherited::dettachApplication();
 }
 
@@ -149,7 +164,7 @@ void ApplicationPlayer::attachInterface(void)
 {
 }
 
-void ApplicationPlayer::attachListeners(void)
+void ApplicationPlayer::attachHandlers(void)
 {
 }
 
@@ -222,115 +237,115 @@ void ApplicationPlayer::createDebugInterface(void)
     // setting the fields of the menu items
     _LoadProjectItem->setText("Open Project ...");
     _LoadProjectItem->setEnabled(false);
-    _LoadProjectItem->setAcceleratorKey(KeyEvent::KEY_O);
-    _LoadProjectItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _LoadProjectItem->setMnemonicKey(KeyEvent::KEY_O);
+    _LoadProjectItem->setAcceleratorKey(KeyEventDetails::KEY_O);
+    _LoadProjectItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _LoadProjectItem->setMnemonicKey(KeyEventDetails::KEY_O);
 
     _SaveProjectItem->setText("Save Project");
-    _SaveProjectItem->setAcceleratorKey(KeyEvent::KEY_S);
-    _SaveProjectItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _SaveProjectItem->setMnemonicKey(KeyEvent::KEY_S);
+    _SaveProjectItem->setAcceleratorKey(KeyEventDetails::KEY_S);
+    _SaveProjectItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _SaveProjectItem->setMnemonicKey(KeyEventDetails::KEY_S);
 
     _SaveProjectAsItem->setText("Save Project As ...");
-    _SaveProjectAsItem->setAcceleratorKey(KeyEvent::KEY_S);
-    _SaveProjectAsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _SaveProjectAsItem->setMnemonicKey(KeyEvent::KEY_S);
+    _SaveProjectAsItem->setAcceleratorKey(KeyEventDetails::KEY_S);
+    _SaveProjectAsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _SaveProjectAsItem->setMnemonicKey(KeyEventDetails::KEY_S);
 
     _ResetItem->setText("Reset");
-    _ResetItem->setAcceleratorKey(KeyEvent::KEY_E);
-    _ResetItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _ResetItem->setMnemonicKey(KeyEvent::KEY_E);
+    _ResetItem->setAcceleratorKey(KeyEventDetails::KEY_E);
+    _ResetItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _ResetItem->setMnemonicKey(KeyEventDetails::KEY_E);
 
     _ForceQuitItem ->setText("Force Quit");
-    _ForceQuitItem ->setAcceleratorKey(KeyEvent::KEY_Q);
-    _ForceQuitItem ->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _ForceQuitItem ->setMnemonicKey(KeyEvent::KEY_Q);
+    _ForceQuitItem ->setAcceleratorKey(KeyEventDetails::KEY_Q);
+    _ForceQuitItem ->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _ForceQuitItem ->setMnemonicKey(KeyEventDetails::KEY_Q);
 
     _UndoItem->setText("Undo");
-    _UndoItem->setAcceleratorKey(KeyEvent::KEY_Z);
-    _UndoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _UndoItem->setMnemonicKey(KeyEvent::KEY_U);
+    _UndoItem->setAcceleratorKey(KeyEventDetails::KEY_Z);
+    _UndoItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _UndoItem->setMnemonicKey(KeyEventDetails::KEY_U);
 
     _RedoItem->setText("Redo");
-    _RedoItem->setAcceleratorKey(KeyEvent::KEY_Z);
-    _RedoItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND |
-                                       KeyEvent::KEY_MODIFIER_SHIFT);
-    _RedoItem->setMnemonicKey(KeyEvent::KEY_R);
+    _RedoItem->setAcceleratorKey(KeyEventDetails::KEY_Z);
+    _RedoItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND |
+                                       KeyEventDetails::KEY_MODIFIER_SHIFT);
+    _RedoItem->setMnemonicKey(KeyEventDetails::KEY_R);
 
     _NextItem ->setText("Next");
-    _NextItem ->setAcceleratorKey(KeyEvent::KEY_TAB);
-    //_NextItem ->setAcceleratorModifiers(!KeyEvent::KEY_MODIFIER_SHIFT);
+    _NextItem ->setAcceleratorKey(KeyEventDetails::KEY_TAB);
+    //_NextItem ->setAcceleratorModifiers(!KeyEventDetails::KEY_MODIFIER_SHIFT);
 
     _PrevItem->setText("Previous");
-    _PrevItem->setAcceleratorKey(KeyEvent::KEY_TAB);
-    _PrevItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_SHIFT);
+    _PrevItem->setAcceleratorKey(KeyEventDetails::KEY_TAB);
+    _PrevItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_SHIFT);
 
     _FirstItem->setText("First");
-    _FirstItem->setAcceleratorKey(KeyEvent::KEY_F);
-    _FirstItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _FirstItem->setMnemonicKey(KeyEvent::KEY_F);
+    _FirstItem->setAcceleratorKey(KeyEventDetails::KEY_F);
+    _FirstItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _FirstItem->setMnemonicKey(KeyEventDetails::KEY_F);
 
     _LastItem->setText("Last");
-    _LastItem->setAcceleratorKey(KeyEvent::KEY_L);
-    _LastItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _LastItem->setMnemonicKey(KeyEvent::KEY_L);
+    _LastItem->setAcceleratorKey(KeyEventDetails::KEY_L);
+    _LastItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _LastItem->setMnemonicKey(KeyEventDetails::KEY_L);
 
     _SceneSubItem->setText("Scenes");
 
     _FlyNavigatorItem->setText("FlyNavigator");
-    _FlyNavigatorItem->setAcceleratorKey(KeyEvent::KEY_N);
-    _FlyNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _FlyNavigatorItem->setMnemonicKey(KeyEvent::KEY_N);
+    _FlyNavigatorItem->setAcceleratorKey(KeyEventDetails::KEY_N);
+    _FlyNavigatorItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _FlyNavigatorItem->setMnemonicKey(KeyEventDetails::KEY_N);
 
     _TrackballNavigatorItem->setText("TrackballNavigator");
-    _TrackballNavigatorItem->setAcceleratorKey(KeyEvent::KEY_T);
-    _TrackballNavigatorItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _TrackballNavigatorItem->setMnemonicKey(KeyEvent::KEY_T);
+    _TrackballNavigatorItem->setAcceleratorKey(KeyEventDetails::KEY_T);
+    _TrackballNavigatorItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _TrackballNavigatorItem->setMnemonicKey(KeyEventDetails::KEY_T);
 
     _BasicItem->setText("Basic");
-    _BasicItem->setAcceleratorKey(KeyEvent::KEY_B);
-    _BasicItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _BasicItem->setMnemonicKey(KeyEvent::KEY_B);
+    _BasicItem->setAcceleratorKey(KeyEventDetails::KEY_B);
+    _BasicItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _BasicItem->setMnemonicKey(KeyEventDetails::KEY_B);
 
     _RenderItem->setText("Render");
-    _RenderItem->setAcceleratorKey(KeyEvent::KEY_R);
-    _RenderItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _RenderItem->setMnemonicKey(KeyEvent::KEY_R);
+    _RenderItem->setAcceleratorKey(KeyEventDetails::KEY_R);
+    _RenderItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _RenderItem->setMnemonicKey(KeyEventDetails::KEY_R);
 
     _PhysicsItem->setText("Physics");
-    _PhysicsItem->setMnemonicKey(KeyEvent::KEY_Y);
+    _PhysicsItem->setMnemonicKey(KeyEventDetails::KEY_Y);
 
     _ParticleSystemItem->setText("ParticleSystem");
-    _ParticleSystemItem->setMnemonicKey(KeyEvent::KEY_Z);
+    _ParticleSystemItem->setMnemonicKey(KeyEventDetails::KEY_Z);
 
     _AnimationItem->setText("Animation");
-    _AnimationItem->setMnemonicKey(KeyEvent::KEY_A);
+    _AnimationItem->setMnemonicKey(KeyEventDetails::KEY_A);
 
     _PauseActiveUpdatesItem->setText("Pause Active Updates");
-    _PauseActiveUpdatesItem->setAcceleratorKey(KeyEvent::KEY_SPACE);
-    //_PauseActiveUpdatesItem->setMnemonicKey(KeyEvent::KEY_SPACE);
+    _PauseActiveUpdatesItem->setAcceleratorKey(KeyEventDetails::KEY_SPACE);
+    //_PauseActiveUpdatesItem->setMnemonicKey(KeyEventDetails::KEY_SPACE);
 
     _DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
-    _DrawBoundingVolumesItem->setAcceleratorKey(KeyEvent::KEY_V);
-    _DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND | KeyEvent::KEY_MODIFIER_SHIFT);
-    _DrawBoundingVolumesItem->setMnemonicKey(KeyEvent::KEY_V);
+    _DrawBoundingVolumesItem->setAcceleratorKey(KeyEventDetails::KEY_V);
+    _DrawBoundingVolumesItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND | KeyEventDetails::KEY_MODIFIER_SHIFT);
+    _DrawBoundingVolumesItem->setMnemonicKey(KeyEventDetails::KEY_V);
 
     _FrustrumCullingItem->setText("Disable Frustrum Culling ");
-    _FrustrumCullingItem->setAcceleratorKey(KeyEvent::KEY_F);
-    _FrustrumCullingItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _FrustrumCullingItem->setMnemonicKey(KeyEvent::KEY_F);
+    _FrustrumCullingItem->setAcceleratorKey(KeyEventDetails::KEY_F);
+    _FrustrumCullingItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _FrustrumCullingItem->setMnemonicKey(KeyEventDetails::KEY_F);
 
     _DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics ");
-    _DrawPhysicsCharacteristicsItem->setAcceleratorKey(KeyEvent::KEY_P);
-    _DrawPhysicsCharacteristicsItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    _DrawPhysicsCharacteristicsItem->setMnemonicKey(KeyEvent::KEY_P);
+    _DrawPhysicsCharacteristicsItem->setAcceleratorKey(KeyEventDetails::KEY_P);
+    _DrawPhysicsCharacteristicsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _DrawPhysicsCharacteristicsItem->setMnemonicKey(KeyEventDetails::KEY_P);
 
 
     /*
        HideItem->setText("Hide Item");
-    // HideItem->setAcceleratorKey(KeyEvent::KEY_H);
-    // HideItem->setAcceleratorModifiers(KeyEvent::KEY_MODIFIER_COMMAND);
-    // HideItem->setMnemonicKey(KeyEvent::KEY_P);
+    // HideItem->setAcceleratorKey(KeyEventDetails::KEY_H);
+    // HideItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    // HideItem->setMnemonicKey(KeyEventDetails::KEY_P);
     */	
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // creation of the Tree
@@ -341,7 +356,6 @@ void ApplicationPlayer::createDebugInterface(void)
     _HelperPanel->setupInfoTabPanel();
     _HelperPanel->setupHistoryList();
     _HelperPanel->setupRest();
-    //	MainApplication::the()->getMainWindow()->addKeyListener(&(_HelperPanel->_PlayerKeyListener));
 
 
     _HierarchyPanel = HierarchyPanel::create();
@@ -362,28 +376,27 @@ void ApplicationPlayer::createDebugInterface(void)
 
     _EditProjectButton = Button::create();
     _EditProjectButton->setText("Edit Project");
-    _EditProjectButton->addActionListener(&_BasicListener);
+    _EditProjectButton->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
 
     _OpenFileButton = Button::create();
     _OpenFileButton->setText("Open File");
     //_OpenFileButton->setPreferredSize(Vec2f(100,50));
-    _OpenFileButton->addActionListener(&_BasicListener);
+    _OpenFileButton->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
 
     _SaveFileButton = Button::create();
     _SaveFileButton->setText("Save File");
     //_SaveFileButton->setPreferredSize(Vec2f(100,50));
-    _SaveFileButton->addActionListener(&_BasicListener);
+    _SaveFileButton->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
 
     /*_CloseFileButton = Button::create();
 
       _CloseFileButton->setText("Close File");
       _CloseFileButton->setPreferredSize(Vec2f(100,50));
 
-      _CloseFileButton->addActionListener(&_BasicListener);
+      _CloseFileButton->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
       */
 
     _ModeComboBox = ComboBox::create();
-
 
     BorderLayoutConstraintsRefPtr ToolbarConstraints = OSG::BorderLayoutConstraints::create();
 
@@ -448,58 +461,56 @@ void ApplicationPlayer::createDebugInterface(void)
 
     // setting the fields for the menus 
     _ProjectMenu->setText("Project");
-    _ProjectMenu->setMnemonicKey(KeyEvent::KEY_P);
+    _ProjectMenu->setMnemonicKey(KeyEventDetails::KEY_P);
 
     _EditMenu->setText("Edit");
-    _EditMenu->setMnemonicKey(KeyEvent::KEY_D);
+    _EditMenu->setMnemonicKey(KeyEventDetails::KEY_D);
 
     _SceneMenu->setText("Scene");
-    _SceneMenu->setMnemonicKey(KeyEvent::KEY_C);
+    _SceneMenu->setMnemonicKey(KeyEventDetails::KEY_C);
 
     _NavigatorMenu->setText("Navigator");
-    _NavigatorMenu->setMnemonicKey(KeyEvent::KEY_N);
+    _NavigatorMenu->setMnemonicKey(KeyEventDetails::KEY_N);
 
     _StatisticsMenu->setText("Statistics");
-    _StatisticsMenu->setMnemonicKey(KeyEvent::KEY_T);
+    _StatisticsMenu->setMnemonicKey(KeyEventDetails::KEY_T);
 
     _ToggleMenu->setText("Toggle");
-    _ToggleMenu->setMnemonicKey(KeyEvent::KEY_G);
+    _ToggleMenu->setMnemonicKey(KeyEventDetails::KEY_G);
 
     // adding actionlisteners to each of the menuitems
-    _LoadProjectItem->addActionListener(&_BasicListener);
-    _SaveProjectItem->addActionListener(&_BasicListener);
-    _SaveProjectAsItem->addActionListener(&_BasicListener);
-    _ResetItem->addActionListener(&_BasicListener);
-    _ForceQuitItem->addActionListener(&_BasicListener);
+    _LoadProjectItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _SaveProjectItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _SaveProjectAsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ResetItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ForceQuitItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
 
-    _NextItem->addActionListener(&_BasicListener);
-    _PrevItem->addActionListener(&_BasicListener);
-    _FirstItem->addActionListener(&_BasicListener);
-    _LastItem->addActionListener(&_BasicListener);
-    _FlyNavigatorItem->addActionListener(&_BasicListener);
-    _TrackballNavigatorItem->addActionListener(&_BasicListener);
-    _BasicItem->addActionListener(&_BasicListener);
-    _RenderItem->addActionListener(&_BasicListener);
-    _PhysicsItem->addActionListener(&_BasicListener);
-    _ParticleSystemItem->addActionListener(&_BasicListener);
-    _AnimationItem->addActionListener(&_BasicListener);
-    _PauseActiveUpdatesItem->addActionListener(&_BasicListener);
-    _DrawBoundingVolumesItem->addActionListener(&_BasicListener);
-    _FrustrumCullingItem->addActionListener(&_BasicListener);
-    _DrawPhysicsCharacteristicsItem->addActionListener(&_BasicListener);
-    _ProjectMenu->addActionListener(&_BasicListener);
-    _EditMenu->addActionListener(&_BasicListener);
-    _SceneMenu->addActionListener(&_BasicListener);	
-    _NavigatorMenu->addActionListener(&_BasicListener);
-    _StatisticsMenu->addActionListener(&_BasicListener);
-    _ToggleMenu->addActionListener(&_BasicListener);
+    _NextItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _PrevItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _FirstItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _LastItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _FlyNavigatorItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _TrackballNavigatorItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _BasicItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _RenderItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _PhysicsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ParticleSystemItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _AnimationItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _PauseActiveUpdatesItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _DrawBoundingVolumesItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _FrustrumCullingItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _DrawPhysicsCharacteristicsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ProjectMenu->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _EditMenu->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _SceneMenu->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));	
+    _NavigatorMenu->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _StatisticsMenu->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ToggleMenu->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
 
-    _UndoActionListener = CommandActionListenerForPlayer(UndoCommandOfPlayer::create(ApplicationPlayerRefPtr(this)), _TheCommandManager);
-    _RedoActionListener = CommandActionListenerForPlayer(RedoCommandOfPlayer::create(ApplicationPlayerRefPtr(this)), _TheCommandManager);
-
-
-    _UndoItem->addActionListener(&_UndoActionListener);
-    _RedoItem->addActionListener(&_RedoActionListener);
+    _UndoItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleUndoButtonAction, this, _1));
+    _RedoItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleRedoButtonAction, this, _1));
+    
+    _TheUndoManager->connectStateChanged(boost::bind(&ApplicationPlayer::handleCommandManagerStateChanged, this, _1));
 
     // Creation of the menubar and addition of the menus to it
     _MainMenuBar = MenuBar::create();
@@ -522,8 +533,7 @@ void ApplicationPlayer::createDebugInterface(void)
     _ModeComboBox->setEditable(false);
     _ModeComboBox->setModel(_ModeComboBoxModel);
 
-    //_ModeComboBox->addActionListener(&_BasicListener);
-    _ModeComboBoxModel->addSelectionListener(&_ComboBoxListener);
+    _ModeComboBoxModel->connectSelectionChanged(boost::bind(&ApplicationPlayer::handleComboBoxSelectionChanged, this, _1));
 
     // Determine where the _ModeComboBox starts
     _ModeComboBox->setSelectedIndex(0);
@@ -669,7 +679,7 @@ void ApplicationPlayer::createGotoSceneMenuItems(ProjectRefPtr TheProject)
         NewSceneItem = MenuItem::create();
         NewSceneItem->setText(SceneName);
         //Attach the Goto Listener
-        NewSceneItem->addActionListener(&_GotoSceneItemListener);
+        NewSceneItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleGotoSceneItemAction, this, _1));
 
         //Add the Scene Menu Item to the SubMenu
         _SceneSubItem->addItem(NewSceneItem);
@@ -737,8 +747,7 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
         updateGotoSceneMenuItems(MainApplication::the()->getProject());
 
         //Attach Listeners to the project
-        MainApplication::the()->getProject()->editEventProducer()->attachEventListener(&_ProjectListener, Project::SceneChangedMethodId);
-        _CommandManagerListener.setApplicationPlayer(ApplicationPlayerRefPtr(this));
+        _ProjectSceneChangedConnection = MainApplication::the()->getProject()->connectSceneChanged(boost::bind(&ApplicationPlayer::handleProjectSceneChanged, this, _1));
         updateUndoRedoInterfaces(_TheUndoManager);
 
         //Update Title
@@ -764,7 +773,7 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
         detachDebugInterface();
 
         //dettach Listeners to the project
-        MainApplication::the()->getProject()->editEventProducer()->detachEventListener(&_ProjectListener, Project::SceneChangedMethodId);
+        _ProjectSceneChangedConnection.disconnect();
 
         //Turn off Input Blocking
         setSceneInputBlocking(false);
@@ -798,42 +807,42 @@ void ApplicationPlayer::updateWindowTitle(void)
     MainApplication::the()->getMainWindow()->setTitle(MainWindowTitle);
 }
 
-void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
+void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
 {
-    if(e->getSource() == _ResetItem)
+    if(details->getSource() == _ResetItem)
     {
         //Reset the Project
         MainApplication::the()->getProject()->reset();
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
     }
-    else if(e->getSource() == _LoadProjectItem)
+    else if(details->getSource() == _LoadProjectItem)
     {
         CommandPtr LoadProjectItemCommand = LoadProjectCommand::create();
         getCommandManager()->executeCommand(LoadProjectItemCommand);
     }
-    else if(e->getSource() == _SaveProjectItem)
+    else if(details->getSource() == _SaveProjectItem)
     {
         CommandPtr SaveProjectItemCommand = SaveProjectCommand::create(false);
         getCommandManager()->executeCommand(SaveProjectItemCommand);
     }
-    else if(e->getSource() == _SaveProjectAsItem)
+    else if(details->getSource() == _SaveProjectAsItem)
     {
         CommandPtr SaveProjectItemCommand = SaveProjectCommand::create(true);
         getCommandManager()->executeCommand(SaveProjectItemCommand);
     }
-    else if(e->getSource() == _ForceQuitItem)
+    else if(details->getSource() == _ForceQuitItem)
     {
         MainApplication::the()->exit();
     }
 
-    else if(e->getSource() == _NextItem)
+    else if(details->getSource() == _NextItem)
     {
         Int32 SceneIndex(MainApplication::the()->getProject()->getMFScenes()->findIndex(MainApplication::the()->getProject()->getActiveScene()));
         SceneIndex = (SceneIndex+1) % MainApplication::the()->getProject()->getMFScenes()->size();
 
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneIndex));
     }
-    else if(e->getSource() == _PrevItem)
+    else if(details->getSource() == _PrevItem)
     {
         Int32 SceneIndex(MainApplication::the()->getProject()->getMFScenes()->findIndex(MainApplication::the()->getProject()->getActiveScene()));
 
@@ -845,45 +854,45 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
 
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneIndex));
     }
-    else if(e->getSource() == _FirstItem)
+    else if(details->getSource() == _FirstItem)
     {
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(0));
     }
 
-    else if(e->getSource() == _LastItem)
+    else if(details->getSource() == _LastItem)
     {
         UInt32 SceneNumber = MainApplication::the()->getProject()->getMFScenes()->size() - 1;
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneNumber));
     }
-    else if(e->getSource() == _FlyNavigatorItem )
+    else if(details->getSource() == _FlyNavigatorItem )
     {
         //TODO: Implement
     }
-    else if(e->getSource() == _TrackballNavigatorItem )
+    else if(details->getSource() == _TrackballNavigatorItem )
     {
         //TODO: Implement
     }
-    else if(e->getSource() == _BasicItem)
+    else if(details->getSource() == _BasicItem)
     {
         toggleStatForeground(_DebugBasicStatForeground);
     }
-    else if(e->getSource() == _RenderItem)
+    else if(details->getSource() == _RenderItem)
     {
         toggleStatForeground(_DebugRenderStatForeground);
     }
-    else if(e->getSource() == _PhysicsItem)
+    else if(details->getSource() == _PhysicsItem)
     {
         toggleStatForeground(_DebugPhysicsStatForeground);
     }
-    else if(e->getSource() == _ParticleSystemItem)
+    else if(details->getSource() == _ParticleSystemItem)
     {
         toggleStatForeground(_DebugParticleSystemStatForeground);
     }
-    else if(e->getSource() == _AnimationItem)
+    else if(details->getSource() == _AnimationItem)
     {
         toggleStatForeground(_DebugAnimationStatForeground);
     }
-    else if(e->getSource() == _PauseActiveUpdatesItem)
+    else if(details->getSource() == _PauseActiveUpdatesItem)
     {
         MainApplication::the()->getProject()->togglePauseActiveUpdates();
 
@@ -897,7 +906,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
             _PauseActiveUpdatesItem->setText("Pause Active Updates");
         }
     }
-    else if(e->getSource() == _DrawBoundingVolumesItem)
+    else if(details->getSource() == _DrawBoundingVolumesItem)
     {
         toggleDrawBoundingVolumes();
 
@@ -911,7 +920,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
             _DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
         }
     }
-    else if(e->getSource() == _FrustrumCullingItem)
+    else if(details->getSource() == _FrustrumCullingItem)
     {
         toggleFrustumCulling();
 
@@ -925,7 +934,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
             _FrustrumCullingItem->setText("Enable Frustrum Culling");
         }
     }
-    else if(e->getSource() == _DrawPhysicsCharacteristicsItem)
+    else if(details->getSource() == _DrawPhysicsCharacteristicsItem)
     {
         toggleDrawPhysicsCharacteristics();
 
@@ -940,17 +949,17 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
             _DrawPhysicsCharacteristicsItem->setText("Hide Physics Characteristics");
         }
     }
-    else if(e->getSource() == _ModeComboBox)
+    else if(details->getSource() == _ModeComboBox)
     {
         int index = _ModeComboBox->getSelectedIndex();
         _HierarchyPanel->setView(index);
         _ContentPanel->setView(index);
     }
-    else if(e->getSource() == _EditProjectButton)
+    else if(details->getSource() == _EditProjectButton)
     {
         openEditor(MainApplication::the()->getProject());
     }
-    else if(e->getSource() == _OpenFileButton)
+    else if(details->getSource() == _OpenFileButton)
     {
 
         std::vector<WindowEventProducer::FileDialogFilter> Filters;
@@ -969,7 +978,7 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
             _ContentPanel->addTabWithText(*Itor);
         }
     }
-    else if(e->getSource() == _SaveFileButton)
+    else if(details->getSource() == _SaveFileButton)
     {
         std::vector<WindowEventProducer::FileDialogFilter> Filters;
         Filters.push_back(WindowEventProducer::FileDialogFilter("Lua Files","lua"));
@@ -991,9 +1000,9 @@ void ApplicationPlayer::actionPerformed(const ActionEventUnrecPtr e)
 
 
 
-void ApplicationPlayer::keyTyped(const KeyEventUnrecPtr e)
+void ApplicationPlayer::handlePlayerKeyTyped(KeyEventDetails* const details)
 {
-    if(e->getKey() == KeyEvent::KEY_D && e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+    if(details->getKey() == KeyEventDetails::KEY_D && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_SHIFT)
     {
         enableDebug(!_IsDebugActive);
         return;
@@ -1003,42 +1012,42 @@ void ApplicationPlayer::keyTyped(const KeyEventUnrecPtr e)
     {
 
 
-        if(isNumericKey(static_cast<KeyEvent::Key>(e->getKey())) && e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND && e->getModifiers() & KeyEvent::KEY_MODIFIER_SHIFT)
+        if(isNumericKey(static_cast<KeyEventDetails::Key>(details->getKey())) && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_SHIFT)
         {
             //Switch To scene #
-            UInt32 SceneNumber(boost::lexical_cast<UInt32>(KeyEvent::getCharFromKey(e->getKey(),0)));
+            UInt32 SceneNumber(boost::lexical_cast<UInt32>(KeyEventDetails::getCharFromKey(details->getKey(),0)));
             if(SceneNumber < MainApplication::the()->getProject()->getMFScenes()->size())
             {
                 MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneNumber));
             }
         }
 
-        //if(e->getKey() == KeyEvent::KEY_1 && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
+        //if(details->getKey() == KeyEventDetails::KEY_1 && (details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND))
         //{
             //MainInternalWindow->setFocusedComponent(_HelperPanel->_CodeTextArea);
             //_HelperPanel->_InfoTabPanel->setSelectedIndex(0);
 
         //}
 
-        if(e->getKey() == KeyEvent::KEY_T && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
+        if(details->getKey() == KeyEventDetails::KEY_T && (details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND))
         {
             _ContentPanel->setIsSplit(!_ContentPanel->getIsSplit());
         }
 
         //Pause Active Updates
-        //else if(e->getKey() == KeyEvent::KEY_SPACE)
+        //else if(details->getKey() == KeyEventDetails::KEY_SPACE)
         //{
         //MainApplication::the()->getProject()->togglePauseActiveUpdates();
         //}
 
         ////Toggle Input Blocking
-        else if(e->getKey() == KeyEvent::KEY_I && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
+        else if(details->getKey() == KeyEventDetails::KEY_I && (details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND))
         {
             toggleSceneInputBlocking();
         }
 
         //Scene Activation
-        if(e->getKey() == KeyEvent::KEY_E && (e->getModifiers() & KeyEvent::KEY_MODIFIER_COMMAND))
+        if(details->getKey() == KeyEventDetails::KEY_E && (details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND))
         {
             //Reset the Project
             MainApplication::the()->getProject()->reset();
@@ -1087,7 +1096,7 @@ void ApplicationPlayer::toggleDrawPhysicsCharacteristics(void)
 }
 
 
-NodeRefPtr ApplicationPlayer::getPhysicsDrawableNode(void)
+Node* ApplicationPlayer::getPhysicsDrawableNode(void)
 {
     if(_PhysDrawable == NULL)
     {
@@ -1113,7 +1122,7 @@ void ApplicationPlayer::toggleFrustumCulling(void)
     MainApplication::the()->getMainWindow()->getRenderAction()->setFrustumCulling(!MainApplication::the()->getMainWindow()->getRenderAction()->getFrustumCulling());
 }
 
-void ApplicationPlayer::toggleStatForeground(StatisticsForegroundRefPtr TheForeground)
+void ApplicationPlayer::toggleStatForeground(StatisticsForeground* const TheForeground)
 {
     Int32 Index(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getMFForegrounds()->findIndex(TheForeground));
     if(Index != -1)
@@ -1406,6 +1415,9 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     _DebugSceneNavigator.setViewport(DebugViewport);
     _DebugSceneNavigator.setCameraTransformation(_DebugCameraBeacon);
 
+    //Create the Generic Editor
+    createGenericEditor();
+
     return DebugViewport;
 }
 
@@ -1433,7 +1445,7 @@ void ApplicationPlayer::moveDebugCamera(const Matrix& Transform)
         //_DebugCameraFovAnimation->setAnimatedField(_DebugCamera,
         //PerspectiveCamera::FovFieldId);
 
-        _DebugCameraAnimationGroup->attachUpdateProducer(MainApplication::the()->getMainWindow()->editEventProducer());
+        _DebugCameraAnimationGroup->attachUpdateProducer(MainApplication::the()->getMainWindow());
 
         //Start the Animation
         _DebugCameraAnimationGroup->start();
@@ -1604,7 +1616,33 @@ void ApplicationPlayer::updateFromSettings(void)
 
 void ApplicationPlayer::openEditor(FieldContainer* FCToEdit)
 {
-    openDefaultFCTreeEditorDialog(FCToEdit, _TheCommandManager, DebuggerDrawingSurface);
+    if(getFCEditedContainer(_GenericEditorDialog) != FCToEdit)
+    {
+        setFCEditedContainer(_GenericEditorDialog, FCToEdit);
+    }
+
+    Pnt2f CenteredPosition = calculateAlignment(Pnt2f(0.0f,0.0f), DebuggerDrawingSurface->getSize(), _GenericEditorDialog->getPreferredSize(), 0.5f, 0.5f);
+    _GenericEditorDialog->setPosition(CenteredPosition);
+    _GenericEditorDialog->setTitle(std::string("Edit ") + FCToEdit->getType().getCName());
+
+    DebuggerDrawingSurface->openWindow(_GenericEditorDialog);
+}
+
+void ApplicationPlayer::openEditor(void)
+{
+    Pnt2f CenteredPosition = calculateAlignment(Pnt2f(0.0f,0.0f), DebuggerDrawingSurface->getSize(), _GenericEditorDialog->getPreferredSize(), 0.5f, 0.5f);
+    _GenericEditorDialog->setPosition(CenteredPosition);
+
+    DebuggerDrawingSurface->openWindow(_GenericEditorDialog);
+}
+
+void ApplicationPlayer::createGenericEditor(void)
+{
+    _GenericEditorDialog = createDefaultFCTreeEditorDialog(MainApplication::the()->getProject(), _TheCommandManager);
+    _GenericEditorDialog->setTitle(std::string("Edit ") + MainApplication::the()->getProject()->getType().getCName());
+    _GenericEditorDialog->setAllwaysOnTop(true);
+    _GenericEditorDialog->setResizable(true);
+    _GenericEditorDialog->setMaximizable(true);
 }
 
 /*-------------------------------------------------------------------------*\
@@ -1615,20 +1653,11 @@ void ApplicationPlayer::openEditor(FieldContainer* FCToEdit)
 
 ApplicationPlayer::ApplicationPlayer(void) :
     Inherited(),
-	_PlayerKeyListener(ApplicationPlayerRefPtr(this)),
-	_BasicListener(ApplicationPlayerRefPtr(this)),
-	_highlightNodeListener(ApplicationPlayerRefPtr(this)),
-	_ComboBoxListener(ApplicationPlayerRefPtr(this)),
-	_GotoSceneItemListener(ApplicationPlayerRefPtr(this)),
-	_ProjectListener(ApplicationPlayerRefPtr(this)),
     _IsDebugActive(false),
     _PhysDrawable(NULL),
     _PhysDrawableNode(NULL),
     _WasMouseHidden(false),
-    _WasMouseAttached(false),
-	_UndoActionListener(),
-	_RedoActionListener(),
-	_CommandManagerListener(ApplicationPlayerRefPtr(this))
+    _WasMouseAttached(false)
 {
 	_TheUndoManager = UndoManager::create();
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
@@ -1636,12 +1665,6 @@ ApplicationPlayer::ApplicationPlayer(void) :
 
 ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     Inherited(source),
-	_PlayerKeyListener(ApplicationPlayerRefPtr(this)),
-	_BasicListener(ApplicationPlayerRefPtr(this)),
-	_highlightNodeListener(ApplicationPlayerRefPtr(this)),
-	_ComboBoxListener(ApplicationPlayerRefPtr(this)),
-	_GotoSceneItemListener(ApplicationPlayerRefPtr(this)),
-	_ProjectListener(ApplicationPlayerRefPtr(this)),
     _IsDebugActive(false),
     _DebugBasicStatForeground(source._DebugBasicStatForeground),
     _DebugRenderStatForeground(source._DebugRenderStatForeground),
@@ -1651,10 +1674,7 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     _PhysDrawable(NULL),
     _PhysDrawableNode(NULL),
     _WasMouseHidden(false),
-    _WasMouseAttached(false),
-	_UndoActionListener(),
-	_RedoActionListener(),
-	_CommandManagerListener(ApplicationPlayerRefPtr(this))
+    _WasMouseAttached(false)
 {
 	_TheUndoManager = UndoManager::create();
 	_TheCommandManager = CommandManager::create(_TheUndoManager);
@@ -1679,61 +1699,29 @@ void ApplicationPlayer::dump(      UInt32    ,
     SLOG << "Dump ApplicationPlayer NI" << std::endl;
 }
 
-ApplicationPlayer::CommandManagerListener::CommandManagerListener(ApplicationPlayerRefPtr ApplicationPlayer)
+void ApplicationPlayer::handleCommandManagerStateChanged(ChangeEventDetails* const details)
 {
-    _ApplicationPlayer = ApplicationPlayer;
+    updateUndoRedoInterfaces(_TheUndoManager);
 }
 
-void ApplicationPlayer::CommandManagerListener::stateChanged(const ChangeEventUnrecPtr e)
+void ApplicationPlayer::handleGotoSceneItemAction(ActionEventDetails* const details)
 {
-    _ApplicationPlayer->updateUndoRedoInterfaces(_ApplicationPlayer->_TheUndoManager);
-}
-
-void ApplicationPlayer::CommandManagerListener::setApplicationPlayer(ApplicationPlayerRefPtr TheApplicationPlayer)
-{
-    _ApplicationPlayer = TheApplicationPlayer;
-    _ApplicationPlayer->_TheUndoManager->addChangeListener(this);
-}
-
-
-void ApplicationPlayer::PlayerKeyListener::keyTyped(const KeyEventUnrecPtr e)
-{
-    _ApplicationPlayer->keyTyped(e);
-}
-
-void ApplicationPlayer::BasicListener::actionPerformed(const ActionEventUnrecPtr e)
-{
-    _ApplicationPlayer->actionPerformed(e);
-}
-
-void ApplicationPlayer::GotoSceneItemListener::actionPerformed(const ActionEventUnrecPtr e)
-{
-    SceneRefPtr TheScene(MainApplication::the()->getProject()->getSceneByName(dynamic_cast<MenuItem*>(e->getSource())->getText()));
+    SceneRefPtr TheScene(MainApplication::the()->getProject()->getSceneByName(dynamic_cast<MenuItem*>(details->getSource())->getText()));
 
     if(TheScene != NULL)
     {
-        _ApplicationPlayer->gotoScene(TheScene);
+        gotoScene(TheScene);
     }
 }
 
-void ApplicationPlayer::ProjectListener::eventProduced(const EventUnrecPtr e, UInt32 EventProducedId)
+void ApplicationPlayer::handleProjectSceneChanged(ProjectEventDetails* const details)
 {
-    switch(EventProducedId)
-    {
-        case Project::SceneChangedMethodId:
-            _ApplicationPlayer->updateDebugSceneChange();
-            break;
-    }
+    updateDebugSceneChange();
 }
 
-ApplicationPlayer::highlightNodeListener::highlightNodeListener(ApplicationPlayerRefPtr TheApplicationPlayer)
+void ApplicationPlayer::handleHighlightNodeUpdate(UpdateEventDetails* const details)
 {
-    _ApplicationPlayer = TheApplicationPlayer;
-}
-
-void ApplicationPlayer::highlightNodeListener::update(const UpdateEventUnrecPtr e)
-{
-    _ApplicationPlayer->updateHighlightNode();
+    updateHighlightNode();
 }
 
 void ApplicationPlayer::updateXFormManipulator(void)
@@ -2023,7 +2011,7 @@ void ApplicationPlayer::updateHighlightNode(void)
         //Get the side lengths of the volume
         Vec3f  Sides(max - min);
 
-        GeoPnt3fPropertyUnrecPtr temphighlightPoints =
+        GeoPnt3fPropertyRecPtr temphighlightPoints =
             static_cast<GeoPnt3fProperty*>(_HighlightVolumeBoxGeo->getPositions());
 
         //Update Bounding Box
@@ -2072,7 +2060,7 @@ void ApplicationPlayer::createHighlightNode(void)
     _HighlightNode = Node::create();
     setName(_HighlightNode,"DEBUG_MODE_HIGHLIGHT_NODE");
 
-    GroupUnrecPtr HighlightCore = Group::create();
+    GroupRecPtr HighlightCore = Group::create();
     _HighlightNode->setCore(HighlightCore);
     _HighlightNode->addChild(_HighlightVolumeBoxNode);
     _HighlightNode->addChild(_HighlightAxisNode);
@@ -2334,22 +2322,21 @@ void ApplicationPlayer::selectNode(const Pnt2f& ViewportPoint)
 
 void ApplicationPlayer::setupPopupMenu()
 {
-
 }
 
-ApplicationPlayer::highlightNodeListener::~highlightNodeListener()
+void ApplicationPlayer::handleComboBoxSelectionChanged(ComboBoxSelectionEventDetails* const details)
 {
-
+    setDebugView(details->getCurrentIndex());
 }
 
-void ApplicationPlayer::ComboBoxListener::selectionChanged(const ComboBoxSelectionEventUnrecPtr e)
+void ApplicationPlayer::handleUndoButtonAction(ActionEventDetails* const details)
 {
-    _ApplicationPlayer->setDebugView(e->getCurrentIndex());
+	getUndoManager()->undo();
 }
 
-ApplicationPlayer::ComboBoxListener::ComboBoxListener(ApplicationPlayerRefPtr TheApplicationPlayer)
+void ApplicationPlayer::handleRedoButtonAction(ActionEventDetails* const details)
 {
-    _ApplicationPlayer = TheApplicationPlayer;
+	getUndoManager()->redo();
 }
 
 OSG_END_NAMESPACE

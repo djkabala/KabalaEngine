@@ -95,31 +95,6 @@ void EffectGroup::finished()
 
 
 /*------------------------- Internal Listener Functions --------------------------*/
-EffectGroup::InternalEffectListener::InternalEffectListener(EffectGroup* parent)
-{
-    fx = parent;
-}
-
-void EffectGroup::InternalEffectListener::effectBegan(const EffectEventUnrecPtr e)
-{
-}
-
-void EffectGroup::InternalEffectListener::effectStopped(const EffectEventUnrecPtr e)
-{
-}
-
-void EffectGroup::InternalEffectListener::effectPaused(const EffectEventUnrecPtr e)
-{
-}
-
-void EffectGroup::InternalEffectListener::effectUnpaused(const EffectEventUnrecPtr e)
-{
-}
-
-void EffectGroup::InternalEffectListener::effectFinished(const EffectEventUnrecPtr e)
-{
-    fx->handleEffectFinished();
-}
 
 /*----------------------- constructors & destructors ----------------------*/
 

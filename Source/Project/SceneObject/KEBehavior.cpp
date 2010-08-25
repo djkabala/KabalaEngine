@@ -57,8 +57,7 @@
 
 #include "KEBehavior.h"
 #include "KEBehaviorFactory.h"
-#include <OpenSG/OSGEvent.h>
-#include <OpenSG/OSGEventListener.h>
+#include <OpenSG/OSGEventDetails.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -88,27 +87,27 @@ void Behavior::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
-void Behavior::DepFieldContainerListener::eventProduced(const EventUnrecPtr e, UInt32 ID)
+void Behavior::handleDepBehaviorEvent(EventDetails* const details, UInt32 ID)
 {
-	_Behavior->depFieldContainerProducedMethod(e, ID);
+	depBehaviorProducedEvent(details, ID);
 }
 
-void Behavior::DepBehaviorListener::eventProduced(const EventUnrecPtr e, UInt32 ID)
+void Behavior::handleDepFieldContainerEvent(EventDetails* const details, UInt32 ID)
 {
-	_Behavior->depBehaviorProducedMethod(e, ID);
+	depFieldContainerProducedEvent(details, ID);
 }
 
 void Behavior::checkListenerAttachment()
 {
-	attachListeners(dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene()->editEventProducer());
+	attachHandlers(getParentSceneObject()->getParentScene());
 }
 
-void Behavior::attachListeners (EventProducerPtr eventProducer)
+void Behavior::attachHandlers (Scene* const eventProducer)
 {
     
 	for(UInt32 i = 0; i < theBehaviorType->_bDependencies.size(); i++)
 	{
-		if(theBehaviorType->_bDependencies[i]->attachedScene == dynamic_cast<SceneObject*>(_sfSceneObject.getValue())->getParentScene())
+		if(theBehaviorType->_bDependencies[i]->attachedScene == getParentSceneObject()->getParentScene())
 		{
 			for(UInt32 c = 0; c < theBehaviorType->_bEventLinks.size(); c++)
 			{
@@ -116,7 +115,9 @@ void Behavior::attachListeners (EventProducerPtr eventProducer)
 				{
 					if(theBehaviorType->_bDependencies[i]->hasEvent(theBehaviorType->_bEventLinks[c]))
 					{
-						eventProducer->attachEventListener(&_DepBehaviorListener,theBehaviorType->_bDependencies[i]->findEventID(theBehaviorType->_bEventLinks[c]));
+                        UInt32 EventID(theBehaviorType->_bDependencies[i]->findEventID(theBehaviorType->_bEventLinks[c]));
+                        eventProducer->connectGenericEvent(EventID,
+                                                           boost::bind(&Behavior::handleDepBehaviorEvent, this, _1, EventID));
                         linksMade++;
 					}
 				}
@@ -130,7 +131,7 @@ SceneObject* Behavior::getParentSceneObject(void) const
     return dynamic_cast<SceneObject*>(_sfSceneObject.getValue());
 }
 
-void Behavior::produceEvent(std::string name, GenericEventRefPtr eventData)
+void Behavior::produceEvent(std::string name, GenericEventDetails* const eventData)
 {
     if(!getBehaviorType()->hasEvent(name))
     {
@@ -138,24 +139,25 @@ void Behavior::produceEvent(std::string name, GenericEventRefPtr eventData)
         return;
     }
     
-    if(getBehaviorType()->attachedScene == NULL)
+    if(getBehaviorType()->getAttachedScene() == NULL)
     {
         SWARNING << "Behavior::produceEvent: The attached scene is null " << endLog;
         return;
     }
     
-    if(eventData == NULL){
-        getBehaviorType()->attachedScene->produceGenericEvent(  name,
-                                                                GenericEvent::create(BehaviorRefPtr(this), getTimeStamp()));
+    if(eventData == NULL)
+    {
+        GenericEventDetailsUnrecPtr details = GenericEventDetails::create(this, getTimeStamp());
+        getBehaviorType()->getAttachedScene()->produceGenericEvent(name, details);
     }
     else
     {
-        getBehaviorType()->attachedScene->produceGenericEvent(  name,
-                                                                eventData);
+        getBehaviorType()->getAttachedScene()->produceGenericEvent(  name,
+                                                                     eventData);
     }
 }
 
-void Behavior::produceEvent(UInt32 id, GenericEventRefPtr eventData)
+void Behavior::produceEvent(UInt32 id, GenericEventDetails* const eventData)
 {
     if(!getBehaviorType()->hasEvent(getBehaviorType()->findEventName(id)))
     {
@@ -163,20 +165,20 @@ void Behavior::produceEvent(UInt32 id, GenericEventRefPtr eventData)
         return;
     }
     
-    if(getBehaviorType()->attachedScene == NULL)
+    if(getBehaviorType()->getAttachedScene() == NULL)
     {
         SWARNING << "Behavior::produceEvent: The attached scene is null " << endLog;
         return;
     }
     
     if(eventData == NULL){
-        getBehaviorType()->attachedScene->produceGenericEvent(  id,
-                                                                GenericEvent::create(BehaviorRefPtr(this), getTimeStamp()));
+        GenericEventDetailsUnrecPtr details = GenericEventDetails::create(this, getTimeStamp());
+        getBehaviorType()->getAttachedScene()->produceGenericEvent(id, details);
     }
     else
     {
-        getBehaviorType()->attachedScene->produceGenericEvent(  id,
-                                                                eventData);
+        getBehaviorType()->getAttachedScene()->produceGenericEvent(  id,
+                                                                     eventData);
     }
 }
 
@@ -188,8 +190,6 @@ void Behavior::produceEvent(UInt32 id, GenericEventRefPtr eventData)
 
 Behavior::Behavior(void) :
     Inherited(),
-	_DepBehaviorListener(BehaviorUnrecPtr(this)),
-    _DepFieldContainerListener(BehaviorUnrecPtr(this)),
 	linksMade(0),
     eventsInitted(false)
 {
@@ -197,8 +197,6 @@ Behavior::Behavior(void) :
 
 Behavior::Behavior(const Behavior &source) :
     Inherited(source),
-	_DepBehaviorListener(BehaviorUnrecPtr(this)),
-    _DepFieldContainerListener(BehaviorUnrecPtr(this)),
 	linksMade(0),
     eventsInitted(false)
 {

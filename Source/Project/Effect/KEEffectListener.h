@@ -36,8 +36,7 @@
 #include "OSGConfig.h"
 #include "KEKabalaEngineDef.h"
 
-#include "OSGEventListener.h"
-#include "KEEffectEvent.h"
+#include "KEEffectEventDetails.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -48,11 +47,11 @@ class KE_KABALAENGINE_DLLMAPPING EffectListener : public EventListener
    /*=========================  PUBLIC  ===============================*/
 public:
 
-   virtual void effectBegan(const EffectEventUnrecPtr e) = 0;
-   virtual void effectStopped(const EffectEventUnrecPtr e) = 0;
-   virtual void effectPaused(const EffectEventUnrecPtr e) = 0;
-   virtual void effectUnpaused(const EffectEventUnrecPtr e) = 0;
-   virtual void effectFinished(const EffectEventUnrecPtr e) = 0;
+   virtual void effectBegan(EffectEventDetails* const details) = 0;
+   virtual void effectStopped(EffectEventDetails* const details) = 0;
+   virtual void effectPaused(EffectEventDetails* const details) = 0;
+   virtual void effectUnpaused(EffectEventDetails* const details) = 0;
+   virtual void effectFinished(EffectEventDetails* const details) = 0;
 };
 
 typedef EffectListener* EffectListenerPtr;

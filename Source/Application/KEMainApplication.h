@@ -42,17 +42,22 @@
 #include <OpenSG/OSGConfig.h>
 
 #include <OpenSG/OSGWindowFields.h>
-#include <OpenSG/OSGWindowAdapter.h>
 #include <boost/program_options.hpp>
 #include "Application/KEApplicationSettings.h" // Settings type
 #include <OpenSG/OSGBoostPathFields.h> // SettingsLoadFile type
 #include <OpenSG/OSGWindowEventProducerFields.h> // MainWindowEventProducer type
+#include <OpenSG/OSGWindowEventDetailsFields.h> // MainWindowEventProducer type
 #include "Project/KEProjectFields.h" // Project type
 #include "Project/Scene/KESceneFields.h" // Scene type
 #include "Application/KEApplicationModeFields.h"
-#include <set> 
-#include "Application/Logging/KELogListener.h"
-#include <OpenSG/OSGEventConnection.h>
+#include "Application/Logging/KELogEventDetailsFields.h"
+
+#include <boost/function.hpp>
+#include "OSGEventDescription.h"
+#include "OSGConsumableEventCombiner.h"
+#include "OSGChangeEventDetailsFields.h"
+#include "OSGEventProducerType.h"
+#include "OSGActivity.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -92,33 +97,57 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
      const ApplicationSettings      &getSettings       (void) const;
            BoostPath                &getSettingsLoadFile(void);
      const BoostPath                &getSettingsLoadFile(void) const;
-           WindowEventProducerRefPtr &getMainWindow(void);
-     const WindowEventProducerRefPtr &getMainWindow(void) const;
-           ProjectRefPtr          &getProject        (void);
-     const ProjectRefPtr          &getProject        (void) const;
-           ApplicationModeRefPtr  &getBuilderMode    (void);
-     const ApplicationModeRefPtr  &getBuilderMode    (void) const;
-           ApplicationModeRefPtr  &getPlayerMode     (void);
-     const ApplicationModeRefPtr  &getPlayerMode     (void) const;
-           ApplicationModeRefPtr  &getStartScreenMode(void);
-     const ApplicationModeRefPtr  &getStartScreenMode(void) const;
-           ApplicationModeRefPtr  &getCurrentMode    (void);
-     const ApplicationModeRefPtr  &getCurrentMode    (void) const;
+           WindowEventProducer* getMainWindow(void);
+     const WindowEventProducer* getMainWindow(void) const;
+           Project*          getProject        (void);
+     const Project*          getProject        (void) const;
+           ApplicationMode*  getBuilderMode    (void);
+     const ApplicationMode*  getBuilderMode    (void) const;
+           ApplicationMode*  getPlayerMode     (void);
+     const ApplicationMode*  getPlayerMode     (void) const;
+           ApplicationMode*  getStartScreenMode(void);
+     const ApplicationMode*  getStartScreenMode(void) const;
+           ApplicationMode*  getCurrentMode    (void);
+     const ApplicationMode*  getCurrentMode    (void) const;
      
      void setSettings       ( const ApplicationSettings &value );
      void setSettingsLoadFile( const BoostPath &value );
-     void setMainWindow( const WindowEventProducerRefPtr &value );
-     void setProject        ( const ProjectRefPtr &value );
-     void setBuilderMode    ( const ApplicationModeRefPtr &value );
-     void setPlayerMode     ( const ApplicationModeRefPtr &value );
-     void setStartScreenMode( const ApplicationModeRefPtr &value );
-     void setCurrentMode    ( const ApplicationModeRefPtr &value );
+     void setMainWindow( WindowEventProducer* const value );
+     void setProject        ( Project* const value );
+     void setBuilderMode    ( ApplicationMode* const value );
+     void setPlayerMode     ( ApplicationMode* const value );
+     void setStartScreenMode( ApplicationMode* const value );
+     void setCurrentMode    ( ApplicationMode* const value );
 
      static const BoostPath EngineAppDataDirectory;
-    
-     EventConnection addLogListener(LogListenerPtr Listener);
-     bool isLogListenerAttached(LogListenerPtr Listener) const;
-     void removeLogListener(LogListenerPtr Listener);
+    typedef LogEventDetails LogEventDetailsType;
+    typedef boost::signals2::signal<void (LogEventDetailsType* const, UInt32), ConsumableEventCombiner> LogEventType;
+
+    enum
+    {
+        LogEventId = 1,
+        NextEventId     = LogEventId            + 1
+    };
+    static const  EventProducerType  &getProducerClassType  (void); 
+    static        UInt32              getProducerClassTypeId(void); 
+    virtual const EventProducerType &getProducerType(void) const; 
+
+    boost::signals2::connection          attachActivity(UInt32 eventId,
+                                                       Activity* TheActivity);
+    UInt32                   getNumProducedEvents(void)          const;
+    const EventDescription *getProducedEventDescription(const   Char8 *ProducedEventName) const;
+    const EventDescription *getProducedEventDescription(UInt32  ProducedEventId) const;
+    UInt32                   getProducedEventId(const            Char8 *ProducedEventName) const;
+
+    boost::signals2::connection connectLog(const LogEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectLog(const LogEventType::group_type &group,
+                                                       const LogEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectLog       (const LogEventType::group_type &group);
+    void   disconnectAllSlotsLog(void);
+    bool   isEmptyLog          (void) const;
+    UInt32 numSlotsLog         (void) const;
     /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -156,29 +185,13 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 
     virtual ~MainApplication(void); 
 
-    class MainWindowListener : public WindowAdapter
-    {
-      public :
-        MainWindowListener(MainApplication* TheMainApplication);
-        virtual void windowClosing(const WindowEventUnrecPtr e);
-
-        virtual void windowClosed(const WindowEventUnrecPtr e);
-      protected :
-        MainApplication* _MainApplication;
-    };
-
-    MainWindowListener _MainWindowListener;
+    void handleWindowClosing(WindowEventDetails* const details);
+    void handleWindowClosed(WindowEventDetails* const details);
+    boost::signals2::connection _WindowClosingConnection,
+                                _WindowClosedConnection;
 
     static boost::program_options::options_description _OptionsDescription;
     static boost::program_options::positional_options_description _PositionalOptions;
-
-	typedef std::set<LogListenerPtr> LogListenerSet;
-    typedef LogListenerSet::iterator LogListenerSetItor;
-    typedef LogListenerSet::const_iterator LogListenerSetConstItor;
-
-    LogListenerSet       _LogListeners;
-
-    void produceLog(const LogEventUnrecPtr e);
 
     void initializeLogging(LogType TheLogType = LOG_FILE,
                            BoostPath LogFilePath = BoostPath("./KabalaEngine.log"));
@@ -189,6 +202,12 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 
     void initOpenSG(int argc, char **argv);
     void updateRecentProject(const BoostPath& ProjectFile);
+
+    static EventDescription   *_eventDesc[];
+    static EventProducerType _producerType;
+    LogEventType _LogEvent;
+    
+    void produceLog(LogEventDetailsType* const e);
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
   private:

@@ -68,7 +68,7 @@ const std::vector<std::string> BehaviorType::getEventLinks()
 }
 
 inline
-const Scene* BehaviorType::getAttachedScene()
+Scene* BehaviorType::getAttachedScene()
 {
     return attachedScene;
 }

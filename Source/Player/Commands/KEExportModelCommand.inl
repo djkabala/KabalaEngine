@@ -36,7 +36,7 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-ExportModelCommand::ExportModelCommand(NodeUnrecPtr ExportNode) : Inherited(),
+ExportModelCommand::ExportModelCommand(Node* const ExportNode) : Inherited(),
     _ExportNode(ExportNode)
 {
 }

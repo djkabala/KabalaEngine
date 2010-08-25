@@ -58,7 +58,7 @@ protected:
 
 	enum cActions{NONE,CUT,COPY};
 
-	CopyCommand(ApplicationPlayerRefPtr ApplicationPlayer, NodeRefPtr CopyNode);
+	CopyCommand(ApplicationPlayer* const ApplicationPlayer, Node* const CopyNode);
 
 	CopyCommand(const CopyCommand& source);
 
@@ -83,7 +83,7 @@ public:
 
 	virtual ~CopyCommand(void);
 	
-	static CopyCommandPtr create(ApplicationPlayerRefPtr ApplicationPlayer, NodeRefPtr CopyNode);
+	static CopyCommandPtr create(ApplicationPlayer* const ApplicationPlayer, Node* const CopyNode);
 };
 
 OSG_END_NAMESPACE
