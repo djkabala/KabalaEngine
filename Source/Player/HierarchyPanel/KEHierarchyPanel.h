@@ -200,6 +200,15 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     MenuItemRefPtr _ExportItem ;
     MenuItemRefPtr _FocusCamera ;
 
+	MenuRefPtr     _GraphOpMenu;
+	MenuItemRefPtr _LodGraphOpItem;
+	MenuItemRefPtr _GeoMergeGraphOpItem;
+	MenuItemRefPtr _SplitGraphOpItem;
+	MenuItemRefPtr _PruneGraphOpItem;
+	MenuItemRefPtr _XformPushGraphOpItem;
+	MenuItemRefPtr _MaterialGroupGraphOpItem;
+	MenuItemRefPtr _SharePtrGraphOpItem;
+
     void createPopUpMenu(void);
     void updatePopupMenu(void);
     void changeShowHideMenuItem(void);
@@ -243,6 +252,13 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     void sgPasteInstOntoSelectedNode(void);
     void sgShowHideSelectedNodeRecursize(void);
     void sgDeleteSelectedNode(void);
+	void sgRunLODGraphOp(void);
+	void sgRunGeoMergeGraphOp(void);
+	void sgRunSplitGraphOp(void);
+	void sgRunPruneGraphOp(void);
+	void sgRunXformPushGraphOp(void);
+	void sgRunMaterialGroupGraphOp(void);
+	void sgRunSharePtrGraphOp(void);
 
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/

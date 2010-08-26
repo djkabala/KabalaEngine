@@ -240,6 +240,30 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<bool> ("player.debugger.auto_save_project.enabled", true, overwriteIfDefined);
     TheSettings.put<Real32> ("player.debugger.auto_save_project.time_between", 120.0f, overwriteIfDefined);
     TheSettings.put<BoostPath> ("player.debugger.auto_save_project.recovery_file", BoostPath("./KabalaEngineProject.xml.recovery"), overwriteIfDefined);
+	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.enabled", true, overwriteIfDefined);
+	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.new_mask", 0, overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string", "_Col", overwriteIfDefined);
+	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_string", true, overwriteIfDefined);
+	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.cur_mask", 1, overwriteIfDefined);
+	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_cur_mask", false, overwriteIfDefined);
+	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.core_type_id", 0, overwriteIfDefined);
+	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_core_type", false, overwriteIfDefined);
+	
+	TheSettings.put<Vec3f>("player.debugger.lod_graph_op.lod_ranges", Vec3f(50.0f,100.0f,300.0f), overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_high_tag", "_High", overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_mid_tag", "_Mid", overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_low_tag", "_Low", overwriteIfDefined);
+
+	TheSettings.put<UInt16>("player.debugger.split_graph_op.max_polygons",1500,overwriteIfDefined);
+
+	TheSettings.put<std::string>("player.debugger.share_ptr_graph_op.includes", "", overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.share_ptr_graph_op.excludes", "", overwriteIfDefined);
+
+	TheSettings.put<std::string>("player.debugger.prune_graph_op.method", "sum_of_dimensions", overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.prune_graph_op.size", "1.0", overwriteIfDefined);
+
+	TheSettings.put<std::string>("player.debugger.geo_merge_graph_op.max_geos_to_merge","200",overwriteIfDefined);
+
 }
 
 ApplicationSettings MainApplication::createDefaultSettings(void)
