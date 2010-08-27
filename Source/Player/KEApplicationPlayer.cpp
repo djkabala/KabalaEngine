@@ -1619,10 +1619,10 @@ void ApplicationPlayer::openEditor(FieldContainer* FCToEdit)
     if(getFCEditedContainer(_GenericEditorDialog) != FCToEdit)
     {
         setFCEditedContainer(_GenericEditorDialog, FCToEdit);
+        Pnt2f CenteredPosition = calculateAlignment(Pnt2f(0.0f,0.0f), DebuggerDrawingSurface->getSize(), _GenericEditorDialog->getPreferredSize(), 0.5f, 0.5f);
+        _GenericEditorDialog->setPosition(CenteredPosition);
     }
 
-    Pnt2f CenteredPosition = calculateAlignment(Pnt2f(0.0f,0.0f), DebuggerDrawingSurface->getSize(), _GenericEditorDialog->getPreferredSize(), 0.5f, 0.5f);
-    _GenericEditorDialog->setPosition(CenteredPosition);
     _GenericEditorDialog->setTitle(std::string("Edit ") + FCToEdit->getType().getCName());
 
     DebuggerDrawingSurface->openWindow(_GenericEditorDialog);
@@ -1630,9 +1630,6 @@ void ApplicationPlayer::openEditor(FieldContainer* FCToEdit)
 
 void ApplicationPlayer::openEditor(void)
 {
-    Pnt2f CenteredPosition = calculateAlignment(Pnt2f(0.0f,0.0f), DebuggerDrawingSurface->getSize(), _GenericEditorDialog->getPreferredSize(), 0.5f, 0.5f);
-    _GenericEditorDialog->setPosition(CenteredPosition);
-
     DebuggerDrawingSurface->openWindow(_GenericEditorDialog);
 }
 

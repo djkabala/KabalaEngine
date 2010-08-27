@@ -244,6 +244,7 @@ void Scene::start(void)
         else
         {
             LuaManager::the()->runScript(getLuaModule());
+            commitChanges();
         }
     }
 

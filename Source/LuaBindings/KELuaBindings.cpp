@@ -7128,30 +7128,6 @@ fail:
 }
 
 
-static int _wrap_Behavior_isInitialized(lua_State* L) {
-  int SWIG_arg = 0;
-  OSG::Behavior *arg1 = (OSG::Behavior *) 0 ;
-  bool result;
-  
-  SWIG_check_num_args("isInitialized",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInitialized",1,"OSG::Behavior *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Behavior,0))){
-    SWIG_fail_ptr("Behavior_isInitialized",1,SWIGTYPE_p_OSG__Behavior);
-  }
-  
-  result = (bool)(arg1)->isInitialized();
-  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_Behavior_getParentSceneObject(lua_State* L) {
   int SWIG_arg = 0;
   OSG::Behavior *arg1 = (OSG::Behavior *) 0 ;
@@ -7419,7 +7395,6 @@ static int _wrap_Behavior_produceEvent(lua_State* L) {
 
 static swig_lua_method swig_OSG_Behavior_methods[] = {
     {"getBehaviorType", _wrap_Behavior_getBehaviorType}, 
-    {"isInitialized", _wrap_Behavior_isInitialized}, 
     {"getParentSceneObject", _wrap_Behavior_getParentSceneObject}, 
     {"produceEvent", _wrap_Behavior_produceEvent}, 
     {0,0}
@@ -7572,30 +7547,6 @@ static int _wrap_BehaviorRefPtr_getBehaviorType(lua_State* L) {
   
   result = (OSG::BehaviorType *)(*arg1)->getBehaviorType();
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_BehaviorRefPtr_isInitialized(lua_State* L) {
-  int SWIG_arg = 0;
-  OSG::BehaviorRefPtr *arg1 = (OSG::BehaviorRefPtr *) 0 ;
-  bool result;
-  
-  SWIG_check_num_args("isInitialized",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInitialized",1,"OSG::BehaviorRefPtr *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__BehaviorRefPtr,0))){
-    SWIG_fail_ptr("BehaviorRefPtr_isInitialized",1,SWIGTYPE_p_OSG__BehaviorRefPtr);
-  }
-  
-  result = (bool)(*arg1)->isInitialized();
-  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -9025,7 +8976,6 @@ delete arg1;
 static swig_lua_method swig_OSG_BehaviorRefPtr_methods[] = {
     {"__deref__", _wrap_BehaviorRefPtr___deref__}, 
     {"getBehaviorType", _wrap_BehaviorRefPtr_getBehaviorType}, 
-    {"isInitialized", _wrap_BehaviorRefPtr_isInitialized}, 
     {"getParentSceneObject", _wrap_BehaviorRefPtr_getParentSceneObject}, 
     {"produceEvent", _wrap_BehaviorRefPtr_produceEvent}, 
     {"addAttachment", _wrap_BehaviorRefPtr_addAttachment}, 
@@ -9258,30 +9208,6 @@ static int _wrap_LuaBehaviorRefPtr_getBehaviorType(lua_State* L) {
   
   result = (OSG::BehaviorType *)(*arg1)->getBehaviorType();
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_OSG__BehaviorType,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LuaBehaviorRefPtr_isInitialized(lua_State* L) {
-  int SWIG_arg = 0;
-  OSG::LuaBehaviorRefPtr *arg1 = (OSG::LuaBehaviorRefPtr *) 0 ;
-  bool result;
-  
-  SWIG_check_num_args("isInitialized",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("isInitialized",1,"OSG::LuaBehaviorRefPtr *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr,0))){
-    SWIG_fail_ptr("LuaBehaviorRefPtr_isInitialized",1,SWIGTYPE_p_OSG__LuaBehaviorRefPtr);
-  }
-  
-  result = (bool)(*arg1)->isInitialized();
-  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -10712,7 +10638,6 @@ static swig_lua_method swig_OSG_LuaBehaviorRefPtr_methods[] = {
     {"__deref__", _wrap_LuaBehaviorRefPtr___deref__}, 
     {"getLuaBehaviorType", _wrap_LuaBehaviorRefPtr_getLuaBehaviorType}, 
     {"getBehaviorType", _wrap_LuaBehaviorRefPtr_getBehaviorType}, 
-    {"isInitialized", _wrap_LuaBehaviorRefPtr_isInitialized}, 
     {"getParentSceneObject", _wrap_LuaBehaviorRefPtr_getParentSceneObject}, 
     {"produceEvent", _wrap_LuaBehaviorRefPtr_produceEvent}, 
     {"addAttachment", _wrap_LuaBehaviorRefPtr_addAttachment}, 

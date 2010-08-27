@@ -66,6 +66,7 @@
 #include <OpenSG/OSGFlowLayoutFields.h>
 #include <OpenSG/OSGMenuButtonFields.h>
 #include <OpenSG/OSGMenuItemFields.h>
+#include <OpenSG/OSGMenuFields.h>
 
 
 #include <OpenSG/OSGCameraFields.h>

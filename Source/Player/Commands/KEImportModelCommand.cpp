@@ -49,6 +49,7 @@
 #include <OpenSG/OSGSceneGraphTreeModel.h>
 #include <OpenSG/OSGTravMaskGraphOp.h>
 #include <OpenSG/OSGImageFileHandler.h>
+#include <OpenSG/OSGFilePathAttachment.h>
 
 OSG_USING_NAMESPACE
 
@@ -136,22 +137,26 @@ void ImportModelCommand::execute(void)
         }
    } 
 	
-	if(MainApplication::the()->getSettings().get<bool>("player.debugger.model_import.trav_mask_graph_op.enabled"))
-	{
-		OSG::TravMaskGraphOpRefPtr colMeshGrOp = OSG::TravMaskGraphOp::create();
-		colMeshGrOp->setSearchString(MainApplication::the()->getSettings().get<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string"));
-		colMeshGrOp->setNewTravMask(MainApplication::the()->getSettings().get<UInt32>("player.debugger.model_import.trav_mask_graph_op.mask"));
-		// default values for this graph op will do fine.
-		if(colMeshGrOp->traverse(_NewNode))
-		{
-			SLOG << "Number of nodes hidden: " << colMeshGrOp->getNumChanged() << std::endl;
-		}
-	}
+	if(_NewNode != NULL)
+    {
+        FilePathAttachment::setFilePath(_NewNode,FilesToOpen[0]);
+	    if(MainApplication::the()->getSettings().get<bool>("player.debugger.model_import.trav_mask_graph_op.enabled"))
+	    {
+		    OSG::TravMaskGraphOpRefPtr colMeshGrOp = OSG::TravMaskGraphOp::create();
+		    colMeshGrOp->setSearchString(MainApplication::the()->getSettings().get<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string"));
+		    colMeshGrOp->setNewTravMask (MainApplication::the()->getSettings().get<UInt32>     ("player.debugger.model_import.trav_mask_graph_op.new_mask"));
+		    // default values for this graph op will do fine.
+		    if(colMeshGrOp->traverse(_NewNode))
+		    {
+			    SLOG << "Number of nodes hidden: " << colMeshGrOp->getNumChanged() << std::endl;
+		    }
+	    }
 
-    if(_NodeToAddTo!=NULL && _NewNode != NULL)
-	{
-	    _HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
-	    _HasBeenDone = true;
+        if(_NodeToAddTo!=NULL)
+	    {
+	        _HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
+	        _HasBeenDone = true;
+        }
     }
 
 	

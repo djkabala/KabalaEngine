@@ -135,14 +135,13 @@ void LuaBehavior::initLinks(SceneObjectUnrecPtr rootSceneObject)
                     //boost::algorithm::split( , NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
                 }
 
-                attachListeners(rootSceneObject->getParentScene()->editEventProducer());
+
+                attachHandlers(rootSceneObject->getParentScene());
             }
             else
             {
                 SWARNING << "LuaBehavior could not find event " << theLuaType->getEventLinks()[i] << endLog;
             }
-
-            attachHandlers(rootSceneObject->getParentScene());
         }
         else
         {
@@ -182,7 +181,8 @@ void LuaBehavior::initLinks(SceneObjectUnrecPtr rootSceneObject)
                     //boost::algorithm::split( _FunctionsMap[uId], NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
                 }
 
-                eventProducer->attachEventListener(&_DepFieldContainerListener,eventProducer->getProducedEventId(theLuaType->getEventLinks()[i]));
+                UInt32 EventID(fc->getProducerType().getProducedEventId(theLuaType->getEventLinks()[i]));
+                fc->connectEvent(EventID, boost::bind(&LuaBehavior::handleDepFieldContainerEvent, this, _1, EventID));
                 linksMade++;
             }
             else
@@ -190,8 +190,6 @@ void LuaBehavior::initLinks(SceneObjectUnrecPtr rootSceneObject)
                 SWARNING << "LuaBehavior could not find event " << theLuaType->getEventLinks()[i] << endLog;
             }
             
-            UInt32 EventID(fc->getProducerType().getProducedEventId(theLuaType->getEventLinks()[i]));
-            fc->connectEvent(EventID, boost::bind(&LuaBehavior::handleDepFieldContainerEvent, this, _1, EventID));
         }
     }
 }

@@ -209,17 +209,6 @@ void HierarchyPanel::createPopUpMenu(void)
 
     _FocusCamera->setText("Focus Camera All");
 
-	_ShowHideItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_ShowRecursiveItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_DeleteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_ImportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_ExportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_CutItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_CopyItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_PasteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_PasteInstanceItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_FocusCamera->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
         _HierarchyPanelPopupMenu->addItem(_ShowHideItem);
@@ -247,23 +236,25 @@ void HierarchyPanel::createPopUpMenu(void)
 	_MaterialGroupGraphOpItem->setText("Material Group Graph Op");
 	_SharePtrGraphOpItem->setText("Share Ptr Graph Op");
 
-	_ShowHideItem->addActionListener(&_BasicListener);
-	_ShowRecursiveItem->addActionListener(&_BasicListener);
-	_DeleteItem->addActionListener(&_BasicListener);
-	_ImportItem->addActionListener(&_BasicListener);
-	_ExportItem->addActionListener(&_BasicListener);
-	_CutItem->addActionListener(&_BasicListener);
-	_CopyItem->addActionListener(&_BasicListener);
-	_PasteItem->addActionListener(&_BasicListener);
-	_PasteInstanceItem->addActionListener(&_BasicListener);
-	_FocusCamera->addActionListener(&_BasicListener);
-	_LodGraphOpItem->addActionListener(&_BasicListener);
-	_GeoMergeGraphOpItem->addActionListener(&_BasicListener);
-	_SplitGraphOpItem->addActionListener(&_BasicListener);
-	_PruneGraphOpItem->addActionListener(&_BasicListener);
-	_XformPushGraphOpItem->addActionListener(&_BasicListener);
-	_MaterialGroupGraphOpItem->addActionListener(&_BasicListener);
-	_SharePtrGraphOpItem->addActionListener(&_BasicListener);
+
+	_ShowHideItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_ShowRecursiveItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_DeleteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_ImportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_ExportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_CutItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_CopyItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_PasteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_PasteInstanceItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_FocusCamera->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+
+	_LodGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_GeoMergeGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_SplitGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_PruneGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_XformPushGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_MaterialGroupGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_SharePtrGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
@@ -281,8 +272,7 @@ void HierarchyPanel::createPopUpMenu(void)
     _HierarchyPanelPopupMenu->addItem(_ImportItem);	
     _HierarchyPanelPopupMenu->addItem(_ExportItem);	
     _HierarchyPanelPopupMenu->addSeparator();
-    _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
-    _HierarchyPanelPopupMenu->addPopupMenuListener(&_TheSceneGraphPopupListener);
+    _HierarchyPanelPopupMenu->addItem(_FocusCamera);
 
 	_GraphOpMenu->addItem(_LodGraphOpItem);
 	_GraphOpMenu->addItem(_GeoMergeGraphOpItem);
@@ -437,7 +427,6 @@ void HierarchyPanel::sgDeleteSelectedNode(void)
     _TheSceneGraphTree->setSelectionRow(NewSelectedRow);
 }
 
-void HierarchyPanel::handleBasicAction(ActionEventDetails* const details)
 void HierarchyPanel::sgRunLODGraphOp(void)
 {
 	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
@@ -516,7 +505,7 @@ void HierarchyPanel::sgRunSharePtrGraphOp(void)
 }
 
 
-void HierarchyPanel::actionPerformed(const ActionEventUnrecPtr e)
+void HierarchyPanel::handleBasicAction(ActionEventDetails* const details)
 {
 	if(details->getSource() == _ShowHideItem)
 	{
@@ -559,31 +548,31 @@ void HierarchyPanel::actionPerformed(const ActionEventUnrecPtr e)
 	{
 		sgPasteInstOntoSelectedNode();
 	}
-	else if(e->getSource() == _LodGraphOpItem)
+	else if(details->getSource() == _LodGraphOpItem)
 	{
 		sgRunLODGraphOp();
 	}
-	else if(e->getSource() == _GeoMergeGraphOpItem)
+	else if(details->getSource() == _GeoMergeGraphOpItem)
 	{
 		sgRunGeoMergeGraphOp();
 	}
-	else if(e->getSource() == _SplitGraphOpItem)
+	else if(details->getSource() == _SplitGraphOpItem)
 	{
 		sgRunSplitGraphOp();
 	}
-	else if(e->getSource() == _PruneGraphOpItem)
+	else if(details->getSource() == _PruneGraphOpItem)
 	{
 		sgRunPruneGraphOp();
 	}
-	else if(e->getSource() == _XformPushGraphOpItem)
+	else if(details->getSource() == _XformPushGraphOpItem)
 	{
 		sgRunXformPushGraphOp();
 	}
-	else if(e->getSource() == _MaterialGroupGraphOpItem)
+	else if(details->getSource() == _MaterialGroupGraphOpItem)
 	{
 		sgRunMaterialGroupGraphOp();
 	}
-	else if(e->getSource() == _SharePtrGraphOpItem)
+	else if(details->getSource() == _SharePtrGraphOpItem)
 	{
 		sgRunSharePtrGraphOp();
 	}
@@ -720,7 +709,7 @@ void HierarchyPanel::updatePopupMenu(void)
         {
             _FocusCamera->setText("Focus Camera All");
         }
-		_GraphOpMenu->setEnabled(_SceneGraphTreeSelectionListener._SelectedNode != NULL);
+		_GraphOpMenu->setEnabled(_SelectedNode != NULL);
 
 
 }
