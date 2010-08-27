@@ -116,7 +116,6 @@ void ImportModelCommand::execute(void)
     if(FilesToOpen.size() > 0)
     {
         //Try loading the file using the SceneFileHandler
-		//ImageFileHandler::the()->setPathHandler(SceneFileHandler::the()->getPathHandler());
         _NewNode = SceneFileHandler::the()->read(FilesToOpen[0].string().c_str(), NULL);
 
         //Try loading the file using the XML file handler

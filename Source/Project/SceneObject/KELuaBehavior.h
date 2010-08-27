@@ -91,8 +91,8 @@ class KE_KABALAENGINE_DLLMAPPING LuaBehavior : public LuaBehaviorBase
                                  EventDetails* const e,
                                  UInt32 ProducedEventID);
 
-    void initEvents(SceneObjectUnrecPtr rootSceneObject);
-    void initLinks(SceneObjectUnrecPtr rootSceneObject);
+    void initEvents(SceneObject* const rootSceneObject);
+    void initLinks(SceneObject* const rootSceneObject);
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */

@@ -87,33 +87,30 @@ LuaBehaviorType* const LuaBehavior::getLuaBehaviorType(void) const
     return dynamic_cast<LuaBehaviorType* const>(theBehaviorType);
 }
 
-void LuaBehavior::initEvents(SceneObjectUnrecPtr rootSceneObject)
+void LuaBehavior::initEvents(SceneObject* const rootSceneObject)
 {
-    LuaBehaviorType* const theLuaType = getLuaBehaviorType();
-	theLuaType->registerWithScene(rootSceneObject->getParentScene());
+	getLuaBehaviorType()->registerWithScene(rootSceneObject->getParentScene());
     eventsInitted = true;
 }
 
-void LuaBehavior::initLinks(SceneObjectUnrecPtr rootSceneObject)
+void LuaBehavior::initLinks(SceneObject* const rootSceneObject)
 {
-    LuaBehaviorType* const theLuaType = getLuaBehaviorType();
-
-    for(UInt32 i(0); i < theLuaType->getSourceContainers().size(); ++i)
+    for(UInt32 i(0); i < getLuaBehaviorType()->getSourceContainers().size(); ++i)
     {
-        if(theLuaType->getSourceContainers()[i].compare("*")==0)
+        if(getLuaBehaviorType()->getSourceContainers()[i].compare("*")==0)
         {
             UInt64 uId(0);//rootSceneObject->getParentScene()->getId();
             //uId <<= 32;
-            const EventDescription* desc = rootSceneObject->getParentScene()->getProducerType().findEventDescription(theLuaType->getEventLinks()[i]);
+            const EventDescription* desc = rootSceneObject->getParentScene()->getProducerType().findEventDescription(getLuaBehaviorType()->getEventLinks()[i]);
             if(desc != NULL)
             {
                 uId |=  desc->getEventId();
                 _FunctionsMap[uId] = std::vector<std::string>();
 
-                std::string NestedTableFunction(theLuaType->getLuaFunctionNames()[i]);
+                std::string NestedTableFunction(getLuaBehaviorType()->getLuaFunctionNames()[i]);
                 if(NestedTableFunction.empty())
                 {
-                    SWARNING << "The lua function bound to the " << desc->getName() << " produced event of " << theLuaType->getName() << " is empty." << theLuaType->getEventLinks()[i] << endLog;
+                    SWARNING << "The lua function bound to the " << desc->getName() << " produced event of " << getLuaBehaviorType()->getName() << " is empty." << getLuaBehaviorType()->getEventLinks()[i] << endLog;
                 }
                 else
                 {
@@ -135,28 +132,27 @@ void LuaBehavior::initLinks(SceneObjectUnrecPtr rootSceneObject)
                     //boost::algorithm::split( , NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
                 }
 
-
                 attachHandlers(rootSceneObject->getParentScene());
             }
             else
             {
-                SWARNING << "LuaBehavior could not find event " << theLuaType->getEventLinks()[i] << endLog;
+                SWARNING << "LuaBehavior could not find event " << getLuaBehaviorType()->getEventLinks()[i] << endLog;
             }
         }
         else
         {
-            FieldContainerRefPtr fc = getFieldContainer(theLuaType->getSourceContainers()[i]);
+            FieldContainerRefPtr fc = getFieldContainer(getLuaBehaviorType()->getSourceContainers()[i]);
 
             UInt64 uId = fc->getId();
 
             uId <<= 32;
-            const EventDescription* desc = fc->getProducerType().findEventDescription(theLuaType->getEventLinks()[i]);
+            const EventDescription* desc = fc->getProducerType().findEventDescription(getLuaBehaviorType()->getEventLinks()[i]);
             if(desc != NULL)
             {
-                std::string NestedTableFunction(theLuaType->getLuaFunctionNames()[i]);
+                std::string NestedTableFunction(getLuaBehaviorType()->getLuaFunctionNames()[i]);
                 if(NestedTableFunction.empty())
                 {
-                    SWARNING << "The lua function bound to the " << desc->getName() << " produced event of " << fc->getProducerType().getName() << " is empty." << theLuaType->getEventLinks()[i] << endLog;
+                    SWARNING << "The lua function bound to the " << desc->getName() << " produced event of " << fc->getProducerType().getName() << " is empty." << getLuaBehaviorType()->getEventLinks()[i] << endLog;
                 }
                 else
                 {
@@ -180,16 +176,14 @@ void LuaBehavior::initLinks(SceneObjectUnrecPtr rootSceneObject)
                     //So for now the split is done by hand.
                     //boost::algorithm::split( _FunctionsMap[uId], NestedTableFunction, boost::algorithm::is_any_of(std::string(".")) );
                 }
-
-                UInt32 EventID(fc->getProducerType().getProducedEventId(theLuaType->getEventLinks()[i]));
+                UInt32 EventID(fc->getProducerType().getProducedEventId(getLuaBehaviorType()->getEventLinks()[i]));
                 fc->connectEvent(EventID, boost::bind(&LuaBehavior::handleDepFieldContainerEvent, this, _1, EventID));
                 linksMade++;
             }
             else
             {
-                SWARNING << "LuaBehavior could not find event " << theLuaType->getEventLinks()[i] << endLog;
+                SWARNING << "LuaBehavior could not find event " << getLuaBehaviorType()->getEventLinks()[i] << endLog;
             }
-            
         }
     }
 }
