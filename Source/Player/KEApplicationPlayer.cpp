@@ -1953,6 +1953,9 @@ void ApplicationPlayer::updateWireframeNode(void)
     {
         dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
 
+        //Use the traversal mask that the viewport this node is in is using
+        dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeTravMask(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getTravMask());
+
     }
 
     //Update the transformation for the wireframe node
@@ -2299,6 +2302,7 @@ void ApplicationPlayer::selectNode(const Pnt2f& ViewportPoint)
     IntersectAction *CastRayAction = IntersectAction::create();
 
     CastRayAction->setLine( ViewRay );
+    CastRayAction->setTravMask(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getTravMask());
     CastRayAction->apply( TheViewport->getRoot() );             
 
     //Get the Tree Model

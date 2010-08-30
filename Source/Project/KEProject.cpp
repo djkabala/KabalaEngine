@@ -158,6 +158,8 @@ void Project::save(void)
     FCFileType::FCTypeVector IgnoreTypes;
     IgnoreTypes.push_back(getNativeWindowType()->getId());
 
+    FCFileType* TheXMLFileType = FCFileHandler::the()->getFileType(std::string("xml"),FCFileType::OSG_WRITE_SUPPORTED);
+    TheXMLFileType->setOptionAs<bool>("RecurseWriteDepFCFiles", true);
     FCFileHandler::the()->write(Containers,getFilePath(),IgnoreTypes);
 }
 

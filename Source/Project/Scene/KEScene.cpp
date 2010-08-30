@@ -106,7 +106,7 @@ void Scene::initMethod(InitPhase ePhase)
 void Scene::enter(void)
 {
     SLOG << "Entering Scene: "
-        << (getName(SceneRefPtr(this)) ? getName(SceneRefPtr(this)) : "UNNAMED SCENE")
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
         << "." << std::endl;
     dump(1);
 
@@ -158,19 +158,6 @@ void Scene::enter(void)
     for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
     {
         getParentProject()->addViewport(getViewports(i));
-    }
-
-    //Attach the initial animations
-    for(::OSG::UInt32 i(0) ; i<getMFInitialAnimations()->size() ; ++i)
-    {
-        getInitialAnimations(i)->attachUpdateProducer(this);
-        getInitialAnimations(i)->start();
-    }
-
-    //Attach the initial particle systems
-    for(::OSG::UInt32 i(0) ; i<getMFInitialParticleSystems()->size() ; ++i)
-    {
-        getInitialParticleSystems(i)->attachUpdateProducer(this);
     }
 
     produceSceneEntered();
@@ -250,6 +237,19 @@ void Scene::start(void)
 
     produceSceneStarted();
 
+    //Attach the initial animations
+    for(::OSG::UInt32 i(0) ; i<getMFInitialAnimations()->size() ; ++i)
+    {
+        getInitialAnimations(i)->attachUpdateProducer(this);
+        getInitialAnimations(i)->start();
+    }
+
+    //Attach the initial particle systems
+    for(::OSG::UInt32 i(0) ; i<getMFInitialParticleSystems()->size() ; ++i)
+    {
+        getInitialParticleSystems(i)->attachUpdateProducer(this);
+    }
+
     _IsStarted = true;
 }
 
@@ -260,14 +260,14 @@ void Scene::end(void)
     produceSceneEnded();
 
     SLOG << "Ending Scene: "
-        << (getName(SceneRefPtr(this)) ? getName(SceneRefPtr(this)) : "UNNAMED SCENE")
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
         << "." << std::endl;
 }
 
 void Scene::reset(void)
 {
     SLOG << "Reseting Scene: "
-        << (getName(SceneRefPtr(this)) ? getName(SceneRefPtr(this)) : "UNNAMED SCENE")
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
         << "." << std::endl;
 
     produceSceneReset();
@@ -280,19 +280,6 @@ void Scene::exit(void)
     for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
     {
         getParentProject()->removeViewport(getViewports(i));
-    }
-
-    //Dettach the initial animations
-    for(::OSG::UInt32 i(0) ; i<getMFInitialAnimations()->size() ; ++i)
-    {
-        //getInitialAnimations(i)->stop();
-        getInitialAnimations(i)->detachUpdateProducer();
-    }
-
-    //Dettach the initial particle systems
-    for(::OSG::UInt32 i(0) ; i<getMFInitialParticleSystems()->size() ; ++i)
-    {
-        getInitialParticleSystems(i)->detachUpdateProducer();
     }
 
     //Detach the User Interface Drawing Surfaces from the Window Event Producer
@@ -338,7 +325,7 @@ void Scene::exit(void)
     produceSceneExited();
 
     SLOG << "Exited Scene: "
-        << (getName(SceneRefPtr(this)) ? getName(SceneRefPtr(this)) : "UNNAMED SCENE")
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
         << "." << std::endl;
 }
 

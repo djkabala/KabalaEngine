@@ -76,8 +76,8 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
     SceneObject* getParentSceneObject(void) const;
 
-    virtual void initEvents(SceneObjectUnrecPtr rootSceneObject) = 0;
-	virtual void initLinks(SceneObjectUnrecPtr rootSceneObject) = 0;
+    virtual void initEvents(SceneObject* const rootSceneObject) = 0;
+	virtual void initLinks(SceneObject* const rootSceneObject) = 0;
 
 	BehaviorType * getBehaviorType(void);
 

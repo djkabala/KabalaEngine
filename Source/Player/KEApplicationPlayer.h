@@ -219,6 +219,8 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void showAll(CameraRefPtr TheCameraOrig,
                  NodeRefPtr Scene,
                  ViewportRefPtr LocalViewport);
+
+    UIDrawingSurface* const getDebuggerDrawingSurface(void) const;
     /*=========================  PROTECTED  ===============================*/
 
   protected:

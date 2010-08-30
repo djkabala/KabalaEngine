@@ -153,4 +153,10 @@ ManipulatorManager& ApplicationPlayer::editXFormManipMgr(void)
     return _XFormManipMgr;
 }
 
+inline
+UIDrawingSurface* const ApplicationPlayer::getDebuggerDrawingSurface(void) const
+{
+    return DebuggerDrawingSurface;
+}
+
 OSG_END_NAMESPACE
