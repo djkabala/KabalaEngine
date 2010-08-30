@@ -237,19 +237,27 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<Real32> ("player.debugger.selected_node.mesh.line_thickness", 1.0f, overwriteIfDefined);
 
     
-    TheSettings.put<bool> ("player.debugger.auto_save_project.enabled", true, overwriteIfDefined);
-    TheSettings.put<Real32> ("player.debugger.auto_save_project.time_between", 120.0f, overwriteIfDefined);
+    TheSettings.put<bool>      ("player.debugger.auto_save_project.enabled",       true, overwriteIfDefined);
+    TheSettings.put<Real32>    ("player.debugger.auto_save_project.time_between",  120.0f, overwriteIfDefined);
     TheSettings.put<BoostPath> ("player.debugger.auto_save_project.recovery_file", BoostPath("./KabalaEngineProject.xml.recovery"), overwriteIfDefined);
-	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.enabled", true, overwriteIfDefined);
-	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.new_mask", 0, overwriteIfDefined);
-	TheSettings.put<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string", "_Col", overwriteIfDefined);
-	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_string", true, overwriteIfDefined);
-	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.cur_mask", 1, overwriteIfDefined);
-	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_cur_mask", false, overwriteIfDefined);
-	TheSettings.put<UInt32>("player.debugger.model_import.trav_mask_graph_op.core_type_id", 0, overwriteIfDefined);
-	TheSettings.put<bool>("player.debugger.model_import.trav_mask_graph_op.check_core_type", false, overwriteIfDefined);
+
+	TheSettings.put<bool>      ("player.debugger.model_import.trav_mask_graph_op.enabled", true, overwriteIfDefined);
+
+	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_name",                true, overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.trav_mask_graph_op.search_regex",              ".*_Col$", overwriteIfDefined);
+	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_whole_name",          true, overwriteIfDefined);
+	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_node_core_type",      false, overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.trav_mask_graph_op.node_core_typename",        "Drawable", overwriteIfDefined);
+	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_derived_core_types",  true, overwriteIfDefined);
+	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_trav_mask",           false, overwriteIfDefined);
+	TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.match_trav_mask_value",     1, overwriteIfDefined);
+	TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.match_mask_condition",      0, overwriteIfDefined);
+	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.apply_mask_to_decendents",  false, overwriteIfDefined);
+	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.apply_to_non_matching",     false, overwriteIfDefined);
+	TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.applied_trav_mask",         0, overwriteIfDefined);
+	TheSettings.put<UInt8>      ("player.debugger.trav_mask_graph_op.apply_trav_mask_operation", 0, overwriteIfDefined);
 	
-	TheSettings.put<Vec3f>("player.debugger.lod_graph_op.lod_ranges", Vec3f(50.0f,100.0f,300.0f), overwriteIfDefined);
+	TheSettings.put<Vec3f>      ("player.debugger.lod_graph_op.lod_ranges", Vec3f(50.0f,100.0f,300.0f), overwriteIfDefined);
 	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_high_tag", "_High", overwriteIfDefined);
 	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_mid_tag", "_Mid", overwriteIfDefined);
 	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_low_tag", "_Low", overwriteIfDefined);

@@ -57,7 +57,7 @@ OSG_USING_NAMESPACE
  *                            Description                                  *
 \***************************************************************************/
 
-/*! \class OSG::ImportModelCommand
+/*! \class ImportModelCommand
 A ImportModelCommand. 
 */
 
@@ -141,10 +141,23 @@ void ImportModelCommand::execute(void)
         FilePathAttachment::setFilePath(_NewNode,FilesToOpen[0]);
 	    if(MainApplication::the()->getSettings().get<bool>("player.debugger.model_import.trav_mask_graph_op.enabled"))
 	    {
-		    OSG::TravMaskGraphOpRefPtr colMeshGrOp = OSG::TravMaskGraphOp::create();
-		    colMeshGrOp->setSearchString(MainApplication::the()->getSettings().get<std::string>("player.debugger.model_import.trav_mask_graph_op.compare_string"));
-		    colMeshGrOp->setNewTravMask (MainApplication::the()->getSettings().get<UInt32>     ("player.debugger.model_import.trav_mask_graph_op.new_mask"));
-		    // default values for this graph op will do fine.
+		    TravMaskGraphOpRefPtr colMeshGrOp = TravMaskGraphOp::create();
+		    
+            colMeshGrOp->setMatchName(MainApplication::the()->getSettings().get<bool>("player.debugger.trav_mask_graph_op.match_name"));
+		    colMeshGrOp->setMatchRegex(MainApplication::the()->getSettings().get<std::string>("player.debugger.trav_mask_graph_op.search_regex"));
+            colMeshGrOp->setMatchWholeName(MainApplication::the()->getSettings().get<bool>("player.debugger.trav_mask_graph_op.match_whole_name"));
+            colMeshGrOp->setMatchNodeCoreType(MainApplication::the()->getSettings().get<bool>("player.debugger.trav_mask_graph_op.match_node_core_type"));
+            colMeshGrOp->setNodeCoreType(MainApplication::the()->getSettings().get<std::string>("player.debugger.trav_mask_graph_op.node_core_typename"));
+            colMeshGrOp->setMatchDerivedCoreTypes(MainApplication::the()->getSettings().get<bool>("player.debugger.trav_mask_graph_op.match_derived_core_types"));
+            colMeshGrOp->setMatchCurrentTravMask(MainApplication::the()->getSettings().get<bool>("player.debugger.trav_mask_graph_op.match_trav_mask"));
+            colMeshGrOp->setCurrentTravMaskValue(MainApplication::the()->getSettings().get<UInt32>("player.debugger.trav_mask_graph_op.match_trav_mask_value"));
+            colMeshGrOp->setMatchMaskCondition(MainApplication::the()->getSettings().get<UInt8>("player.debugger.trav_mask_graph_op.match_mask_condition"));
+            colMeshGrOp->setApplyMaskToAllDecendents(MainApplication::the()->getSettings().get<bool>("player.debugger.trav_mask_graph_op.apply_mask_to_decendents"));
+            colMeshGrOp->setApplyToNonMatching(MainApplication::the()->getSettings().get<bool>("player.debugger.trav_mask_graph_op.apply_to_non_matching"));
+            colMeshGrOp->setNewTravMask(MainApplication::the()->getSettings().get<UInt32>("player.debugger.trav_mask_graph_op.applied_trav_mask"));
+            colMeshGrOp->setNewTravMaskOperation(MainApplication::the()->getSettings().get<UInt8>("player.debugger.trav_mask_graph_op.apply_trav_mask_operation"));
+		    
+            // default values for this graph op will do fine.
 		    if(colMeshGrOp->traverse(_NewNode))
 		    {
 			    SLOG << "Number of nodes hidden: " << colMeshGrOp->getNumChanged() << std::endl;

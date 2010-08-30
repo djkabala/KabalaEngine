@@ -87,6 +87,7 @@
 #include "Player/Commands/GraphOps/KETransformPushGraphOpCommand.h"
 #include "Player/Commands/GraphOps/KESplitGraphOpCommand.h"
 #include "Player/Commands/GraphOps/KELODSetupCommand.h"
+#include "Player/Commands/GraphOps/KETravMaskCommand.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -179,6 +180,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_FocusCamera = MenuItem::create();
 
 	_GraphOpMenu = Menu::create();
+	_MaskGraphOpItem = MenuItem::create();
 	_LodGraphOpItem = MenuItem::create();
 	_GeoMergeGraphOpItem = MenuItem::create();
 	_SplitGraphOpItem = MenuItem::create();
@@ -211,23 +213,24 @@ void HierarchyPanel::createPopUpMenu(void)
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
-        _HierarchyPanelPopupMenu->addItem(_ShowHideItem);
-        _HierarchyPanelPopupMenu->addItem(_ShowRecursiveItem);
-        _HierarchyPanelPopupMenu->addSeparator();
-        _HierarchyPanelPopupMenu->addItem(_CutItem);	
-        _HierarchyPanelPopupMenu->addItem(_CopyItem);	
-        _HierarchyPanelPopupMenu->addItem(_PasteItem);	
-        _HierarchyPanelPopupMenu->addItem(_PasteInstanceItem);	
-        _HierarchyPanelPopupMenu->addItem(_DeleteItem);	
-        _HierarchyPanelPopupMenu->addSeparator();
-        _HierarchyPanelPopupMenu->addItem(_ImportItem);	
-        _HierarchyPanelPopupMenu->addItem(_ExportItem);	
-        _HierarchyPanelPopupMenu->addSeparator();
-        _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
+    _HierarchyPanelPopupMenu->addItem(_ShowHideItem);
+    _HierarchyPanelPopupMenu->addItem(_ShowRecursiveItem);
+    _HierarchyPanelPopupMenu->addSeparator();
+    _HierarchyPanelPopupMenu->addItem(_CutItem);	
+    _HierarchyPanelPopupMenu->addItem(_CopyItem);	
+    _HierarchyPanelPopupMenu->addItem(_PasteItem);	
+    _HierarchyPanelPopupMenu->addItem(_PasteInstanceItem);	
+    _HierarchyPanelPopupMenu->addItem(_DeleteItem);	
+    _HierarchyPanelPopupMenu->addSeparator();
+    _HierarchyPanelPopupMenu->addItem(_ImportItem);	
+    _HierarchyPanelPopupMenu->addItem(_ExportItem);	
+    _HierarchyPanelPopupMenu->addSeparator();
+    _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
 	_SceneGraphPopupMenuWillBecomeVisibleConnection = _HierarchyPanelPopupMenu->connectPopupMenuWillBecomeVisible(boost::bind(&HierarchyPanel::handleSceneGraphPopupMenuWillBecomeVisible, this, _1));
 
 	setPopupMenu(_HierarchyPanelPopupMenu);
 	_GraphOpMenu->setText("Graph Ops");
+	_MaskGraphOpItem->setText("Traversal Mask Graph Op");
 	_LodGraphOpItem->setText("LOD Graph Op");
 	_GeoMergeGraphOpItem->setText("Geo Merge Graph Op");
 	_SplitGraphOpItem->setText("Split Graph Op");
@@ -237,24 +240,25 @@ void HierarchyPanel::createPopUpMenu(void)
 	_SharePtrGraphOpItem->setText("Share Ptr Graph Op");
 
 
-	_ShowHideItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_ShowRecursiveItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_DeleteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_ImportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_ExportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_CutItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_CopyItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_PasteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_PasteInstanceItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_FocusCamera->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_ShowHideItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleShowHideToggleSelectedNode, this, _1));
+	_ShowRecursiveItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleShowHideSelectedNodeRecursize, this, _1));
+	_DeleteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleDeleteSelectedNode, this, _1));
+	_ImportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleImportIntoSelectedNode, this, _1));
+	_ExportItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleExportSelectedNode, this, _1));
+	_CutItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleCutSelectedNode, this, _1));
+	_CopyItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleCopySelectedNode, this, _1));
+	_PasteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePasteOntoSelectedNode, this, _1));
+	_PasteInstanceItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePasteInstOntoSelectedNode, this, _1));
+	_FocusCamera->connectActionPerformed(boost::bind(&HierarchyPanel::handleFocusCameraOnSelectedNode, this, _1));
 
-	_LodGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_GeoMergeGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_SplitGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_PruneGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_XformPushGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_MaterialGroupGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
-	_SharePtrGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleBasicAction, this, _1));
+	_MaskGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunTravMaskGraphOp, this, _1));
+	_LodGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunLODGraphOp, this, _1));
+	_GeoMergeGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunGeoMergeGraphOp, this, _1));
+	_SplitGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunSplitGraphOp, this, _1));
+	_PruneGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunPruneGraphOp, this, _1));
+	_XformPushGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunXformPushGraphOp, this, _1));
+	_MaterialGroupGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunMaterialGroupGraphOp, this, _1));
+	_SharePtrGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunSharePtrGraphOp, this, _1));
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
@@ -274,6 +278,7 @@ void HierarchyPanel::createPopUpMenu(void)
     _HierarchyPanelPopupMenu->addSeparator();
     _HierarchyPanelPopupMenu->addItem(_FocusCamera);
 
+	_GraphOpMenu->addItem(_MaskGraphOpItem);
 	_GraphOpMenu->addItem(_LodGraphOpItem);
 	_GraphOpMenu->addItem(_GeoMergeGraphOpItem);
 	_GraphOpMenu->addItem(_SplitGraphOpItem);
@@ -291,7 +296,7 @@ void HierarchyPanel::setView(UInt32 Index)
         _CardLayout->setCard(Index);
 }
 
-void HierarchyPanel::sgShowHideToggleSelectedNode(void)
+void HierarchyPanel::handleShowHideToggleSelectedNode(EventDetails* const details)
 {
 	 CommandPtr ShowHideItemCommand =
          ShowHideCommand::create(_SelectedNode,
@@ -300,7 +305,7 @@ void HierarchyPanel::sgShowHideToggleSelectedNode(void)
     _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
 }
 
-void HierarchyPanel::sgImportIntoSelectedNode(void)
+void HierarchyPanel::handleImportIntoSelectedNode(EventDetails* const details)
 {
     NodeRecPtr NodeToAddTo = _ApplicationPlayer->getSelectedNode();
     if(NodeToAddTo == NULL)
@@ -311,7 +316,7 @@ void HierarchyPanel::sgImportIntoSelectedNode(void)
     _ApplicationPlayer->getCommandManager()->executeCommand(TheImportModelCommand);
 }
 
-void HierarchyPanel::sgExportSelectedNode(void)
+void HierarchyPanel::handleExportSelectedNode(EventDetails* const details)
 {
     NodeRecPtr NodeToExport = _ApplicationPlayer->getSelectedNode();
     if(NodeToExport == NULL)
@@ -322,13 +327,13 @@ void HierarchyPanel::sgExportSelectedNode(void)
     _ApplicationPlayer->getCommandManager()->executeCommand(TheExportModelCommand);
 }
 
-void HierarchyPanel::sgFocusCameraOnSelectedNode(void)
+void HierarchyPanel::handleFocusCameraOnSelectedNode(EventDetails* const details)
 {
 	//Reset the debug camera to point to the corresponding geometry
 	changeDebugCameraPosition();
 }
 
-void HierarchyPanel::sgCutSelectedNode(void)
+void HierarchyPanel::handleCutSelectedNode(EventDetails* const details)
 {
     UInt32 NewSelectedRow(0);
     if(!_TheSceneGraphTree->isSelectionEmpty())
@@ -349,14 +354,14 @@ void HierarchyPanel::sgCutSelectedNode(void)
     _TheSceneGraphTree->setSelectionRow(NewSelectedRow);
 }
 
-void HierarchyPanel::sgCopySelectedNode(void)
+void HierarchyPanel::handleCopySelectedNode(EventDetails* const details)
 {
 	CommandPtr CopyCommandPtr = CopyCommand::create(_ApplicationPlayer,_ApplicationPlayer->getSelectedNode());
     _ApplicationPlayer->getCommandManager()->executeCommand(CopyCommandPtr);
 
 }
 
-void HierarchyPanel::sgPasteOntoSelectedNode(void)
+void HierarchyPanel::handlePasteOntoSelectedNode(EventDetails* const details)
 {
     CommandPtr ThePasteCommand;
     if(_ApplicationPlayer->getSelectedNode() != NULL)
@@ -377,7 +382,7 @@ void HierarchyPanel::sgPasteOntoSelectedNode(void)
     _ApplicationPlayer->getCommandManager()->executeCommand(ThePasteCommand);
 }
 
-void HierarchyPanel::sgPasteInstOntoSelectedNode(void)
+void HierarchyPanel::handlePasteInstOntoSelectedNode(EventDetails* const details)
 {
     CommandPtr ThePasteCommand;
     if(_ApplicationPlayer->getSelectedNode() != NULL)
@@ -398,7 +403,7 @@ void HierarchyPanel::sgPasteInstOntoSelectedNode(void)
     _ApplicationPlayer->getCommandManager()->executeCommand(ThePasteCommand);
 }
 
-void HierarchyPanel::sgShowHideSelectedNodeRecursize(void)
+void HierarchyPanel::handleShowHideSelectedNodeRecursize(EventDetails* const details)
 {
 	 CommandPtr ShowHideItemCommand =
          ShowHideCommand::create(_SelectedNode,
@@ -407,7 +412,7 @@ void HierarchyPanel::sgShowHideSelectedNodeRecursize(void)
     _ApplicationPlayer->getCommandManager()->executeCommand(ShowHideItemCommand);
 }
 
-void HierarchyPanel::sgDeleteSelectedNode(void)
+void HierarchyPanel::handleDeleteSelectedNode(EventDetails* const details)
 {
     UInt32 NewSelectedRow(0);
     if(!_TheSceneGraphTree->isSelectionEmpty())
@@ -427,7 +432,7 @@ void HierarchyPanel::sgDeleteSelectedNode(void)
     _TheSceneGraphTree->setSelectionRow(NewSelectedRow);
 }
 
-void HierarchyPanel::sgRunLODGraphOp(void)
+void HierarchyPanel::handleRunLODGraphOp(EventDetails* const details)
 {
 	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
 	if(GraphOpNode == NULL)
@@ -438,7 +443,18 @@ void HierarchyPanel::sgRunLODGraphOp(void)
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
 }
 
-void HierarchyPanel::sgRunGeoMergeGraphOp(void)
+void HierarchyPanel::handleRunTravMaskGraphOp(EventDetails* const details)
+{
+	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
+	if(GraphOpNode == NULL)
+	{
+		GraphOpNode =  getSceneGraphTreeModel()->getRootNode();
+	}
+	CommandPtr TheTravMaskCommand = TravMaskCommand::create(GraphOpNode, _ApplicationPlayer->getDebuggerDrawingSurface());
+	_ApplicationPlayer->getCommandManager()->executeCommand(TheTravMaskCommand);
+}
+
+void HierarchyPanel::handleRunGeoMergeGraphOp(EventDetails* const details)
 {
 	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
 	if(GraphOpNode == NULL)
@@ -449,7 +465,7 @@ void HierarchyPanel::sgRunGeoMergeGraphOp(void)
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
 }
 
-void HierarchyPanel::sgRunSplitGraphOp(void)
+void HierarchyPanel::handleRunSplitGraphOp(EventDetails* const details)
 {
 	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
 	if(GraphOpNode == NULL)
@@ -460,7 +476,7 @@ void HierarchyPanel::sgRunSplitGraphOp(void)
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
 }
 
-void HierarchyPanel::sgRunPruneGraphOp(void)
+void HierarchyPanel::handleRunPruneGraphOp(EventDetails* const details)
 {
 	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
 	if(GraphOpNode == NULL)
@@ -471,7 +487,7 @@ void HierarchyPanel::sgRunPruneGraphOp(void)
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
 }
 
-void HierarchyPanel::sgRunXformPushGraphOp(void)
+void HierarchyPanel::handleRunXformPushGraphOp(EventDetails* const details)
 {
 	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
 	if(GraphOpNode == NULL)
@@ -482,7 +498,7 @@ void HierarchyPanel::sgRunXformPushGraphOp(void)
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
 }
 
-void HierarchyPanel::sgRunMaterialGroupGraphOp(void)
+void HierarchyPanel::handleRunMaterialGroupGraphOp(EventDetails* const details)
 {
 	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
 	if(GraphOpNode == NULL)
@@ -493,7 +509,7 @@ void HierarchyPanel::sgRunMaterialGroupGraphOp(void)
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
 }
 
-void HierarchyPanel::sgRunSharePtrGraphOp(void)
+void HierarchyPanel::handleRunSharePtrGraphOp(EventDetails* const details)
 {
 	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
 	if(GraphOpNode == NULL)
@@ -502,80 +518,6 @@ void HierarchyPanel::sgRunSharePtrGraphOp(void)
 	}
 	CommandPtr TheGraphOpCommand = SharePtrGraphOpCommand::create(GraphOpNode);
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
-}
-
-
-void HierarchyPanel::handleBasicAction(ActionEventDetails* const details)
-{
-	if(details->getSource() == _ShowHideItem)
-	{
-        sgShowHideToggleSelectedNode();
-	}
-    else if(details->getSource() == _ShowRecursiveItem)
-	{
-        sgShowHideSelectedNodeRecursize();
-	}
-	else if(details->getSource() == _DeleteItem)
-	{
-        sgDeleteSelectedNode();
-	}
-	else if(details->getSource() == _ImportItem)
-	{
-        sgImportIntoSelectedNode();
-	}
-	else if(details->getSource() == _ExportItem)
-	{
-        sgExportSelectedNode();
-	}
-	else if(details->getSource() == _FocusCamera)
-	{
-        sgFocusCameraOnSelectedNode();
-	}
-	else if(details->getSource() == _CutItem)
-	{
-        sgCutSelectedNode();
-	}
-
-	else if(details->getSource() == _CopyItem)
-	{
-        sgCopySelectedNode();
-	}
-	else if(details->getSource() == _PasteItem)
-	{
-        sgPasteOntoSelectedNode();
-	}
-	else if(details->getSource() == _PasteInstanceItem)
-	{
-		sgPasteInstOntoSelectedNode();
-	}
-	else if(details->getSource() == _LodGraphOpItem)
-	{
-		sgRunLODGraphOp();
-	}
-	else if(details->getSource() == _GeoMergeGraphOpItem)
-	{
-		sgRunGeoMergeGraphOp();
-	}
-	else if(details->getSource() == _SplitGraphOpItem)
-	{
-		sgRunSplitGraphOp();
-	}
-	else if(details->getSource() == _PruneGraphOpItem)
-	{
-		sgRunPruneGraphOp();
-	}
-	else if(details->getSource() == _XformPushGraphOpItem)
-	{
-		sgRunXformPushGraphOp();
-	}
-	else if(details->getSource() == _MaterialGroupGraphOpItem)
-	{
-		sgRunMaterialGroupGraphOp();
-	}
-	else if(details->getSource() == _SharePtrGraphOpItem)
-	{
-		sgRunSharePtrGraphOp();
-	}
 }
 
 void HierarchyPanel::createLuaGraphTree()
@@ -829,19 +771,19 @@ void HierarchyPanel::handleSceneGraphTreeKeyTyped(KeyEventDetails* const details
         switch(details->getKey())
         {
         case KeyEventDetails::KEY_C:
-            sgCopySelectedNode();
+            handleCopySelectedNode(details);
             break;
         case KeyEventDetails::KEY_V:
-            sgPasteOntoSelectedNode();
+            handlePasteOntoSelectedNode(details);
             break;
         case KeyEventDetails::KEY_I:
-            sgImportIntoSelectedNode();
+            handleImportIntoSelectedNode(details);
             break;
         case KeyEventDetails::KEY_H:
-            sgShowHideToggleSelectedNode();
+            handleShowHideToggleSelectedNode(details);
             break;
         case KeyEventDetails::KEY_X:
-            sgCutSelectedNode();
+            handleCutSelectedNode(details);
             break;
         }
     }
@@ -851,10 +793,10 @@ void HierarchyPanel::handleSceneGraphTreeKeyTyped(KeyEventDetails* const details
         {
         case KeyEventDetails::KEY_BACK_SPACE:
         case KeyEventDetails::KEY_DELETE:
-            sgDeleteSelectedNode();
+            handleDeleteSelectedNode(details);
             break;
         case KeyEventDetails::KEY_F:
-            sgFocusCameraOnSelectedNode();
+            handleFocusCameraOnSelectedNode(details);
             break;
         }
     }

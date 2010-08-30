@@ -202,6 +202,7 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     MenuItemRefPtr _FocusCamera ;
 
 	MenuRefPtr     _GraphOpMenu;
+	MenuItemRefPtr _MaskGraphOpItem;
 	MenuItemRefPtr _LodGraphOpItem;
 	MenuItemRefPtr _GeoMergeGraphOpItem;
 	MenuItemRefPtr _SplitGraphOpItem;
@@ -213,9 +214,6 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     void createPopUpMenu(void);
     void updatePopupMenu(void);
     void changeShowHideMenuItem(void);
-
-    virtual void handleBasicAction(ActionEventDetails* const details);
-    //boost::signals2::connection _BasicActionConnection;
 
     void handleLuaGraphTreeSelectionAdded(TreeSelectionEventDetails* const details);
     boost::signals2::connection _LuaGraphTreeSelectionAddedConnection;
@@ -243,23 +241,24 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     /*! \name               Scene Graph Commands                           */
     /*! \{                                                                 */
 
-    void sgShowHideToggleSelectedNode(void);
-    void sgImportIntoSelectedNode(void);
-    void sgExportSelectedNode(void);
-    void sgFocusCameraOnSelectedNode(void);
-    void sgCopySelectedNode(void);
-    void sgCutSelectedNode(void);
-    void sgPasteOntoSelectedNode(void);
-    void sgPasteInstOntoSelectedNode(void);
-    void sgShowHideSelectedNodeRecursize(void);
-    void sgDeleteSelectedNode(void);
-	void sgRunLODGraphOp(void);
-	void sgRunGeoMergeGraphOp(void);
-	void sgRunSplitGraphOp(void);
-	void sgRunPruneGraphOp(void);
-	void sgRunXformPushGraphOp(void);
-	void sgRunMaterialGroupGraphOp(void);
-	void sgRunSharePtrGraphOp(void);
+    void handleShowHideToggleSelectedNode(EventDetails* const details);
+    void handleImportIntoSelectedNode(EventDetails* const details);
+    void handleExportSelectedNode(EventDetails* const details);
+    void handleFocusCameraOnSelectedNode(EventDetails* const details);
+    void handleCopySelectedNode(EventDetails* const details);
+    void handleCutSelectedNode(EventDetails* const details);
+    void handlePasteOntoSelectedNode(EventDetails* const details);
+    void handlePasteInstOntoSelectedNode(EventDetails* const details);
+    void handleShowHideSelectedNodeRecursize(EventDetails* const details);
+    void handleDeleteSelectedNode(EventDetails* const details);
+    void handleRunTravMaskGraphOp(EventDetails* const details);
+	void handleRunLODGraphOp(EventDetails* const details);
+	void handleRunGeoMergeGraphOp(EventDetails* const details);
+	void handleRunSplitGraphOp(EventDetails* const details);
+	void handleRunPruneGraphOp(EventDetails* const details);
+	void handleRunXformPushGraphOp(EventDetails* const details);
+	void handleRunMaterialGroupGraphOp(EventDetails* const details);
+	void handleRunSharePtrGraphOp(EventDetails* const details);
 
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
