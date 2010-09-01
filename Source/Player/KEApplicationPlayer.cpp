@@ -188,6 +188,11 @@ void ApplicationPlayer::stop(void)
     {
         MainApplication::the()->getProject()->stop();
     }
+
+    //Clear history
+    UInt32 Limit = _TheUndoManager->getLimit();
+    _TheUndoManager->setLimit(0);
+    _TheUndoManager->setLimit(Limit);
 }
 
 
@@ -236,7 +241,6 @@ void ApplicationPlayer::createDebugInterface(void)
 
     // setting the fields of the menu items
     _LoadProjectItem->setText("Open Project ...");
-    _LoadProjectItem->setEnabled(false);
     _LoadProjectItem->setAcceleratorKey(KeyEventDetails::KEY_O);
     _LoadProjectItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
     _LoadProjectItem->setMnemonicKey(KeyEventDetails::KEY_O);
@@ -1114,7 +1118,16 @@ Node* ApplicationPlayer::getPhysicsDrawableNode(void)
 
 void ApplicationPlayer::gotoScene(SceneRefPtr TheScene)
 {
+    bool wasDebugging(isDebugging());
+    if(wasDebugging)
+    {
+        enableDebug(false);
+    }
     MainApplication::the()->getProject()->setActiveScene(TheScene);
+    if(wasDebugging)
+    {
+        enableDebug(true);
+    }
 }
 
 void ApplicationPlayer::toggleFrustumCulling(void)
@@ -1281,9 +1294,15 @@ void ApplicationPlayer::updateDebugUI(void)
 {
     updateGotoSceneMenuItems(MainApplication::the()->getProject());
     //TODO: Update the Scene Node Tree
-    if(_HierarchyPanel->getSceneGraphTreeModel()->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
+    if(MainApplication::the()->getProject() != NULL &&
+        MainApplication::the()->getProject()->getActiveScene() != NULL &&
+        _HierarchyPanel->getSceneGraphTreeModel()->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
     {
         _HierarchyPanel->getSceneGraphTreeModel()->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+    }
+    else
+    {
+        _HierarchyPanel->getSceneGraphTreeModel()->setRoot(NULL);
     }
 
     updateHighlightNode();
@@ -1954,7 +1973,7 @@ void ApplicationPlayer::updateWireframeNode(void)
         dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
 
         //Use the traversal mask that the viewport this node is in is using
-        dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeTravMask(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getTravMask());
+        //dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeTravMask(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getTravMask());
 
     }
 
