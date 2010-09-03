@@ -1,0 +1,138 @@
+# name the installer
+!define ProjectName "@NSIS_PROJECT_NAME@"
+!define SMPROGRAMSFolder $SMPROGRAMS\${ProjectName}
+!define OutFileName Install${ProjectName}.exe
+!define InstallDirName ${ProjectName}
+!define UninstallFileName "Uninstall ${ProjectName}.exe"
+
+!define ProjectRootDir "@CMAKE_SOURCE_DIR@"
+
+outFile "${OutFileName}"
+
+# define the directory to install to, the desktop in this case as specified  
+# by the predefined $DESKTOP variable
+installDir $PROGRAMFILES\${InstallDirName}
+
+Page license
+   LicenseText "GNU Library General Public License v. 3"
+   LicenseData "${ProjectRootDir}\LICENSE.txt"
+   LicenseForceSelection checkbox
+   
+Page components
+Page Directory
+Page instfiles
+
+UninstPage uninstConfirm
+UninstPage instfiles
+
+# default section start; every NSIS script has at least one section.
+section
+   
+   # define the output path for this file
+   setOutPath $INSTDIR
+   
+   #Create the Install Directory
+   CreateDirectory $INSTDIR
+   
+   # define what to install and place it in the output path
+   #file test.txt
+   
+   # define uninstaller name
+   writeUninstaller "$INSTDIR\${UninstallFileName}"
+   
+   #Create OpenSGToolbox environment variable
+   
+   # create a shortcut named "new shortcut" in the start menu programs directory
+   # presently, the new shortcut doesn't call anything (the second field is blank)
+   CreateDirectory "${SMPROGRAMSFolder}"
+   createShortCut "${SMPROGRAMSFolder}\${ProjectName}.lnk" "$INSTDIR\KabalaEngine.exe"
+   createShortCut "${SMPROGRAMSFolder}\Uninstall ${ProjectName}.lnk" "$INSTDIR\${UninstallFileName}"
+
+# default section end
+sectionEnd
+
+section "Main Application"
+   # define the output path for this file
+   setOutPath $INSTDIR
+   
+   #Add lib directory to the path
+   
+   #Create the Install Directory
+   #CreateDirectory $INSTDIR\lib
+      
+   #setOutPath $INSTDIR\lib
+   
+   #OpenSG
+   File "@OpenSG_BINARIES_DIR@\OSG*.dll"
+   
+   #Fmod
+   File "@FMOD_BINARY@"
+   
+   #Lua
+   File "@LUA_BINARY@"
+   
+   #Collada
+   File "@COLLADA_BINARY@"
+   
+   #CgFX
+   File "@CG_BINARY@"
+   File "@CG_GL_BINARY@"
+   
+   #Support libs
+   #jpeg,tiff,png,zlib
+   #File "@ZLIB_BINARY@"
+   #File "@TIFF_BINARY@"
+   #File "@JPEG_BINARY@"
+   #File "@PNG_BINARY@"
+   
+   #Video, VLC
+   
+   #Boost
+   File "@Boost_SYSTEM_LIBRARY_BIN@"
+   File "@Boost_FILESYSTEM_LIBRARY_BIN@"
+   File "@Boost_PROGRAM_OPTIONS_LIBRARY_BIN@"
+   
+   #ODE
+   File "@ODE_BINARY@"
+   
+   File "@CMAKE_BINARY_DIR@\Release\KabalaEngine.exe"
+   
+   #Create the Data Directory
+   CreateDirectory $INSTDIR\Data
+   
+   CreateDirectory $INSTDIR\Data\Models
+   setOutPath $INSTDIR\Data\Models
+   File "${ProjectRootDir}\Data\Models\TorusKnot.osb"
+   
+   CreateDirectory $INSTDIR\Data\Images
+   CreateDirectory $INSTDIR\Data\Images\icons
+   setOutPath $INSTDIR\Data\Images\icons
+   File /nonfatal /r "${ProjectRootDir}\Data\Images\icons\"
+sectionEnd
+
+section "Documentation"
+   # define the output path for this file
+   setOutPath $INSTDIR
+   
+   #Create the Install Directory
+   CreateDirectory $INSTDIR\Documentation
+sectionEnd
+
+
+# create a section to define what the uninstaller does.
+# the section will always be named "Uninstall"
+section "un.Uninstall ${ProjectName}"
+
+   # Always delete uninstaller first
+   delete "$INSTDIR\${UninstallFileName}"
+    
+   #Remove the Install Directory
+   RMDir /r $INSTDIR
+   
+   # now delete installed file
+   #delete $INSTDIR\test.txt
+   
+   # second, remove the link from the start menu
+   RMDir /r "${SMPROGRAMSFolder}"
+ 
+sectionEnd
