@@ -88,6 +88,7 @@
 #include "Player/Commands/GraphOps/KESplitGraphOpCommand.h"
 #include "Player/Commands/GraphOps/KELODSetupCommand.h"
 #include "Player/Commands/GraphOps/KETravMaskCommand.h"
+#include "Player/Commands/GraphOps/KEAttachColGeomGraphOpCommand.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -188,6 +189,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_XformPushGraphOpItem = MenuItem::create();
 	_MaterialGroupGraphOpItem = MenuItem::create();
 	_SharePtrGraphOpItem = MenuItem::create(); 
+	_AttachColGeomOpItem = MenuItem::create(); 
 
 	// _HierarchyPanelPopupMenu up menu items
 
@@ -238,6 +240,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_XformPushGraphOpItem->setText("Transform Push Graph Op");
 	_MaterialGroupGraphOpItem->setText("Material Group Graph Op");
 	_SharePtrGraphOpItem->setText("Share Ptr Graph Op");
+	_AttachColGeomOpItem->setText("Attach Col Geom Graph Op");
 
 
 	_ShowHideItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleShowHideToggleSelectedNode, this, _1));
@@ -259,6 +262,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_XformPushGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunXformPushGraphOp, this, _1));
 	_MaterialGroupGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunMaterialGroupGraphOp, this, _1));
 	_SharePtrGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunSharePtrGraphOp, this, _1));
+	_AttachColGeomOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunAttachColGeomGraphOp, this, _1));
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
@@ -286,6 +290,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_GraphOpMenu->addItem(_XformPushGraphOpItem);
 	_GraphOpMenu->addItem(_MaterialGroupGraphOpItem);
 	_GraphOpMenu->addItem(_SharePtrGraphOpItem);
+	_GraphOpMenu->addItem(_AttachColGeomOpItem);
 
 	this->setPopupMenu(_HierarchyPanelPopupMenu);
 
@@ -517,6 +522,17 @@ void HierarchyPanel::handleRunSharePtrGraphOp(EventDetails* const details)
 		GraphOpNode =  getSceneGraphTreeModel()->getRootNode();
 	}
 	CommandPtr TheGraphOpCommand = SharePtrGraphOpCommand::create(GraphOpNode);
+	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
+}
+
+void HierarchyPanel::handleRunAttachColGeomGraphOp(EventDetails* const details)
+{
+	NodeUnrecPtr GraphOpNode = _ApplicationPlayer->getSelectedNode();
+	if(GraphOpNode == NULL)
+	{
+		GraphOpNode =  getSceneGraphTreeModel()->getRootNode();
+	}
+	CommandPtr TheGraphOpCommand = AttachColGeomGraphOpCommand::create(GraphOpNode);
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
 }
 

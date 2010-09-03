@@ -272,6 +272,15 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
 
 	TheSettings.put<std::string>("player.debugger.geo_merge_graph_op.max_geos_to_merge","200",overwriteIfDefined);
 
+    //Attach Collision Geom Graph Op
+	TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_name",                true, overwriteIfDefined);
+	TheSettings.put<std::string>("player.debugger.col_geom_graph_op.search_regex",              ".*_Col$", overwriteIfDefined);
+	TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_whole_name",          true, overwriteIfDefined);
+	TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_trav_mask",           false, overwriteIfDefined);
+	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.match_trav_mask_value",     1, overwriteIfDefined);
+	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.match_mask_condition",      0, overwriteIfDefined);
+	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.create_geom_type",          0, overwriteIfDefined);
+
 }
 
 ApplicationSettings MainApplication::createDefaultSettings(void)

@@ -210,6 +210,7 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	MenuItemRefPtr _XformPushGraphOpItem;
 	MenuItemRefPtr _MaterialGroupGraphOpItem;
 	MenuItemRefPtr _SharePtrGraphOpItem;
+	MenuItemRefPtr _AttachColGeomOpItem;
 
     void createPopUpMenu(void);
     void updatePopupMenu(void);
@@ -259,6 +260,7 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	void handleRunXformPushGraphOp(EventDetails* const details);
 	void handleRunMaterialGroupGraphOp(EventDetails* const details);
 	void handleRunSharePtrGraphOp(EventDetails* const details);
+	void handleRunAttachColGeomGraphOp(EventDetails* const details);
 
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
