@@ -110,12 +110,6 @@ void Scene::enter(void)
         << "." << std::endl;
     dump(1);
 
-    if(getRoot() == NULL)
-    {
-        createDefaults();
-        initDefaults();
-    }
-
     //Attach the listeners
    _UpdateConnection = MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&Scene::handleUpdate, this, _1));
    _MouseClickedConnection = MainApplication::the()->getMainWindow()->connectMouseClicked(boost::bind(&Scene::handleMouseClicked, this, _1));
@@ -139,15 +133,6 @@ void Scene::enter(void)
    _WindowEnteredConnection = MainApplication::the()->getMainWindow()->connectWindowEntered(boost::bind(&Scene::handleWindowEntered, this, _1));
    _WindowExitedConnection = MainApplication::the()->getMainWindow()->connectWindowExited(boost::bind(&Scene::handleWindowExited, this, _1));
 
-    //Set up Initial Model Nodes
-    for(::OSG::UInt32 i(0) ; i<getMFInitialModelNodes()->size() ; ++i)
-    {
-        getRoot()->addChild(getInitialModelNodes(i));
-    }
-
-    //Root Node
-    getParentProject()->setActiveNode(getRoot());
-
     //Attach the User Interface Drawing Surfaces to the Window Event Producer
     for(::OSG::UInt32 i(0) ; i<getMFUIDrawingSurfaces()->size() ; ++i)
     {
@@ -163,23 +148,29 @@ void Scene::enter(void)
     produceSceneEntered();
 
     //If There is a physics World then update it's contents
-    if(getPhysicsWorld() != NULL && getPhysicsHandler()->getUpdateNode() == NULL)
+    if(getPhysicsWorld() != NULL && getPhysicsHandler() != NULL)
     {
         PhysicsAttachmentsFinder PhysicsFinder;
-        PhysicsFinder.traverse(getRoot());
+        PhysicsFinder.traverse(getViewports(0)->getRoot());
 
         //For each Body set it's world to this scenes world
         const std::vector<PhysicsBody*>& FoundBodies(PhysicsFinder.getFoundBodies());
         for(UInt32 i(0) ; i<FoundBodies.size() ; ++i)
         {
-            FoundBodies[i]->setWorld(getPhysicsWorld());
+            if(FoundBodies[i]->getWorld() != getPhysicsWorld())
+            {
+                FoundBodies[i]->setWorld(getPhysicsWorld());
+            }
         }
 
         //For each Joint set it's world to this scenes world
         const std::vector<PhysicsJoint*>& FoundJoints(PhysicsFinder.getFoundJoints());
         for(UInt32 i(0) ; i<FoundJoints.size() ; ++i)
         {
-            FoundJoints[i]->setWorld(getPhysicsWorld());
+            if(FoundJoints[i]->getWorld() != getPhysicsWorld())
+            {
+                FoundJoints[i]->setWorld(getPhysicsWorld());
+            }
         }
 
         //If There is a physics Handler then attach it to the update
@@ -189,19 +180,28 @@ void Scene::enter(void)
             getPhysicsHandler()->attachUpdateProducer(this);
 
             //Attach all Physics spaces without a parent space to the Physics handler
-            getPhysicsHandler()->setUpdateNode(getRoot());
-            getPhysicsHandler()->setWorld(getPhysicsWorld());
+            if(getPhysicsHandler()->getUpdateNode() != getViewports(0)->getRoot())
+            {
+                getPhysicsHandler()->setUpdateNode(getViewports(0)->getRoot());
+            }
+            if(getPhysicsHandler()->getWorld() != getPhysicsWorld())
+            {
+                getPhysicsHandler()->setWorld(getPhysicsWorld());
+            }
             if(getPhysicsHandler()->getMFSpaces()->size() > 0)
             {
                 const std::vector<PhysicsGeom*>& FoundGeoms(PhysicsFinder.getFoundGeoms());
                 for(UInt32 i(0) ; i<FoundGeoms.size() ; ++i)
                 {
-                    if(FoundGeoms[i]->getSpace() == NULL)
+                    if(FoundGeoms[i]->getSpace() == NULL &&
+                       FoundGeoms[i]->getSpace() != getPhysicsHandler()->getSpaces(0))
                     {
                         //If the Goem has no parent space then add it to this scenes space
                         FoundGeoms[i]->setSpace(getPhysicsHandler()->getSpaces(0));
+
+                        //Tag the body as having changed
+                        FoundGeoms[i]->editSFBody();
                     }
-                    //Tell the Geom to update it's body
                 }
             }
         }
