@@ -42,6 +42,15 @@
 OSG_BEGIN_NAMESPACE
 
 inline
+void Project::setActiveSceneOnEvent(Scene* const TheScene,
+                                    ReflexiveContainer* EventProducer,
+                                    UInt32 EventId)
+{
+    _TriggeringSceneChangeEventConnection.disconnect();
+    _TriggeringSceneChangeEventConnection = EventProducer->connectEvent(EventId, boost::bind(&Project::handleTriggeringSceneChangeEvent, this, _1, TheScene));
+}
+
+inline
 void Project::addViewport(const ViewportRefPtr& port)
 {
     MainApplication::the()->getMainWindow()->addPort(port);

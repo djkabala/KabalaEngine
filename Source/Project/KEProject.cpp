@@ -153,7 +153,7 @@ WindowEventProducer* Project::getEventProducer(void) const
 void Project::save(void)
 {
     FCFileType::FCPtrStore Containers;
-    Containers.insert(ProjectRefPtr(this));
+    Containers.insert(this);
 
     FCFileType::FCTypeVector IgnoreTypes;
     IgnoreTypes.push_back(getNativeWindowType()->getId());
@@ -203,6 +203,9 @@ void Project::start(void)
     //Attach the SoundManager
     SoundManager::the()->attachUpdateProducer(MainApplication::the()->getMainWindow());
 
+    //Load Scritps
+    loadScripts();
+
     //If I have an initial Scene then enter it
     if(getInitialScene() != NULL)
     {
@@ -212,8 +215,6 @@ void Project::start(void)
     {
         SFATAL << "Project has no Initial Scene set." << std::endl;
     }
-
-    loadScripts();
 
 
     produceProjectStarted();
@@ -358,8 +359,10 @@ void Project::loadScripts(void)
 
 }
 
-void Project::setActiveScene(SceneRefPtr TheScene)
+void Project::setActiveScene(Scene* const TheScene)
 {
+    _TriggeringSceneChangeEventConnection.disconnect();
+
     if(getInternalActiveScene() != TheScene)
     {
         if(getInternalActiveScene() != NULL)
@@ -384,7 +387,20 @@ void Project::setActiveScene(SceneRefPtr TheScene)
     }
 }
 
-void Project::setActiveNode(NodeRefPtr TheNode)
+void Project::setActiveSceneOnEvent(Scene* const TheScene,
+                                    ReflexiveContainer* EventProducer,
+                                    const std::string& EventName)
+{
+    const EventDescription* Desc(EventProducer->getEventDescription(EventName.c_str()));
+    if(Desc == NULL)
+    {
+        SWARNING << "No producedEvent named: " << EventName << " defined on containers of type: " << EventProducer->getType().getName() << "." << std::endl;
+        return;
+    }
+    setActiveSceneOnEvent(TheScene, EventProducer, Desc->getEventId());
+}
+
+void Project::setActiveNode(Node* const TheNode)
 {
     //TODO: Implement
 }
@@ -428,7 +444,7 @@ void Project::attachNames(void)
 
 }
 
-void Project::addActiveAnimation(AnimationRefPtr TheAnimation)
+void Project::addActiveAnimation(Animation* const TheAnimation)
 {
     if(editMFActiveAnimations()->find(TheAnimation) == editMFActiveAnimations()->end())
     {
@@ -436,7 +452,7 @@ void Project::addActiveAnimation(AnimationRefPtr TheAnimation)
     }
 }
 
-void Project::removeActiveAnimation(AnimationRefPtr TheAnimation)
+void Project::removeActiveAnimation(Animation* const TheAnimation)
 {
     if(editMFActiveAnimations()->find(TheAnimation) != editMFActiveAnimations()->end())
     {
@@ -445,7 +461,7 @@ void Project::removeActiveAnimation(AnimationRefPtr TheAnimation)
 }
 
 
-void Project::addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem)
+void Project::addActiveParticleSystem(ParticleSystem* const TheParticleSystem)
 {
     if(editMFActiveParticleSystems()->find(TheParticleSystem) ==
        editMFActiveParticleSystems()->end())
@@ -455,7 +471,7 @@ void Project::addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem)
     }
 }
 
-void Project::removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem)
+void Project::removeActiveParticleSystem(ParticleSystem* const TheParticleSystem)
 {
     if(editMFActiveParticleSystems()->find(TheParticleSystem) ==
        editMFActiveParticleSystems()->end())
@@ -503,6 +519,12 @@ void Project::produceProjectReset(void)
     Inherited::produceProjectReset(details);
 }
 
+void Project::handleTriggeringSceneChangeEvent(EventDetails* const details,
+                                               Scene* const scene)
+{
+    setActiveScene(scene);
+}
+
 void Project::resolveLinks(void)
 {
     Inherited::resolveLinks();
@@ -529,6 +551,7 @@ void Project::resolveLinks(void)
     _WindowEnteredConnection.disconnect();
     _WindowExitedConnection.disconnect();
 
+    _TriggeringSceneChangeEventConnection.disconnect();
 }
 
 /*----------------------- constructors & destructors ----------------------*/

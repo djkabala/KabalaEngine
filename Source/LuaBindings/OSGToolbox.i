@@ -59,7 +59,7 @@
 #include "OSGWindow.h"
 #include "OSGLuaActivity.h"
 #include "OSGGenericEventDetails.h"
-//#include "OSGCgFXMaterial.h"
+#include "OSGCgFXMaterial.h"
         
 %}
 
@@ -1114,41 +1114,57 @@ namespace OSG {
     class VideoWrapper : public AttachmentContainer
     {
       public:
-        //virtual bool open(const BoostPath& ThePath);
-        virtual bool open(const std::string& ThePath, WindowRefPtr window) = 0;
+        //virtual bool open(const std::string& ThePath, Window* const TheWindow) = 0;
     
-        virtual bool seek(Int64 SeekPos) = 0;
-        virtual bool jump(Int64 Amount) = 0;
-        virtual bool setRate(Real32 Rate) = 0;
-        virtual Real32 getRate(void) const = 0;
+        virtual bool seek(Real64 SeekPos) = 0;
+        virtual bool jump(Real64 Amount) = 0;
+        virtual bool setRate(Real64 Rate) = 0;
+        virtual Real64 getRate(void) const = 0;
         virtual bool play(void) = 0;
         virtual bool pause(void) = 0;
         virtual bool unpause(void) = 0;
         virtual bool pauseToggle(void) = 0;
         virtual bool stop(void) = 0;
         virtual bool close(void) = 0;
-        
         virtual bool isPlaying(void) const = 0;
-        virtual bool isStopped(void) const = 0;
         virtual bool isPaused(void) const = 0;
         virtual bool isInitialized(void) const = 0;
+        virtual bool isStopped(void) const = 0;
+        
+        virtual bool canSeekForward(void) const = 0;
+        virtual bool canSeekBackward(void) const = 0;
+        virtual Real64 getPosition(void) const = 0;
+        virtual Real64 getDuration(void) const = 0;
+        virtual UInt32 getWidth(void) const = 0;
+        virtual UInt32 getHeight(void) const = 0;
     
-        virtual Int64 getPosition(void) const = 0;
-        virtual Int64 getDuration(void) const = 0;
+        virtual bool hasAudio(void) const = 0;
+        virtual void enableAudio(void) = 0;
+        virtual void disableAudio(void) = 0;
+        virtual bool isAudioEnabled(void) const = 0;
     
-        virtual ImageRefPtr getCurrentFrame(void) = 0;
+        virtual Real32 getAudioVolume(void) const = 0;
+        virtual void setAudioVolume(Real32 volume) = 0;
+    
         virtual bool updateImage(void) = 0;
-        virtual bool updateTexture(TextureObjChunkRefPtr TheTexture);
     
-        ImageRefPtr getImage(void) const;
-    
-        //Events
-        //void addVideoListener(VideoListenerRefPtr Listener);
-        //void removeVideoListener(VideoListenerRefPtr Listener);
+        //void attachUpdateProducer(ReflexiveContainer* const producer);
+        void detachUpdateProducer(void);
       protected:
         VideoWrapper(void);
         VideoWrapper(const VideoWrapper &source);
         virtual ~VideoWrapper(void); 
+    };
+    %extend VideoWrapper
+    {
+        bool open(const std::string& ThePath, FieldContainerRefPtr TheWindow)
+        {
+            return ($self)->open(ThePath, OSG::dynamic_pointer_cast<OSG::Window>(TheWindow));
+        }
+        void attachUpdateProducer(FieldContainerRefPtr producer)
+        {
+            ($self)->attachUpdateProducer(producer);
+        }
     };
     
 

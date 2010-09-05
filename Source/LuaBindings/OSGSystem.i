@@ -19,11 +19,13 @@
 #include "OSGGeometry.h"
 #include "OSGViewport.h"
 #include "OSGCamera.h"
+#include "OSGIntersectAction.h"
 #include "OSGImage.h"
 #include "OSGTextureObjChunk.h"
 #include "OSGMathFields.h"
 #include "OSGSysFields.h"
 #include "OSGBaseFields.h"
+#include "OSGBaseFieldTraits.h"
 #include "OSGVecFields.h"
 #include "OSGFieldContainerFields.h"
 #include "OSGContainerUtils.h"
@@ -162,7 +164,9 @@
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum,1>::getType() )
           {
-              lua_pushnumber(L,static_cast<const OSG::SFGLenum*>(TheFieldHandle->getField())->getValue()); SWIG_arg++;
+              std::string value = std::string("GL_") + OSG::GLDefineMapper::the()->toString(static_cast<const OSG::SFGLenum*>(TheFieldHandle->getField())->getValue());
+
+              lua_pushstring(L,value.c_str()); SWIG_arg++;
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -391,7 +395,9 @@
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
           {
-              lua_pushnumber(L,static_cast<const OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg3)); SWIG_arg++;
+              std::string value = std::string("GL_") + OSG::GLDefineMapper::the()->toString(static_cast<const OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg3));
+
+              lua_pushstring(L,value.c_str()); SWIG_arg++;
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -677,12 +683,19 @@
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
           {
-              if(!lua_isnumber(L,3))
+              if(lua_isnumber(L,3))
+              {
+                  static_cast<OSG::SFGLenum*>(TheFieldHandle->getField())->setValue(static_cast<GLenum>(lua_tonumber(L, 3)));
+              }
+              else if(lua_isstring(L,3))
+              {
+                  static_cast<OSG::SFGLenum*>(TheFieldHandle->getField())->setValue(OSG::GLDefineMapper::the()->fromString(lua_tostring(L, 3)));
+              }
+              else
               {
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"GLenum'");
                   return SWIG_arg;
               }
-                  static_cast<OSG::SFGLenum*>(TheFieldHandle->getField())->setValue(static_cast<GLenum>(lua_tonumber(L, 3)));
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -692,7 +705,7 @@
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"Int8'");
                   return SWIG_arg;
               }
-                  static_cast<OSG::SFInt8*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int8>(lua_tonumber(L, 3)));
+              static_cast<OSG::SFInt8*>(TheFieldHandle->getField())->setValue(static_cast<OSG::Int8>(lua_tonumber(L, 3)));
           }
           //Int16
           else if(FieldContentType == OSG::FieldTraits<OSG::Int16>::getType() )
@@ -1074,12 +1087,19 @@
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
           {
-              if(!lua_isnumber(L,3))
+              if(lua_isnumber(L,3))
+              {
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<GLenum>(lua_tonumber(L, 3)));
+              }
+              else if(lua_isstring(L,3))
+              {
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg4) = OSG::GLDefineMapper::the()->fromString(lua_tostring(L, 3));
+              }
+              else
               {
                   LUA_BINDING_fail_arg(L,"setFieldValue",3,"GLenum'");
                   return SWIG_arg;
               }
-                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->operator[](arg4) = (static_cast<GLenum>(lua_tonumber(L, 3)));
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -1331,7 +1351,7 @@
           //Otherwise
           else
           {
-              lua_pushfstring(L,"Error in setFieldValue field of name '%s' on type '%s', could not set the indexed value of the multi-field because that type is not supported in this biding.",arg2,(*arg1)->getTypeName());
+              lua_pushfstring(L,"Error in setFieldValue field of name '%s' on type '%s', could not set the indexed value of the multi-field because that type is not supported in this binding.",arg2,(*arg1)->getTypeName());
               lua_error(L);
           }
         }
@@ -1455,12 +1475,19 @@
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
           {
-              if(!lua_isnumber(L,3))
+              if(lua_isnumber(L,3))
               {
-                  LUA_BINDING_fail_arg(L,"pushFieldValue",3,"GLenum'");
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->push_back(static_cast<GLenum>(lua_tonumber(L, 3)));
+              }
+              else if(lua_isstring(L,3))
+              {
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->push_back(OSG::GLDefineMapper::the()->fromString(lua_tostring(L, 3)));
+              }
+              else
+              {
+                  LUA_BINDING_fail_arg(L,"setFieldValue",3,"GLenum'");
                   return SWIG_arg;
               }
-                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->push_back(static_cast<GLenum>(lua_tonumber(L, 3)));
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -1870,14 +1897,23 @@
           //GLenum
           else if(FieldContentType == OSG::FieldTraits<GLenum, 1>::getType() )
           {
-              if(!lua_isnumber(L,3))
+              if(lua_isnumber(L,3))
               {
-                  LUA_BINDING_fail_arg(L,"insertFieldValue",3,"GLenum'");
+                  OSG::MFGLenum::iterator InsertItor(static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->begin());
+                  InsertItor += arg4;
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<GLenum>(lua_tonumber(L, 3)));
+              }
+              else if(lua_isstring(L,3))
+              {
+                  OSG::MFGLenum::iterator InsertItor(static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->begin());
+                  InsertItor += arg4;
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->insert(InsertItor, OSG::GLDefineMapper::the()->fromString(lua_tostring(L, 3)));
+              }
+              else
+              {
+                  LUA_BINDING_fail_arg(L,"setFieldValue",3,"GLenum'");
                   return SWIG_arg;
               }
-              OSG::MFGLenum::iterator InsertItor(static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->begin());
-              InsertItor += arg4;
-                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->insert(InsertItor, static_cast<GLenum>(lua_tonumber(L, 3)));
           }
           //Int8
           else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -2170,7 +2206,7 @@
           //Otherwise
           else
           {
-              lua_pushfstring(L,"Error in insertFieldValue field of name '%s' on type '%s', could not insert the value of the multi-field because that type is not supported in this biding.",arg2,(*arg1)->getTypeName());
+              lua_pushfstring(L,"Error in insertFieldValue field of name '%s' on type '%s', could not insert the value of the multi-field because that type is not supported in this binding.",arg2,(*arg1)->getTypeName());
               lua_error(L);
           }
 
@@ -2181,7 +2217,31 @@
 %template(StringToUInt32Map) std::map<std::string,OSG::UInt32>;
 %template(Int32ToStringMap) std::map<OSG::Int32,std::string>;
 
-namespace OSG {
+namespace boost
+{
+    namespace signals2
+    {
+        class connection
+        {
+        public:
+    
+          connection();
+          connection(const connection &other);
+          //connection(const boost::weak_ptr<detail::connection_body_base> &connectionBody);
+          ~connection();
+          void disconnect() const;
+          bool connected() const;
+          bool blocked() const;
+          bool operator==(const connection& other) const;
+          bool operator!=(const connection& other) const;
+          bool operator<(const connection& other) const;
+          void swap(connection &other);
+        };
+    }
+}
+
+namespace OSG
+{
 
     class FieldDescription;
     class FieldContainerRefPtr;
@@ -2439,7 +2499,7 @@ namespace OSG {
               //GLenum
               else if(FieldContentType == OSG::FieldTraits<GLenum,1>::getType() )
               {
-                      static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->clear();
+                  static_cast<OSG::MFGLenum*>(TheFieldHandle->getField())->clear();
               }
               //Int8
               else if(FieldContentType == OSG::FieldTraits<OSG::Int8>::getType() )
@@ -3747,11 +3807,149 @@ namespace OSG {
         public:
 
             static boost::signals2::connection addLuaCallback(FieldContainerRefPtr producerObject, std::string funcName, UInt32 producedEventId);
+            static boost::signals2::connection addLuaCallback(FieldContainerRefPtr producerObject, std::string funcName, const std::string& producedEventName);
 
         protected:
             LuaActivity(void);
             LuaActivity(const LuaActivity &obj);
             virtual ~LuaActivity(void);
+    };
+    
+    /******************************************************/
+    /*              Intersect Action                      */
+    /******************************************************/
+    class ActionBase
+    {
+      public:
+     
+        enum ResultE
+        {
+            Continue,   // continue with my children
+            Skip,       // skip my children
+                        // really needed? Cancel, 
+                        // skip my brothers, go one step up
+            Quit        // forget it, you're done
+        };
+      protected:
+        ActionBase(void);
+        ActionBase(const Action &source);
+    };
+    
+    class Action : public ActionBase
+    {
+      public:
+        static Action *create(void);
+        //static void    setPrototype(Action *proto);
+        //static Action *getPrototype(void         );
+    
+        virtual ~Action(void);
+        
+        //static void registerEnterDefault (const FieldContainerType &type, 
+        //                                  const Functor            &func);
+        //static void registerLeaveDefault (const FieldContainerType &type, 
+        //                                  const Functor            &func);
+        //       void registerEnterFunction(const FieldContainerType &type, 
+        //                                  const Functor            &func);
+        //       void registerLeaveFunction(const FieldContainerType &type, 
+        //                                  const Functor            &func);
+    
+        //virtual ResultE apply(std::vector<Node *>::iterator begin, 
+        //                      std::vector<Node *>::iterator end  );
+        virtual ResultE apply(Node * const                   node);
+        
+        //inline Node           *getActNode  (void);
+        //inline FieldContainer *getActParent(void);
+        //void setActNode(Node * const node);
+        //UInt32       getNNodes  (void                 ) const;
+        //Node        *getNode    (int             index);
+        //void         addNode    (Node * const node);
+        //void         useNodeList(bool bVal = true    ); 
+        UInt32 getTravMask (void      ) const;
+        void   setTravMask (UInt32 val);
+        void   andTravMask (UInt32 val);
+        void pushTravMask(void);
+        void popTravMask (void);
+        //bool operator <  (const Action &other);
+        //bool operator == (const Action &other);
+        //bool operator != (const Action &other);
+    
+      protected:
+        Action(void);
+        Action(const Action &source);
+      private:
+    };
+    %extend Action
+    {
+        ResultE apply(NodeRefPtr node)
+        {
+            return $self->apply(node);
+        }
+    };
+
+    class IntersectAction : public Action
+    {
+      public:
+    
+        // create a new IntersectAction by cloning the prototype
+        static IntersectAction *create(      void                 );
+        static IntersectAction *create(const Line   &line, 
+                                       const Real32  maxdist = Inf);
+        
+    
+        //static void             setPrototype(IntersectAction *proto);
+        //static IntersectAction *getPrototype(void                  );
+     
+        //IntersectAction& operator =(const IntersectAction &source);
+    
+        virtual ~IntersectAction(void); 
+    
+              void     setLine(       const Line   &line, 
+                                      const Real32  maxdist = Inf);
+              void     setTestLines     ( bool value );
+              void     setTestLineWidth (Real32 width);
+        const Line    &getLine       (      void                 ) const;
+              Real32   getMaxDist    (      void                 ) const;
+              bool     getTestLines  (      void                 ) const;
+              Real32   getTestLineWidth (   void                 ) const;
+              bool     didHit        (      void                 ) const;
+              Real32   getHitT       (      void                 ) const;
+              Pnt3f    getHitPoint   (      void                 ) const;
+              Vec3f    getHitNormal  (      void                 ) const;
+              //Node    *getHitObject  (      void                 ) const;
+              Int32    getHitTriangle(      void                 ) const;
+              Int32    getHitLine    (      void                 ) const;
+        /* Action::ResultE setEnterLeave(Real32   enter, 
+                                      Real32   leave   );
+        void            setHit       (Real32   t, 
+                                      Node    *obj, 
+                                      Int32    triIndex, 
+                                      Vec3f   &normal,
+                                      Int32    lineIndex );
+        void scale(Real32 s); */
+        //bool operator < (const IntersectAction &other) const;
+        
+        //bool operator == (const IntersectAction &other) const;
+        //bool operator != (const IntersectAction &other) const;
+        
+        
+        // default registration. static, so it can be called during static init
+        //static void registerEnterDefault(const FieldContainerType &type, 
+        //                                 const Action::Functor    &func);
+        //
+        //static void registerLeaveDefault(const FieldContainerType &type, 
+        //                                 const Action::Functor    &func);
+    
+      protected:
+        IntersectAction(void);
+        IntersectAction(const IntersectAction &source);
+      private:
+    };
+    %extend IntersectAction
+    {
+        NodeRefPtr getHitObject(void) const
+        {
+            return $self->getHitObject();
+        }
     };
     
     /******************************************************/

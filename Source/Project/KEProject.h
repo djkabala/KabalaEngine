@@ -94,16 +94,23 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
 
     void stop(void);
 
-    void setActiveScene(SceneRefPtr TheScene);
+    void setActiveScene(Scene* const TheScene);
+    void setActiveSceneOnEvent(Scene* const TheScene,
+                               ReflexiveContainer* EventProducer,
+                               UInt32 EventId);
+    void setActiveSceneOnEvent(Scene* const TheScene,
+                               ReflexiveContainer* EventProducer,
+                               const std::string& EventName);
+
     Scene* getActiveScene(void) const;
 
-    void setActiveNode(NodeRefPtr TheNode);
+    void setActiveNode(Node* const TheNode);
     Node* getActiveNode(void);
 
-    void addActiveAnimation(AnimationRefPtr TheAnimation);
-    void removeActiveAnimation(AnimationRefPtr TheAnimation);
-    void addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
-    void removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
+    void addActiveAnimation(Animation* const TheAnimation);
+    void removeActiveAnimation(Animation* const TheAnimation);
+    void addActiveParticleSystem(ParticleSystem* const TheParticleSystem);
+    void removeActiveParticleSystem(ParticleSystem* const TheParticleSystem);
 
     void save(const BoostPath& ProjectFile);
 
@@ -220,6 +227,11 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
                                 _WindowDeactivatedConnection,
                                 _WindowEnteredConnection,
                                 _WindowExitedConnection;
+
+    
+    void handleTriggeringSceneChangeEvent(EventDetails* const details,
+                                          Scene* const scene);
+    boost::signals2::connection _TriggeringSceneChangeEventConnection;
 
     bool _PauseActiveUpdates;
 

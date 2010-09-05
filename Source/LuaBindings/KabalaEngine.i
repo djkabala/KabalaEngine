@@ -153,25 +153,8 @@ namespace OSG {
     
         void stop(void);
     
-        void setActiveScene(SceneRefPtr TheScene);
-        SceneRefPtr getActiveScene(void) const;
-    
-        void setActiveNode(NodeRefPtr TheNode);
-        
-        void addActiveAnimation(AnimationRefPtr TheAnimation);
-        void removeActiveAnimation(AnimationRefPtr TheAnimation);
-        void addActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
-        void removeActiveParticleSystem(ParticleSystemRefPtr TheParticleSystem);
-    
-        //void save(const BoostPath& ProjectFile);
-    
-        //static ProjectRefPtr load(const BoostPath& ProjectFile);
-    
-        //static ProjectRefPtr create(const BoostPath& ProjectFile);
-    
-        //void save(void);
-    
-        //void attachNames(void);
+        //void setActiveScene(SceneRefPtr TheScene);
+        //SceneRefPtr getActiveScene(void) const;
     
         void pauseActiveUpdates(void);
         void unpauseActiveUpdates(void);
@@ -182,6 +165,30 @@ namespace OSG {
         Project(void);
         Project(const Project &source);
         virtual ~Project(void);
+    };
+    %extend Project
+    {
+        void setActiveScene(SceneRefPtr TheScene)
+        {
+            self->setActiveScene(TheScene);
+        }
+        
+        SceneRefPtr getActiveScene(void) const
+        {
+            return self->getActiveScene();
+        }
+        void setActiveSceneOnEvent(SceneRefPtr TheScene,
+                                   FieldContainerRefPtr EventProducer,
+                                   UInt32 EventId)
+        {
+            self->setActiveSceneOnEvent(TheScene, EventProducer, EventId);
+        }
+        void setActiveSceneOnEvent(SceneRefPtr TheScene,
+                                   FieldContainerRefPtr EventProducer,
+                                   const std::string& EventName)
+        {
+            self->setActiveSceneOnEvent(TheScene, EventProducer, EventName);
+        }
     };
     
     /******************************************************/
