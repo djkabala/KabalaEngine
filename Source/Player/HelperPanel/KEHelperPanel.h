@@ -76,6 +76,11 @@
 #include "Player/HierarchyPanel/KEHierarchyPanelFields.h"
 #include "Player/KEApplicationPlayerFields.h"
 
+#ifdef OSG_WITH_LUA_DEBUGGER
+#include <OpenSG/OSGTreeFields.h>
+#include <OpenSG/OSGLuaIntrospectionTreeModelFields.h>
+#endif
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief HelperPanel class. See \ref
@@ -214,6 +219,14 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
 	void setupInfoTabLabels(void);
 	void setupInfoTabPanel(void);
     void createLoggingTab(void);
+    
+#ifdef OSG_WITH_LUA_DEBUGGER
+    void createIntrospectionTreeTab(TabPanel* const tabPanel);
+    void updateGlobalLuaIntroTree(void);
+    void updateLocalLuaIntroTree(void);
+
+    LuaIntrospectionTreeModelRecPtr _GlobalLuaIntroTreeModel;
+#endif
     /*==========================  PRIVATE  ================================*/
 
   private:

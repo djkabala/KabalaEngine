@@ -270,6 +270,9 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void handleHighlightNodeUpdate(UpdateEventDetails* const details);
     boost::signals2::connection _HighlightNodeUpdateConnection;
 
+    void handleStatisticsReset(UpdateEventDetails* const details);
+    boost::signals2::connection _StatisticsResetConnection;
+
     //Selected Node
     NodeRefPtr _SelectedNode;
 
@@ -337,33 +340,34 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     ButtonRefPtr	_CloseFileButton;
 
 
-    MenuItemRefPtr _LoadProjectItem ;				
-    MenuItemRefPtr _SaveProjectItem ;				
+    MenuItemRefPtr _LoadProjectItem;				
+    MenuItemRefPtr _SaveProjectItem;				
     MenuItemRefPtr _SaveProjectAsItem;
-    MenuItemRefPtr _ResetItem ;				
-    MenuItemRefPtr _ForceQuitItem ;			
+    MenuItemRefPtr _ResetItem;				
+    MenuItemRefPtr _ForceQuitItem;			
 
-    MenuItemRefPtr _UndoItem ;				
-    MenuItemRefPtr _RedoItem ;				
+    MenuItemRefPtr _UndoItem;				
+    MenuItemRefPtr _RedoItem;				
 
 
-    MenuItemRefPtr _NextItem ;				
-    MenuItemRefPtr _PrevItem ;				
+    MenuItemRefPtr _NextItem;				
+    MenuItemRefPtr _PrevItem;				
     MenuItemRefPtr _FirstItem;				
-    MenuItemRefPtr _LastItem ;				
-    MenuRefPtr		_SceneSubItem ;				
+    MenuItemRefPtr _LastItem;				
+    MenuRefPtr		_SceneSubItem;				
 
-    MenuItemRefPtr _FlyNavigatorItem ;		
-    MenuItemRefPtr _TrackballNavigatorItem ;
-    MenuItemRefPtr _BasicItem ;				
-    MenuItemRefPtr _RenderItem ;			
-    MenuItemRefPtr _PhysicsItem ;			
-    MenuItemRefPtr _ParticleSystemItem ;	
-    MenuItemRefPtr _AnimationItem ;			
+    MenuItemRefPtr _FlyNavigatorItem;		
+    MenuItemRefPtr _TrackballNavigatorItem;
+    MenuItemRefPtr _BasicStatsItem;				
+    MenuItemRefPtr _RenderStatsItem;			
+    MenuItemRefPtr _PhysicsStatsItem;			
+    MenuItemRefPtr _ParticleSystemStatsItem;	
+    MenuItemRefPtr _AnimationStatsItem;	
+    MenuItemRefPtr _ConfigurableStatsItem;
     MenuItemRefPtr _PauseActiveUpdatesItem;			
-    MenuItemRefPtr _DrawBoundingVolumesItem ;		
-    MenuItemRefPtr _FrustrumCullingItem  ;
-    MenuItemRefPtr _DrawPhysicsCharacteristicsItem  ;
+    MenuItemRefPtr _DrawBoundingVolumesItem;		
+    MenuItemRefPtr _FrustrumCullingItem;
+    MenuItemRefPtr _DrawPhysicsCharacteristicsItem;
 
 
     MenuRefPtr		_EditMenu;
@@ -392,6 +396,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     SimpleStatisticsForegroundRefPtr _DebugPhysicsStatForeground;
     SimpleStatisticsForegroundRefPtr _DebugParticleSystemStatForeground;
     SimpleStatisticsForegroundRefPtr _DebugAnimationStatForeground;
+    SimpleStatisticsForegroundRefPtr _ConfigurableStatForeground;
 
     //Debug Camera
     CameraRefPtr    _SceneViewportCamera;

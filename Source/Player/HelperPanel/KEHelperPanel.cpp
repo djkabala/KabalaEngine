@@ -45,6 +45,8 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KEHelperPanel.h"
+#include "KELogListModel.h"
+#include "KELogListComponentGenerator.h"
 #include "Player/KEApplicationPlayer.h"
 #include "Player/HierarchyPanel/KEHierarchyPanel.h"
 #include "Project/KEProject.h"
@@ -59,6 +61,16 @@
 #include <OpenSG/OSGDefaultListModel.h>
 #include <OpenSG/OSGTabPanel.h>
 #include <OpenSG/OSGScrollPanel.h>
+
+#ifdef OSG_WITH_LUA_DEBUGGER
+#include <OpenSG/OSGLuaIntrospectionTreeModel.h>
+#include <OpenSG/OSGLuaIntrospectionComponentGenerator.h>
+#include <OpenSG/OSGTree.h>
+#include <OpenSG/OSGFixedHeightTreeModelLayout.h>
+#include <OpenSG/OSGBorderLayout.h>
+#include <OpenSG/OSGBorderLayoutConstraints.h>
+#include <OpenSG/OSGSplitPanel.h>
+#endif
 
 OSG_BEGIN_NAMESPACE
 
@@ -187,17 +199,26 @@ void HelperPanel::setupTraceTab()
 }
 
 void HelperPanel::createLoggingTab()
-{
-    //Text Area
-    _LoggingArea = TextArea::create();
-    _LoggingArea->setEditable(false);
-    _LoggingArea->setText("Logging Area\n");
-    setName(_LoggingArea,"__KABALA_ENGINE_PLAYER_LOGGING_TEXT_AREA");
+{   
+    //Logging List Component Generator
+	LogListComponentGeneratorRecPtr LoggingCompGenerator = LogListComponentGenerator::create();
 
-    //Scroll Panel
+    //Logging Model
+	LogListModelRecPtr LoggingModel = LogListModel::create();
+    LoggingModel->connectLogging();
+
+    ListRecPtr _LoggingList = List::create();
+    _LoggingList->setPreferredSize(Vec2f(200, 300));
+    _LoggingList->setOrientation(List::VERTICAL_ORIENTATION);
+	_LoggingList->setModel(LoggingModel);
+	_LoggingList->setCellGenerator(LoggingCompGenerator);
+	_LoggingList->setSelectable(false);
+
+    // Create a ScrollPanel for easier viewing of the List (see 27ScrollPanel)
     _LoggingScrollPanel = ScrollPanel::create();
+    _LoggingScrollPanel->setPreferredSize(Vec2f(200,300));
     _LoggingScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    _LoggingScrollPanel->setViewComponent(_LoggingArea);
+    _LoggingScrollPanel->setViewComponent(_LoggingList);
 
     //Content Panel
     _LoggingContent = Panel::createEmpty();
@@ -293,6 +314,9 @@ void HelperPanel::setupInfoTabPanel()
     _InfoTabPanel->addTab(_TabPanel3Label, _TabPanel3Content);
     _InfoTabPanel->addTab(_TabPanel4Label, _TabPanel4Content);
     _InfoTabPanel->addTab(_LoggingContentLabel, _LoggingContent);
+#ifdef OSG_WITH_LUA_DEBUGGER
+    createIntrospectionTreeTab(_InfoTabPanel);
+#endif
     _InfoTabPanel->setTabAlignment(0.5f);
     _InfoTabPanel->setTabPlacement(TabPanel::PLACEMENT_NORTH);
     _InfoTabPanel->setSelectedIndex(0);
@@ -339,6 +363,82 @@ void HelperPanel::hideTab(UInt32)
 {
 
 }
+
+#ifdef OSG_WITH_LUA_DEBUGGER
+
+void HelperPanel::createIntrospectionTreeTab(TabPanel* const tabPanel)
+{
+    BorderLayoutConstraintsRefPtr CenterConstraints = OSG::BorderLayoutConstraints::create();
+    CenterConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
+    BorderLayoutConstraintsRefPtr NorthConstraints = OSG::BorderLayoutConstraints::create();
+    NorthConstraints->setRegion(BorderLayoutConstraints::BORDER_NORTH);
+
+
+    _GlobalLuaIntroTreeModel = LuaIntrospectionTreeModel::create();
+    _GlobalLuaIntroTreeModel->setRoot("");
+
+    LuaIntrospectionComponentGeneratorRecPtr LuaIntroTreeComponentGenerator = LuaIntrospectionComponentGenerator::create();
+
+    //Create the Tree
+    TreeRecPtr TheTree = Tree::create();
+
+    TheTree->setPreferredSize(Vec2f(200, 500));
+    TheTree->setModel(_GlobalLuaIntroTreeModel);
+    TheTree->setCellGenerator(LuaIntroTreeComponentGenerator);
+
+    //Layout Expansion
+    TheTree->expandPath(_GlobalLuaIntroTreeModel->getRootPath());
+
+    //Create a scroll panel for the tree
+    ScrollPanelRefPtr TreeScrollPanel = ScrollPanel::create();
+    TreeScrollPanel->setPreferredSize(Vec2f(200,300));
+    TreeScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    TreeScrollPanel->setViewComponent(TheTree);
+    TreeScrollPanel->setConstraints(CenterConstraints);
+
+    //Global Label
+    LabelRecPtr GlobalTreeLabel = Label::create();
+    GlobalTreeLabel->setText("Global");
+    GlobalTreeLabel->setConstraints(NorthConstraints);
+
+    BorderLayoutRecPtr BorderPanelLayout = BorderLayout::create();
+
+    //Global Panel
+    PanelRecPtr GlobalLuaTreePanel = Panel::createEmpty();
+    GlobalLuaTreePanel->pushToChildren(GlobalTreeLabel);
+    GlobalLuaTreePanel->pushToChildren(TreeScrollPanel);
+    GlobalLuaTreePanel->setLayout(BorderPanelLayout);
+
+    //Local Label
+    LabelRecPtr LocalTreeLabel = Label::create();
+    LocalTreeLabel->setText("Local");
+    LocalTreeLabel->setConstraints(NorthConstraints);
+
+    //Local Panel
+    PanelRecPtr LocalLuaTreePanel = Panel::createEmpty();
+    LocalLuaTreePanel->pushToChildren(LocalTreeLabel);
+    LocalLuaTreePanel->setLayout(BorderPanelLayout);
+
+    //Global/Local Split Panel
+    SplitPanelRecPtr GlocalLocalSplitPanel = SplitPanel::create();
+    GlocalLocalSplitPanel->setMinComponent(GlobalLuaTreePanel);
+    GlocalLocalSplitPanel->setMaxComponent(LocalLuaTreePanel);
+    GlocalLocalSplitPanel->setDividerPosition(0.5f);
+    GlocalLocalSplitPanel->setDividerSize(5);
+    GlocalLocalSplitPanel->setMinDividerPosition(.1);
+    GlocalLocalSplitPanel->setMaxDividerPosition(.9);
+    
+
+    //Add the Panel to the TabPanel
+    LabelRefPtr IntrospectionTreeTabLabel = Label::create();
+    IntrospectionTreeTabLabel->setText("Lua Introspection");
+    IntrospectionTreeTabLabel->setBorders(NULL);
+    IntrospectionTreeTabLabel->setBackgrounds(NULL);
+
+    tabPanel->addTab(IntrospectionTreeTabLabel, GlocalLocalSplitPanel);
+}
+
+#endif
 
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -

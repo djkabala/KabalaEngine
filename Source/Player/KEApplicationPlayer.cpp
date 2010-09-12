@@ -106,6 +106,10 @@
 #include <OpenSG/OSGUIDrawUtils.h>
 
 
+#include <OpenSG/OSGParticleSystem.h>
+
+#include <OpenSG/OSGSoundManager.h>
+
 OSG_BEGIN_NAMESPACE
 
 // Documentation for this class is emitted in the
@@ -228,11 +232,12 @@ void ApplicationPlayer::createDebugInterface(void)
     _FlyNavigatorItem = MenuItem::create();		
     _TrackballNavigatorItem = MenuItem::create();
 
-    _BasicItem = MenuItem::create();				
-    _RenderItem = MenuItem::create();			
-    _PhysicsItem = MenuItem::create();
-    _ParticleSystemItem = MenuItem::create();	
-    _AnimationItem = MenuItem::create();
+    _BasicStatsItem = MenuItem::create();				
+    _RenderStatsItem = MenuItem::create();			
+    _PhysicsStatsItem = MenuItem::create();
+    _ParticleSystemStatsItem = MenuItem::create();	
+    _AnimationStatsItem = MenuItem::create();
+    _ConfigurableStatsItem = MenuItem::create();
     _PauseActiveUpdatesItem = MenuItem::create();
     _DrawBoundingVolumesItem = MenuItem::create();
     _FrustrumCullingItem = MenuItem::create();
@@ -306,24 +311,26 @@ void ApplicationPlayer::createDebugInterface(void)
     _TrackballNavigatorItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
     _TrackballNavigatorItem->setMnemonicKey(KeyEventDetails::KEY_T);
 
-    _BasicItem->setText("Basic");
-    _BasicItem->setAcceleratorKey(KeyEventDetails::KEY_B);
-    _BasicItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
-    _BasicItem->setMnemonicKey(KeyEventDetails::KEY_B);
+    _BasicStatsItem->setText("Basic");
+    _BasicStatsItem->setAcceleratorKey(KeyEventDetails::KEY_B);
+    _BasicStatsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _BasicStatsItem->setMnemonicKey(KeyEventDetails::KEY_B);
 
-    _RenderItem->setText("Render");
-    _RenderItem->setAcceleratorKey(KeyEventDetails::KEY_R);
-    _RenderItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
-    _RenderItem->setMnemonicKey(KeyEventDetails::KEY_R);
+    _RenderStatsItem->setText("Render");
+    _RenderStatsItem->setAcceleratorKey(KeyEventDetails::KEY_R);
+    _RenderStatsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _RenderStatsItem->setMnemonicKey(KeyEventDetails::KEY_R);
 
-    _PhysicsItem->setText("Physics");
-    _PhysicsItem->setMnemonicKey(KeyEventDetails::KEY_Y);
+    _PhysicsStatsItem->setText("Physics");
+    _PhysicsStatsItem->setMnemonicKey(KeyEventDetails::KEY_Y);
 
-    _ParticleSystemItem->setText("ParticleSystem");
-    _ParticleSystemItem->setMnemonicKey(KeyEventDetails::KEY_Z);
+    _ParticleSystemStatsItem->setText("ParticleSystem");
+    _ParticleSystemStatsItem->setMnemonicKey(KeyEventDetails::KEY_Z);
 
-    _AnimationItem->setText("Animation");
-    _AnimationItem->setMnemonicKey(KeyEventDetails::KEY_A);
+    _AnimationStatsItem->setText("Animation");
+    _AnimationStatsItem->setMnemonicKey(KeyEventDetails::KEY_A);
+
+    _ConfigurableStatsItem->setText("Configurable");
 
     _PauseActiveUpdatesItem->setText("Pause Active Updates");
     _PauseActiveUpdatesItem->setAcceleratorKey(KeyEventDetails::KEY_SPACE);
@@ -451,11 +458,12 @@ void ApplicationPlayer::createDebugInterface(void)
     _NavigatorMenu->addItem(_TrackballNavigatorItem);
 
     _StatisticsMenu = Menu::create();
-    _StatisticsMenu->addItem(_BasicItem);
-    _StatisticsMenu->addItem(_RenderItem);
-    _StatisticsMenu->addItem(_PhysicsItem);
-    _StatisticsMenu->addItem(_ParticleSystemItem);
-    _StatisticsMenu->addItem(_AnimationItem);
+    _StatisticsMenu->addItem(_BasicStatsItem);
+    _StatisticsMenu->addItem(_RenderStatsItem);
+    _StatisticsMenu->addItem(_PhysicsStatsItem);
+    _StatisticsMenu->addItem(_ParticleSystemStatsItem);
+    _StatisticsMenu->addItem(_AnimationStatsItem);
+    _StatisticsMenu->addItem(_ConfigurableStatsItem);
 
     _ToggleMenu = Menu::create();
     _ToggleMenu->addItem(_PauseActiveUpdatesItem);
@@ -495,11 +503,12 @@ void ApplicationPlayer::createDebugInterface(void)
     _LastItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _FlyNavigatorItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _TrackballNavigatorItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _BasicItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _RenderItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _PhysicsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _ParticleSystemItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _AnimationItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _BasicStatsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _RenderStatsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _PhysicsStatsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ParticleSystemStatsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _AnimationStatsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ConfigurableStatsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _PauseActiveUpdatesItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _DrawBoundingVolumesItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _FrustrumCullingItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
@@ -876,25 +885,29 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
     {
         //TODO: Implement
     }
-    else if(details->getSource() == _BasicItem)
+    else if(details->getSource() == _BasicStatsItem)
     {
         toggleStatForeground(_DebugBasicStatForeground);
     }
-    else if(details->getSource() == _RenderItem)
+    else if(details->getSource() == _RenderStatsItem)
     {
         toggleStatForeground(_DebugRenderStatForeground);
     }
-    else if(details->getSource() == _PhysicsItem)
+    else if(details->getSource() == _PhysicsStatsItem)
     {
         toggleStatForeground(_DebugPhysicsStatForeground);
     }
-    else if(details->getSource() == _ParticleSystemItem)
+    else if(details->getSource() == _ParticleSystemStatsItem)
     {
         toggleStatForeground(_DebugParticleSystemStatForeground);
     }
-    else if(details->getSource() == _AnimationItem)
+    else if(details->getSource() == _AnimationStatsItem)
     {
         toggleStatForeground(_DebugAnimationStatForeground);
+    }
+    else if(details->getSource() == _ConfigurableStatsItem)
+    {
+        toggleStatForeground(_ConfigurableStatForeground);
     }
     else if(details->getSource() == _PauseActiveUpdatesItem)
     {
@@ -1137,11 +1150,15 @@ void ApplicationPlayer::toggleFrustumCulling(void)
 
 void ApplicationPlayer::toggleStatForeground(StatisticsForeground* const TheForeground)
 {
-    Int32 Index(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getMFForegrounds()->findIndex(TheForeground));
+    Int32 Index(_DebugViewport->getMFForegrounds()->findIndex(TheForeground));
     if(Index != -1)
     {
         //If the Stat foreground is present then switch it off
-        MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->removeFromForegrounds(Index);
+        _DebugViewport->removeFromForegrounds(Index);
+
+        StatCollector::setGlobalCollector(NULL);
+
+        _StatisticsResetConnection.disconnect();
     }
     else
     {
@@ -1149,9 +1166,18 @@ void ApplicationPlayer::toggleStatForeground(StatisticsForeground* const TheFore
         hideAllStatForegrounds();
 
         //and switch it on
-        MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->addForeground(TheForeground);
+        _DebugViewport->addForeground(TheForeground);
 
-        MainApplication::the()->getMainWindow()->getRenderAction()->setStatCollector(TheForeground->getCollector());
+        //Set the Global stat collector
+        StatCollector::setGlobalCollector(TheForeground->getCollector());
+
+        //Add callback for resetting the statistics
+        if(!_StatisticsResetConnection.connected())
+        {
+            _StatisticsResetConnection = 
+                MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&ApplicationPlayer::handleStatisticsReset, this, _1),
+                                                                       boost::signals2::at_front);
+        }
     }
 }
 
@@ -1159,19 +1185,22 @@ void ApplicationPlayer::hideAllStatForegrounds(void)
 {
 
     //Hide Basic Stat Foreground if present
-    MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->removeObjFromForegrounds(_DebugBasicStatForeground);
+    _DebugViewport->removeObjFromForegrounds(_DebugBasicStatForeground);
 
     //Hide Render Stat Foreground if present
-    MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->removeObjFromForegrounds(_DebugRenderStatForeground);
+    _DebugViewport->removeObjFromForegrounds(_DebugRenderStatForeground);
 
     //Hide Physics Stat Foreground if present
-    MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->removeObjFromForegrounds(_DebugPhysicsStatForeground);
+    _DebugViewport->removeObjFromForegrounds(_DebugPhysicsStatForeground);
 
     //Hide Particle System Stat Foreground if present
-    MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->removeObjFromForegrounds(_DebugParticleSystemStatForeground);
+    _DebugViewport->removeObjFromForegrounds(_DebugParticleSystemStatForeground);
 
     //Hide Animation Stat Foreground if present
-    MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->removeObjFromForegrounds(_DebugAnimationStatForeground);
+    _DebugViewport->removeObjFromForegrounds(_DebugAnimationStatForeground);
+
+    //Hide Configurable Stat Foreground if present
+    _DebugViewport->removeObjFromForegrounds(_ConfigurableStatForeground);
 }
 
 void ApplicationPlayer::initDebugStatForegrounds(void)
@@ -1193,8 +1222,11 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugBasicStatForeground->setBgColor(StatBackgroundColor);
     _DebugBasicStatForeground->setBorderColor(StatBorderColor);
     _DebugBasicStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    _DebugBasicStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
     _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+    _DebugBasicStatForeground->getCollector()->getElem(RenderAction::statNGeometries, true);
     _DebugBasicStatForeground->addElement(RenderAction::statNTriangles, "%d triangles drawn");
+    _DebugBasicStatForeground->getCollector()->getElem(RenderAction::statNTriangles, true);
 
     //Rendering Statistics
     _DebugRenderStatForeground = SimpleStatisticsForeground::create();
@@ -1207,42 +1239,64 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugRenderStatForeground->setBorderColor(StatBorderColor);
     //Drawing Statistics
     _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
     _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "Trav FPS: %r.3f");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statTravTime, true);
     _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNGeometries, true);
     _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "DrawTime: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
     _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "TravTime: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statTravTime, true);
 
     //Nodes
     _DebugRenderStatForeground->addElement(RenderPartition::statCullTestedNodes, "%d Nodes culltested");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderPartition::statCullTestedNodes, true);
     _DebugRenderStatForeground->addElement(RenderPartition::statCulledNodes, "%d Nodes culled");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderPartition::statCulledNodes, true);
     _DebugRenderStatForeground->addElement(RenderAction::statNMatrices, "%d matrix changes");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNMatrices, true);
     _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNGeometries, true);
     //_DebugRenderStatForeground->addElement(RenderAction::statNTransGeometries, "%d transparent Nodes drawn");
 
     //Materials
     //_DebugRenderStatForeground->addElement(RenderAction::statNMaterials, "%d material changes");
     _DebugRenderStatForeground->addElement(RenderAction::statNShaders, "%d shader changes");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNShaders, true);
     _DebugRenderStatForeground->addElement(RenderAction::statNShaderParams, "%d shader param changes");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNShaderParams, true);
 
     //Drawn primities
     _DebugRenderStatForeground->addElement(RenderAction::statNTriangles, "%d triangles drawn");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNTriangles, true);
     _DebugRenderStatForeground->addElement(Drawable::statNLines, "%d lines drawn");
+    _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNLines, true);
     _DebugRenderStatForeground->addElement(Drawable::statNPoints, "%d points drawn");
+    _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNPoints, true);
     _DebugRenderStatForeground->addElement(Drawable::statNPrimitives,"%d primitive groups drawn");
+    _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNPrimitives, true);
     _DebugRenderStatForeground->addElement(Drawable::statNVertices, "%d vertices transformed");
+    _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNVertices, true);
     _DebugRenderStatForeground->addElement(Drawable::statNGeoBytes, "%d bytes of geometry used");
+    _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNGeoBytes, true);
 
     //Textures
     _DebugRenderStatForeground->addElement(TextureObjChunk::statNTextures, "%d textures used");
+    _DebugRenderStatForeground->getCollector()->getElem(TextureObjChunk::statNTextures, true);
     _DebugRenderStatForeground->addElement(TextureObjChunk::statNTexBytes, "%MB MB of texture used");
+    _DebugRenderStatForeground->getCollector()->getElem(TextureObjChunk::statNTexBytes, true);
 
     //Lights
     _DebugRenderStatForeground->addElement(PointLight::statNPointLights,
                                            "%d point lights");
+    _DebugRenderStatForeground->getCollector()->getElem(PointLight::statNPointLights, true);
     _DebugRenderStatForeground->addElement(DirectionalLight::statNDirectionalLights,
                                            "%d directional lights");
+    _DebugRenderStatForeground->getCollector()->getElem(DirectionalLight::statNDirectionalLights, true);
     _DebugRenderStatForeground->addElement(SpotLight::statNSpotLights,
                                            "%d spot lights");
+    _DebugRenderStatForeground->getCollector()->getElem(SpotLight::statNSpotLights, true);
 
     //Occlusion
     //_DebugRenderStatForeground->addElement(OcclusionTestingTreeBuilder::statNOccNodes,
@@ -1266,6 +1320,21 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugPhysicsStatForeground->setBgColor(StatBackgroundColor);
     _DebugPhysicsStatForeground->setBorderColor(StatBorderColor);
     _DebugPhysicsStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    _DebugPhysicsStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
+    _DebugPhysicsStatForeground->addElement(PhysicsHandler::statPhysicsTime, "Total Physics: %.3f s");
+    _DebugPhysicsStatForeground->getCollector()->getElem(PhysicsHandler::statPhysicsTime, true);
+    _DebugPhysicsStatForeground->addElement(PhysicsHandler::statCollisionTime, "Collision: %.3f s");
+    _DebugPhysicsStatForeground->getCollector()->getElem(PhysicsHandler::statCollisionTime, true);
+    _DebugPhysicsStatForeground->addElement(PhysicsHandler::statSimulationTime, "Simulation: %.3f s");
+    _DebugPhysicsStatForeground->getCollector()->getElem(PhysicsHandler::statSimulationTime, true);
+    _DebugPhysicsStatForeground->addElement(PhysicsHandler::statTransformUpdateTime, "Transform update: %.3f s");
+    _DebugPhysicsStatForeground->getCollector()->getElem(PhysicsHandler::statTransformUpdateTime, true);
+    _DebugPhysicsStatForeground->addElement(PhysicsHandler::statNPhysicsSteps, "%d simulation steps");
+    _DebugPhysicsStatForeground->getCollector()->getElem(PhysicsHandler::statNPhysicsSteps, true);
+    _DebugPhysicsStatForeground->addElement(PhysicsHandler::statNCollisionTests, "%d average collision tests");
+    _DebugPhysicsStatForeground->getCollector()->getElem(PhysicsHandler::statNCollisionTests, true);
+    _DebugPhysicsStatForeground->addElement(PhysicsHandler::statNCollisions, "%d average collisions");
+    _DebugPhysicsStatForeground->getCollector()->getElem(PhysicsHandler::statNCollisions, true);
 
     //Particle System Statistics
     _DebugParticleSystemStatForeground = SimpleStatisticsForeground::create();
@@ -1277,6 +1346,17 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugParticleSystemStatForeground->setBgColor(StatBackgroundColor);
     _DebugParticleSystemStatForeground->setBorderColor(StatBorderColor);
     _DebugParticleSystemStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    _DebugParticleSystemStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
+    _DebugParticleSystemStatForeground->addElement(ParticleSystem::statNParticles, "%d Particles");
+    _DebugParticleSystemStatForeground->getCollector()->getElem(ParticleSystem::statNParticlesCreated, true);
+    _DebugParticleSystemStatForeground->addElement(ParticleSystem::statNParticlesCreated, "%d Particles created");
+    _DebugParticleSystemStatForeground->getCollector()->getElem(ParticleSystem::statNParticlesCreated, true);
+    _DebugParticleSystemStatForeground->addElement(ParticleSystem::statNParticlesKilled, "%d Particles killed");
+    _DebugParticleSystemStatForeground->getCollector()->getElem(ParticleSystem::statNParticlesKilled, true);
+    _DebugParticleSystemStatForeground->addElement(ParticleSystem::statParticleUpdateTime, "Particle Update Time: %.3f s");
+    _DebugParticleSystemStatForeground->getCollector()->getElem(ParticleSystem::statParticleUpdateTime, true);
+    _DebugParticleSystemStatForeground->addElement(ParticleSystem::statParticleSortTime, "Particle Sort Time: %.3f s");
+    _DebugParticleSystemStatForeground->getCollector()->getElem(ParticleSystem::statParticleSortTime, true);
 
     //Animation Statistics
     _DebugAnimationStatForeground = SimpleStatisticsForeground::create();
@@ -1288,6 +1368,52 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugAnimationStatForeground->setBgColor(StatBackgroundColor);
     _DebugAnimationStatForeground->setBorderColor(StatBorderColor);
     _DebugAnimationStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    _DebugAnimationStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
+    _DebugAnimationStatForeground->addElement(Animation::statAnimUpdateTime, "Animation Update Time: %.3f s");
+    _DebugAnimationStatForeground->getCollector()->getElem(Animation::statAnimUpdateTime, true);
+    _DebugAnimationStatForeground->addElement(Animation::statNAnimations, "%d animations");
+    _DebugAnimationStatForeground->getCollector()->getElem(Animation::statNAnimations, true);
+    _DebugAnimationStatForeground->addElement(SoundManager::statNChannels, "%d sound channels");
+    _DebugAnimationStatForeground->getCollector()->getElem(SoundManager::statNChannels, true);
+    _DebugAnimationStatForeground->addElement(LuaManager::statScriptsRunTime, "Lua script time: %.3f s");
+    _DebugAnimationStatForeground->getCollector()->getElem(LuaManager::statScriptsRunTime, true);
+
+    //Configurable Statistics
+    _ConfigurableStatForeground = SimpleStatisticsForeground::create();
+    _ConfigurableStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
+    _ConfigurableStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+    _ConfigurableStatForeground->setSize(StatFontSize);
+    _ConfigurableStatForeground->setColor(StatColor);
+    _ConfigurableStatForeground->setShadowColor(StatShadowColor);
+    _ConfigurableStatForeground->setBgColor(StatBackgroundColor);
+    _ConfigurableStatForeground->setBorderColor(StatBorderColor);
+
+    //std::vector<std::string> ElementsVec(MainApplication::the()->getSettings().get_vec<std::string>("player.debugger.configurable_stats.elements"));
+    //std::vector<std::string>::iterator LoopItor(ElementsVec.begin());
+    //StatElemDescBase* ElementDesc;
+    //std::string ElementIdName;
+    //std::string ElementPrintFormat;
+    //while(LoopItor!=ElementsVec.end())
+    //{
+    //    //Get the Stat Element Description name
+    //    ElementIdName = *LoopItor;
+    //    ElementDesc = StatElemDescBase::findDescByName(ElementIdName.c_str());
+    //    ++LoopItor;
+
+    //    //Error check if the vec isn't the correct size
+    //    if(LoopItor==ElementsVec.end()) { break; }
+
+    //    //Get the string to use to format the output of the stat element
+    //    ElementPrintFormat = *LoopItor;
+
+    //    //If the stat element is defined
+    //    if(ElementDesc != NULL)
+    //    {
+    //        //add it to the Stat Foreground
+    //        _DebugParticleSystemStatForeground->addElement(*ElementDesc, ElementPrintFormat.c_str());
+    //    }
+    //    ++LoopItor;
+    //}
 }
 
 void ApplicationPlayer::updateDebugUI(void)
@@ -1687,6 +1813,7 @@ ApplicationPlayer::ApplicationPlayer(const ApplicationPlayer &source) :
     _DebugPhysicsStatForeground(source._DebugPhysicsStatForeground),
     _DebugParticleSystemStatForeground(source._DebugParticleSystemStatForeground),
     _DebugAnimationStatForeground(source._DebugAnimationStatForeground),
+    _ConfigurableStatForeground(source._ConfigurableStatForeground),
     _PhysDrawable(NULL),
     _PhysDrawableNode(NULL),
     _WasMouseHidden(false),
@@ -1738,6 +1865,11 @@ void ApplicationPlayer::handleProjectSceneChanged(ProjectEventDetails* const det
 void ApplicationPlayer::handleHighlightNodeUpdate(UpdateEventDetails* const details)
 {
     updateHighlightNode();
+}
+
+void ApplicationPlayer::handleStatisticsReset(UpdateEventDetails* const details)
+{
+    StatCollector::getGlobalCollector()->reset();
 }
 
 void ApplicationPlayer::updateXFormManipulator(void)
