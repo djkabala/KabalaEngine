@@ -104,14 +104,6 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
 
     Scene* getActiveScene(void) const;
 
-    void setActiveNode(Node* const TheNode);
-    Node* getActiveNode(void);
-
-    void addActiveAnimation(Animation* const TheAnimation);
-    void removeActiveAnimation(Animation* const TheAnimation);
-    void addActiveParticleSystem(ParticleSystem* const TheParticleSystem);
-    void removeActiveParticleSystem(ParticleSystem* const TheParticleSystem);
-
     void save(const BoostPath& ProjectFile);
 
     static ProjectRefPtr load(const BoostPath& ProjectFile);
@@ -119,8 +111,6 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
     static ProjectRefPtr create(const BoostPath& ProjectFile);
 
     void save(void);
-
-    void attachNames(void);
 
     WindowEventProducer* getEventProducer(void) const;
 

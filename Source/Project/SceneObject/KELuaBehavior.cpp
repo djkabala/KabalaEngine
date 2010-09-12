@@ -89,7 +89,7 @@ LuaBehaviorType* const LuaBehavior::getLuaBehaviorType(void) const
 
 void LuaBehavior::initEvents(SceneObject* const rootSceneObject)
 {
-	getLuaBehaviorType()->registerWithScene(rootSceneObject->getParentScene());
+    getLuaBehaviorType()->registerWithScene(rootSceneObject->getParentScene());
     eventsInitted = true;
 }
 
@@ -115,14 +115,14 @@ void LuaBehavior::initLinks(SceneObject* const rootSceneObject)
                 else
                 {
                     std::string::size_type subStrStart(0),
-                                           subStrEnd(0);
+                        subStrEnd(0);
                     //Loop through all nested tables
                     while(subStrEnd != std::string::npos)
                     {
                         subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
                         _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd-subStrStart));
 
-                        if(subStrEnd != std::string::npos) ++subStrEnd; 
+                        if(subStrEnd != std::string::npos) { ++subStrEnd; }
                         subStrStart = subStrEnd;
                     }
                     //BUG: For some reason using the split algorithm is causing a
@@ -160,14 +160,14 @@ void LuaBehavior::initLinks(SceneObject* const rootSceneObject)
                     _FunctionsMap[uId] = std::vector<std::string>();
 
                     std::string::size_type subStrStart(0),
-                                           subStrEnd(0);
+                        subStrEnd(0);
                     //Loop through all nested tables
                     while(subStrEnd != std::string::npos)
                     {
                         subStrEnd   = NestedTableFunction.find_first_of('.',subStrStart);
                         _FunctionsMap[uId].push_back(NestedTableFunction.substr(subStrStart,subStrEnd-subStrStart));
 
-                        if(subStrEnd != std::string::npos) ++subStrEnd; 
+                        if(subStrEnd != std::string::npos) { ++subStrEnd; }
                         subStrStart = subStrEnd;
                     }
                     //BUG: For some reason using the split algorithm is causing a
@@ -209,8 +209,8 @@ void LuaBehavior::callLuaFunctionForEvent(UInt64 MapId,
                                           UInt32 ProducedEventID)
 {
     //Get the Lua state
-    lua_State *LuaState(LuaManager::the()->getLuaState());
-        
+    lua_State* LuaState(LuaManager::the()->getLuaState());
+
     const std::vector<std::string>& funcPath = _FunctionsMap[MapId];
 
     //Get the Lua function to be called
@@ -230,13 +230,13 @@ void LuaBehavior::callLuaFunctionForEvent(UInt64 MapId,
                 std::string TablePath("");
                 for(UInt32 j(0) ; j<i ; ++j)
                 {
-                    if(j!=0) TablePath += ".";
+                    if(j!=0) { TablePath += "."; }
                     TablePath += funcPath[j];
                 }
                 SWARNING << TablePath << " cannot be referenced in lua because it is not a table" << std::endl;
                 return;
             }
-        
+
             lua_pushstring(LuaState,funcPath[i].c_str());             //push the name of the table on the stack
             lua_gettable(LuaState, -2);  //Push The table onto the stack
 
@@ -253,7 +253,7 @@ void LuaBehavior::callLuaFunctionForEvent(UInt64 MapId,
         std::string TablePath("");
         for(UInt32 i(0) ; i<funcPath.size() ; ++i)
         {
-            if(i!=0) TablePath += ".";
+            if(i!=0) { TablePath += "."; }
             TablePath += funcPath[i];
         }
         SWARNING << TablePath << " cannot be referenced in lua because it is not a function" << std::endl;
@@ -269,12 +269,12 @@ void LuaBehavior::callLuaFunctionForEvent(UInt64 MapId,
 
     //Execute the Function
     //
-    //                                                |------3 arguments to function
-    //                                                |
-    //                                                |  |---0 arguments returned
-    //                                                |  |
-    //                                                V  V
-    LuaManager::the()->checkError(lua_pcall(LuaState, 3, 0, 0));
+    //                                   |------3 arguments to function
+    //                                   |
+    //                                   |  |---0 arguments returned
+    //                                   |  |
+    //                                   V  V
+    LuaManager::the()->runPushedFunction(3, 0);
 }
 
 /***************************************************************************\
@@ -292,7 +292,7 @@ LuaBehavior::LuaBehavior(void) :
 {
 }
 
-LuaBehavior::LuaBehavior(const LuaBehavior &source) :
+LuaBehavior::LuaBehavior(const LuaBehavior& source) :
     Inherited(source)
 {
 }
@@ -303,15 +303,15 @@ LuaBehavior::~LuaBehavior(void)
 
 /*----------------------------- class specific ----------------------------*/
 
-void LuaBehavior::changed(ConstFieldMaskArg whichField, 
-                            UInt32            origin,
-                            BitVector         details)
+void LuaBehavior::changed(ConstFieldMaskArg whichField,
+                          UInt32            origin,
+                          BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
 }
 
 void LuaBehavior::dump(      UInt32    ,
-                         const BitVector ) const
+                             const BitVector ) const
 {
     SLOG << "Dump LuaBehavior NI" << std::endl;
 }

@@ -331,89 +331,11 @@ void Scene::exit(void)
 
 void Scene::createDefaults(void)
 {
-    if(getDefaultCameraBeaconCore() == NULL)
-    {
-        TransformRefPtr TheDefaultCameraBeaconCore = Transform::create();
-
-        setDefaultCameraBeaconCore(TheDefaultCameraBeaconCore);
-    }
-
-    if(getDefaultCameraBeacon() == NULL)
-    {
-        NodeRefPtr TheDefaultCameraBeacon = Node::create();
-
-        setDefaultCameraBeacon(TheDefaultCameraBeacon);
-    }
-
-    if(getRootCore() == NULL)
-    {
-        TransformRefPtr TheRootCore = Transform::create();
-
-        setRootCore(TheRootCore);
-    }
-
-    if(getRoot() == NULL)
-    {
-        NodeRefPtr TheRoot = Node::create();
-
-        setRoot(TheRoot);
-    }
-
     if(getMFViewports()->size() == 0)
     {
         ViewportRefPtr TheViewport = Viewport::create();
 
         pushToViewports(TheViewport);
-    }
-}
-
-void Scene::initDefaults(void)
-{
-    Matrix Mat;
-    Mat.setIdentity();
-
-    getDefaultCameraBeaconCore()->setMatrix(Mat);
-
-    getDefaultCameraBeacon()->setCore(getDefaultCameraBeaconCore());
-
-    getRootCore()->setMatrix(Mat);
-
-    getRoot()->setCore(getRootCore());
-    while(getRoot()->getNChildren() > 0)
-    {
-        getRoot()->subChild(getRoot()->getNChildren()-1);
-    }
-    getRoot()->addChild(getDefaultCameraBeacon());
-
-}
-
-void Scene::attachNames(void)
-{
-    //Backgrounds
-    for(::OSG::UInt32 i(0); i<getMFBackgrounds()->size() ; ++i)
-    {
-        attachName(getBackgrounds(i));
-    }
-
-    //Foregrounds
-    for(::OSG::UInt32 i(0); i<getMFForegrounds()->size() ; ++i)
-    {
-        attachName(getForegrounds(i));
-    }
-
-    //Cameras
-    for(::OSG::UInt32 i(0); i<getMFCameras()->size() ; ++i)
-    {
-        attachName(getCameras(i));
-    }
-
-    //ModelNodes
-    for(::OSG::UInt32 i(0); i<getMFModelNodes()->size() ; ++i)
-    {
-        if(getModelNodes(i) != NULL)
-        {
-            attachName(getModelNodes(i));
-        }
     }
 }
 
@@ -656,6 +578,195 @@ UInt32 Scene::numSlotsEvent          (UInt32 eventId) const
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
+
+void Scene::handleUpdate(UpdateEventDetails* const details)
+{
+    if(!_BlockInput && details->getElapsedTime() < 1.0)
+    {
+        UpdateEventDetailsUnrecPtr newSourceDetails = UpdateEventDetails::create(details, this);
+        produceUpdate(newSourceDetails);
+    }
+}
+
+void Scene::handleMouseClicked(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseClicked(newSourceDetails);
+    }
+}
+
+void Scene::handleMouseEntered(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseEntered(newSourceDetails);
+    }
+}
+
+void Scene::handleMouseExited(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseExited(newSourceDetails);
+    }
+}
+
+void Scene::handleMousePressed(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMousePressed(newSourceDetails);
+    }
+}
+
+void Scene::handleMouseReleased(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseReleased(newSourceDetails);
+    }
+}
+
+void Scene::handleMouseMoved(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseMoved(newSourceDetails);
+    }
+}
+
+void Scene::handleMouseDragged(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseDragged(newSourceDetails);
+    }
+}
+
+void Scene::handleMouseWheelMoved(MouseWheelEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseWheelEventDetailsUnrecPtr newSourceDetails = MouseWheelEventDetails::create(details, this);
+        produceMouseWheelMoved(newSourceDetails);
+    }
+}
+
+void Scene::handleKeyPressed(KeyEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        KeyEventDetailsUnrecPtr newSourceDetails = KeyEventDetails::create(details, this);
+        produceKeyPressed(newSourceDetails);
+    }
+}
+
+void Scene::handleKeyReleased(KeyEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        KeyEventDetailsUnrecPtr newSourceDetails = KeyEventDetails::create(details, this);
+        produceKeyReleased(newSourceDetails);
+    }
+}
+
+void Scene::handleKeyTyped(KeyEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        KeyEventDetailsUnrecPtr newSourceDetails = KeyEventDetails::create(details, this);
+        produceKeyTyped(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowOpened(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowOpened(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowClosing(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowClosing(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowClosed(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowClosed(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowIconified(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowIconified(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowDeiconified(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowDeiconified(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowActivated(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowActivated(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowDeactivated(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowDeactivated(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowEntered(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowEntered(newSourceDetails);
+    }
+}
+
+void Scene::handleWindowExited(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowExited(newSourceDetails);
+    }
+}
 
 void Scene::produceSceneEntered(void)
 {

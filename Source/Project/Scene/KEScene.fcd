@@ -43,8 +43,8 @@ The Scene.
 	  The Project this Scene is contained in.
 	</Field>
 	<Field
-		name="Viewports"
-		type="Viewport"
+		name="ObjectStore"
+		type="FieldContainer"
 		category="pointer"
 		cardinality="multi"
 		visibility="external"
@@ -52,8 +52,8 @@ The Scene.
 	>
 	</Field>
 	<Field
-		name="Backgrounds"
-		type="Background"
+		name="Viewports"
+		type="Viewport"
 		category="pointer"
 		cardinality="multi"
 		visibility="external"
@@ -70,111 +70,6 @@ The Scene.
 	>
 	</Field>
 	<Field
-		name="InitialBackground"
-		type="Background"
-		category="pointer"
-		cardinality="single"
-		visibility="external"
-		defaultValue="NULL"
-		access="public"
-	>
-	</Field>
-	<Field
-		name="Foregrounds"
-		type="Foreground"
-		category="pointer"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
-	<Field
-		name="InitialForegrounds"
-		type="Foreground"
-		category="pointer"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
-	<Field
-		name="ModelNodes"
-		type="Node"
-		category="pointer"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
-	<Field
-		name="InitialModelNodes"
-		type="Node"
-		category="pointer"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
-	<Field
-		name="Root"
-		type="Node"
-		category="pointer"
-		cardinality="single"
-		visibility="internal"
-		defaultValue="NULL"
-		access="protected"
-	>
-	</Field>
-	<Field
-		name="RootCore"
-		type="Transform"
-		category="pointer"
-		cardinality="single"
-		visibility="internal"
-		defaultValue="NULL"
-		access="protected"
-	>
-	</Field>
-	<Field
-		name="DefaultCameraBeacon"
-		type="Node"
-		category="pointer"
-		cardinality="single"
-		visibility="internal"
-		defaultValue="NULL"
-		access="protected"
-	>
-	</Field>
-	<Field
-		name="DefaultCameraBeaconCore"
-		type="Transform"
-		category="pointer"
-		cardinality="single"
-		visibility="internal"
-		defaultValue="NULL"
-		access="protected"
-	>
-	</Field>
-	<Field
-		name="Cameras"
-		type="Camera"
-		category="pointer"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
-	<Field
-		name="InitialCamera"
-		type="Camera"
-		category="pointer"
-		cardinality="single"
-		visibility="external"
-		defaultValue="NULL"
-		access="public"
-	>
-	</Field>
-	<Field
 		name="Animations"
 		type="Animation"
 		category="pointer"
@@ -186,15 +81,6 @@ The Scene.
 	<Field
 		name="InitialAnimations"
 		type="Animation"
-		category="pointer"
-		cardinality="multi"
-		visibility="external"
-		access="public"
-	>
-	</Field>
-	<Field
-		name="ParticleSystems"
-		type="ParticleSystem"
 		category="pointer"
 		cardinality="multi"
 		visibility="external"
@@ -242,7 +128,7 @@ The Scene.
 		name="GenericMethodIDs"
 		type="UInt32"
 		cardinality="single"
-		visibility="external"
+		visibility="internal"
 		access="protected"
 	>
 	</Field>

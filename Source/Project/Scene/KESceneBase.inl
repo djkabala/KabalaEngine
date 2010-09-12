@@ -92,102 +92,6 @@ OSG::UInt16 SceneBase::getClassGroupId(void)
 
 /*------------------------------ get -----------------------------------*/
 
-
-//! Get the value of the Scene::_sfInitialBackground field.
-inline
-Background * SceneBase::getInitialBackground(void) const
-{
-    return _sfInitialBackground.getValue();
-}
-
-//! Set the value of the Scene::_sfInitialBackground field.
-inline
-void SceneBase::setInitialBackground(Background * const value)
-{
-    editSField(InitialBackgroundFieldMask);
-
-    _sfInitialBackground.setValue(value);
-}
-
-//! Get the value of the Scene::_sfRoot field.
-inline
-Node * SceneBase::getRoot(void) const
-{
-    return _sfRoot.getValue();
-}
-
-//! Set the value of the Scene::_sfRoot field.
-inline
-void SceneBase::setRoot(Node * const value)
-{
-    editSField(RootFieldMask);
-
-    _sfRoot.setValue(value);
-}
-
-//! Get the value of the Scene::_sfRootCore field.
-inline
-Transform * SceneBase::getRootCore(void) const
-{
-    return _sfRootCore.getValue();
-}
-
-//! Set the value of the Scene::_sfRootCore field.
-inline
-void SceneBase::setRootCore(Transform * const value)
-{
-    editSField(RootCoreFieldMask);
-
-    _sfRootCore.setValue(value);
-}
-
-//! Get the value of the Scene::_sfDefaultCameraBeacon field.
-inline
-Node * SceneBase::getDefaultCameraBeacon(void) const
-{
-    return _sfDefaultCameraBeacon.getValue();
-}
-
-//! Set the value of the Scene::_sfDefaultCameraBeacon field.
-inline
-void SceneBase::setDefaultCameraBeacon(Node * const value)
-{
-    editSField(DefaultCameraBeaconFieldMask);
-
-    _sfDefaultCameraBeacon.setValue(value);
-}
-
-//! Get the value of the Scene::_sfDefaultCameraBeaconCore field.
-inline
-Transform * SceneBase::getDefaultCameraBeaconCore(void) const
-{
-    return _sfDefaultCameraBeaconCore.getValue();
-}
-
-//! Set the value of the Scene::_sfDefaultCameraBeaconCore field.
-inline
-void SceneBase::setDefaultCameraBeaconCore(Transform * const value)
-{
-    editSField(DefaultCameraBeaconCoreFieldMask);
-
-    _sfDefaultCameraBeaconCore.setValue(value);
-}
-
-//! Get the value of the Scene::_sfInitialCamera field.
-inline
-Camera * SceneBase::getInitialCamera(void) const
-{
-    return _sfInitialCamera.getValue();
-}
-
-//! Set the value of the Scene::_sfInitialCamera field.
-inline
-void SceneBase::setInitialCamera(Camera * const value)
-{
-    editSField(InitialCameraFieldMask);
-
-    _sfInitialCamera.setValue(value);
-}
 //! Get the value of the Scene::_sfLuaModule field.
 
 inline
@@ -278,6 +182,13 @@ SceneObject * SceneBase::getSceneObjects(const UInt32 index) const
     return _mfSceneObjects[index];
 }
 
+//! Get the value of the \a index element the Scene::_mfObjectStore field.
+inline
+FieldContainer * SceneBase::getObjectStore(const UInt32 index) const
+{
+    return _mfObjectStore[index];
+}
+
 //! Get the value of the \a index element the Scene::_mfViewports field.
 inline
 Viewport * SceneBase::getViewports(const UInt32 index) const
@@ -285,53 +196,11 @@ Viewport * SceneBase::getViewports(const UInt32 index) const
     return _mfViewports[index];
 }
 
-//! Get the value of the \a index element the Scene::_mfBackgrounds field.
-inline
-Background * SceneBase::getBackgrounds(const UInt32 index) const
-{
-    return _mfBackgrounds[index];
-}
-
 //! Get the value of the \a index element the Scene::_mfUIDrawingSurfaces field.
 inline
 UIDrawingSurface * SceneBase::getUIDrawingSurfaces(const UInt32 index) const
 {
     return _mfUIDrawingSurfaces[index];
-}
-
-//! Get the value of the \a index element the Scene::_mfForegrounds field.
-inline
-Foreground * SceneBase::getForegrounds(const UInt32 index) const
-{
-    return _mfForegrounds[index];
-}
-
-//! Get the value of the \a index element the Scene::_mfInitialForegrounds field.
-inline
-Foreground * SceneBase::getInitialForegrounds(const UInt32 index) const
-{
-    return _mfInitialForegrounds[index];
-}
-
-//! Get the value of the \a index element the Scene::_mfModelNodes field.
-inline
-Node * SceneBase::getModelNodes(const UInt32 index) const
-{
-    return _mfModelNodes[index];
-}
-
-//! Get the value of the \a index element the Scene::_mfInitialModelNodes field.
-inline
-Node * SceneBase::getInitialModelNodes(const UInt32 index) const
-{
-    return _mfInitialModelNodes[index];
-}
-
-//! Get the value of the \a index element the Scene::_mfCameras field.
-inline
-Camera * SceneBase::getCameras(const UInt32 index) const
-{
-    return _mfCameras[index];
 }
 
 //! Get the value of the \a index element the Scene::_mfAnimations field.
@@ -346,13 +215,6 @@ inline
 Animation * SceneBase::getInitialAnimations(const UInt32 index) const
 {
     return _mfInitialAnimations[index];
-}
-
-//! Get the value of the \a index element the Scene::_mfParticleSystems field.
-inline
-ParticleSystem * SceneBase::getParticleSystems(const UInt32 index) const
-{
-    return _mfParticleSystems[index];
 }
 
 //! Get the value of the \a index element the Scene::_mfInitialParticleSystems field.
@@ -382,14 +244,14 @@ void SceneBase::execSync (      SceneBase *pFrom,
     if(FieldBits::NoField != (ParentProjectFieldMask & whichField))
         _sfParentProject.syncWith(pFrom->_sfParentProject);
 
-    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
-        _mfViewports.syncWith(pFrom->_mfViewports,
+    if(FieldBits::NoField != (ObjectStoreFieldMask & whichField))
+        _mfObjectStore.syncWith(pFrom->_mfObjectStore,
                                 syncMode,
                                 uiSyncInfo,
                                 oOffsets);
 
-    if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
-        _mfBackgrounds.syncWith(pFrom->_mfBackgrounds,
+    if(FieldBits::NoField != (ViewportsFieldMask & whichField))
+        _mfViewports.syncWith(pFrom->_mfViewports,
                                 syncMode,
                                 uiSyncInfo,
                                 oOffsets);
@@ -400,54 +262,6 @@ void SceneBase::execSync (      SceneBase *pFrom,
                                 uiSyncInfo,
                                 oOffsets);
 
-    if(FieldBits::NoField != (InitialBackgroundFieldMask & whichField))
-        _sfInitialBackground.syncWith(pFrom->_sfInitialBackground);
-
-    if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
-        _mfForegrounds.syncWith(pFrom->_mfForegrounds,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (InitialForegroundsFieldMask & whichField))
-        _mfInitialForegrounds.syncWith(pFrom->_mfInitialForegrounds,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
-        _mfModelNodes.syncWith(pFrom->_mfModelNodes,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (InitialModelNodesFieldMask & whichField))
-        _mfInitialModelNodes.syncWith(pFrom->_mfInitialModelNodes,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (RootFieldMask & whichField))
-        _sfRoot.syncWith(pFrom->_sfRoot);
-
-    if(FieldBits::NoField != (RootCoreFieldMask & whichField))
-        _sfRootCore.syncWith(pFrom->_sfRootCore);
-
-    if(FieldBits::NoField != (DefaultCameraBeaconFieldMask & whichField))
-        _sfDefaultCameraBeacon.syncWith(pFrom->_sfDefaultCameraBeacon);
-
-    if(FieldBits::NoField != (DefaultCameraBeaconCoreFieldMask & whichField))
-        _sfDefaultCameraBeaconCore.syncWith(pFrom->_sfDefaultCameraBeaconCore);
-
-    if(FieldBits::NoField != (CamerasFieldMask & whichField))
-        _mfCameras.syncWith(pFrom->_mfCameras,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (InitialCameraFieldMask & whichField))
-        _sfInitialCamera.syncWith(pFrom->_sfInitialCamera);
-
     if(FieldBits::NoField != (AnimationsFieldMask & whichField))
         _mfAnimations.syncWith(pFrom->_mfAnimations,
                                 syncMode,
@@ -456,12 +270,6 @@ void SceneBase::execSync (      SceneBase *pFrom,
 
     if(FieldBits::NoField != (InitialAnimationsFieldMask & whichField))
         _mfInitialAnimations.syncWith(pFrom->_mfInitialAnimations,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (ParticleSystemsFieldMask & whichField))
-        _mfParticleSystems.syncWith(pFrom->_mfParticleSystems,
                                 syncMode,
                                 uiSyncInfo,
                                 oOffsets);
@@ -491,13 +299,6 @@ inline
 const Char8 *SceneBase::getClassname(void)
 {
     return "Scene";
-}
-
-inline
-boost::signals2::connection SceneBase::attachActivity(UInt32 eventId,
-                                                              Activity* TheActivity)
-{
-    return connectEvent(eventId, boost::bind(&Activity::eventProduced, ActivityUnrecPtr(TheActivity), _1, _2) );
 }
 
 inline

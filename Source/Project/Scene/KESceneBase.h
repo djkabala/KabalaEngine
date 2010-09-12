@@ -67,15 +67,11 @@
 
 #include "Project/SceneObject/KESceneObjectFields.h" // SceneObjects type
 #include "Project/KEProjectFields.h"    // ParentProject type
+#include <OpenSG/OSGFieldContainerFields.h> // ObjectStore type
 #include <OpenSG/OSGViewportFields.h>   // Viewports type
-#include <OpenSG/OSGBackgroundFields.h> // Backgrounds type
 #include <OpenSG/OSGUIDrawingSurfaceFields.h> // UIDrawingSurfaces type
-#include <OpenSG/OSGForegroundFields.h> // Foregrounds type
-#include <OpenSG/OSGNodeFields.h>       // ModelNodes type
-#include <OpenSG/OSGTransformFields.h>  // RootCore type
-#include <OpenSG/OSGCameraFields.h>     // Cameras type
 #include <OpenSG/OSGAnimationFields.h>  // Animations type
-#include <OpenSG/OSGParticleSystemFields.h> // ParticleSystems type
+#include <OpenSG/OSGParticleSystemFields.h> // InitialParticleSystems type
 #include <OpenSG/OSGBoostPathFields.h>  // LuaModule type
 #include <OpenSG/OSGPhysicsHandlerFields.h> // PhysicsHandler type
 #include <OpenSG/OSGPhysicsWorldFields.h> // PhysicsWorld type
@@ -176,24 +172,12 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     {
         SceneObjectsFieldId = Inherited::NextFieldId,
         ParentProjectFieldId = SceneObjectsFieldId + 1,
-        ViewportsFieldId = ParentProjectFieldId + 1,
-        BackgroundsFieldId = ViewportsFieldId + 1,
-        UIDrawingSurfacesFieldId = BackgroundsFieldId + 1,
-        InitialBackgroundFieldId = UIDrawingSurfacesFieldId + 1,
-        ForegroundsFieldId = InitialBackgroundFieldId + 1,
-        InitialForegroundsFieldId = ForegroundsFieldId + 1,
-        ModelNodesFieldId = InitialForegroundsFieldId + 1,
-        InitialModelNodesFieldId = ModelNodesFieldId + 1,
-        RootFieldId = InitialModelNodesFieldId + 1,
-        RootCoreFieldId = RootFieldId + 1,
-        DefaultCameraBeaconFieldId = RootCoreFieldId + 1,
-        DefaultCameraBeaconCoreFieldId = DefaultCameraBeaconFieldId + 1,
-        CamerasFieldId = DefaultCameraBeaconCoreFieldId + 1,
-        InitialCameraFieldId = CamerasFieldId + 1,
-        AnimationsFieldId = InitialCameraFieldId + 1,
+        ObjectStoreFieldId = ParentProjectFieldId + 1,
+        ViewportsFieldId = ObjectStoreFieldId + 1,
+        UIDrawingSurfacesFieldId = ViewportsFieldId + 1,
+        AnimationsFieldId = UIDrawingSurfacesFieldId + 1,
         InitialAnimationsFieldId = AnimationsFieldId + 1,
-        ParticleSystemsFieldId = InitialAnimationsFieldId + 1,
-        InitialParticleSystemsFieldId = ParticleSystemsFieldId + 1,
+        InitialParticleSystemsFieldId = InitialAnimationsFieldId + 1,
         LuaModuleFieldId = InitialParticleSystemsFieldId + 1,
         PhysicsHandlerFieldId = LuaModuleFieldId + 1,
         PhysicsWorldFieldId = PhysicsHandlerFieldId + 1,
@@ -205,40 +189,16 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
         (TypeTraits<BitVector>::One << SceneObjectsFieldId);
     static const OSG::BitVector ParentProjectFieldMask =
         (TypeTraits<BitVector>::One << ParentProjectFieldId);
+    static const OSG::BitVector ObjectStoreFieldMask =
+        (TypeTraits<BitVector>::One << ObjectStoreFieldId);
     static const OSG::BitVector ViewportsFieldMask =
         (TypeTraits<BitVector>::One << ViewportsFieldId);
-    static const OSG::BitVector BackgroundsFieldMask =
-        (TypeTraits<BitVector>::One << BackgroundsFieldId);
     static const OSG::BitVector UIDrawingSurfacesFieldMask =
         (TypeTraits<BitVector>::One << UIDrawingSurfacesFieldId);
-    static const OSG::BitVector InitialBackgroundFieldMask =
-        (TypeTraits<BitVector>::One << InitialBackgroundFieldId);
-    static const OSG::BitVector ForegroundsFieldMask =
-        (TypeTraits<BitVector>::One << ForegroundsFieldId);
-    static const OSG::BitVector InitialForegroundsFieldMask =
-        (TypeTraits<BitVector>::One << InitialForegroundsFieldId);
-    static const OSG::BitVector ModelNodesFieldMask =
-        (TypeTraits<BitVector>::One << ModelNodesFieldId);
-    static const OSG::BitVector InitialModelNodesFieldMask =
-        (TypeTraits<BitVector>::One << InitialModelNodesFieldId);
-    static const OSG::BitVector RootFieldMask =
-        (TypeTraits<BitVector>::One << RootFieldId);
-    static const OSG::BitVector RootCoreFieldMask =
-        (TypeTraits<BitVector>::One << RootCoreFieldId);
-    static const OSG::BitVector DefaultCameraBeaconFieldMask =
-        (TypeTraits<BitVector>::One << DefaultCameraBeaconFieldId);
-    static const OSG::BitVector DefaultCameraBeaconCoreFieldMask =
-        (TypeTraits<BitVector>::One << DefaultCameraBeaconCoreFieldId);
-    static const OSG::BitVector CamerasFieldMask =
-        (TypeTraits<BitVector>::One << CamerasFieldId);
-    static const OSG::BitVector InitialCameraFieldMask =
-        (TypeTraits<BitVector>::One << InitialCameraFieldId);
     static const OSG::BitVector AnimationsFieldMask =
         (TypeTraits<BitVector>::One << AnimationsFieldId);
     static const OSG::BitVector InitialAnimationsFieldMask =
         (TypeTraits<BitVector>::One << InitialAnimationsFieldId);
-    static const OSG::BitVector ParticleSystemsFieldMask =
-        (TypeTraits<BitVector>::One << ParticleSystemsFieldId);
     static const OSG::BitVector InitialParticleSystemsFieldMask =
         (TypeTraits<BitVector>::One << InitialParticleSystemsFieldId);
     static const OSG::BitVector LuaModuleFieldMask =
@@ -254,23 +214,11 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
         
     typedef MFUnrecChildSceneObjectPtr MFSceneObjectsType;
     typedef SFParentFieldContainerPtr SFParentProjectType;
+    typedef MFUnrecFieldContainerPtr MFObjectStoreType;
     typedef MFUnrecViewportPtr MFViewportsType;
-    typedef MFUnrecBackgroundPtr MFBackgroundsType;
     typedef MFUnrecUIDrawingSurfacePtr MFUIDrawingSurfacesType;
-    typedef SFUnrecBackgroundPtr SFInitialBackgroundType;
-    typedef MFUnrecForegroundPtr MFForegroundsType;
-    typedef MFUnrecForegroundPtr MFInitialForegroundsType;
-    typedef MFUnrecNodePtr    MFModelNodesType;
-    typedef MFUnrecNodePtr    MFInitialModelNodesType;
-    typedef SFUnrecNodePtr    SFRootType;
-    typedef SFUnrecTransformPtr SFRootCoreType;
-    typedef SFUnrecNodePtr    SFDefaultCameraBeaconType;
-    typedef SFUnrecTransformPtr SFDefaultCameraBeaconCoreType;
-    typedef MFUnrecCameraPtr  MFCamerasType;
-    typedef SFUnrecCameraPtr  SFInitialCameraType;
     typedef MFUnrecAnimationPtr MFAnimationsType;
     typedef MFUnrecAnimationPtr MFInitialAnimationsType;
-    typedef MFUnrecParticleSystemPtr MFParticleSystemsType;
     typedef MFUnrecParticleSystemPtr MFInitialParticleSystemsType;
     typedef SFBoostPath       SFLuaModuleType;
     typedef SFUnrecPhysicsHandlerPtr SFPhysicsHandlerType;
@@ -335,32 +283,16 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
             const MFUnrecChildSceneObjectPtr *getMFSceneObjects   (void) const;
                   MFUnrecChildSceneObjectPtr *editMFSceneObjects   (void);
+            const MFUnrecFieldContainerPtr *getMFObjectStore    (void) const;
+                  MFUnrecFieldContainerPtr *editMFObjectStore    (void);
             const MFUnrecViewportPtr  *getMFViewports      (void) const;
                   MFUnrecViewportPtr  *editMFViewports      (void);
-            const MFUnrecBackgroundPtr *getMFBackgrounds    (void) const;
-                  MFUnrecBackgroundPtr *editMFBackgrounds    (void);
             const MFUnrecUIDrawingSurfacePtr *getMFUIDrawingSurfaces(void) const;
                   MFUnrecUIDrawingSurfacePtr *editMFUIDrawingSurfaces(void);
-            const SFUnrecBackgroundPtr *getSFInitialBackground(void) const;
-                  SFUnrecBackgroundPtr *editSFInitialBackground(void);
-            const MFUnrecForegroundPtr *getMFForegrounds    (void) const;
-                  MFUnrecForegroundPtr *editMFForegrounds    (void);
-            const MFUnrecForegroundPtr *getMFInitialForegrounds(void) const;
-                  MFUnrecForegroundPtr *editMFInitialForegrounds(void);
-            const MFUnrecNodePtr      *getMFModelNodes     (void) const;
-                  MFUnrecNodePtr      *editMFModelNodes     (void);
-            const MFUnrecNodePtr      *getMFInitialModelNodes(void) const;
-                  MFUnrecNodePtr      *editMFInitialModelNodes(void);
-            const MFUnrecCameraPtr    *getMFCameras        (void) const;
-                  MFUnrecCameraPtr    *editMFCameras        (void);
-            const SFUnrecCameraPtr    *getSFInitialCamera  (void) const;
-                  SFUnrecCameraPtr    *editSFInitialCamera  (void);
             const MFUnrecAnimationPtr *getMFAnimations     (void) const;
                   MFUnrecAnimationPtr *editMFAnimations     (void);
             const MFUnrecAnimationPtr *getMFInitialAnimations(void) const;
                   MFUnrecAnimationPtr *editMFInitialAnimations(void);
-            const MFUnrecParticleSystemPtr *getMFParticleSystems(void) const;
-                  MFUnrecParticleSystemPtr *editMFParticleSystems(void);
             const MFUnrecParticleSystemPtr *getMFInitialParticleSystems(void) const;
                   MFUnrecParticleSystemPtr *editMFInitialParticleSystems(void);
 
@@ -374,31 +306,15 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
                   SceneObject * getSceneObjects   (const UInt32 index) const;
 
+                  FieldContainer * getObjectStore    (const UInt32 index) const;
+
                   Viewport * getViewports      (const UInt32 index) const;
 
-                  Background * getBackgrounds    (const UInt32 index) const;
-
                   UIDrawingSurface * getUIDrawingSurfaces(const UInt32 index) const;
-
-                  Background * getInitialBackground(void) const;
-
-                  Foreground * getForegrounds    (const UInt32 index) const;
-
-                  Foreground * getInitialForegrounds(const UInt32 index) const;
-
-                  Node * getModelNodes     (const UInt32 index) const;
-
-                  Node * getInitialModelNodes(const UInt32 index) const;
-
-                  Camera * getCameras        (const UInt32 index) const;
-
-                  Camera * getInitialCamera  (void) const;
 
                   Animation * getAnimations     (const UInt32 index) const;
 
                   Animation * getInitialAnimations(const UInt32 index) const;
-
-                  ParticleSystem * getParticleSystems(const UInt32 index) const;
 
                   ParticleSystem * getInitialParticleSystems(const UInt32 index) const;
 
@@ -414,8 +330,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-            void setInitialBackground(Background * const value);
-            void setInitialCamera  (Camera * const value);
             void setLuaModule      (const BoostPath &value);
             void setPhysicsHandler (PhysicsHandler * const value);
             void setPhysicsWorld   (PhysicsWorld * const value);
@@ -436,53 +350,23 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     void removeObjFromSceneObjects(SceneObject * const value   );
     void clearSceneObjects            (void                         );
 
+    void pushToObjectStore           (FieldContainer * const value   );
+    void assignObjectStore          (const MFUnrecFieldContainerPtr &value);
+    void removeFromObjectStore (UInt32               uiIndex );
+    void removeObjFromObjectStore(FieldContainer * const value   );
+    void clearObjectStore            (void                         );
+
     void pushToViewports           (Viewport * const value   );
     void assignViewports          (const MFUnrecViewportPtr &value);
     void removeFromViewports (UInt32               uiIndex );
     void removeObjFromViewports(Viewport * const value   );
     void clearViewports             (void                         );
 
-    void pushToBackgrounds           (Background * const value   );
-    void assignBackgrounds          (const MFUnrecBackgroundPtr &value);
-    void removeFromBackgrounds (UInt32               uiIndex );
-    void removeObjFromBackgrounds(Background * const value   );
-    void clearBackgrounds            (void                         );
-
     void pushToUIDrawingSurfaces           (UIDrawingSurface * const value   );
     void assignUIDrawingSurfaces          (const MFUnrecUIDrawingSurfacePtr &value);
     void removeFromUIDrawingSurfaces (UInt32               uiIndex );
     void removeObjFromUIDrawingSurfaces(UIDrawingSurface * const value   );
     void clearUIDrawingSurfaces            (void                         );
-
-    void pushToForegrounds           (Foreground * const value   );
-    void assignForegrounds          (const MFUnrecForegroundPtr &value);
-    void removeFromForegrounds (UInt32               uiIndex );
-    void removeObjFromForegrounds(Foreground * const value   );
-    void clearForegrounds            (void                         );
-
-    void pushToInitialForegrounds           (Foreground * const value   );
-    void assignInitialForegrounds          (const MFUnrecForegroundPtr &value);
-    void removeFromInitialForegrounds (UInt32               uiIndex );
-    void removeObjFromInitialForegrounds(Foreground * const value   );
-    void clearInitialForegrounds            (void                         );
-
-    void pushToModelNodes           (Node * const value   );
-    void assignModelNodes          (const MFUnrecNodePtr    &value);
-    void removeFromModelNodes (UInt32               uiIndex );
-    void removeObjFromModelNodes(Node * const value   );
-    void clearModelNodes            (void                         );
-
-    void pushToInitialModelNodes           (Node * const value   );
-    void assignInitialModelNodes          (const MFUnrecNodePtr    &value);
-    void removeFromInitialModelNodes (UInt32               uiIndex );
-    void removeObjFromInitialModelNodes(Node * const value   );
-    void clearInitialModelNodes            (void                         );
-
-    void pushToCameras             (Camera * const value   );
-    void assignCameras            (const MFUnrecCameraPtr  &value);
-    void removeFromCameras (UInt32               uiIndex );
-    void removeObjFromCameras(Camera * const value   );
-    void clearCameras               (void                         );
 
     void pushToAnimations           (Animation * const value   );
     void assignAnimations          (const MFUnrecAnimationPtr &value);
@@ -495,12 +379,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     void removeFromInitialAnimations (UInt32               uiIndex );
     void removeObjFromInitialAnimations(Animation * const value   );
     void clearInitialAnimations            (void                         );
-
-    void pushToParticleSystems           (ParticleSystem * const value   );
-    void assignParticleSystems          (const MFUnrecParticleSystemPtr &value);
-    void removeFromParticleSystems (UInt32               uiIndex );
-    void removeObjFromParticleSystems(ParticleSystem * const value   );
-    void clearParticleSystems            (void                         );
 
     void pushToInitialParticleSystems           (ParticleSystem * const value   );
     void assignInitialParticleSystems          (const MFUnrecParticleSystemPtr &value);
@@ -527,9 +405,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
     virtual const EventProducerType &getProducerType(void) const; 
 
-    virtual boost::signals2::connection attachActivity(UInt32 eventId,
-                                                       Activity* TheActivity);
-                                                         
     virtual UInt32                   getNumProducedEvents       (void                                ) const;
     virtual const EventDescription *getProducedEventDescription(const std::string &ProducedEventName) const;
     virtual const EventDescription *getProducedEventDescription(UInt32 ProducedEventId              ) const;
@@ -915,23 +790,11 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
     MFUnrecChildSceneObjectPtr _mfSceneObjects;
     SFParentFieldContainerPtr _sfParentProject;
+    MFUnrecFieldContainerPtr _mfObjectStore;
     MFUnrecViewportPtr _mfViewports;
-    MFUnrecBackgroundPtr _mfBackgrounds;
     MFUnrecUIDrawingSurfacePtr _mfUIDrawingSurfaces;
-    SFUnrecBackgroundPtr _sfInitialBackground;
-    MFUnrecForegroundPtr _mfForegrounds;
-    MFUnrecForegroundPtr _mfInitialForegrounds;
-    MFUnrecNodePtr    _mfModelNodes;
-    MFUnrecNodePtr    _mfInitialModelNodes;
-    SFUnrecNodePtr    _sfRoot;
-    SFUnrecTransformPtr _sfRootCore;
-    SFUnrecNodePtr    _sfDefaultCameraBeacon;
-    SFUnrecTransformPtr _sfDefaultCameraBeaconCore;
-    MFUnrecCameraPtr  _mfCameras;
-    SFUnrecCameraPtr  _sfInitialCamera;
     MFUnrecAnimationPtr _mfAnimations;
     MFUnrecAnimationPtr _mfInitialAnimations;
-    MFUnrecParticleSystemPtr _mfParticleSystems;
     MFUnrecParticleSystemPtr _mfInitialParticleSystems;
     SFBoostPath       _sfLuaModule;
     SFUnrecPhysicsHandlerPtr _sfPhysicsHandler;
@@ -988,40 +851,16 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     EditFieldHandlePtr editHandleSceneObjects   (void);
     GetFieldHandlePtr  getHandleParentProject   (void) const;
     EditFieldHandlePtr editHandleParentProject  (void);
+    GetFieldHandlePtr  getHandleObjectStore     (void) const;
+    EditFieldHandlePtr editHandleObjectStore    (void);
     GetFieldHandlePtr  getHandleViewports       (void) const;
     EditFieldHandlePtr editHandleViewports      (void);
-    GetFieldHandlePtr  getHandleBackgrounds     (void) const;
-    EditFieldHandlePtr editHandleBackgrounds    (void);
     GetFieldHandlePtr  getHandleUIDrawingSurfaces (void) const;
     EditFieldHandlePtr editHandleUIDrawingSurfaces(void);
-    GetFieldHandlePtr  getHandleInitialBackground (void) const;
-    EditFieldHandlePtr editHandleInitialBackground(void);
-    GetFieldHandlePtr  getHandleForegrounds     (void) const;
-    EditFieldHandlePtr editHandleForegrounds    (void);
-    GetFieldHandlePtr  getHandleInitialForegrounds (void) const;
-    EditFieldHandlePtr editHandleInitialForegrounds(void);
-    GetFieldHandlePtr  getHandleModelNodes      (void) const;
-    EditFieldHandlePtr editHandleModelNodes     (void);
-    GetFieldHandlePtr  getHandleInitialModelNodes (void) const;
-    EditFieldHandlePtr editHandleInitialModelNodes(void);
-    GetFieldHandlePtr  getHandleRoot            (void) const;
-    EditFieldHandlePtr editHandleRoot           (void);
-    GetFieldHandlePtr  getHandleRootCore        (void) const;
-    EditFieldHandlePtr editHandleRootCore       (void);
-    GetFieldHandlePtr  getHandleDefaultCameraBeacon (void) const;
-    EditFieldHandlePtr editHandleDefaultCameraBeacon(void);
-    GetFieldHandlePtr  getHandleDefaultCameraBeaconCore (void) const;
-    EditFieldHandlePtr editHandleDefaultCameraBeaconCore(void);
-    GetFieldHandlePtr  getHandleCameras         (void) const;
-    EditFieldHandlePtr editHandleCameras        (void);
-    GetFieldHandlePtr  getHandleInitialCamera   (void) const;
-    EditFieldHandlePtr editHandleInitialCamera  (void);
     GetFieldHandlePtr  getHandleAnimations      (void) const;
     EditFieldHandlePtr editHandleAnimations     (void);
     GetFieldHandlePtr  getHandleInitialAnimations (void) const;
     EditFieldHandlePtr editHandleInitialAnimations(void);
-    GetFieldHandlePtr  getHandleParticleSystems (void) const;
-    EditFieldHandlePtr editHandleParticleSystems(void);
     GetFieldHandlePtr  getHandleInitialParticleSystems (void) const;
     EditFieldHandlePtr editHandleInitialParticleSystems(void);
     GetFieldHandlePtr  getHandleLuaModule       (void) const;
@@ -1069,26 +908,10 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-            const SFUnrecNodePtr      *getSFRoot            (void) const;
-                  SFUnrecNodePtr      *editSFRoot           (void);
-            const SFUnrecTransformPtr *getSFRootCore        (void) const;
-                  SFUnrecTransformPtr *editSFRootCore       (void);
-            const SFUnrecNodePtr      *getSFDefaultCameraBeacon (void) const;
-                  SFUnrecNodePtr      *editSFDefaultCameraBeacon(void);
-            const SFUnrecTransformPtr *getSFDefaultCameraBeaconCore (void) const;
-                  SFUnrecTransformPtr *editSFDefaultCameraBeaconCore(void);
 
                   SFUInt32            *editSFGenericMethodIDs(void);
             const SFUInt32            *getSFGenericMethodIDs (void) const;
 
-
-                  Node * getRoot           (void) const;
-
-                  Transform * getRootCore       (void) const;
-
-                  Node * getDefaultCameraBeacon(void) const;
-
-                  Transform * getDefaultCameraBeaconCore(void) const;
 
                   UInt32              &editGenericMethodIDs(void);
                   UInt32               getGenericMethodIDs (void) const;
@@ -1098,10 +921,6 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-            void setRoot           (Node * const value);
-            void setRootCore       (Transform * const value);
-            void setDefaultCameraBeacon(Node * const value);
-            void setDefaultCameraBeaconCore(Transform * const value);
             void setGenericMethodIDs(const UInt32 value);
 
     /*! \}                                                                 */

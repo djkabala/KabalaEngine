@@ -338,7 +338,7 @@ Int32 MainApplication::run(int argc, char **argv)
     {
         KELogLevel = OptionsVariableMap["log-level"].as<LogLevel>();
     }
-    LogType KELogType(LOG_FILE);
+    LogType KELogType(LOG_BUFFER);
     if(OptionsVariableMap.count("log-type"))
     {
         KELogType = OptionsVariableMap["log-type"].as<LogType>();
@@ -864,14 +864,6 @@ SceneRefPtr MainApplication::createDefaultScene(void)
 
     SceneRefPtr TheDefaultScene = Scene::create();
     setName(TheDefaultScene, "Untitled Scene" );
-    TheDefaultScene->pushToBackgrounds(DefaultSceneBackground);
-    TheDefaultScene->setInitialBackground(DefaultSceneBackground);
-
-    TheDefaultScene->pushToCameras(DefaultSceneCamera);
-    TheDefaultScene->setInitialCamera(DefaultSceneCamera);
-
-    TheDefaultScene->pushToModelNodes(DefaultSceneNode);
-    TheDefaultScene->pushToInitialModelNodes(DefaultSceneNode);
 
     TheDefaultScene->pushToViewports(DefaultSceneViewport);
 
@@ -949,10 +941,13 @@ void MainApplication::KELogBufferCallback(const Char8 *data,
                          Int32  size,
                          void  *clientData)
 {
-	//Send to the Log Listeners
-    std::string value(data,size);
-    LogEventDetailsUnrecPtr details = LogEventDetails::create(NULL, getTimeStamp(),value);
-    MainApplication::the()->produceLog(details);
+    if(GlobalSystemState == Running)
+    {
+	    //Send to the Log Listeners
+        std::string value(data,size);
+        LogEventDetailsUnrecPtr details = LogEventDetails::create(NULL, getTimeStamp(),value);
+        MainApplication::the()->produceLog(details);
+    }
 }
 
 
@@ -964,6 +959,7 @@ void MainApplication::initializeLogging(LogType KELogType, BoostPath KELogFilePa
 	//LOG_STDERR, 
 	//LOG_FILE,
 
+    //Configure the LogBuffer
     if(osgLogP->getLogType() != KELogType)
     {
 	    osgLogP->setLogType(KELogType, true);

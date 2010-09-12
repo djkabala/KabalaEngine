@@ -84,33 +84,33 @@ const std::vector<BehaviorType*> BehaviorType::getDependencies()
 
 UInt32 BehaviorType::findEventID(std::string eventName)
 {
-	if(_bEvents.empty())
-	{
-		SWARNING << "BehaviorType: " << getName() << " has not been registered. Search for EventID's default returns ZERO!!" << std::endl;
-		return 0;
-	}
-	for(UInt32 i = 0; _bEvents.size() > i; i++)
-	{
-		if(_bEvents[i] == eventName)
-		{
-			return _bActiveEventIDs[i];
-		}
-	}
+    if(_bEvents.empty())
+    {
+        SWARNING << "BehaviorType: " << getName() << " has not been registered. Search for EventID's default returns ZERO!!" << std::endl;
+        return 0;
+    }
+    for(UInt32 i = 0; _bEvents.size() > i; i++)
+    {
+        if(_bEvents[i] == eventName)
+        {
+            return _bActiveEventIDs[i];
+        }
+    }
 
-	SWARNING << "BehaviorType: " << getName() << " has no event by the name of " << eventName << "Search for EventID's default returns ZERO!!" <<std::endl;
-	return 0;
+    SWARNING << "BehaviorType: " << getName() << " has no event by the name of " << eventName << "Search for EventID's default returns ZERO!!" <<std::endl;
+    return 0;
 }
 
 std::string BehaviorType::findEventName(UInt32 id)
 {
-	if(id > 0 && id < _bActiveEventIDs.size())
+    if(id > 0 && id < _bActiveEventIDs.size())
     {
-		return _bEvents[id];
-	}
+        return _bEvents[id];
+    }
     else
     {
-    	SWARNING << "BehaviorType: " << getName() << " has no event by the id of " << id << "Search for EventID's default returns ZERO!!" <<std::endl;
-	    return NULL;
+        SWARNING << "BehaviorType: " << getName() << " has no event by the id of " << id << "Search for EventID's default returns ZERO!!" <<std::endl;
+        return NULL;
     }
 }
 
@@ -119,50 +119,50 @@ std::string BehaviorType::findEventName(UInt32 id)
 
 bool BehaviorType::hasEvent(std::string e)
 {
-	for(UInt32 i = 0; i < _bEvents.size(); i++)
-	{
-		if(_bEvents[i].compare(e) == 0)
-		{
-			return true;
-		}
-	}
-	return false;
+    for(UInt32 i = 0; i < _bEvents.size(); i++)
+    {
+        if(_bEvents[i].compare(e) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool BehaviorType::hasEventLink(std::string e)
 {
-	for(UInt32 i = 0; i < _bEventLinks.size(); i++)
-	{
-		if(_bEventLinks[i].compare(e) == 0)
-		{
-			return true;
-		}
-	}
-	return false;
+    for(UInt32 i = 0; i < _bEventLinks.size(); i++)
+    {
+        if(_bEventLinks[i].compare(e) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool BehaviorType::hasDependent(BehaviorType* d)
 {
-	for(UInt32 i = 0; i < _bDependencies.size(); i++)
-	{
-		if(_bDependencies[i] == d)
-		{
-			return true;
-		}
-	}
-	return false;
+    for(UInt32 i = 0; i < _bDependencies.size(); i++)
+    {
+        if(_bDependencies[i] == d)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool BehaviorType::hasDependency(BehaviorType* d)
 {
-	for(UInt32 i = 0; i < _bDependents.size(); i++)
-	{
-		if(_bDependents[i] == d)
-		{
-			return true;
-		}
-	}
-	return false;
+    for(UInt32 i = 0; i < _bDependents.size(); i++)
+    {
+        if(_bDependents[i] == d)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 /*-------------------------------------------------------------------------*/
@@ -175,62 +175,62 @@ void BehaviorType::registerType()
 
 void BehaviorType::registerWithScene(Scene* scene)
 {
-//	scene = (Scene*)scene;
-	if(scene != attachedScene)
-	{
+    //  scene = (Scene*)scene;
+    if(scene != attachedScene)
+    {
         _bActiveEventIDs.clear();
-		for(UInt32 i = 0; i < _bEvents.size(); i++)
-		{
+        for(UInt32 i = 0; i < _bEvents.size(); i++)
+        {
             _bActiveEventIDs.push_back(scene->registerNewGenericEvent(_bEvents[i]));
-		}
-		attachedScene = scene;
-	}
+        }
+        attachedScene = scene;
+    }
 }
 
 /*-------------------------------------------------------------------------*/
 /*                            Constructors                                 */
 
-BehaviorType::BehaviorType( const std::string &szName,
-							FieldContainerType * bBehaviorFieldContainerType,
+BehaviorType::BehaviorType( const std::string& szName,
+                            FieldContainerType* bBehaviorFieldContainerType,
                             std::vector<std::string> eventSourceNames,
-		                    std::vector<std::string> bEvents,
-		                    std::vector<std::string> bEventLinks) :
-    Inherited        (szName.c_str(), 
+                            std::vector<std::string> bEvents,
+                            std::vector<std::string> bEventLinks) :
+    Inherited        (szName.c_str(),
                       "TypeBase"),
 
     _bInitialized     (false            ),
 
-	behaviorFieldContainerType	(bBehaviorFieldContainerType),
+    behaviorFieldContainerType  (bBehaviorFieldContainerType),
 
     _pParent          (NULL             ),
 
-	_bEvents		  (bEvents			),
+    _bEvents          (bEvents          ),
 
-	_bEventLinks	  (bEventLinks		),
+    _bEventLinks      (bEventLinks      ),
 
     _bSourceContainers(eventSourceNames ),
-	
-	attachedScene	  (NULL             )
+
+    attachedScene     (NULL             )
 {
 }
 
-BehaviorType::BehaviorType(const BehaviorType &obj) :
+BehaviorType::BehaviorType(const BehaviorType& obj) :
 
-     Inherited        (obj                   ),
+    Inherited        (obj                   ),
 
     _bInitialized     (true                 ),
 
     _pParent          (obj._pParent          ),
 
-    behaviorFieldContainerType	(obj.behaviorFieldContainerType),
+    behaviorFieldContainerType  (obj.behaviorFieldContainerType),
 
-	_bDependencies	  (obj._bDependencies	 ),
+    _bDependencies    (obj._bDependencies    ),
 
-    _bEvents		  (obj._bEvents			 ),
+    _bEvents          (obj._bEvents          ),
 
-	_bEventLinks	  (obj._bEventLinks		 ),
-	
-	attachedScene	  (NULL					 ),
+    _bEventLinks      (obj._bEventLinks      ),
+
+    attachedScene     (NULL                  ),
 
     _bSourceContainers (obj._bSourceContainers      )
 {
@@ -263,9 +263,9 @@ void BehaviorType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
 {
     SLOG << "BehaviorType: "
          << getCName()
-         << ", Id: "       
+         << ", Id: "
          << getId()
-         << ", parentP: " 
+         << ", parentP: "
          << (_pParent ? _pParent->getCName() : "NONE")
          << std::endl;
 }
@@ -277,16 +277,16 @@ void BehaviorType::dump(      UInt32    OSG_CHECK_ARG(uiIndent),
 bool BehaviorType::initialize(void)
 {
     if(_bInitialized == true)
-        return _bInitialized;
+        { return _bInitialized; }
 
     _bInitialized = true;
 
     if(_bInitialized == false)
-        return _bInitialized;
+        { return _bInitialized; }
 
     if(_bInitialized == false)
-        return _bInitialized;
-    
+        { return _bInitialized; }
+
     return _bInitialized;
 }
 

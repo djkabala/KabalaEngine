@@ -193,12 +193,8 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
     void reset(void);
 
     void createDefaults(void);
-    void initDefaults(void);
 
     friend class Project;
-
-    void attachNames(void);
-
 
     void produceSceneEntered(void);
     void produceSceneExited(void);

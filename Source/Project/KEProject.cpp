@@ -113,7 +113,6 @@ ProjectRefPtr Project::create(const BoostPath& ProjectFile)
         if((*Itor)->getType() == Project::getClassType())
         {
             dynamic_pointer_cast<Project>(*Itor)->setFilePath(ProjectFile);
-            dynamic_pointer_cast<Project>(*Itor)->attachNames();
 
             //Attach the FilePath to me
             //FilePathAttachment::setFilePath(dynamic_pointer_cast<Project>(*Itor), ProjectFile);
@@ -400,89 +399,198 @@ void Project::setActiveSceneOnEvent(Scene* const TheScene,
     setActiveSceneOnEvent(TheScene, EventProducer, Desc->getEventId());
 }
 
-void Project::setActiveNode(Node* const TheNode)
-{
-    //TODO: Implement
-}
-
-Node* Project::getActiveNode(void)
-{
-    return NULL;
-}
-
-void Project::attachNames(void)
-{
-    //Backgrounds
-    for(::OSG::UInt32 i(0); i<getMFBackgrounds()->size() ; ++i)
-    {
-        attachName(getBackgrounds(i));
-    }
-
-    //Foregrounds
-    for(::OSG::UInt32 i(0); i<getMFForegrounds()->size() ; ++i)
-    {
-        attachName(getForegrounds(i));
-    }
-
-    //Cameras
-    for(::OSG::UInt32 i(0); i<getMFCameras()->size() ; ++i)
-    {
-        attachName(getCameras(i));
-    }
-
-    //ModelNodes
-    for(::OSG::UInt32 i(0); i<getMFModelNodes()->size() ; ++i)
-    {
-        attachName(getModelNodes(i));
-    }
-
-    //Scenes
-    for(::OSG::UInt32 i(0) ; i<getMFScenes()->size() ; ++i)
-    {
-        getScenes(i)->attachNames();
-    }
-
-}
-
-void Project::addActiveAnimation(Animation* const TheAnimation)
-{
-    if(editMFActiveAnimations()->find(TheAnimation) == editMFActiveAnimations()->end())
-    {
-        pushToActiveAnimations(TheAnimation);
-    }
-}
-
-void Project::removeActiveAnimation(Animation* const TheAnimation)
-{
-    if(editMFActiveAnimations()->find(TheAnimation) != editMFActiveAnimations()->end())
-    {
-        removeObjFromActiveAnimations(TheAnimation);
-    }
-}
-
-
-void Project::addActiveParticleSystem(ParticleSystem* const TheParticleSystem)
-{
-    if(editMFActiveParticleSystems()->find(TheParticleSystem) ==
-       editMFActiveParticleSystems()->end())
-    {
-        pushToActiveParticleSystems(TheParticleSystem);
-        TheParticleSystem->attachUpdateProducer(this);
-    }
-}
-
-void Project::removeActiveParticleSystem(ParticleSystem* const TheParticleSystem)
-{
-    if(editMFActiveParticleSystems()->find(TheParticleSystem) ==
-       editMFActiveParticleSystems()->end())
-    {
-        removeObjFromActiveParticleSystems(TheParticleSystem);
-    }
-}
-
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
+
+void Project::handleUpdate(UpdateEventDetails* const details)
+{
+    if(!_BlockInput && details->getElapsedTime() < 1.0)
+    {
+        UpdateEventDetailsUnrecPtr newSourceDetails = UpdateEventDetails::create(details, this);
+        produceUpdate(newSourceDetails);
+    }
+}
+
+void Project::handleMouseClicked(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseClicked(newSourceDetails);
+    }
+}
+
+void Project::handleMouseEntered(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseEntered(newSourceDetails);
+    }
+}
+
+void Project::handleMouseExited(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseExited(newSourceDetails);
+    }
+}
+
+void Project::handleMousePressed(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMousePressed(newSourceDetails);
+    }
+}
+
+void Project::handleMouseReleased(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseReleased(newSourceDetails);
+    }
+}
+
+void Project::handleMouseMoved(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseMoved(newSourceDetails);
+    }
+}
+
+void Project::handleMouseDragged(MouseEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseEventDetailsUnrecPtr newSourceDetails = MouseEventDetails::create(details, this);
+        produceMouseDragged(newSourceDetails);
+    }
+}
+
+void Project::handleMouseWheelMoved(MouseWheelEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        MouseWheelEventDetailsUnrecPtr newSourceDetails = MouseWheelEventDetails::create(details, this);
+        produceMouseWheelMoved(newSourceDetails);
+    }
+}
+
+void Project::handleKeyPressed(KeyEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        KeyEventDetailsUnrecPtr newSourceDetails = KeyEventDetails::create(details, this);
+        produceKeyPressed(newSourceDetails);
+    }
+}
+
+void Project::handleKeyReleased(KeyEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        KeyEventDetailsUnrecPtr newSourceDetails = KeyEventDetails::create(details, this);
+        produceKeyReleased(newSourceDetails);
+    }
+}
+
+void Project::handleKeyTyped(KeyEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        KeyEventDetailsUnrecPtr newSourceDetails = KeyEventDetails::create(details, this);
+        produceKeyTyped(newSourceDetails);
+    }
+}
+
+void Project::handleWindowOpened(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowOpened(newSourceDetails);
+    }
+}
+
+void Project::handleWindowClosing(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowClosing(newSourceDetails);
+    }
+}
+
+void Project::handleWindowClosed(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowClosed(newSourceDetails);
+    }
+}
+
+void Project::handleWindowIconified(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowIconified(newSourceDetails);
+    }
+}
+
+void Project::handleWindowDeiconified(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowDeiconified(newSourceDetails);
+    }
+}
+
+void Project::handleWindowActivated(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowActivated(newSourceDetails);
+    }
+}
+
+void Project::handleWindowDeactivated(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowDeactivated(newSourceDetails);
+    }
+}
+
+void Project::handleWindowEntered(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowEntered(newSourceDetails);
+    }
+}
+
+void Project::handleWindowExited(WindowEventDetails* const details)
+{
+    if(!_BlockInput)
+    {
+        WindowEventDetailsUnrecPtr newSourceDetails = WindowEventDetails::create(details, this);
+        produceWindowExited(newSourceDetails);
+    }
+}
 
 void Project::produceSceneChanged(void)
 {

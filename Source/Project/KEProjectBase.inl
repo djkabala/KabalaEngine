@@ -199,38 +199,6 @@ void ProjectBase::setInternalActiveScene(Scene * const value)
 
     _sfInternalActiveScene.setValue(value);
 }
-
-//! Get the value of the Project::_sfInternalActiveBackground field.
-inline
-Background * ProjectBase::getInternalActiveBackground(void) const
-{
-    return _sfInternalActiveBackground.getValue();
-}
-
-//! Set the value of the Project::_sfInternalActiveBackground field.
-inline
-void ProjectBase::setInternalActiveBackground(Background * const value)
-{
-    editSField(InternalActiveBackgroundFieldMask);
-
-    _sfInternalActiveBackground.setValue(value);
-}
-
-//! Get the value of the Project::_sfInternalActiveCamera field.
-inline
-Camera * ProjectBase::getInternalActiveCamera(void) const
-{
-    return _sfInternalActiveCamera.getValue();
-}
-
-//! Set the value of the Project::_sfInternalActiveCamera field.
-inline
-void ProjectBase::setInternalActiveCamera(Camera * const value)
-{
-    editSField(InternalActiveCameraFieldMask);
-
-    _sfInternalActiveCamera.setValue(value);
-}
 //! Get the value of the Project::_sfLuaModule field.
 
 inline
@@ -289,69 +257,6 @@ Scene * ProjectBase::getScenes(const UInt32 index) const
     return _mfScenes[index];
 }
 
-//! Get the value of the \a index element the Project::_mfBackgrounds field.
-inline
-Background * ProjectBase::getBackgrounds(const UInt32 index) const
-{
-    return _mfBackgrounds[index];
-}
-
-//! Get the value of the \a index element the Project::_mfForegrounds field.
-inline
-Foreground * ProjectBase::getForegrounds(const UInt32 index) const
-{
-    return _mfForegrounds[index];
-}
-
-//! Get the value of the \a index element the Project::_mfInternalActiveForegrounds field.
-inline
-Foreground * ProjectBase::getInternalActiveForegrounds(const UInt32 index) const
-{
-    return _mfInternalActiveForegrounds[index];
-}
-
-//! Get the value of the \a index element the Project::_mfGlobalActiveForegrounds field.
-inline
-Foreground * ProjectBase::getGlobalActiveForegrounds(const UInt32 index) const
-{
-    return _mfGlobalActiveForegrounds[index];
-}
-
-//! Get the value of the \a index element the Project::_mfModelNodes field.
-inline
-Node * ProjectBase::getModelNodes(const UInt32 index) const
-{
-    return _mfModelNodes[index];
-}
-
-//! Get the value of the \a index element the Project::_mfInternalActiveModelNodes field.
-inline
-Node * ProjectBase::getInternalActiveModelNodes(const UInt32 index) const
-{
-    return _mfInternalActiveModelNodes[index];
-}
-
-//! Get the value of the \a index element the Project::_mfGlobalActiveModelNodes field.
-inline
-Node * ProjectBase::getGlobalActiveModelNodes(const UInt32 index) const
-{
-    return _mfGlobalActiveModelNodes[index];
-}
-
-//! Get the value of the \a index element the Project::_mfCameras field.
-inline
-Camera * ProjectBase::getCameras(const UInt32 index) const
-{
-    return _mfCameras[index];
-}
-
-//! Get the value of the \a index element the Project::_mfActiveAnimations field.
-inline
-Animation * ProjectBase::getActiveAnimations(const UInt32 index) const
-{
-    return _mfActiveAnimations[index];
-}
-
 //! Get the value of the \a index element the Project::_mfActiveParticleSystems field.
 inline
 ParticleSystem * ProjectBase::getActiveParticleSystems(const UInt32 index) const
@@ -391,66 +296,6 @@ void ProjectBase::execSync (      ProjectBase *pFrom,
     if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
         _sfInternalActiveScene.syncWith(pFrom->_sfInternalActiveScene);
 
-    if(FieldBits::NoField != (BackgroundsFieldMask & whichField))
-        _mfBackgrounds.syncWith(pFrom->_mfBackgrounds,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (InternalActiveBackgroundFieldMask & whichField))
-        _sfInternalActiveBackground.syncWith(pFrom->_sfInternalActiveBackground);
-
-    if(FieldBits::NoField != (ForegroundsFieldMask & whichField))
-        _mfForegrounds.syncWith(pFrom->_mfForegrounds,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (InternalActiveForegroundsFieldMask & whichField))
-        _mfInternalActiveForegrounds.syncWith(pFrom->_mfInternalActiveForegrounds,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (GlobalActiveForegroundsFieldMask & whichField))
-        _mfGlobalActiveForegrounds.syncWith(pFrom->_mfGlobalActiveForegrounds,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (ModelNodesFieldMask & whichField))
-        _mfModelNodes.syncWith(pFrom->_mfModelNodes,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (InternalActiveModelNodesFieldMask & whichField))
-        _mfInternalActiveModelNodes.syncWith(pFrom->_mfInternalActiveModelNodes,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (GlobalActiveModelNodesFieldMask & whichField))
-        _mfGlobalActiveModelNodes.syncWith(pFrom->_mfGlobalActiveModelNodes,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (CamerasFieldMask & whichField))
-        _mfCameras.syncWith(pFrom->_mfCameras,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
-    if(FieldBits::NoField != (InternalActiveCameraFieldMask & whichField))
-        _sfInternalActiveCamera.syncWith(pFrom->_sfInternalActiveCamera);
-
-    if(FieldBits::NoField != (ActiveAnimationsFieldMask & whichField))
-        _mfActiveAnimations.syncWith(pFrom->_mfActiveAnimations,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
-
     if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
         _mfActiveParticleSystems.syncWith(pFrom->_mfActiveParticleSystems,
                                 syncMode,
@@ -470,13 +315,6 @@ inline
 const Char8 *ProjectBase::getClassname(void)
 {
     return "Project";
-}
-
-inline
-boost::signals2::connection ProjectBase::attachActivity(UInt32 eventId,
-                                                              Activity* TheActivity)
-{
-    return connectEvent(eventId, boost::bind(&Activity::eventProduced, ActivityUnrecPtr(TheActivity), _1, _2) );
 }
 
 inline
