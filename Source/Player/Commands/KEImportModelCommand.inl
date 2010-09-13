@@ -36,10 +36,13 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-ImportModelCommand::ImportModelCommand(HierarchyPanel* const HierarchyPanel,Node* const NodeToAddTo) : Inherited(),
+ImportModelCommand::ImportModelCommand(HierarchyPanel* const HierarchyPanel,
+                                       Node* const NodeToAddTo,
+                                       Scene* const SceneToAddTo) : Inherited(),
     _HierarchyPanel(HierarchyPanel),
     _NewNode(NULL),
-    _NodeToAddTo(NodeToAddTo)
+    _NodeToAddTo(NodeToAddTo),
+    _SceneAddedTo(SceneToAddTo)
 {
 }
 
@@ -47,7 +50,8 @@ inline
 ImportModelCommand::ImportModelCommand(const ImportModelCommand& source) : Inherited(source),
     _HierarchyPanel(source._HierarchyPanel),
     _NewNode(source._NewNode),
-    _NodeToAddTo(source._NodeToAddTo)
+    _NodeToAddTo(source._NodeToAddTo),
+    _SceneAddedTo(source._SceneAddedTo)
 {
 }
 

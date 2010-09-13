@@ -46,10 +46,12 @@
 #include <OpenSG/OSGFCFileHandler.h>
 #include <OpenSG/OSGWindowEventProducer.h>
 #include "Application/KEMainApplication.h"
+#include "Project/Scene/KEScene.h"
 #include <OpenSG/OSGSceneGraphTreeModel.h>
 #include <OpenSG/OSGTravMaskGraphOp.h>
 #include <OpenSG/OSGImageFileHandler.h>
 #include <OpenSG/OSGFilePathAttachment.h>
+#include <OpenSG/OSGAnimation.h>
 
 OSG_USING_NAMESPACE
 
@@ -71,9 +73,11 @@ CommandType ImportModelCommand::_Type("ImportModelCommand", "UndoableCommand");
  *                           Class methods                                 *
 \***************************************************************************/
 
-ImportModelCommandPtr ImportModelCommand::create(HierarchyPanel* const HierarchyPanel,Node* const NodeToAddTo)
+ImportModelCommandPtr ImportModelCommand::create(HierarchyPanel* const HierarchyPanel,
+                                                 Node* const NodeToAddTo,
+                                                 Scene* const SceneToAddTo)
 {
-	return RefPtr(new ImportModelCommand(HierarchyPanel,NodeToAddTo));
+	return RefPtr(new ImportModelCommand(HierarchyPanel, NodeToAddTo, SceneToAddTo));
 }
 
 /***************************************************************************\
@@ -107,32 +111,39 @@ void ImportModelCommand::execute(void)
 
 	std::vector<BoostPath> FilesToOpen;
     FilesToOpen = MainApplication::the()->getMainWindow()->openFileDialog("Import a model file.",
-        Filters,
-        BoostPath(".."),
-        false);
+                                                                          Filters,
+                                                                          BoostPath(".."),
+                                                                          false);
 
 	_NewNode = NULL;
 
     if(FilesToOpen.size() > 0)
     {
-        //Try loading the file using the SceneFileHandler
-        _NewNode = SceneFileHandler::the()->read(FilesToOpen[0].string().c_str(), NULL);
+        //Try loading the file using the FC file handler
+        FCFileType::FCPtrStore NewContainers;
+        NewContainers = FCFileHandler::the()->read(FilesToOpen[0]);
 
-        //Try loading the file using the XML file handler
+        FCFileType::FCPtrStore::iterator Itor;
+        for(Itor = NewContainers.begin() ; Itor != NewContainers.end() ; ++Itor)
+        {
+            //Grab the root node
+            if( (*Itor)->getType() == (Node::getClassType()) && 
+                (dynamic_pointer_cast<Node>(*Itor)->getParent() == NULL))
+            {
+                _NewNode = (dynamic_pointer_cast<Node>(*Itor));
+            }
+
+            //Grab all of the animations
+            else if( (*Itor)->getType().isDerivedFrom(Animation::getClassType()) )
+            {
+                _NewAnimations.push_back(dynamic_pointer_cast<Animation>(*Itor));
+            }
+        }
+
         if(_NewNode == NULL)
         {
-            FCFileType::FCPtrStore NewContainers;
-            NewContainers = FCFileHandler::the()->read(FilesToOpen[0]);
-
-            FCFileType::FCPtrStore::iterator Itor;
-            for(Itor = NewContainers.begin() ; Itor != NewContainers.end() ; ++Itor)
-            {
-                if( (*Itor)->getType() == (Node::getClassType()) && 
-                    (dynamic_pointer_cast<Node>(*Itor)->getParent() == NULL))
-                {
-                    _NewNode = (dynamic_pointer_cast<Node>(*Itor));
-                }
-            }
+            //Try loading the file using the SceneFileHandler
+            _NewNode = SceneFileHandler::the()->read(FilesToOpen[0].string().c_str(), NULL);
         }
    } 
 	
@@ -167,8 +178,13 @@ void ImportModelCommand::execute(void)
         if(_NodeToAddTo!=NULL)
 	    {
 	        _HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
-	        _HasBeenDone = true;
         }
+    }
+
+    //Add the animations
+    for(std::vector<AnimationRefPtr>::iterator AnimItor(_NewAnimations.begin()) ; AnimItor != _NewAnimations.end() ; ++AnimItor)
+    {
+        _SceneAddedTo->pushToAnimations(*AnimItor);
     }
 
 	
@@ -191,10 +207,17 @@ void ImportModelCommand::redo(void)
 {
     Inherited::redo();
 
+    //Add the node
 	if(_NewNode!=NULL)
 	{
 		_HierarchyPanel->getSceneGraphTreeModel()->addNode(_NodeToAddTo,_NewNode);
 	}
+
+    //Add the animations
+    for(std::vector<AnimationRefPtr>::iterator AnimItor(_NewAnimations.begin()) ; AnimItor != _NewAnimations.end() ; ++AnimItor)
+    {
+        _SceneAddedTo->pushToAnimations(*AnimItor);
+    }
 
 }
 
@@ -202,10 +225,17 @@ void ImportModelCommand::undo(void)
 {
     Inherited::undo();
 
+    //Remove the node
 	if(_NewNode!=NULL)
 	{
 		_HierarchyPanel->getSceneGraphTreeModel()->removeNode(_NewNode);
 	}
+
+    //Remove the animations
+    for(std::vector<AnimationRefPtr>::iterator AnimItor(_NewAnimations.begin()) ; AnimItor != _NewAnimations.end() ; ++AnimItor)
+    {
+        _SceneAddedTo->removeObjFromAnimations(*AnimItor);
+    }
 
 }
 

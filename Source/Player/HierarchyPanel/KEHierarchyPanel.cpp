@@ -317,7 +317,9 @@ void HierarchyPanel::handleImportIntoSelectedNode(EventDetails* const details)
     {
         NodeToAddTo =  getSceneGraphTreeModel()->getRootNode();
     }
-	CommandPtr TheImportModelCommand = ImportModelCommand::create(HierarchyPanelRefPtr(this),NodeToAddTo);
+	CommandPtr TheImportModelCommand = ImportModelCommand::create(this,
+                                                                  NodeToAddTo,
+                                                                  MainApplication::the()->getProject()->getActiveScene());
     _ApplicationPlayer->getCommandManager()->executeCommand(TheImportModelCommand);
 }
 
@@ -372,14 +374,14 @@ void HierarchyPanel::handlePasteOntoSelectedNode(EventDetails* const details)
     if(_ApplicationPlayer->getSelectedNode() != NULL)
     {
         ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
-                                               HierarchyPanelRefPtr(this),
+                                               this,
                                                _ApplicationPlayer->getSelectedNode(),
                                                true);
     }
     else
     {
         ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
-                                               HierarchyPanelRefPtr(this),
+                                               this,
                                                MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
                                                true);
     }
@@ -393,14 +395,14 @@ void HierarchyPanel::handlePasteInstOntoSelectedNode(EventDetails* const details
     if(_ApplicationPlayer->getSelectedNode() != NULL)
     {
         ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
-                                               HierarchyPanelRefPtr(this),
+                                               this,
                                                _ApplicationPlayer->getSelectedNode(),
                                                false);
     }
     else
     {
         ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
-                                               HierarchyPanelRefPtr(this),
+                                               this,
                                                MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
                                                false);
     }
@@ -432,7 +434,7 @@ void HierarchyPanel::handleDeleteSelectedNode(EventDetails* const details)
             ++NewSelectedRow;
         }
     }
-	CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,HierarchyPanelRefPtr(this),_ApplicationPlayer->getSelectedNode());
+	CommandPtr DeleteCommandPtr = DeleteCommand::create(_ApplicationPlayer,this,_ApplicationPlayer->getSelectedNode());
     _ApplicationPlayer->getCommandManager()->executeCommand(DeleteCommandPtr);
     _TheSceneGraphTree->setSelectionRow(NewSelectedRow);
 }

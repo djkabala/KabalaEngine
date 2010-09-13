@@ -43,6 +43,7 @@
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGUndoableCommand.h>
+#include <OpenSG/OSGAnimationFields.h>
 
 #include "Player/HierarchyPanel/KEHierarchyPanel.h"
 
@@ -57,7 +58,9 @@ protected:
 	typedef UndoableCommand Inherited;
 	typedef ImportModelCommandPtr RefPtr;
 
-	ImportModelCommand(HierarchyPanel* const HierarchyPanel, Node* const NodeToAddTo);
+	ImportModelCommand(HierarchyPanel* const HierarchyPanel,
+                       Node* const NodeToAddTo,
+                       Scene* const SceneToAddTo);
 
 	ImportModelCommand(const ImportModelCommand& source);
 
@@ -70,9 +73,12 @@ protected:
 	virtual void redo(void);
 	virtual void undo(void);
 
-	HierarchyPanelRefPtr _HierarchyPanel;
-	NodeRefPtr _NewNode;
+	HierarchyPanelRecPtr _HierarchyPanel;
+	NodeRecPtr _NewNode;
     NodeRecPtr _NodeToAddTo;
+
+    std::vector<AnimationRecPtr> _NewAnimations;
+    SceneRecPtr _SceneAddedTo;
 
 
 public:
@@ -85,7 +91,9 @@ public:
 
 	virtual ~ImportModelCommand(void);
 	
-	static ImportModelCommandPtr create(HierarchyPanel* const HierarchyPanel,Node* const NodeToAddTo);
+	static ImportModelCommandPtr create(HierarchyPanel* const HierarchyPanel,
+                                        Node* const NodeToAddTo,
+                                        Scene* const SceneToAddTo);
 };
 
 OSG_END_NAMESPACE
