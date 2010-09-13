@@ -46,6 +46,7 @@
 #include <OpenSG/OSGPathType.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/info_parser.hpp>
+#include <boost/filesystem/convenience.hpp>
 
 #include "KEApplicationSettings.h"
 
@@ -65,6 +66,19 @@ OSG_BEGIN_NAMESPACE
 
 bool ApplicationSettings::writeXML(const BoostPath& FilePath)
 {
+    //Make sure the directory is created
+    try
+    {
+        boost::filesystem::create_directories(FilePath.parent_path());
+    }
+    catch(std::exception& ex)
+    {
+        SWARNING << "Failed to create directory: " << FilePath.parent_path() 
+                 << ", error: " << ex.what() << std::endl;
+	    return false;
+    }
+
+    //Write the XML
     try
     {
         boost::property_tree::xml_parser::write_xml(FilePath.string(), 

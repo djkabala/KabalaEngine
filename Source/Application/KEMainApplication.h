@@ -148,6 +148,9 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
     void   disconnectAllSlotsLog(void);
     bool   isEmptyLog          (void) const;
     UInt32 numSlotsLog         (void) const;
+
+    BoostPath getUserAppDataDir(void) const;
+    BoostPath getLoggingDir(void) const;
     /*=========================  PROTECTED  ===============================*/
   protected:
 
@@ -193,8 +196,10 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
     static boost::program_options::options_description _OptionsDescription;
     static boost::program_options::positional_options_description _PositionalOptions;
 
-    void initializeLogging(LogType TheLogType = LOG_FILE,
-                           BoostPath LogFilePath = BoostPath("./KabalaEngine.log"));
+    void initializeLogging(LogType TheLogType,
+                           BoostPath LogFilePath);
+    
+    void cleanupLoggingDir(void);
 
     static void KELogBufferCallback(const Char8 *data, 
                                     Int32  size,
@@ -208,6 +213,11 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
     LogEventType _LogEvent;
     
     void produceLog(LogEventDetailsType* const e);
+
+    struct CompLogFileDates
+    {
+        bool operator()(const BoostPath& Left, const BoostPath Right);
+    };
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
   private:

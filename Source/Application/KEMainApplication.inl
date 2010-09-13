@@ -38,6 +38,8 @@
 //---------------------------------------------------------------------------
 
 #include "Application/Logging/KELogEventDetails.h"
+#include "KEVersion.h"
+#include <OpenSG/OSGPlatformUtils.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -224,6 +226,21 @@ void MainApplication::produceLog(LogEventDetailsType* const e)
 {
     _LogEvent.set_combiner(ConsumableEventCombiner(e));
     _LogEvent(dynamic_cast<LogEventDetailsType* const>(e), LogEventId);
+}
+
+inline
+BoostPath MainApplication::getUserAppDataDir(void) const
+{
+    return BoostPath(getPlatformUserAppDataDir()
+                   / BoostPath("KabalaEngine")
+                   / BoostPath(getKabalaEngineVersion()));
+}
+
+inline
+BoostPath MainApplication::getLoggingDir(void) const
+{
+    return BoostPath(getUserAppDataDir()
+                   / BoostPath("Logs"));
 }
 
 OSG_END_NAMESPACE

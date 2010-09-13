@@ -58,6 +58,7 @@
 #include <OpenSG/OSGPerspectiveCamera.h>
 #include <OpenSG/OSGNameAttachment.h>
 
+
 #include "KEApplicationSettings.h"
 #include "KEApplicationMode.h"
 #include "Project/KEProject.h"
@@ -73,6 +74,9 @@
 //#include "KEFieldContainerEditorFactory.h"
 
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/convenience.hpp>
+
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 //#include <OpenSG/OSGInventory.h>
 #include <OpenSG/OSGPhysicsHandler.h>
@@ -82,7 +86,6 @@
 
 //Kabala Engine Lua Bindings
 #include "LuaBindings/KELuaBindings.h"
-#include "KEVersion.h"
 
 
 OSG_USING_NAMESPACE
@@ -142,7 +145,7 @@ MainApplication *MainApplication::the(void)
         //Initialize static variables
         _OptionsDescription.add_options()
             ("help,h", "Produce help message.")
-            ("settings-file,s", boost::program_options::value<std::string>()->default_value("./.KEDefaultSettings.xml"), "The settings file to use.")
+            ("settings-file,s", boost::program_options::value<std::string>(), "The settings file to use.")
             ("project-file,f", boost::program_options::value<std::string>(), "The Project file to use.")
             ("builder,b", "Start the world builder.")
             ("play,p", "Play the project file.")
@@ -193,8 +196,13 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     //Logging
     TheSettings.put<UInt8>    ("logging.type",            LOG_FILE, overwriteIfDefined);
     TheSettings.put<UInt8>    ("logging.level",           LOG_NOTICE, overwriteIfDefined);
-    TheSettings.put<BoostPath>("logging.file",            BoostPath("./KabalaEngine.log"), overwriteIfDefined);
-    TheSettings.put<UInt32>   ("logging.header_elements", (LOG_TYPE_HEADER | LOG_TIMESTAMP_HEADER), overwriteIfDefined);
+    TheSettings.put<BoostPath>("logging.file",            BoostPath("KabalaEngine.log"), overwriteIfDefined);
+    TheSettings.put<UInt32>   ("logging.header_elements", (LOG_TYPE_HEADER | LOG_FUNCNAME_HEADER), overwriteIfDefined);
+    TheSettings.put<bool>     ("logging.remove_old_logs", true, overwriteIfDefined);
+    TheSettings.put<UInt32>   ("logging.max_old_logs",    3, overwriteIfDefined);
+
+    //UI settings
+    TheSettings.put<BoostPath>   ("ui.look_and_feel.xml_file",    BoostPath("LookAndFeel.xml"), overwriteIfDefined);
 
     //Player
     //Debugger
@@ -339,18 +347,21 @@ Int32 MainApplication::run(int argc, char **argv)
         KELogLevel = OptionsVariableMap["log-level"].as<LogLevel>();
     }
     LogType KELogType(LOG_BUFFER);
+    //LogType KELogType(LOG_FILE);
     if(OptionsVariableMap.count("log-type"))
     {
         KELogType = OptionsVariableMap["log-type"].as<LogType>();
     }
-    BoostPath KELogFilePath("./KabalaEngine.log");
+
+    BoostPath KELogFilePath(getLoggingDir()
+                          / BoostPath(to_iso_string(boost::posix_time::second_clock::local_time()) + ".log"));  //ISO date/time format
     if(KELogType == LOG_FILE && OptionsVariableMap.count("log-file"))
     {
         KELogFilePath = BoostPath(OptionsVariableMap["log-file"].as<std::string>());
     }
     initializeLogging(KELogType, KELogFilePath);
     osgLogP->setLogLevel(KELogLevel, true);
-	osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_TIMESTAMP_HEADER), true);
+	osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_FUNCNAME_HEADER), true);
 
     // Set up Settings
     //Check for the settings file
@@ -358,14 +369,23 @@ Int32 MainApplication::run(int argc, char **argv)
     {
         setSettingsLoadFile(BoostPath(OptionsVariableMap["settings-file"].as<std::string>()));
     }
+    else
+    {
+        //Use default location
+        setSettingsLoadFile(getUserAppDataDir()
+                          / BoostPath("KEDefaultSettings.xml"));
+    }
     loadSettings(getSettingsLoadFile());
+
+    //Cleanup the Logging Directory
+    cleanupLoggingDir();
 
     //If the settings aren't being overriden by the command-line options
     //then set the logging with the settings values
-    //if(!OptionsVariableMap.count("log-level"))
-    //{
-        //osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
-    //}
+    if(!OptionsVariableMap.count("log-level"))
+    {
+        osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
+    }
     //if(osgLogP->getLogType() == LOG_FILE &&
        //!OptionsVariableMap.count("log-file") &&
        //!boost::filesystem::equivalent(getSettings().get<BoostPath>("logging.file"),KELogFilePath))
@@ -376,7 +396,7 @@ Int32 MainApplication::run(int argc, char **argv)
     //{
        //osgLogP->setLogType(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), true);
     //}
-	//osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
+	osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
 
     //Initialize OpenSG
     initOpenSG(argc,argv);
@@ -950,6 +970,70 @@ void MainApplication::KELogBufferCallback(const Char8 *data,
     }
 }
 
+bool MainApplication::CompLogFileDates::operator()(const BoostPath& Left, const BoostPath Right)
+{
+    //Get the filenames
+    std::string LeftName(Left.stem());
+    std::string RightName(Right.stem());
+
+    //Convert the ISO formatted strings into time objects
+    boost::posix_time::ptime LeftTime(boost::posix_time::from_iso_string(LeftName));
+    boost::posix_time::ptime RightTime(boost::posix_time::from_iso_string(RightName));
+
+    //Return time comparison
+    //Oldest to Newest
+    return LeftTime < RightTime;
+}
+
+void MainApplication::cleanupLoggingDir(void)
+{
+    //Determine if old log files need to be removed
+    if(getSettings().get<bool>("logging.remove_old_logs") &&
+       boost::filesystem::exists(getLoggingDir()))
+    {
+        std::vector<BoostPath> LogFiles;
+        boost::filesystem::directory_iterator EndItor; // default construction yields past-the-end
+        for ( boost::filesystem::directory_iterator DirItor( getLoggingDir() );
+              DirItor != EndItor;
+              ++DirItor )
+        {
+            //Remove all non-logging files
+            if ( DirItor->path().string().find_last_of(".log") == std::string::npos )
+            {
+                boost::filesystem::remove(DirItor->path());
+            }
+            else
+            {
+                //Get all of the log files
+                LogFiles.push_back(DirItor->path());
+            }
+        }
+
+        UInt32 NumLogFiles(LogFiles.size());
+
+        //Determine the number of log files to remove
+        //   = Num of Log files - Max old logs
+        UInt32 NumToRemove(osgMax<Int32>(0,NumLogFiles - static_cast<Int32>(getSettings().get<UInt32>("logging.max_old_logs"))));
+
+        //Sort the LogFiles by date
+        std::sort(LogFiles.begin(), LogFiles.end(), CompLogFileDates());
+
+        //Remove the NumToRemove oldest logs
+        for(UInt32 i(0) ; i<NumToRemove ; ++i)
+        {
+            try
+            {
+                boost::filesystem::remove(LogFiles[i]);
+                SLOG << "Removed old log: " << LogFiles[i].string() << std::endl;
+            }
+            catch(std::exception& ex)
+            {
+                SWARNING << "Unable to remove log file: " << LogFiles[i].string() << ". Because " << ex.what() << std::endl;
+            }
+        }
+    }
+
+}
 
 void MainApplication::initializeLogging(LogType KELogType, BoostPath KELogFilePath)
 {
@@ -979,6 +1063,18 @@ void MainApplication::initializeLogging(LogType KELogType, BoostPath KELogFilePa
 
 	if(osgLogP->getLogType() == LOG_FILE)
 	{
+        //Make sure the directory is created
+        try
+        {
+            boost::filesystem::create_directories(KELogFilePath.parent_path());
+        }
+        catch(std::exception& ex)
+        {
+            SWARNING << "Failed to create directory: " << KELogFilePath.parent_path() 
+                     << ", error: " << ex.what() << std::endl;
+	        return;
+        }
+
 		//If the Log is to a file then set the file
 		osgLogP->setLogFile(KELogFilePath.string().c_str(), true);
 	}
