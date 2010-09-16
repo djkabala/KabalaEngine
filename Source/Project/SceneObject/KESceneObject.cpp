@@ -165,17 +165,14 @@ void SceneObject::changed(ConstFieldMaskArg whichField,
 {
     Inherited::changed(whichField, origin, details);
     
-    if(whichField & ParentSceneFieldMask)
+    if((whichField & ParentSceneFieldMask) && getParentScene() != NULL)
 	{
 		//should be ReInitializeAll();
         getParentScene()->checkBehaviorInitialization();
 	}
-    else if(whichField & BehaviorsFieldMask)
-	{
-        if(getParentScene() != NULL)
-        {
-		    getParentScene()->checkBehaviorInitialization();
-        }
+    if((whichField & BehaviorsFieldMask) && getParentScene() != NULL)
+    {
+	    getParentScene()->checkBehaviorInitialization();
     }
 }
 
