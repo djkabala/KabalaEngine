@@ -53,6 +53,7 @@
 #include <OpenSG/OSGWindowEventProducer.h>
 #include <OpenSG/OSGStringUtils.h>
 #include <OpenSG/OSGChunkMaterial.h>
+#include <OpenSG/OSGMultiPassMaterial.h>
 #include <OpenSG/OSGBlendChunk.h>
 #include <OpenSG/OSGIntersectAction.h>
 #include <OpenSG/OSGPolygonChunk.h>
@@ -1542,6 +1543,10 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     //Background
     PassiveBackgroundRefPtr DefaultBackground = PassiveBackground::create();
 
+    //Render Options
+    RenderOptionsRecPtr DebugViewportRenderOptions = RenderOptions::create();
+    DebugViewportRenderOptions->setFrustumCulling(false);
+
     ViewportRefPtr DebugViewport = Viewport::create();
     setName(DebugViewport,"__KABALA_ENGINE_DEBUGGER_VIEWPORT");
 
@@ -1550,6 +1555,7 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     DebugViewport->setBackground(DefaultBackground);
     DebugViewport->addForeground(DebuggerUIForeground);
     DebugViewport->setTravMask  (DEBUG_GRAPH_DRAWN);
+    DebugViewport->setRenderOptions(DebugViewportRenderOptions);
 
     //Setup the XForm Manipulation Manager
     _XFormManipMgr.setTarget(NULL);
@@ -2105,7 +2111,7 @@ void ApplicationPlayer::updateWireframeNode(void)
         dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
 
         //Use the traversal mask that the viewport this node is in is using
-        //dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeTravMask(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getTravMask());
+        dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeTravMask(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getTravMask());
 
     }
 
@@ -2232,9 +2238,34 @@ void ApplicationPlayer::createHighlightBoundBoxNode(void)
     TheBlendChunk->setSrcFactor(GL_SRC_ALPHA);
     TheBlendChunk->setDestFactor(GL_ONE_MINUS_SRC_ALPHA);
 
-    ChunkMaterialRefPtr HighlightMaterial = ChunkMaterial::create();
-    HighlightMaterial->addChunk (TheBlendChunk);
-    HighlightMaterial->addChunk (_HighlightBoundBoxMatLineChunk);
+    ChunkMaterialRefPtr FrontHighlightMaterial = ChunkMaterial::create();
+    FrontHighlightMaterial->addChunk (TheBlendChunk);
+    FrontHighlightMaterial->addChunk (_HighlightBoundBoxMatLineChunk);
+
+    DepthChunkRecPtr BackDepthChunk = DepthChunk::create();
+
+    BackDepthChunk->setEnable(true);
+    BackDepthChunk->setFunc(GL_GREATER);
+    BackDepthChunk->setReadOnly(true);
+
+    MaterialChunkRecPtr BackWireframeMatMaterialChunk = MaterialChunk::create();
+    BackWireframeMatMaterialChunk->setAmbient (Color4f(0.0f,0.0f,0.0f,0.25f));
+    BackWireframeMatMaterialChunk->setDiffuse (Color4f(0.0f,0.0f,0.0f,0.25f));
+    BackWireframeMatMaterialChunk->setSpecular(Color4f(0.0f,0.0f,0.0f,0.25f));
+    BackWireframeMatMaterialChunk->setEmission(Color4f(1.0f,1.0f,1.0f,0.25f));
+    BackWireframeMatMaterialChunk->setColorMaterial(GL_EMISSION);
+    BackWireframeMatMaterialChunk->setLit(true);
+
+    ChunkMaterialRefPtr BackHighlightMaterial = ChunkMaterial::create();
+    BackHighlightMaterial->addChunk (TheBlendChunk);
+    BackHighlightMaterial->addChunk (_HighlightBoundBoxMatLineChunk);
+    BackHighlightMaterial->addChunk (BackWireframeMatMaterialChunk);
+    BackHighlightMaterial->addChunk (BackDepthChunk);
+
+    
+    MultiPassMaterialRefPtr HighlightMaterial = MultiPassMaterial::create();
+    HighlightMaterial->addMaterial(FrontHighlightMaterial);
+    HighlightMaterial->addMaterial(BackHighlightMaterial);
 
     //Create the Geometry for the highlight
     GeoUInt8PropertyRecPtr type = GeoUInt8Property::create();
@@ -2319,9 +2350,34 @@ void ApplicationPlayer::createHighlightAxisNode(void)
     TheBlendChunk->setSrcFactor(GL_SRC_ALPHA);
     TheBlendChunk->setDestFactor(GL_ONE_MINUS_SRC_ALPHA);
 
-    ChunkMaterialRefPtr HighlightMaterial = ChunkMaterial::create();
-    HighlightMaterial->addChunk (TheBlendChunk);
-    HighlightMaterial->addChunk (_HighlightAxisLineChunk);
+    ChunkMaterialRefPtr FrontHighlightMaterial = ChunkMaterial::create();
+    FrontHighlightMaterial->addChunk (TheBlendChunk);
+    FrontHighlightMaterial->addChunk (_HighlightAxisLineChunk);
+
+    DepthChunkRecPtr BackDepthChunk = DepthChunk::create();
+
+    BackDepthChunk->setEnable(true);
+    BackDepthChunk->setFunc(GL_GREATER);
+    BackDepthChunk->setReadOnly(true);
+
+    MaterialChunkRecPtr BackHighlightMaterialChunk = MaterialChunk::create();
+    BackHighlightMaterialChunk->setAmbient (Color4f(0.0f,0.0f,0.0f,0.25f));
+    BackHighlightMaterialChunk->setDiffuse (Color4f(0.0f,0.0f,0.0f,0.25f));
+    BackHighlightMaterialChunk->setSpecular(Color4f(0.0f,0.0f,0.0f,0.25f));
+    BackHighlightMaterialChunk->setEmission(Color4f(1.0f,1.0f,1.0f,0.25f));
+    BackHighlightMaterialChunk->setColorMaterial(GL_EMISSION);
+    BackHighlightMaterialChunk->setLit(true);
+
+    ChunkMaterialRefPtr BackHighlightMaterial = ChunkMaterial::create();
+    BackHighlightMaterial->addChunk (TheBlendChunk);
+    BackHighlightMaterial->addChunk (_HighlightAxisLineChunk);
+    BackHighlightMaterial->addChunk (BackHighlightMaterialChunk);
+    BackHighlightMaterial->addChunk (BackDepthChunk);
+
+    
+    MultiPassMaterialRefPtr HighlightMaterial = MultiPassMaterial::create();
+    HighlightMaterial->addMaterial(FrontHighlightMaterial);
+    HighlightMaterial->addMaterial(BackHighlightMaterial);
 
     //Create the Geometry for the highlight
     GeoUInt8PropertyRecPtr type = GeoUInt8Property::create();
@@ -2393,6 +2449,11 @@ void ApplicationPlayer::createHighlightTriMeshNode(void)
     SelectedSubTreeNode->setCore(SelectedSubTree);
     
 
+    //Front Pass
+    DepthChunkRecPtr FrontDepthChunk = DepthChunk::create();
+    FrontDepthChunk->setEnable(true);
+    FrontDepthChunk->setFunc(GL_LEQUAL);
+
     //Create the Material for the Mesh Highlight
     _WireframeMatLineChunk = LineChunk::create();
     _WireframeMatLineChunk->setWidth(1.0f);
@@ -2403,7 +2464,7 @@ void ApplicationPlayer::createHighlightTriMeshNode(void)
     TheBlendChunk->setDestFactor(GL_ONE_MINUS_SRC_ALPHA);
 
     PolygonChunkRefPtr WireframeMatPolygonChunk = PolygonChunk::create();
-    WireframeMatPolygonChunk->setCullFace(GL_NONE);
+    WireframeMatPolygonChunk->setCullFace(GL_BACK);
     WireframeMatPolygonChunk->setFrontMode(GL_LINE);
     WireframeMatPolygonChunk->setBackMode(GL_LINE);
     WireframeMatPolygonChunk->setOffsetFactor(1.0f);
@@ -2418,11 +2479,38 @@ void ApplicationPlayer::createHighlightTriMeshNode(void)
     _WireframeMatMaterialChunk->setEmission(WireframeColor);
     _WireframeMatMaterialChunk->setLit(true);
 
-    ChunkMaterialRefPtr WireframeMaterial = ChunkMaterial::create();
-    WireframeMaterial->addChunk (TheBlendChunk);
-    WireframeMaterial->addChunk (WireframeMatPolygonChunk);
-    WireframeMaterial->addChunk (_WireframeMatMaterialChunk);
-    WireframeMaterial->addChunk (_WireframeMatLineChunk);
+    ChunkMaterialRefPtr FrontWireframeMaterial = ChunkMaterial::create();
+    FrontWireframeMaterial->addChunk (TheBlendChunk);
+    FrontWireframeMaterial->addChunk (WireframeMatPolygonChunk);
+    FrontWireframeMaterial->addChunk (_WireframeMatMaterialChunk);
+    FrontWireframeMaterial->addChunk (_WireframeMatLineChunk);
+    FrontWireframeMaterial->addChunk (FrontDepthChunk);
+
+    //Behind Pass
+    DepthChunkRecPtr BackDepthChunk = DepthChunk::create();
+    BackDepthChunk->setEnable(true);
+    BackDepthChunk->setFunc(GL_GREATER);
+    BackDepthChunk->setReadOnly(true);
+
+    Color4f BackWireframeColor(1.0f,0.0f,1.0f,0.15f);
+    MaterialChunkRecPtr _BackWireframeMatMaterialChunk = MaterialChunk::create();
+    _BackWireframeMatMaterialChunk->setAmbient (Color4f(0.0f,0.0f,0.0f,0.15f));
+    _BackWireframeMatMaterialChunk->setDiffuse (Color4f(0.0f,0.0f,0.0f,0.15f));
+    _BackWireframeMatMaterialChunk->setSpecular(Color4f(0.0f,0.0f,0.0f,0.15f));
+    _BackWireframeMatMaterialChunk->setEmission(BackWireframeColor);
+    _BackWireframeMatMaterialChunk->setLit(true);
+
+    ChunkMaterialRefPtr BackWireframeMaterial = ChunkMaterial::create();
+    BackWireframeMaterial->addChunk (TheBlendChunk);
+    BackWireframeMaterial->addChunk (WireframeMatPolygonChunk);
+    BackWireframeMaterial->addChunk (_BackWireframeMatMaterialChunk);
+    BackWireframeMaterial->addChunk (_WireframeMatLineChunk);
+    BackWireframeMaterial->addChunk (BackDepthChunk);
+
+    
+    MultiPassMaterialRefPtr WireframeMaterial = MultiPassMaterial::create();
+    WireframeMaterial->addMaterial(FrontWireframeMaterial);
+    WireframeMaterial->addMaterial(BackWireframeMaterial);
 
     //MaterialGroup
     MaterialGroupRefPtr WireframeMaterialGroup = MaterialGroup::create(); 
