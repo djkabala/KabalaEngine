@@ -91,6 +91,7 @@ section "Main Application"
    File "@Boost_SYSTEM_LIBRARY_BIN@"
    File "@Boost_FILESYSTEM_LIBRARY_BIN@"
    File "@Boost_PROGRAM_OPTIONS_LIBRARY_BIN@"
+   File "@Boost_DATE_TIME_LIBRARY_BIN@"
    
    #ODE
    File "@ODE_BINARY@"
