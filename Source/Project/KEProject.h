@@ -133,7 +133,6 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
     Viewport* getViewport(UInt32 index) const;
 
     BoostPath getProjectFilePath(void) const;
-    BoostPath getLuaModulePath(void) const;
     /*=========================  PROTECTED  ===============================*/
 
   protected:

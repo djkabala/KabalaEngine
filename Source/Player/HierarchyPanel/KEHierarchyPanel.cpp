@@ -543,7 +543,7 @@ void HierarchyPanel::createLuaGraphTree()
 	_TheLuaGraphTree = Tree::create();
 	_TheLuaGraphTreeModel = LuaGraphTreeModel::create();
 	
-	_TheLuaGraphTreeModel->setRoot(MainApplication::the()->getProject()->getLuaModulePath());
+	//_TheLuaGraphTreeModel->setRoot(MainApplication::the()->getProject()->getLuaModulePath());
 
         _TheLuaGraphTree->setPreferredSize(Vec2f(100, 500));
         _TheLuaGraphTree->setModel(_TheLuaGraphTreeModel);

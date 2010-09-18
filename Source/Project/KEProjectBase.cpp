@@ -115,7 +115,7 @@ OSG_BEGIN_NAMESPACE
     
 */
 
-/*! \var BoostPath       ProjectBase::_sfLuaModulesDirectory
+/*! \var BoostPath       ProjectBase::_mfLuaDirectories
     
 */
 
@@ -243,15 +243,15 @@ void ProjectBase::classDescInserter(TypeObject &oType)
 
     oType.addInitialDesc(pDesc);
 
-    pDesc = new SFBoostPath::Description(
-        SFBoostPath::getClassType(),
-        "LuaModulesDirectory",
+    pDesc = new MFBoostPath::Description(
+        MFBoostPath::getClassType(),
+        "LuaDirectories",
         "",
-        LuaModulesDirectoryFieldId, LuaModulesDirectoryFieldMask,
+        LuaDirectoriesFieldId, LuaDirectoriesFieldMask,
         false,
-        (Field::SFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&Project::editHandleLuaModulesDirectory),
-        static_cast<FieldGetMethodSig >(&Project::getHandleLuaModulesDirectory));
+        (Field::MFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleLuaDirectories),
+        static_cast<FieldGetMethodSig >(&Project::getHandleLuaDirectories));
 
     oType.addInitialDesc(pDesc);
 }
@@ -370,10 +370,10 @@ ProjectBase::TypeObject ProjectBase::_type(
     "\t>\n"
     "\t</Field>\n"
     "\t<Field\n"
-    "\t\tname=\"LuaModulesDirectory\"\n"
+    "\t\tname=\"LuaDirectories\"\n"
     "\t\ttype=\"BoostPath\"\n"
     "\t\tcategory=\"data\"\n"
-    "\t\tcardinality=\"single\"\n"
+    "\t\tcardinality=\"multi\"\n"
     "\t\tvisibility=\"external\"\n"
     "\t\taccess=\"public\"\n"
     "        defaultValue=\"./lua\"\n"
@@ -867,16 +867,16 @@ const SFBoostPath *ProjectBase::getSFLuaModule(void) const
 }
 
 
-SFBoostPath *ProjectBase::editSFLuaModulesDirectory(void)
+MFBoostPath *ProjectBase::editMFLuaDirectories(void)
 {
-    editSField(LuaModulesDirectoryFieldMask);
+    editMField(LuaDirectoriesFieldMask, _mfLuaDirectories);
 
-    return &_sfLuaModulesDirectory;
+    return &_mfLuaDirectories;
 }
 
-const SFBoostPath *ProjectBase::getSFLuaModulesDirectory(void) const
+const MFBoostPath *ProjectBase::getMFLuaDirectories(void) const
 {
-    return &_sfLuaModulesDirectory;
+    return &_mfLuaDirectories;
 }
 
 
@@ -1076,9 +1076,9 @@ UInt32 ProjectBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfLuaModule.getBinSize();
     }
-    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
+    if(FieldBits::NoField != (LuaDirectoriesFieldMask & whichField))
     {
-        returnValue += _sfLuaModulesDirectory.getBinSize();
+        returnValue += _mfLuaDirectories.getBinSize();
     }
 
     return returnValue;
@@ -1121,9 +1121,9 @@ void ProjectBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfLuaModule.copyToBin(pMem);
     }
-    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
+    if(FieldBits::NoField != (LuaDirectoriesFieldMask & whichField))
     {
-        _sfLuaModulesDirectory.copyToBin(pMem);
+        _mfLuaDirectories.copyToBin(pMem);
     }
 }
 
@@ -1164,9 +1164,9 @@ void ProjectBase::copyFromBin(BinaryDataHandler &pMem,
     {
         _sfLuaModule.copyFromBin(pMem);
     }
-    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
+    if(FieldBits::NoField != (LuaDirectoriesFieldMask & whichField))
     {
-        _sfLuaModulesDirectory.copyFromBin(pMem);
+        _mfLuaDirectories.copyFromBin(pMem);
     }
 }
 
@@ -2011,7 +2011,7 @@ ProjectBase::ProjectBase(void) :
     _sfInternalActiveScene    (NULL),
     _mfActiveParticleSystems  (),
     _sfLuaModule              (),
-    _sfLuaModulesDirectory    (BoostPath("./lua"))
+    _mfLuaDirectories         ()
 {
 }
 
@@ -2027,7 +2027,7 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _sfInternalActiveScene    (NULL),
     _mfActiveParticleSystems  (),
     _sfLuaModule              (source._sfLuaModule              ),
-    _sfLuaModulesDirectory    (source._sfLuaModulesDirectory    )
+    _mfLuaDirectories         (source._mfLuaDirectories         )
 {
 }
 
@@ -2353,27 +2353,27 @@ EditFieldHandlePtr ProjectBase::editHandleLuaModule      (void)
     return returnValue;
 }
 
-GetFieldHandlePtr ProjectBase::getHandleLuaModulesDirectory (void) const
+GetFieldHandlePtr ProjectBase::getHandleLuaDirectories  (void) const
 {
-    SFBoostPath::GetHandlePtr returnValue(
-        new  SFBoostPath::GetHandle(
-             &_sfLuaModulesDirectory,
-             this->getType().getFieldDesc(LuaModulesDirectoryFieldId),
+    MFBoostPath::GetHandlePtr returnValue(
+        new  MFBoostPath::GetHandle(
+             &_mfLuaDirectories,
+             this->getType().getFieldDesc(LuaDirectoriesFieldId),
              const_cast<ProjectBase *>(this)));
 
     return returnValue;
 }
 
-EditFieldHandlePtr ProjectBase::editHandleLuaModulesDirectory(void)
+EditFieldHandlePtr ProjectBase::editHandleLuaDirectories (void)
 {
-    SFBoostPath::EditHandlePtr returnValue(
-        new  SFBoostPath::EditHandle(
-             &_sfLuaModulesDirectory,
-             this->getType().getFieldDesc(LuaModulesDirectoryFieldId),
+    MFBoostPath::EditHandlePtr returnValue(
+        new  MFBoostPath::EditHandle(
+             &_mfLuaDirectories,
+             this->getType().getFieldDesc(LuaDirectoriesFieldId),
              this));
 
 
-    editSField(LuaModulesDirectoryFieldMask);
+    editMField(LuaDirectoriesFieldMask, _mfLuaDirectories);
 
     return returnValue;
 }
@@ -2710,7 +2710,16 @@ void ProjectBase::resolveLinks(void)
 
     static_cast<Project *>(this)->clearActiveParticleSystems();
 
+#ifdef OSG_MT_CPTR_ASPECT
+    AspectOffsetStore oOffsets;
 
+    _pAspectStore->fillOffsetArray(oOffsets, this);
+#endif
+
+#ifdef OSG_MT_CPTR_ASPECT
+    _mfLuaDirectories.terminateShare(Thread::getCurrentAspect(),
+                                      oOffsets);
+#endif
 }
 
 

@@ -224,31 +224,6 @@ void ProjectBase::setLuaModule(const BoostPath &value)
 
     _sfLuaModule.setValue(value);
 }
-//! Get the value of the Project::_sfLuaModulesDirectory field.
-
-inline
-BoostPath &ProjectBase::editLuaModulesDirectory(void)
-{
-    editSField(LuaModulesDirectoryFieldMask);
-
-    return _sfLuaModulesDirectory.getValue();
-}
-
-//! Get the value of the Project::_sfLuaModulesDirectory field.
-inline
-const BoostPath &ProjectBase::getLuaModulesDirectory(void) const
-{
-    return _sfLuaModulesDirectory.getValue();
-}
-
-//! Set the value of the Project::_sfLuaModulesDirectory field.
-inline
-void ProjectBase::setLuaModulesDirectory(const BoostPath &value)
-{
-    editSField(LuaModulesDirectoryFieldMask);
-
-    _sfLuaModulesDirectory.setValue(value);
-}
 
 //! Get the value of the \a index element the Project::_mfScenes field.
 inline
@@ -263,6 +238,22 @@ ParticleSystem * ProjectBase::getActiveParticleSystems(const UInt32 index) const
 {
     return _mfActiveParticleSystems[index];
 }
+
+//! Get the value of the \a index element the Project::_mfLuaDirectories field.
+inline
+const BoostPath &ProjectBase::getLuaDirectories(const UInt32 index) const
+{
+    return _mfLuaDirectories[index];
+}
+
+inline
+BoostPath &ProjectBase::editLuaDirectories(const UInt32 index)
+{
+    editMField(LuaDirectoriesFieldMask, _mfLuaDirectories);
+
+    return _mfLuaDirectories[index];
+}
+
 
 
 #ifdef OSG_MT_CPTR_ASPECT
@@ -305,8 +296,11 @@ void ProjectBase::execSync (      ProjectBase *pFrom,
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
         _sfLuaModule.syncWith(pFrom->_sfLuaModule);
 
-    if(FieldBits::NoField != (LuaModulesDirectoryFieldMask & whichField))
-        _sfLuaModulesDirectory.syncWith(pFrom->_sfLuaModulesDirectory);
+    if(FieldBits::NoField != (LuaDirectoriesFieldMask & whichField))
+        _mfLuaDirectories.syncWith(pFrom->_mfLuaDirectories,
+                                syncMode,
+                                uiSyncInfo,
+                                oOffsets);
 }
 #endif
 

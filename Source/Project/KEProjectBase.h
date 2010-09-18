@@ -171,8 +171,8 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
         InternalActiveSceneFieldId = InitialSceneFieldId + 1,
         ActiveParticleSystemsFieldId = InternalActiveSceneFieldId + 1,
         LuaModuleFieldId = ActiveParticleSystemsFieldId + 1,
-        LuaModulesDirectoryFieldId = LuaModuleFieldId + 1,
-        NextFieldId = LuaModulesDirectoryFieldId + 1
+        LuaDirectoriesFieldId = LuaModuleFieldId + 1,
+        NextFieldId = LuaDirectoriesFieldId + 1
     };
 
     static const OSG::BitVector VersionFieldMask =
@@ -191,8 +191,8 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
         (TypeTraits<BitVector>::One << ActiveParticleSystemsFieldId);
     static const OSG::BitVector LuaModuleFieldMask =
         (TypeTraits<BitVector>::One << LuaModuleFieldId);
-    static const OSG::BitVector LuaModulesDirectoryFieldMask =
-        (TypeTraits<BitVector>::One << LuaModulesDirectoryFieldId);
+    static const OSG::BitVector LuaDirectoriesFieldMask =
+        (TypeTraits<BitVector>::One << LuaDirectoriesFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
@@ -204,7 +204,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     typedef SFUnrecScenePtr   SFInternalActiveSceneType;
     typedef MFUnrecParticleSystemPtr MFActiveParticleSystemsType;
     typedef SFBoostPath       SFLuaModuleType;
-    typedef SFBoostPath       SFLuaModulesDirectoryType;
+    typedef MFBoostPath       MFLuaDirectoriesType;
 
     enum
     {
@@ -278,8 +278,8 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
                   SFBoostPath         *editSFLuaModule      (void);
             const SFBoostPath         *getSFLuaModule       (void) const;
 
-                  SFBoostPath         *editSFLuaModulesDirectory(void);
-            const SFBoostPath         *getSFLuaModulesDirectory (void) const;
+                  MFBoostPath         *editMFLuaDirectories (void);
+            const MFBoostPath         *getMFLuaDirectories  (void) const;
 
 
                   std::string         &editVersion        (void);
@@ -298,8 +298,8 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
                   BoostPath           &editLuaModule      (void);
             const BoostPath           &getLuaModule       (void) const;
 
-                  BoostPath           &editLuaModulesDirectory(void);
-            const BoostPath           &getLuaModulesDirectory (void) const;
+                  BoostPath           &editLuaDirectories (const UInt32 index);
+            const BoostPath           &getLuaDirectories  (const UInt32 index) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -311,7 +311,6 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
             void setFilePath       (const BoostPath &value);
             void setInitialScene   (Scene * const value);
             void setLuaModule      (const BoostPath &value);
-            void setLuaModulesDirectory(const BoostPath &value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -745,7 +744,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     SFUnrecScenePtr   _sfInternalActiveScene;
     MFUnrecParticleSystemPtr _mfActiveParticleSystems;
     SFBoostPath       _sfLuaModule;
-    SFBoostPath       _sfLuaModulesDirectory;
+    MFBoostPath       _mfLuaDirectories;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -798,8 +797,8 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     EditFieldHandlePtr editHandleActiveParticleSystems(void);
     GetFieldHandlePtr  getHandleLuaModule       (void) const;
     EditFieldHandlePtr editHandleLuaModule      (void);
-    GetFieldHandlePtr  getHandleLuaModulesDirectory (void) const;
-    EditFieldHandlePtr editHandleLuaModulesDirectory(void);
+    GetFieldHandlePtr  getHandleLuaDirectories  (void) const;
+    EditFieldHandlePtr editHandleLuaDirectories (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

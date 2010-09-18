@@ -313,28 +313,39 @@ BoostPath Project::getProjectFilePath(void) const
     return ProjectBaseDir;
 }
 
-BoostPath Project::getLuaModulePath(void) const
-{
-    return getLuaModulesDirectory();
-}
-
 void Project::loadScripts(void)
 {
-    //Get the directory that the project is located in
 
-    //Set the BoostPath used for finding modules by lua
-    std::string PackagePath("?;"
-                            + (getLuaModulePath() / "?" ).file_string() + ";"
-                            + (getLuaModulePath() / "?.lua" ).file_string() + ";"
-                            + (getLuaModulePath() / "?" /  "init.lua").file_string());
+    std::string PlatformLibExt = 
+#ifdef __linux
+                             "?.so";
+#endif
+#ifdef __APPLE__
+                             "?.dylib";
+#endif
+#ifdef WIN32
+                             "?.dll";
+#endif
 
+    std::string PackagePath("?");
+    std::string PackageCPath("?");
+
+    BoostPath ModulePath;
+    for(UInt32 i(0) ; i<getMFLuaDirectories()->size() ; ++i)
+    {
+        ModulePath = getProjectFilePath() / getLuaDirectories(i);
+
+        //Set the BoostPath used for finding modules by lua
+        PackagePath += ";" + (ModulePath / "?" ).file_string() + ";"
+                           + (ModulePath / "?.lua" ).file_string() + ";"
+                           + (ModulePath / "?" /  "init.lua").file_string();
+
+
+        PackageCPath += ";" + (ModulePath / "?" ).file_string() + ";"
+                            + (ModulePath / PlatformLibExt  ).file_string();
+
+    }
     LuaManager::the()->setPackagePath(PackagePath);
-
-    std::string PackageCPath("?;"
-                             + (getLuaModulePath() / "?" ).file_string() + ";"
-                             + (getLuaModulePath() / "?.so" ).file_string() + ";"
-                             + (getLuaModulePath() / "?.dylib" ).file_string() + ";"
-                             + (getLuaModulePath() / "?.dll" ).file_string());
     LuaManager::the()->setPackageCPath(PackageCPath);
 
     //If I have a Lua Module then load it

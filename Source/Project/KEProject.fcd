@@ -100,13 +100,12 @@ The Project.
 	>
 	</Field>
 	<Field
-		name="LuaModulesDirectory"
+		name="LuaDirectories"
 		type="BoostPath"
 		category="data"
-		cardinality="single"
+		cardinality="multi"
 		visibility="external"
 		access="public"
-        defaultValue="./lua"
 	>
 	</Field>
 	<ProducedEvent
