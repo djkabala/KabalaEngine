@@ -56,7 +56,6 @@
 
 
 #include "Project/Scene/KEScene.h"      // Scenes Class
-#include <OpenSG/OSGParticleSystem.h>   // ActiveParticleSystems Class
 
 #include "KEProjectBase.h"
 #include "KEProject.h"
@@ -104,10 +103,6 @@ OSG_BEGIN_NAMESPACE
 */
 
 /*! \var Scene *         ProjectBase::_sfInternalActiveScene
-    
-*/
-
-/*! \var ParticleSystem * ProjectBase::_mfActiveParticleSystems
     
 */
 
@@ -216,18 +211,6 @@ void ProjectBase::classDescInserter(TypeObject &oType)
         (Field::SFDefaultFlags | Field::FStdAccess),
         static_cast<FieldEditMethodSig>(&Project::editHandleInternalActiveScene),
         static_cast<FieldGetMethodSig >(&Project::getHandleInternalActiveScene));
-
-    oType.addInitialDesc(pDesc);
-
-    pDesc = new MFUnrecParticleSystemPtr::Description(
-        MFUnrecParticleSystemPtr::getClassType(),
-        "ActiveParticleSystems",
-        "",
-        ActiveParticleSystemsFieldId, ActiveParticleSystemsFieldMask,
-        false,
-        (Field::MFDefaultFlags | Field::FStdAccess),
-        static_cast<FieldEditMethodSig>(&Project::editHandleActiveParticleSystems),
-        static_cast<FieldGetMethodSig >(&Project::getHandleActiveParticleSystems));
 
     oType.addInitialDesc(pDesc);
 
@@ -352,15 +335,6 @@ ProjectBase::TypeObject ProjectBase::_type(
     "\t>\n"
     "\t</Field>\n"
     "\t<Field\n"
-    "\t\tname=\"ActiveParticleSystems\"\n"
-    "\t\ttype=\"ParticleSystem\"\n"
-    "\t\tcategory=\"pointer\"\n"
-    "\t\tcardinality=\"multi\"\n"
-    "\t\tvisibility=\"external\"\n"
-    "\t\taccess=\"protected\"\n"
-    "\t>\n"
-    "\t</Field>\n"
-    "\t<Field\n"
     "\t\tname=\"LuaModule\"\n"
     "\t\ttype=\"BoostPath\"\n"
     "\t\tcategory=\"data\"\n"
@@ -376,7 +350,6 @@ ProjectBase::TypeObject ProjectBase::_type(
     "\t\tcardinality=\"multi\"\n"
     "\t\tvisibility=\"external\"\n"
     "\t\taccess=\"public\"\n"
-    "        defaultValue=\"./lua\"\n"
     "\t>\n"
     "\t</Field>\n"
     "\t<ProducedEvent\n"
@@ -841,19 +814,6 @@ SFUnrecScenePtr     *ProjectBase::editSFInternalActiveScene(void)
     return &_sfInternalActiveScene;
 }
 
-//! Get the Project::_mfActiveParticleSystems field.
-const MFUnrecParticleSystemPtr *ProjectBase::getMFActiveParticleSystems(void) const
-{
-    return &_mfActiveParticleSystems;
-}
-
-MFUnrecParticleSystemPtr *ProjectBase::editMFActiveParticleSystems(void)
-{
-    editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
-
-    return &_mfActiveParticleSystems;
-}
-
 SFBoostPath *ProjectBase::editSFLuaModule(void)
 {
     editSField(LuaModuleFieldMask);
@@ -983,59 +943,6 @@ void ProjectBase::clearScenes(void)
     _mfScenes.clear();
 }
 
-void ProjectBase::pushToActiveParticleSystems(ParticleSystem * const value)
-{
-    editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
-
-    _mfActiveParticleSystems.push_back(value);
-}
-
-void ProjectBase::assignActiveParticleSystems(const MFUnrecParticleSystemPtr &value)
-{
-    MFUnrecParticleSystemPtr::const_iterator elemIt  =
-        value.begin();
-    MFUnrecParticleSystemPtr::const_iterator elemEnd =
-        value.end  ();
-
-    static_cast<Project *>(this)->clearActiveParticleSystems();
-
-    while(elemIt != elemEnd)
-    {
-        this->pushToActiveParticleSystems(*elemIt);
-
-        ++elemIt;
-    }
-}
-
-void ProjectBase::removeFromActiveParticleSystems(UInt32 uiIndex)
-{
-    if(uiIndex < _mfActiveParticleSystems.size())
-    {
-        editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
-
-        _mfActiveParticleSystems.erase(uiIndex);
-    }
-}
-
-void ProjectBase::removeObjFromActiveParticleSystems(ParticleSystem * const value)
-{
-    Int32 iElemIdx = _mfActiveParticleSystems.findIndex(value);
-
-    if(iElemIdx != -1)
-    {
-        editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
-
-        _mfActiveParticleSystems.erase(iElemIdx);
-    }
-}
-void ProjectBase::clearActiveParticleSystems(void)
-{
-    editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
-
-
-    _mfActiveParticleSystems.clear();
-}
-
 
 
 /*------------------------------ access -----------------------------------*/
@@ -1067,10 +974,6 @@ UInt32 ProjectBase::getBinSize(ConstFieldMaskArg whichField)
     if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
     {
         returnValue += _sfInternalActiveScene.getBinSize();
-    }
-    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
-    {
-        returnValue += _mfActiveParticleSystems.getBinSize();
     }
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
@@ -1113,10 +1016,6 @@ void ProjectBase::copyToBin(BinaryDataHandler &pMem,
     {
         _sfInternalActiveScene.copyToBin(pMem);
     }
-    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
-    {
-        _mfActiveParticleSystems.copyToBin(pMem);
-    }
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
         _sfLuaModule.copyToBin(pMem);
@@ -1155,10 +1054,6 @@ void ProjectBase::copyFromBin(BinaryDataHandler &pMem,
     if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
     {
         _sfInternalActiveScene.copyFromBin(pMem);
-    }
-    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
-    {
-        _mfActiveParticleSystems.copyFromBin(pMem);
     }
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
     {
@@ -2009,7 +1904,6 @@ ProjectBase::ProjectBase(void) :
                           Scene::ParentProjectFieldId),
     _sfInitialScene           (NULL),
     _sfInternalActiveScene    (NULL),
-    _mfActiveParticleSystems  (),
     _sfLuaModule              (),
     _mfLuaDirectories         ()
 {
@@ -2025,7 +1919,6 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
                           Scene::ParentProjectFieldId),
     _sfInitialScene           (NULL),
     _sfInternalActiveScene    (NULL),
-    _mfActiveParticleSystems  (),
     _sfLuaModule              (source._sfLuaModule              ),
     _mfLuaDirectories         (source._mfLuaDirectories         )
 {
@@ -2099,18 +1992,6 @@ void ProjectBase::onCreate(const Project *source)
         pThis->setInitialScene(source->getInitialScene());
 
         pThis->setInternalActiveScene(source->getInternalActiveScene());
-
-        MFUnrecParticleSystemPtr::const_iterator ActiveParticleSystemsIt  =
-            source->_mfActiveParticleSystems.begin();
-        MFUnrecParticleSystemPtr::const_iterator ActiveParticleSystemsEnd =
-            source->_mfActiveParticleSystems.end  ();
-
-        while(ActiveParticleSystemsIt != ActiveParticleSystemsEnd)
-        {
-            pThis->pushToActiveParticleSystems(*ActiveParticleSystemsIt);
-
-            ++ActiveParticleSystemsIt;
-        }
     }
 }
 
@@ -2287,43 +2168,6 @@ EditFieldHandlePtr ProjectBase::editHandleInternalActiveScene(void)
                     static_cast<Project *>(this), _1));
 
     editSField(InternalActiveSceneFieldMask);
-
-    return returnValue;
-}
-
-GetFieldHandlePtr ProjectBase::getHandleActiveParticleSystems (void) const
-{
-    MFUnrecParticleSystemPtr::GetHandlePtr returnValue(
-        new  MFUnrecParticleSystemPtr::GetHandle(
-             &_mfActiveParticleSystems,
-             this->getType().getFieldDesc(ActiveParticleSystemsFieldId),
-             const_cast<ProjectBase *>(this)));
-
-    return returnValue;
-}
-
-EditFieldHandlePtr ProjectBase::editHandleActiveParticleSystems(void)
-{
-    MFUnrecParticleSystemPtr::EditHandlePtr returnValue(
-        new  MFUnrecParticleSystemPtr::EditHandle(
-             &_mfActiveParticleSystems,
-             this->getType().getFieldDesc(ActiveParticleSystemsFieldId),
-             this));
-
-    returnValue->setAddMethod(
-        boost::bind(&Project::pushToActiveParticleSystems,
-                    static_cast<Project *>(this), _1));
-    returnValue->setRemoveMethod(
-        boost::bind(&Project::removeFromActiveParticleSystems,
-                    static_cast<Project *>(this), _1));
-    returnValue->setRemoveObjMethod(
-        boost::bind(&Project::removeObjFromActiveParticleSystems,
-                    static_cast<Project *>(this), _1));
-    returnValue->setClearMethod(
-        boost::bind(&Project::clearActiveParticleSystems,
-                    static_cast<Project *>(this)));
-
-    editMField(ActiveParticleSystemsFieldMask, _mfActiveParticleSystems);
 
     return returnValue;
 }
@@ -2707,8 +2551,6 @@ void ProjectBase::resolveLinks(void)
     static_cast<Project *>(this)->setInitialScene(NULL);
 
     static_cast<Project *>(this)->setInternalActiveScene(NULL);
-
-    static_cast<Project *>(this)->clearActiveParticleSystems();
 
 #ifdef OSG_MT_CPTR_ASPECT
     AspectOffsetStore oOffsets;

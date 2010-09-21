@@ -257,6 +257,22 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
     GenericEventSignalMap _GenericEventSignalMap;
     UInt32 _GenericEventIDCount;
 
+    void loadLuaModule(void);
+
+    void attachViewports(void);
+    void attachUIDrawingSurfaces(void);
+    void attachPhysics(void);
+    void attachInitialAnimations(void);
+    void attachInitialParticleSystems(void);
+
+    void detachViewports(void);
+    void detachUIDrawingSurfaces(void);
+    void detachPhysics(void);
+    void detachInitialAnimations(void);
+    void detachInitialParticleSystems(void);
+
+    void disconnectAllEvents(void);
+
     /*==========================  PRIVATE  ================================*/
 
   private:

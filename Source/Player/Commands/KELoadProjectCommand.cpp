@@ -91,11 +91,25 @@ void LoadProjectCommand::execute(void)
     if(FilesToOpen.size() > 0)
     {
         //Exit the Debugger
-        //bool isInDebugger(dynamic_pointer_cast<ApplicationPlayer>(MainApplication::the()->getPlayerMode())->isDebugging());
-        //if(isInDebugger)
-        //{
-            //dynamic_pointer_cast<ApplicationPlayer>(MainApplication::the()->getPlayerMode())->enableDebug(false);
-        //}
+        bool isInDebugger(dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->isDebugging());
+        if(isInDebugger)
+        {
+            dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->enableDebug(false);
+        }
+
+        //If started then stop the current project
+        ProjectRecPtr PrevProject(MainApplication::the()->getProject());
+        bool isProjectRunning(PrevProject != NULL && PrevProject->isRunning());
+        if(PrevProject != NULL)
+        {
+            if(PrevProject->isRunning())
+            {
+                PrevProject->stop();
+            }
+        }
+
+        //Set the current project to NULL
+        MainApplication::the()->setProject(NULL);
 
         //ApplicationMode* InitialMode(MainApplication::the()->getCurrentMode());
         //MainApplication::the()->setCurrentMode(MainApplication::the()->getStartScreenMode());
@@ -103,16 +117,25 @@ void LoadProjectCommand::execute(void)
         //Try loading the file using the XML file handler
         MainApplication::the()->loadProject(FilesToOpen[0]);
 
+        //Get the new project
+        ProjectRecPtr NewProject(MainApplication::the()->getProject());
+
+        //Restart the project
+        if(NewProject != NULL && isProjectRunning)
+        {
+            NewProject->start();
+        }
+
         //if(InitialMode != MainApplication::the()->getCurrentMode())
         //{
             //MainApplication::the()->setCurrentMode(InitialMode);
         //}
 
         //Reenter the Debugger
-        //if(isInDebugger)
-        //{
-            //dynamic_pointer_cast<ApplicationPlayer>(MainApplication::the()->getPlayerMode())->enableDebug(true);
-        //}
+        if(isInDebugger)
+        {
+            dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->enableDebug(true);
+        }
     }
 }
 

@@ -134,19 +134,149 @@ void Scene::enter(void)
    _WindowExitedConnection = MainApplication::the()->getMainWindow()->connectWindowExited(boost::bind(&Scene::handleWindowExited, this, _1));
 
     //Attach the User Interface Drawing Surfaces to the Window Event Producer
-    for(::OSG::UInt32 i(0) ; i<getMFUIDrawingSurfaces()->size() ; ++i)
-    {
-        getUIDrawingSurfaces(i)->setEventProducer(getParentProject()->getEventProducer());
-    }
+    attachUIDrawingSurfaces();
 
     //Attach the viewports
+    attachViewports();
+
+    produceSceneEntered();
+
+    //Attach Physics
+    attachPhysics();
+
+}
+
+
+void Scene::start(void)
+{
+    SLOG << "Starting Scene: "
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
+        << "." << std::endl;
+
+    loadLuaModule();
+
+    produceSceneStarted();
+
+    //Attach the initial animations
+    attachInitialAnimations();
+
+    //Attach the initial particle systems
+    attachInitialParticleSystems();
+
+    _IsStarted = true;
+}
+
+void Scene::end(void)
+{
+    //Dettach Animations
+    detachInitialAnimations();
+    
+    //Dettach Particle Systems
+    detachInitialParticleSystems();
+
+    _IsStarted = false;
+
+    produceSceneEnded();
+
+    SLOG << "Ending Scene: "
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
+        << "." << std::endl;
+}
+
+void Scene::reset(void)
+{
+    SLOG << "Reseting Scene: "
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
+        << "." << std::endl;
+
+    //Exit the scene if it is entered
+    bool isCurrentlyActive(getParentProject() != NULL && getParentProject()->getActiveScene() == this);
+
+    //Stop the scene if it has been started
+    bool isCurrentlyStarted(isStarted());
+
+    //Reload lua module
+    loadLuaModule();
+
+    //Reset all
+    disconnectAllEvents();
+
+    produceSceneReset();
+
+    //Start the scene if it was previously started
+    if(isCurrentlyStarted)
+    {
+        start();
+    }
+
+    //Enter the scene if it was previously entered
+    if(isCurrentlyActive)
+    {
+        enter();
+    }
+}
+
+
+void Scene::exit(void)
+{
+    //Dettach the viewports
+    detachViewports();
+
+    //Detach the User Interface Drawing Surfaces from the Window Event Producer
+    detachUIDrawingSurfaces();
+
+    //Detach Physics
+    detachPhysics();
+
+    //Detach the listeners
+    _UpdateConnection.disconnect();
+    _MouseClickedConnection.disconnect();
+    _MouseEnteredConnection.disconnect();
+    _MouseExitedConnection.disconnect();
+    _MousePressedConnection.disconnect();
+    _MouseReleasedConnection.disconnect();
+    _MouseMovedConnection.disconnect();
+    _MouseDraggedConnection.disconnect();
+    _MouseWheelMovedConnection.disconnect();
+    _KeyPressedConnection.disconnect();
+    _KeyReleasedConnection.disconnect();
+    _KeyTypedConnection.disconnect();
+    _WindowOpenedConnection.disconnect();
+    _WindowClosingConnection.disconnect();
+    _WindowClosedConnection.disconnect();
+    _WindowIconifiedConnection.disconnect();
+    _WindowDeiconifiedConnection.disconnect();
+    _WindowActivatedConnection.disconnect();
+    _WindowDeactivatedConnection.disconnect();
+    _WindowEnteredConnection.disconnect();
+    _WindowExitedConnection.disconnect();
+
+
+    produceSceneExited();
+
+    SLOG << "Exited Scene: "
+        << (getName(this) ? getName(this) : "UNNAMED SCENE")
+        << "." << std::endl;
+}
+
+void Scene::attachViewports(void)
+{
     for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
     {
         getParentProject()->addViewport(getViewports(i));
     }
+}
 
-    produceSceneEntered();
+void Scene::attachUIDrawingSurfaces(void)
+{
+    for(::OSG::UInt32 i(0) ; i<getMFUIDrawingSurfaces()->size() ; ++i)
+    {
+        getUIDrawingSurfaces(i)->setEventProducer(getParentProject()->getEventProducer());
+    }
+}
 
+void Scene::attachPhysics(void)
+{
     //If There is a physics World then update it's contents
     if(getPhysicsWorld() != NULL && getPhysicsHandler() != NULL)
     {
@@ -206,15 +336,40 @@ void Scene::enter(void)
             }
         }
     }
-
 }
 
-void Scene::start(void)
+void Scene::detachViewports(void)
 {
-    SLOG << "Starting Scene: "
-        << (getName(this) ? getName(this) : "UNNAMED SCENE")
-        << "." << std::endl;
+    for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
+    {
+        getParentProject()->removeViewport(getViewports(i));
+    }
+}
 
+void Scene::detachUIDrawingSurfaces(void)
+{
+    for(::OSG::UInt32 i(0) ; i<getMFUIDrawingSurfaces()->size() ; ++i)
+    {
+        getUIDrawingSurfaces(i)->detachFromEventProducer();
+    }
+}
+
+void Scene::detachPhysics(void)
+{
+    //If There is a physics Handler then detach it
+    if(getPhysicsHandler() != NULL)
+    {
+        //getPhysicsHandler()->detachUpdateProducer();
+
+        //Detach all Physics spaces from the Physics handler
+        //getPhysicsHandler()->getSpaces().clear();
+        //getPhysicsHandler()->setUpdateNode(NULL);
+        //getPhysicsHandler()->setWorld(NULL);
+    }
+}
+
+void Scene::loadLuaModule(void)
+{
     //If there is  a Lua Module for this scene then load it
     if(!getLuaModule().string().empty())
     {
@@ -234,99 +389,52 @@ void Scene::start(void)
             commitChanges();
         }
     }
+}
 
-    produceSceneStarted();
-
-    //Attach the initial animations
+void Scene::attachInitialAnimations(void)
+{
     for(::OSG::UInt32 i(0) ; i<getMFInitialAnimations()->size() ; ++i)
     {
         getInitialAnimations(i)->attachUpdateProducer(this);
         getInitialAnimations(i)->start();
     }
+}
 
-    //Attach the initial particle systems
+void Scene::attachInitialParticleSystems(void)
+{
     for(::OSG::UInt32 i(0) ; i<getMFInitialParticleSystems()->size() ; ++i)
     {
         getInitialParticleSystems(i)->attachUpdateProducer(this);
     }
-
-    _IsStarted = true;
 }
 
-void Scene::end(void)
+void Scene::detachInitialAnimations(void)
 {
-    _IsStarted = false;
-
-    produceSceneEnded();
-
-    SLOG << "Ending Scene: "
-        << (getName(this) ? getName(this) : "UNNAMED SCENE")
-        << "." << std::endl;
+    for(::OSG::UInt32 i(0) ; i<getMFInitialAnimations()->size() ; ++i)
+    {
+        getInitialAnimations(i)->stop();
+        getInitialAnimations(i)->detachUpdateProducer();
+    }
 }
 
-void Scene::reset(void)
+void Scene::detachInitialParticleSystems(void)
 {
-    SLOG << "Reseting Scene: "
-        << (getName(this) ? getName(this) : "UNNAMED SCENE")
-        << "." << std::endl;
-
-    produceSceneReset();
+    for(::OSG::UInt32 i(0) ; i<getMFInitialParticleSystems()->size() ; ++i)
+    {
+        getInitialParticleSystems(i)->detachUpdateProducer();
+    }
 }
 
-
-void Scene::exit(void)
+void Scene::disconnectAllEvents(void)
 {
-    //Dettach the viewports
-    for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
+    //Disconnect all normal events
+    for(UInt32 i(0) ; i<NextProducedEventId ; ++i)
     {
-        getParentProject()->removeViewport(getViewports(i));
+        disconnectAllSlotsEvent(i);
     }
 
-    //Detach the User Interface Drawing Surfaces from the Window Event Producer
-    for(::OSG::UInt32 i(0) ; i<getMFUIDrawingSurfaces()->size() ; ++i)
-    {
-        getUIDrawingSurfaces(i)->detachFromEventProducer();
-    }
-
-    //Detach the listeners
-    _UpdateConnection.disconnect();
-    _MouseClickedConnection.disconnect();
-    _MouseEnteredConnection.disconnect();
-    _MouseExitedConnection.disconnect();
-    _MousePressedConnection.disconnect();
-    _MouseReleasedConnection.disconnect();
-    _MouseMovedConnection.disconnect();
-    _MouseDraggedConnection.disconnect();
-    _MouseWheelMovedConnection.disconnect();
-    _KeyPressedConnection.disconnect();
-    _KeyReleasedConnection.disconnect();
-    _KeyTypedConnection.disconnect();
-    _WindowOpenedConnection.disconnect();
-    _WindowClosingConnection.disconnect();
-    _WindowClosedConnection.disconnect();
-    _WindowIconifiedConnection.disconnect();
-    _WindowDeiconifiedConnection.disconnect();
-    _WindowActivatedConnection.disconnect();
-    _WindowDeactivatedConnection.disconnect();
-    _WindowEnteredConnection.disconnect();
-    _WindowExitedConnection.disconnect();
-
-    //If There is a physics Handler then detach it
-    if(getPhysicsHandler() != NULL)
-    {
-        //getPhysicsHandler()->detachUpdateProducer();
-
-        //Detach all Physics spaces from the Physics handler
-        //getPhysicsHandler()->getSpaces().clear();
-        //getPhysicsHandler()->setUpdateNode(NULL);
-        //getPhysicsHandler()->setWorld(NULL);
-    }
-
-    produceSceneExited();
-
-    SLOG << "Exited Scene: "
-        << (getName(this) ? getName(this) : "UNNAMED SCENE")
-        << "." << std::endl;
+    //Disconnect all Generic events
+    _GenericEventSignalMap.clear();
 }
 
 void Scene::createDefaults(void)
@@ -863,18 +971,46 @@ void Scene::changed(ConstFieldMaskArg whichField,
 {
     Inherited::changed(whichField, origin, details);
 
-    if((whichField & ViewportsFieldMask) &&
+    /*if((whichField & ViewportsFieldMask) &&
        getParentProject() != NULL &&
        getParentProject()->getActiveScene() == this)
     {
-        //getParentProject()->clearViewports();
+        attachViewports();
+    }*/
 
-        //Add The Viewports
-        for(::OSG::UInt32 i(0) ; i<getMFViewports()->size() ; ++i)
-        {
-            getParentProject()->addViewport(getViewports(i));
-        }
+    if((whichField & UIDrawingSurfacesFieldMask) &&
+       getParentProject() != NULL &&
+       getParentProject()->getActiveScene() == this)
+    {
+        attachUIDrawingSurfaces();
     }
+
+    if((whichField & (PhysicsWorldFieldMask | PhysicsHandlerFieldMask)) &&
+       getParentProject() != NULL &&
+       getParentProject()->getActiveScene() == this)
+    {
+        attachPhysics();
+    }
+
+    if((whichField & LuaModuleFieldMask) &&
+       isStarted())
+    {
+        loadLuaModule();
+    }
+
+    /*if((whichField & InitialAnimationsFieldMask) &&
+       getParentProject() != NULL &&
+       getParentProject()->getActiveScene() == this)
+    {
+        attachInitialAnimations();
+    }
+
+    if((whichField & InitialParticleSystemsFieldMask) &&
+       getParentProject() != NULL &&
+       getParentProject()->getActiveScene() == this)
+    {
+        attachInitialParticleSystems();
+    }*/
 }
 
 void Scene::dump(      UInt32 uiIndent   ,

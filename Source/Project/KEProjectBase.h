@@ -68,7 +68,6 @@
 #include <OpenSG/OSGBaseFields.h>       // Version type
 #include <OpenSG/OSGBoostPathFields.h>  // FilePath type
 #include "Project/Scene/KESceneFields.h" // Scenes type
-#include <OpenSG/OSGParticleSystemFields.h> // ActiveParticleSystems type
 
 #include "KEProjectFields.h"
 
@@ -169,8 +168,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
         ScenesFieldId = FilePathFieldId + 1,
         InitialSceneFieldId = ScenesFieldId + 1,
         InternalActiveSceneFieldId = InitialSceneFieldId + 1,
-        ActiveParticleSystemsFieldId = InternalActiveSceneFieldId + 1,
-        LuaModuleFieldId = ActiveParticleSystemsFieldId + 1,
+        LuaModuleFieldId = InternalActiveSceneFieldId + 1,
         LuaDirectoriesFieldId = LuaModuleFieldId + 1,
         NextFieldId = LuaDirectoriesFieldId + 1
     };
@@ -187,8 +185,6 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
         (TypeTraits<BitVector>::One << InitialSceneFieldId);
     static const OSG::BitVector InternalActiveSceneFieldMask =
         (TypeTraits<BitVector>::One << InternalActiveSceneFieldId);
-    static const OSG::BitVector ActiveParticleSystemsFieldMask =
-        (TypeTraits<BitVector>::One << ActiveParticleSystemsFieldId);
     static const OSG::BitVector LuaModuleFieldMask =
         (TypeTraits<BitVector>::One << LuaModuleFieldId);
     static const OSG::BitVector LuaDirectoriesFieldMask =
@@ -202,7 +198,6 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     typedef MFUnrecChildScenePtr MFScenesType;
     typedef SFUnrecScenePtr   SFInitialSceneType;
     typedef SFUnrecScenePtr   SFInternalActiveSceneType;
-    typedef MFUnrecParticleSystemPtr MFActiveParticleSystemsType;
     typedef SFBoostPath       SFLuaModuleType;
     typedef MFBoostPath       MFLuaDirectoriesType;
 
@@ -742,7 +737,6 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     MFUnrecChildScenePtr _mfScenes;
     SFUnrecScenePtr   _sfInitialScene;
     SFUnrecScenePtr   _sfInternalActiveScene;
-    MFUnrecParticleSystemPtr _mfActiveParticleSystems;
     SFBoostPath       _sfLuaModule;
     MFBoostPath       _mfLuaDirectories;
 
@@ -793,8 +787,6 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     EditFieldHandlePtr editHandleInitialScene   (void);
     GetFieldHandlePtr  getHandleInternalActiveScene (void) const;
     EditFieldHandlePtr editHandleInternalActiveScene(void);
-    GetFieldHandlePtr  getHandleActiveParticleSystems (void) const;
-    EditFieldHandlePtr editHandleActiveParticleSystems(void);
     GetFieldHandlePtr  getHandleLuaModule       (void) const;
     EditFieldHandlePtr editHandleLuaModule      (void);
     GetFieldHandlePtr  getHandleLuaDirectories  (void) const;
@@ -838,13 +830,9 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
 
             const SFUnrecScenePtr     *getSFInternalActiveScene (void) const;
                   SFUnrecScenePtr     *editSFInternalActiveScene(void);
-            const MFUnrecParticleSystemPtr *getMFActiveParticleSystems (void) const;
-                  MFUnrecParticleSystemPtr *editMFActiveParticleSystems(void);
 
 
                   Scene * getInternalActiveScene(void) const;
-
-                  ParticleSystem * getActiveParticleSystems(const UInt32 index) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -857,12 +845,6 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     /*---------------------------------------------------------------------*/
     /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
-
-    void pushToActiveParticleSystems           (ParticleSystem * const value   );
-    void assignActiveParticleSystems           (const MFUnrecParticleSystemPtr &value);
-    void removeFromActiveParticleSystems (UInt32                uiIndex );
-    void removeObjFromActiveParticleSystems(ParticleSystem * const value   );
-    void clearActiveParticleSystems            (void                          );
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/

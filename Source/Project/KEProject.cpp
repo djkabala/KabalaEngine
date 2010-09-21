@@ -171,6 +171,18 @@ void Project::save(const BoostPath& ProjectFile)
 
 void Project::start(void)
 {
+    if(isRunning())
+    {
+        SWARNING << "Cannot start project because it is already running" << std::endl;
+        return;
+    }
+
+    //Toolbox Bindings
+    LuaManager::the()->openLuaBindingLib(getOSGToolboxLuaBindingsLibFunctor());
+
+    //Kabala Engine Bindings
+    LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
+
     //Temporarily validate all openGL Objects
     //SLOG << "Starting to validate all OpenGL Objects." << std::endl;
     //MainApplication::the()->getMainWindow()->validateAllGLObjects();
@@ -215,12 +227,21 @@ void Project::start(void)
         SFATAL << "Project has no Initial Scene set." << std::endl;
     }
 
+    _Running = true;
 
     produceProjectStarted();
 }
 
 void Project::reset(void)
 {
+    if(!isRunning())
+    {
+        SWARNING << "Cannot reset project because it is not running" << std::endl;
+        return;
+    }
+
+    _Running = false;
+
     //Scene Active Scene To NULL
     setActiveScene(NULL);
 
@@ -256,12 +277,21 @@ void Project::reset(void)
     {
         setActiveScene(getInitialScene());
     }
+    _Running = true;
 
     produceProjectReset();
 }
 
 void Project::stop(void)
 {
+    if(!isRunning())
+    {
+        SWARNING << "Cannot stop project because it is not running" << std::endl;
+        return;
+    }
+
+    _Running = false;
+
     produceProjectStopping();
 
     setActiveScene(NULL);
@@ -297,6 +327,9 @@ void Project::stop(void)
     {
         getScenes(i)->end();
     }
+
+    //Recreate the Lua State
+    LuaManager::the()->recreateLuaState();
 
     produceProjectStopped();
 }
@@ -679,7 +712,8 @@ Project::Project(void) :
     Inherited(),
     _PauseActiveUpdates(false),
     _LastActiveScene(NULL),
-    _BlockInput(false)
+    _BlockInput(false),
+    _Running(false)
 {
 }
 
@@ -687,7 +721,8 @@ Project::Project(const Project &source) :
     Inherited(source),
     _PauseActiveUpdates(source._PauseActiveUpdates),
     _LastActiveScene(NULL),
-    _BlockInput(source._BlockInput)
+    _BlockInput(source._BlockInput),
+    _Running(false)
 {
 }
 

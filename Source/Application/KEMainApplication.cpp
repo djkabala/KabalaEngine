@@ -81,13 +81,6 @@
 //#include <OpenSG/OSGInventory.h>
 #include <OpenSG/OSGPhysicsHandler.h>
 
-//Bindings for the OSGToolbox libraries
-#include <OpenSG/OSGToolbox_wrap.h>
-
-//Kabala Engine Lua Bindings
-#include "LuaBindings/KELuaBindings.h"
-
-
 OSG_USING_NAMESPACE
 
 /***************************************************************************\
@@ -586,12 +579,6 @@ void MainApplication::initOpenSG(int argc, char **argv)
 
     // OSG init
 	OSG::osgInit(argc,argv);
-
-    //Toolbox Bindings
-    OSG::LuaManager::the()->openLuaBindingLib(getOSGToolboxLuaBindingsLibFunctor());
-    
-    //Kabala Engine Bindings
-    OSG::LuaManager::the()->openLuaBindingLib(getKabalaEngineLuaBindingsLibFunctor());
 }
 
 void MainApplication::attachStartScreen(void)

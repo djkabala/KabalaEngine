@@ -154,7 +154,6 @@ void ApplicationPlayer::attachApplication(void)
     ProjectRefPtr TheProject(MainApplication::the()->getProject());
     updateWindowTitle();
     _PlayerKeyTypedConnection = MainApplication::the()->getMainWindow()->connectKeyTyped(boost::bind(&ApplicationPlayer::handlePlayerKeyTyped, this, _1));
-    _HighlightNodeUpdateConnection = MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&ApplicationPlayer::handleHighlightNodeUpdate, this, _1));
 }
 
 
@@ -177,10 +176,6 @@ void ApplicationPlayer::start(void)
 {
     if(MainApplication::the()->getProject() != NULL)
     {
-        createDebugInterface();							// Allocate memory to the various pointers in the debug interface when the ApplicationPlayer is started
-
-        createGotoSceneMenuItems(MainApplication::the()->getProject());
-
         MainApplication::the()->getProject()->start();
 
         enableDebug(false);
@@ -218,16 +213,17 @@ void ApplicationPlayer::createDebugInterface(void)
     _SaveProjectItem = MenuItem::create();				
     _SaveProjectAsItem = MenuItem::create();				
 
-    _ResetItem = MenuItem::create();				
+    _ResetProjectItem = MenuItem::create();				
     _ForceQuitItem = MenuItem::create();			
 
     _UndoItem = MenuItem::create();				
     _RedoItem = MenuItem::create();			
 
-    _NextItem = MenuItem::create();				
-    _PrevItem = MenuItem::create();				
-    _FirstItem = MenuItem::create();				
-    _LastItem = MenuItem::create();				
+    _NextSceneItem = MenuItem::create();				
+    _PrevSceneItem = MenuItem::create();				
+    _FirstSceneItem = MenuItem::create();				
+    _LastSceneItem = MenuItem::create();
+    _ResetSceneItem = MenuItem::create();
     _SceneSubItem = Menu::create();				
 
     _FlyNavigatorItem = MenuItem::create();		
@@ -261,10 +257,10 @@ void ApplicationPlayer::createDebugInterface(void)
     _SaveProjectAsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
     _SaveProjectAsItem->setMnemonicKey(KeyEventDetails::KEY_S);
 
-    _ResetItem->setText("Reset");
-    _ResetItem->setAcceleratorKey(KeyEventDetails::KEY_E);
-    _ResetItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
-    _ResetItem->setMnemonicKey(KeyEventDetails::KEY_E);
+    _ResetProjectItem->setText("Reset");
+    _ResetProjectItem->setAcceleratorKey(KeyEventDetails::KEY_E);
+    _ResetProjectItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _ResetProjectItem->setMnemonicKey(KeyEventDetails::KEY_E);
 
     _ForceQuitItem ->setText("Force Quit");
     _ForceQuitItem ->setAcceleratorKey(KeyEventDetails::KEY_Q);
@@ -282,23 +278,28 @@ void ApplicationPlayer::createDebugInterface(void)
                                        KeyEventDetails::KEY_MODIFIER_SHIFT);
     _RedoItem->setMnemonicKey(KeyEventDetails::KEY_R);
 
-    _NextItem ->setText("Next");
-    _NextItem ->setAcceleratorKey(KeyEventDetails::KEY_TAB);
-    //_NextItem ->setAcceleratorModifiers(!KeyEventDetails::KEY_MODIFIER_SHIFT);
+    _NextSceneItem ->setText("Next");
+    _NextSceneItem ->setAcceleratorKey(KeyEventDetails::KEY_TAB);
+    //_NextSceneItem ->setAcceleratorModifiers(!KeyEventDetails::KEY_MODIFIER_SHIFT);
 
-    _PrevItem->setText("Previous");
-    _PrevItem->setAcceleratorKey(KeyEventDetails::KEY_TAB);
-    _PrevItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_SHIFT);
+    _PrevSceneItem->setText("Previous");
+    _PrevSceneItem->setAcceleratorKey(KeyEventDetails::KEY_TAB);
+    _PrevSceneItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_SHIFT);
 
-    _FirstItem->setText("First");
-    _FirstItem->setAcceleratorKey(KeyEventDetails::KEY_F);
-    _FirstItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
-    _FirstItem->setMnemonicKey(KeyEventDetails::KEY_F);
+    _FirstSceneItem->setText("First");
+    _FirstSceneItem->setAcceleratorKey(KeyEventDetails::KEY_F);
+    _FirstSceneItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _FirstSceneItem->setMnemonicKey(KeyEventDetails::KEY_F);
 
-    _LastItem->setText("Last");
-    _LastItem->setAcceleratorKey(KeyEventDetails::KEY_L);
-    _LastItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
-    _LastItem->setMnemonicKey(KeyEventDetails::KEY_L);
+    _LastSceneItem->setText("Last");
+    _LastSceneItem->setAcceleratorKey(KeyEventDetails::KEY_L);
+    _LastSceneItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _LastSceneItem->setMnemonicKey(KeyEventDetails::KEY_L);
+
+    _ResetSceneItem->setText("Reset");
+    //_ResetSceneItem->setAcceleratorKey(KeyEventDetails::KEY_L);
+    //_ResetSceneItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _ResetSceneItem->setMnemonicKey(KeyEventDetails::KEY_R);
 
     _SceneSubItem->setText("Scenes");
 
@@ -436,7 +437,7 @@ void ApplicationPlayer::createDebugInterface(void)
     _ProjectMenu->addItem(_SaveProjectItem);
     _ProjectMenu->addItem(_SaveProjectAsItem);
     _ProjectMenu->addSeparator();
-    _ProjectMenu->addItem(_ResetItem);
+    _ProjectMenu->addItem(_ResetProjectItem);
     _ProjectMenu->addSeparator();
     _ProjectMenu->addItem(_ForceQuitItem);
 
@@ -446,10 +447,12 @@ void ApplicationPlayer::createDebugInterface(void)
 
 
     _SceneMenu = Menu::create();
-    _SceneMenu->addItem(_NextItem);
-    _SceneMenu->addItem(_PrevItem);
-    _SceneMenu->addItem(_FirstItem);
-    _SceneMenu->addItem(_LastItem);
+    _SceneMenu->addItem(_NextSceneItem);
+    _SceneMenu->addItem(_PrevSceneItem);
+    _SceneMenu->addItem(_FirstSceneItem);
+    _SceneMenu->addItem(_LastSceneItem);
+    _SceneMenu->addSeparator();
+    _SceneMenu->addItem(_ResetSceneItem);
     _SceneMenu->addSeparator();
     _SceneMenu->addItem(_SceneSubItem);
 
@@ -495,13 +498,14 @@ void ApplicationPlayer::createDebugInterface(void)
     _LoadProjectItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _SaveProjectItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _SaveProjectAsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _ResetItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ResetProjectItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _ForceQuitItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
 
-    _NextItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _PrevItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _FirstItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-    _LastItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _NextSceneItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _PrevSceneItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _FirstSceneItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _LastSceneItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
+    _ResetSceneItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _FlyNavigatorItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _TrackballNavigatorItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
     _BasicStatsItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
@@ -640,6 +644,9 @@ void ApplicationPlayer::createDebugInterface(void)
 
     //Create the statistic foregrounds
 	initDebugStatForegrounds();
+
+    //Create the menu items for the goto scene menu
+    createGotoSceneMenuItems(MainApplication::the()->getProject());
 }
 
 void ApplicationPlayer::updateGotoSceneMenuItems(ProjectRefPtr TheProject)
@@ -702,6 +709,8 @@ void ApplicationPlayer::createGotoSceneMenuItems(ProjectRefPtr TheProject)
 
 void ApplicationPlayer::attachDebugInterface(void)
 {
+    createDebugInterface();							// Allocate memory to the various pointers in the debug interface when the ApplicationPlayer is started
+
     if( MainApplication::the()->getProject()->getActiveScene()->getMFViewports()->size() == 0 ||
         MainApplication::the()->getProject()->getActiveScene()->getViewports(0) == NULL)
     {
@@ -739,6 +748,8 @@ void ApplicationPlayer::attachDebugInterface(void)
 
     attachDebugViewport();
 
+    _HighlightNodeUpdateConnection = MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&ApplicationPlayer::handleHighlightNodeUpdate, this, _1));
+
     //MainApplication::the()->getMainWindow()->getPort(0)->addForeground(DebuggerUIForeground);
 }
 
@@ -749,6 +760,8 @@ void ApplicationPlayer::detachDebugInterface(void)
     DebuggerDrawingSurface->setEventProducer(NULL);
 
     detachDebugViewport();
+
+    _HighlightNodeUpdateConnection.disconnect();
 }
 
 void ApplicationPlayer::enableDebug(bool EnableDebug)
@@ -823,11 +836,13 @@ void ApplicationPlayer::updateWindowTitle(void)
 
 void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
 {
-    if(details->getSource() == _ResetItem)
+    if(details->getSource() == _ResetProjectItem)
     {
+        enableDebug(false);
         //Reset the Project
         MainApplication::the()->getProject()->reset();
-        MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
+        //MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
+        enableDebug(true);
     }
     else if(details->getSource() == _LoadProjectItem)
     {
@@ -849,14 +864,14 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
         MainApplication::the()->exit();
     }
 
-    else if(details->getSource() == _NextItem)
+    else if(details->getSource() == _NextSceneItem)
     {
         Int32 SceneIndex(MainApplication::the()->getProject()->getMFScenes()->findIndex(MainApplication::the()->getProject()->getActiveScene()));
         SceneIndex = (SceneIndex+1) % MainApplication::the()->getProject()->getMFScenes()->size();
 
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneIndex));
     }
-    else if(details->getSource() == _PrevItem)
+    else if(details->getSource() == _PrevSceneItem)
     {
         Int32 SceneIndex(MainApplication::the()->getProject()->getMFScenes()->findIndex(MainApplication::the()->getProject()->getActiveScene()));
 
@@ -868,15 +883,22 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
 
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneIndex));
     }
-    else if(details->getSource() == _FirstItem)
+    else if(details->getSource() == _FirstSceneItem)
     {
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(0));
     }
 
-    else if(details->getSource() == _LastItem)
+    else if(details->getSource() == _LastSceneItem)
     {
         UInt32 SceneNumber = MainApplication::the()->getProject()->getMFScenes()->size() - 1;
         MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneNumber));
+    }
+    else if(details->getSource() == _ResetSceneItem)
+    {
+        enableDebug(false);
+        //Reset the scene
+        MainApplication::the()->getProject()->resetScene( MainApplication::the()->getProject()->getActiveScene() );
+        enableDebug(true);
     }
     else if(details->getSource() == _FlyNavigatorItem )
     {

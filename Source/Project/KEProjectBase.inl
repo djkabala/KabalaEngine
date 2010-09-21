@@ -232,13 +232,6 @@ Scene * ProjectBase::getScenes(const UInt32 index) const
     return _mfScenes[index];
 }
 
-//! Get the value of the \a index element the Project::_mfActiveParticleSystems field.
-inline
-ParticleSystem * ProjectBase::getActiveParticleSystems(const UInt32 index) const
-{
-    return _mfActiveParticleSystems[index];
-}
-
 //! Get the value of the \a index element the Project::_mfLuaDirectories field.
 inline
 const BoostPath &ProjectBase::getLuaDirectories(const UInt32 index) const
@@ -286,12 +279,6 @@ void ProjectBase::execSync (      ProjectBase *pFrom,
 
     if(FieldBits::NoField != (InternalActiveSceneFieldMask & whichField))
         _sfInternalActiveScene.syncWith(pFrom->_sfInternalActiveScene);
-
-    if(FieldBits::NoField != (ActiveParticleSystemsFieldMask & whichField))
-        _mfActiveParticleSystems.syncWith(pFrom->_mfActiveParticleSystems,
-                                syncMode,
-                                uiSyncInfo,
-                                oOffsets);
 
     if(FieldBits::NoField != (LuaModuleFieldMask & whichField))
         _sfLuaModule.syncWith(pFrom->_sfLuaModule);

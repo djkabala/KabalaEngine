@@ -90,7 +90,10 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
 
     void start(void);
 
+    bool isRunning(void) const;
+
     void reset(void);
+    void resetScene(Scene* const TheScene);
 
     void stop(void);
 
@@ -234,6 +237,7 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
 
     void loadScripts(void);
     bool _BlockInput;
+    bool _Running;
 
     /*==========================  PRIVATE  ================================*/
 

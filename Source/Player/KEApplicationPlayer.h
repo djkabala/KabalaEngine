@@ -343,17 +343,18 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     MenuItemRefPtr _LoadProjectItem;				
     MenuItemRefPtr _SaveProjectItem;				
     MenuItemRefPtr _SaveProjectAsItem;
-    MenuItemRefPtr _ResetItem;				
+    MenuItemRefPtr _ResetProjectItem;
     MenuItemRefPtr _ForceQuitItem;			
 
     MenuItemRefPtr _UndoItem;				
     MenuItemRefPtr _RedoItem;				
 
 
-    MenuItemRefPtr _NextItem;				
-    MenuItemRefPtr _PrevItem;				
-    MenuItemRefPtr _FirstItem;				
-    MenuItemRefPtr _LastItem;				
+    MenuItemRefPtr _NextSceneItem;				
+    MenuItemRefPtr _PrevSceneItem;				
+    MenuItemRefPtr _FirstSceneItem;				
+    MenuItemRefPtr _LastSceneItem;
+    MenuItemRefPtr _ResetSceneItem;
     MenuRefPtr		_SceneSubItem;				
 
     MenuItemRefPtr _FlyNavigatorItem;		

@@ -135,4 +135,16 @@ void Project::togglePauseActiveUpdates(void)
     _PauseActiveUpdates = !_PauseActiveUpdates;
 }
 
+inline
+void Project::resetScene(Scene* const TheScene)
+{
+    TheScene->reset();
+}
+
+inline
+bool Project::isRunning(void) const
+{
+    return _Running;
+}
+
 OSG_END_NAMESPACE

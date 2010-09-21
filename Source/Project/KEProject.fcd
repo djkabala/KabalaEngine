@@ -82,15 +82,6 @@ The Project.
 	>
 	</Field>
 	<Field
-		name="ActiveParticleSystems"
-		type="ParticleSystem"
-		category="pointer"
-		cardinality="multi"
-		visibility="external"
-		access="protected"
-	>
-	</Field>
-	<Field
 		name="LuaModule"
 		type="BoostPath"
 		category="data"
