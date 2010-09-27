@@ -749,14 +749,11 @@ void ApplicationPlayer::attachDebugInterface(void)
     attachDebugViewport();
 
     _HighlightNodeUpdateConnection = MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&ApplicationPlayer::handleHighlightNodeUpdate, this, _1));
-
-    //MainApplication::the()->getMainWindow()->getPort(0)->addForeground(DebuggerUIForeground);
 }
 
 
 void ApplicationPlayer::detachDebugInterface(void)
 {
-
     DebuggerDrawingSurface->setEventProducer(NULL);
 
     detachDebugViewport();
@@ -841,7 +838,6 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
         enableDebug(false);
         //Reset the Project
         MainApplication::the()->getProject()->reset();
-        //MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
         enableDebug(true);
     }
     else if(details->getSource() == _LoadProjectItem)
@@ -1091,7 +1087,6 @@ void ApplicationPlayer::handlePlayerKeyTyped(KeyEventDetails* const details)
         {
             //Reset the Project
             MainApplication::the()->getProject()->reset();
-            MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getLastActiveScene());
         }
     }
 }
@@ -1154,16 +1149,7 @@ Node* ApplicationPlayer::getPhysicsDrawableNode(void)
 
 void ApplicationPlayer::gotoScene(SceneRefPtr TheScene)
 {
-    bool wasDebugging(isDebugging());
-    if(wasDebugging)
-    {
-        enableDebug(false);
-    }
     MainApplication::the()->getProject()->setActiveScene(TheScene);
-    if(wasDebugging)
-    {
-        enableDebug(true);
-    }
 }
 
 void ApplicationPlayer::toggleFrustumCulling(void)
@@ -1460,6 +1446,8 @@ void ApplicationPlayer::updateDebugUI(void)
 
 void ApplicationPlayer::updateDebugSceneChange(void)
 {
+    detachDebugViewportCamera();
+
     //Update the UI for the debug interface
     updateDebugUI();
 
@@ -1480,6 +1468,7 @@ void ApplicationPlayer::updateDebugSceneChange(void)
         setSceneInputBlocking(true);
     }
 
+    _HierarchyPanel->getSceneGraphTree()->clearSelection();
     updateDebugViewport();
 
 }
@@ -1489,25 +1478,14 @@ void ApplicationPlayer::detachDebugViewport(void)
     //Make sure the Debug Viewport is on top
     MainApplication::the()->getMainWindow()->subPortByObj(_DebugViewport);
 
-    //Put the original Camera back on the Scene's Viewport
-    MainApplication::the()->getMainWindow()->getPort(0)->setCamera(_SceneViewportCamera);
+    //Detach the debug camera
+    detachDebugViewportCamera();
 }
 
 void ApplicationPlayer::updateDebugViewport(void)
 {
-    //Update The Camera
-    _SceneViewportCamera = MainApplication::the()->getMainWindow()->getPort(0)->getCamera();
-
-    _DebugCamera = dynamic_pointer_cast<Camera>(_SceneViewportCamera->shallowCopy());
-    _DebugCamera->setBeacon(_DebugCameraBeacon);
-
-    //Put the Camera Beacon to the beacon of the scene's camera
-    _DebugSceneNavigator.set(_SceneViewportCamera->getBeacon()->getToWorld());
-
-    //Put the Debug Camera on the Scene's Viewport
-    MainApplication::the()->getMainWindow()->getPort(0)->setCamera(_DebugCamera);
-
-    _DebugViewport->setCamera(_DebugCamera);
+    //Attach the debug camera
+    attachDebugViewportCamera();
 
     //Make sure the Debug Viewport is on top
     MainApplication::the()->getMainWindow()->subPortByObj(_DebugViewport);
@@ -1517,6 +1495,31 @@ void ApplicationPlayer::updateDebugViewport(void)
 void ApplicationPlayer::attachDebugViewport(void)
 {
     updateDebugViewport();
+}
+
+void ApplicationPlayer::attachDebugViewportCamera(void)
+{
+    _SceneViewport = MainApplication::the()->getProject()->getActiveScene()->getViewports(0);
+
+    //Update The Camera
+    _SceneViewportCamera = _SceneViewport->getCamera();
+
+    _DebugCamera = dynamic_pointer_cast<Camera>(_SceneViewportCamera->shallowCopy());
+    _DebugCamera->setBeacon(_DebugCameraBeacon);
+
+    //Put the Camera Beacon to the beacon of the scene's camera
+    _DebugSceneNavigator.set(_SceneViewportCamera->getBeacon()->getToWorld());
+
+    //Put the Debug Camera on the Scene's Viewport
+    _SceneViewport->setCamera(_DebugCamera);
+
+    _DebugViewport->setCamera(_DebugCamera);
+}
+
+void ApplicationPlayer::detachDebugViewportCamera(void)
+{
+    //Put the original Camera back on the Scene's Viewport
+    _SceneViewport->setCamera(_SceneViewportCamera);
 }
 
 ViewportRefPtr ApplicationPlayer::createDebugViewport(void)

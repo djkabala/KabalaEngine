@@ -404,6 +404,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     CameraRefPtr    _DebugCamera;
     NodeRefPtr      _DebugCameraBeacon;
     TransformRefPtr _DebugBeaconTransform;
+    ViewportRefPtr  _SceneViewport;
 
     //Camera Navigator
     Navigator    _DebugSceneNavigator;
@@ -423,6 +424,9 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     void attachDebugViewport(void);
     void detachDebugViewport(void);
     void updateDebugViewport(void);
+
+    void attachDebugViewportCamera(void);
+    void detachDebugViewportCamera(void);
 
     void createDebugCameraAnim(void);
 
