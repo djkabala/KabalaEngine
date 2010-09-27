@@ -90,7 +90,7 @@ void SaveProjectCommand::execute(void)
         //Have the user select the file to import
         std::vector<WindowEventProducer::FileDialogFilter> Filters;
 
-        //Determine all of the readable model filetypes
+        //Filter by xml files
         Filters.push_back(WindowEventProducer::FileDialogFilter("Project Filetype","xml"));
         Filters.push_back(WindowEventProducer::FileDialogFilter("All (*.*)","*"));
 
@@ -100,21 +100,23 @@ void SaveProjectCommand::execute(void)
             BoostPath(".."),
             true);
     }
-
-    //Exit the Debugger
-    bool isInDebugger(dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->isDebugging());
-    if(isInDebugger)
+    if(!FileToSave.empty())
     {
-        dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->enableDebug(false);
-    }
+        //Exit the Debugger
+        bool isInDebugger(dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->isDebugging());
+        if(isInDebugger)
+        {
+            dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->enableDebug(false);
+        }
 
-    //Get the extionsion of the file
-    MainApplication::the()->saveProject(FileToSave);
+        //Get the extionsion of the file
+        MainApplication::the()->saveProject(FileToSave);
 
-    //Reenter the Debugger
-    if(isInDebugger)
-    {
-        dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->enableDebug(true);
+        //Reenter the Debugger
+        if(isInDebugger)
+        {
+            dynamic_cast<ApplicationPlayer*>(MainApplication::the()->getPlayerMode())->enableDebug(true);
+        }
     }
 }
 
