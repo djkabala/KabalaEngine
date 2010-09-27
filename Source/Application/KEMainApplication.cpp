@@ -76,8 +76,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/convenience.hpp>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 //#include <OpenSG/OSGInventory.h>
 #include <OpenSG/OSGPhysicsHandler.h>
 
@@ -144,7 +142,8 @@ MainApplication *MainApplication::the(void)
             ("play,p", "Play the project file.")
             ("debug,d", "Only relevant if -p option is present.  Startup with the dubugger attached.")
 		    ("log-level,l", boost::program_options::value<UInt32>(), "The logging level.  Higher values logs more information. 0=LOG_LOG,1=LOG_FATAL,2=LOG_WARNING,3=LOG_NOTICE,4=LOG_INFO,5=LOG_DEBUG.  This will override the value defined in the settings file.")
-		    ("log-type,t", boost::program_options::value<UInt32>(), "The location to route the logging. 0=LOG_NONE,1=LOG_STDOUT,2=LOG_STDERR,3=LOG_FILE,4=LOG_BUFFER.  This will override the value defined in the settings file.")
+		    ("disable-log,y", boost::program_options::value<bool>(), "Disables all logging.")
+		    ("disable-file-log,z", boost::program_options::value<bool>(), "Disables logging to a file.")
 		    ("log-file,g", boost::program_options::value<std::string>(), "The file to route the logging to.  This will override the value defined in the settings file.  This option is only relavent if log-route is 3(LOG_FILE).")
             ;
 
@@ -304,6 +303,9 @@ void MainApplication::printCommandLineHelp(void) const
 
 Int32 MainApplication::run(int argc, char **argv)
 {
+    //Get the date/time run
+    _DateTimeRun = boost::posix_time::second_clock::local_time();
+
     //Get the path to the command
     BoostPath CommandPath(argv[0]);
     if(!CommandPath.is_complete() && !CommandPath.has_root_directory())
@@ -339,22 +341,34 @@ Int32 MainApplication::run(int argc, char **argv)
     {
         KELogLevel = OptionsVariableMap["log-level"].as<LogLevel>();
     }
-    LogType KELogType(LOG_BUFFER);
-    //LogType KELogType(LOG_FILE);
-    if(OptionsVariableMap.count("log-type"))
+
+    _LogFilePath = getLoggingDir()
+                 / BoostPath(boost::posix_time::to_iso_string(_DateTimeRun) + ".log");  //ISO date/time format
+    if(OptionsVariableMap.count("log-file"))
     {
-        KELogType = OptionsVariableMap["log-type"].as<LogType>();
+        _LogFilePath = BoostPath(OptionsVariableMap["log-file"].as<std::string>());
+    }
+    if(OptionsVariableMap.count("disable-log"))
+    {
+        _EnableLogging = false;
+    }
+    if(OptionsVariableMap.count("disable-file-log"))
+    {
+        _LogToFile = false;
     }
 
-    BoostPath KELogFilePath(getLoggingDir()
-                          / BoostPath(to_iso_string(boost::posix_time::second_clock::local_time()) + ".log"));  //ISO date/time format
-    if(KELogType == LOG_FILE && OptionsVariableMap.count("log-file"))
-    {
-        KELogFilePath = BoostPath(OptionsVariableMap["log-file"].as<std::string>());
-    }
-    initializeLogging(KELogType, KELogFilePath);
+    initializeLogging(_LogFilePath);
     osgLogP->setLogLevel(KELogLevel, true);
 	osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_FUNCNAME_HEADER), true);
+
+    //Check if the last run crashed
+    if(didCrashLastExecution())
+    {
+        handleCrashLastExecution();
+    }
+
+    //Create a file to indicate if a crash occurs
+    createCrashIndicationFile();
 
     // Set up Settings
     //Check for the settings file
@@ -379,16 +393,6 @@ Int32 MainApplication::run(int argc, char **argv)
     {
         osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
     }
-    //if(osgLogP->getLogType() == LOG_FILE &&
-       //!OptionsVariableMap.count("log-file") &&
-       //!boost::filesystem::equivalent(getSettings().get<BoostPath>("logging.file"),KELogFilePath))
-    //{
-        //initializeLogging(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), getSettings().get<BoostPath>("logging.file"));
-    //}
-    //if(!OptionsVariableMap.count("log-type"))
-    //{
-       //osgLogP->setLogType(static_cast<LogType>(getSettings().get<UInt8>("logging.type")), true);
-    //}
 	osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
 
     //Initialize OpenSG
@@ -396,6 +400,8 @@ Int32 MainApplication::run(int argc, char **argv)
 
     //Log information about the Engine
     SLOG << "Starting Kabala Engine:" << std::endl;
+    OSG::indentLog(4,PLOG);
+    PLOG << "Time: " << to_simple_string(_DateTimeRun) << std::endl;
     OSG::indentLog(4,PLOG);
     PLOG << "Version: " << getKabalaEngineVersion() << std::endl;
     OSG::indentLog(4,PLOG);
@@ -549,9 +555,17 @@ Int32 MainApplication::run(int argc, char **argv)
     saveSettings(getSettingsLoadFile());
     
     SLOG << "Stopping Kabala Engine" << std::endl;
+    OSG::indentLog(4,PLOG);
+    PLOG << "Time: " << to_simple_string(boost::posix_time::second_clock::local_time()) << std::endl;
 
 	//OSG exit
     OSG::osgExit();
+
+    //Uninitialize logging
+    uninitializeLogging();
+
+    //Create a file to indicate if a crash occurs
+    removeCrashIndicationFile();
 
     return 0;
 }
@@ -948,10 +962,17 @@ void MainApplication::KELogBufferCallback(const Char8 *data,
                          Int32  size,
                          void  *clientData)
 {
+    std::string value(data,size);
+
+    //Log to the logfile
+    if(MainApplication::the()->_LogToFile)
+    {
+        MainApplication::the()->_LogFile << value;
+    }
+
     if(GlobalSystemState == Running)
     {
 	    //Send to the Log Listeners
-        std::string value(data,size);
         LogEventDetailsUnrecPtr details = LogEventDetails::create(NULL, getTimeStamp(),value);
         MainApplication::the()->produceLog(details);
     }
@@ -1022,59 +1043,113 @@ void MainApplication::cleanupLoggingDir(void)
 
 }
 
-void MainApplication::initializeLogging(LogType KELogType, BoostPath KELogFilePath)
+void MainApplication::initializeLogging(BoostPath KELogFilePath)
 {
-	//Set the log type
-	//LOG_NONE, 
-	//LOG_STDOUT, 
-	//LOG_STDERR, 
-	//LOG_FILE,
-
-    //Configure the LogBuffer
-    if(osgLogP->getLogType() != KELogType)
+    if(_EnableLogging)
     {
-	    osgLogP->setLogType(KELogType, true);
+        //Configure the LogBuffer
+        osgLogP->setLogType(LOG_BUFFER, true);
 
-	    if(osgLogP->getLogType() == LOG_BUFFER)
+        //Configure the LogBuffer
+        osgLogP->getLogBuf().setEnabled(true);
+        osgLogP->getLogBuf().setCallback(KELogBufferCallback);
+
+	    if(_LogToFile)
 	    {
-		    //Configure the LogBuffer
-		    osgLogP->getLogBuf().setEnabled(true);
-		    osgLogP->getLogBuf().setCallback(KELogBufferCallback);
-	    }
-	    else
-	    {
-		    osgLogP->getLogBuf().setEnabled(false);
-		    osgLogP->getLogBuf().removeCallback();
-	    }
+            //Make sure the directory is created
+            try
+            {
+                boost::filesystem::create_directories(KELogFilePath.parent_path());
+            }
+            catch(std::exception& ex)
+            {
+                SWARNING << "Failed to create directory: " << KELogFilePath.parent_path() 
+                         << ", error: " << ex.what() << std::endl;
+	            return;
+            }
+
+		    //If the Log is to a file then set the filev
+            _LogFile.open(KELogFilePath.string().c_str());
+        }
     }
+    else
+    {
+        //Disable all logging
+        osgLogP->setLogType(LOG_NONE, true);
+    }
+}
 
-	if(osgLogP->getLogType() == LOG_FILE)
-	{
-        //Make sure the directory is created
+void MainApplication::uninitializeLogging(void)
+{
+    if(_EnableLogging && _LogToFile)
+    {
+        _LogFile.close();
+    }
+}
+
+void MainApplication::createCrashIndicationFile(void)
+{
+    BoostPath TheFilePath(getCrashIndicationFilePath());
+    if(!boost::filesystem::exists(TheFilePath))
+    {
+        std::ofstream IndicatorFile(TheFilePath.string().c_str());
+        IndicatorFile << to_iso_string(_DateTimeRun);
+        IndicatorFile.close();
+    }
+}
+
+void MainApplication::removeCrashIndicationFile(void)
+{
+    BoostPath TheFilePath(getCrashIndicationFilePath());
+    if(boost::filesystem::exists(TheFilePath))
+    {
         try
         {
-            boost::filesystem::create_directories(KELogFilePath.parent_path());
+            boost::filesystem::remove(TheFilePath);
+            SLOG << "Destroying crash indicator file " << std::endl;
         }
         catch(std::exception& ex)
         {
-            SWARNING << "Failed to create directory: " << KELogFilePath.parent_path() 
-                     << ", error: " << ex.what() << std::endl;
-	        return;
+            SWARNING << "Unable to crash indicator file: " << TheFilePath.string() << ". Because " << ex.what() << std::endl;
         }
+    }
+}
 
-		//If the Log is to a file then set the file
-		osgLogP->setLogFile(KELogFilePath.string().c_str(), true);
-	}
+bool MainApplication::didCrashLastExecution(void) const
+{
+    return boost::filesystem::exists(getCrashIndicationFilePath());
+}
+
+BoostPath MainApplication::getCrashIndicationFilePath(void) const
+{
+    return getUserAppDataDir() / "CrashIndicator";
+}
+
+void MainApplication::handleCrashLastExecution(void)
+{
+    //Get the details of the crash
+    std::ifstream IndicatorFile(getCrashIndicationFilePath().string().c_str());
+    std::ostringstream Contents;
+    Contents << IndicatorFile.rdbuf();
+    IndicatorFile.close();
+
+    boost::posix_time::ptime DateTimeCrashRun = boost::posix_time::from_iso_string(Contents.str());
+    SLOG << "KabalaEngine crashed the last time it was run at " << boost::posix_time::to_simple_string(DateTimeCrashRun) << std::endl;
+
+    removeCrashIndicationFile();
 }
 
 /*----------------------- constructors & destructors ----------------------*/
 
-MainApplication::MainApplication(void)
+MainApplication::MainApplication(void) :
+    _EnableLogging(true),
+    _LogToFile(true)
 {
 }
 
 MainApplication::MainApplication(const MainApplication &source)
 {
+    assert(false && "MainApplication is a singleton, copy constructor should never be reached");
 }
 
 MainApplication::~MainApplication(void)

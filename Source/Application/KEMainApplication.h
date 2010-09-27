@@ -59,6 +59,8 @@
 #include "OSGEventProducerType.h"
 #include "OSGActivity.h"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief MainApplication class. See \ref 
@@ -162,6 +164,12 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
      ApplicationModeRefPtr      _StartScreenMode;
      ApplicationModeRefPtr      _PlayerMode;
      ApplicationModeRefPtr      _CurrentMode;
+     boost::posix_time::ptime   _DateTimeRun;
+
+     bool          _EnableLogging;
+     bool          _LogToFile;
+     std::ofstream _LogFile;
+     BoostPath     _LogFilePath;
 
      static ApplicationSettings createDefaultSettings(void);
      static void applyDefaultSettings(ApplicationSettings& TheSettings, bool overwriteIfDefined = true);
@@ -174,6 +182,12 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 
      ProjectRefPtr createDefaultProject(void);
      SceneRefPtr createDefaultScene(void);
+
+     BoostPath getCrashIndicationFilePath(void) const;
+     void createCrashIndicationFile(void);
+     void removeCrashIndicationFile(void);
+     bool didCrashLastExecution(void) const;
+     void handleCrashLastExecution(void);
     // Variables should all be in MainApplicationBase.
 
     /*---------------------------------------------------------------------*/
@@ -196,8 +210,8 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
     static boost::program_options::options_description _OptionsDescription;
     static boost::program_options::positional_options_description _PositionalOptions;
 
-    void initializeLogging(LogType TheLogType,
-                           BoostPath LogFilePath);
+    void initializeLogging(BoostPath LogFilePath);
+    void uninitializeLogging(void);
     
     void cleanupLoggingDir(void);
 
