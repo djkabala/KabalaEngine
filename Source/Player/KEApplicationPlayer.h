@@ -266,6 +266,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     
     void handleUndoButtonAction(ActionEventDetails* const details);
     void handleRedoButtonAction(ActionEventDetails* const details);
+    void handleEditProjectAction(ActionEventDetails* const details);
 
     void handleHighlightNodeUpdate(UpdateEventDetails* const details);
     boost::signals2::connection _HighlightNodeUpdateConnection;
@@ -331,15 +332,6 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     PanelRefPtr					_ToolbarAndContentPanel;
 
-    PanelRefPtr			_Toolbar;
-
-    ButtonRefPtr	_EditProjectButton;
-
-    ButtonRefPtr	_OpenFileButton;
-    ButtonRefPtr	_SaveFileButton;
-    ButtonRefPtr	_CloseFileButton;
-
-
     MenuItemRefPtr _LoadProjectItem;				
     MenuItemRefPtr _SaveProjectItem;				
     MenuItemRefPtr _SaveProjectAsItem;
@@ -348,6 +340,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     MenuItemRefPtr _UndoItem;				
     MenuItemRefPtr _RedoItem;				
+    MenuItemRefPtr _EditProjectItem;				
 
 
     MenuItemRefPtr _NextSceneItem;				

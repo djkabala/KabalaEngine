@@ -217,7 +217,8 @@ void ApplicationPlayer::createDebugInterface(void)
     _ForceQuitItem = MenuItem::create();			
 
     _UndoItem = MenuItem::create();				
-    _RedoItem = MenuItem::create();			
+    _RedoItem = MenuItem::create();
+    _EditProjectItem = MenuItem::create();
 
     _NextSceneItem = MenuItem::create();				
     _PrevSceneItem = MenuItem::create();				
@@ -254,13 +255,13 @@ void ApplicationPlayer::createDebugInterface(void)
 
     _SaveProjectAsItem->setText("Save Project As ...");
     _SaveProjectAsItem->setAcceleratorKey(KeyEventDetails::KEY_S);
-    _SaveProjectAsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _SaveProjectAsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND | KeyEventDetails::KEY_MODIFIER_SHIFT);
     _SaveProjectAsItem->setMnemonicKey(KeyEventDetails::KEY_S);
 
     _ResetProjectItem->setText("Reset");
-    _ResetProjectItem->setAcceleratorKey(KeyEventDetails::KEY_E);
+    _ResetProjectItem->setAcceleratorKey(KeyEventDetails::KEY_R);
     _ResetProjectItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
-    _ResetProjectItem->setMnemonicKey(KeyEventDetails::KEY_E);
+    _ResetProjectItem->setMnemonicKey(KeyEventDetails::KEY_R);
 
     _ForceQuitItem ->setText("Force Quit");
     _ForceQuitItem ->setAcceleratorKey(KeyEventDetails::KEY_Q);
@@ -277,6 +278,11 @@ void ApplicationPlayer::createDebugInterface(void)
     _RedoItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND |
                                        KeyEventDetails::KEY_MODIFIER_SHIFT);
     _RedoItem->setMnemonicKey(KeyEventDetails::KEY_R);
+
+    _EditProjectItem->setText("Edit Project");
+    _EditProjectItem->setAcceleratorKey(KeyEventDetails::KEY_E);
+    _EditProjectItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _EditProjectItem->setMnemonicKey(KeyEventDetails::KEY_E);
 
     _NextSceneItem ->setText("Next");
     _NextSceneItem ->setAcceleratorKey(KeyEventDetails::KEY_TAB);
@@ -319,8 +325,8 @@ void ApplicationPlayer::createDebugInterface(void)
     _BasicStatsItem->setMnemonicKey(KeyEventDetails::KEY_B);
 
     _RenderStatsItem->setText("Render");
-    _RenderStatsItem->setAcceleratorKey(KeyEventDetails::KEY_R);
-    _RenderStatsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    //_RenderStatsItem->setAcceleratorKey(KeyEventDetails::KEY_R);
+    //_RenderStatsItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
     _RenderStatsItem->setMnemonicKey(KeyEventDetails::KEY_R);
 
     _PhysicsStatsItem->setText("Physics");
@@ -335,7 +341,8 @@ void ApplicationPlayer::createDebugInterface(void)
     _ConfigurableStatsItem->setText("Configurable");
 
     _PauseActiveUpdatesItem->setText("Pause Active Updates");
-    _PauseActiveUpdatesItem->setAcceleratorKey(KeyEventDetails::KEY_SPACE);
+    _PauseActiveUpdatesItem->setAcceleratorKey(KeyEventDetails::KEY_I);
+    _PauseActiveUpdatesItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
     //_PauseActiveUpdatesItem->setMnemonicKey(KeyEventDetails::KEY_SPACE);
 
     _DrawBoundingVolumesItem->setText("Draw Bounding Volumes");
@@ -387,50 +394,6 @@ void ApplicationPlayer::createDebugInterface(void)
     _ContentPanel->setConstraints(ContentConstraints);
     _ContentPanel->init();
 
-    _EditProjectButton = Button::create();
-    _EditProjectButton->setText("Edit Project");
-    _EditProjectButton->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-
-    _OpenFileButton = Button::create();
-    _OpenFileButton->setText("Open File");
-    //_OpenFileButton->setPreferredSize(Vec2f(100,50));
-    _OpenFileButton->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-
-    _SaveFileButton = Button::create();
-    _SaveFileButton->setText("Save File");
-    //_SaveFileButton->setPreferredSize(Vec2f(100,50));
-    _SaveFileButton->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-
-    /*_CloseFileButton = Button::create();
-
-      _CloseFileButton->setText("Close File");
-      _CloseFileButton->setPreferredSize(Vec2f(100,50));
-
-      _CloseFileButton->connectActionPerformed(boost::bind(&ApplicationPlayer::handleBasicAction, this, _1));
-      */
-
-    _ModeComboBox = ComboBox::create();
-
-    BorderLayoutConstraintsRefPtr ToolbarConstraints = OSG::BorderLayoutConstraints::create();
-
-    ToolbarConstraints->setRegion(BorderLayoutConstraints::BORDER_NORTH);
-
-    _Toolbar = Panel::create();
-
-    _Toolbar->setConstraints(ToolbarConstraints);
-    _Toolbar->setPreferredSize(Vec2f(200,40));
-
-    FlowLayoutRefPtr ToolbarLayout = OSG::FlowLayout::create();
-    ToolbarLayout->setOrientation(FlowLayout::HORIZONTAL_ORIENTATION);
-    ToolbarLayout->setMajorAxisAlignment(1.0);
-
-    _Toolbar->pushToChildren(_EditProjectButton);
-    _Toolbar->pushToChildren(_OpenFileButton);
-    _Toolbar->pushToChildren(_SaveFileButton);
-    _Toolbar->pushToChildren(_ModeComboBox);
-    _Toolbar->setLayout(ToolbarLayout);
-
-
     // creation of menus and addition of menu items to them
     _ProjectMenu = Menu::create();
     _ProjectMenu->addItem(_LoadProjectItem);
@@ -444,6 +407,8 @@ void ApplicationPlayer::createDebugInterface(void)
     _EditMenu = Menu::create();
     _EditMenu->addItem(_UndoItem);
     _EditMenu->addItem(_RedoItem);
+    _EditMenu->addSeparator();
+    _EditMenu->addItem(_EditProjectItem);
 
 
     _SceneMenu = Menu::create();
@@ -527,6 +492,7 @@ void ApplicationPlayer::createDebugInterface(void)
 
     _UndoItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleUndoButtonAction, this, _1));
     _RedoItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleRedoButtonAction, this, _1));
+    _EditProjectItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleEditProjectAction, this, _1));
     
     _TheUndoManager->connectStateChanged(boost::bind(&ApplicationPlayer::handleCommandManagerStateChanged, this, _1));
 
@@ -543,21 +509,6 @@ void ApplicationPlayer::createDebugInterface(void)
 
     _HierarchyPanel->setPreferredSize(Vec2f(400,700));
 
-    _ModeComboBoxModel = DefaultMutableComboBoxModel::create();
-    _ModeComboBoxModel->addElement(boost::any(std::string("Scene Graph")));
-    _ModeComboBoxModel->addElement(boost::any(std::string("Lua Graph")));
-
-    _ModeComboBox->setMinSize(Vec2f(100.0,20));
-    _ModeComboBox->setEditable(false);
-    _ModeComboBox->setModel(_ModeComboBoxModel);
-
-    _ModeComboBoxModel->connectSelectionChanged(boost::bind(&ApplicationPlayer::handleComboBoxSelectionChanged, this, _1));
-
-    // Determine where the _ModeComboBox starts
-    _ModeComboBox->setSelectedIndex(0);
-
-    setupPopupMenu();
-
     /*************************************************** _DebugWindowSplitPanel creation **********************************************************************/
 
     BorderLayoutRefPtr ToolbarAndContentPanelLayout = BorderLayout::create();
@@ -565,7 +516,6 @@ void ApplicationPlayer::createDebugInterface(void)
     _ToolbarAndContentPanel = OSG::Panel::createEmpty();
 
     _ToolbarAndContentPanel->setLayout(ToolbarAndContentPanelLayout);
-    _ToolbarAndContentPanel->pushToChildren(_Toolbar);
     _ToolbarAndContentPanel->pushToChildren(_ContentPanel);
 
     _TopHalfSplitPanel = OSG::SplitPanel::create();
@@ -774,9 +724,6 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
         _ProjectSceneChangedConnection = MainApplication::the()->getProject()->connectSceneChanged(boost::bind(&ApplicationPlayer::handleProjectSceneChanged, this, _1));
         updateUndoRedoInterfaces(_TheUndoManager);
 
-        //Update Title
-        updateWindowTitle();
-
         //Turn on Input Blocking
         setSceneInputBlocking(MainApplication::the()->getSettings().get<bool>("player.debugger.block_scene_input"));
 
@@ -802,9 +749,6 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
         //Turn off Input Blocking
         setSceneInputBlocking(false);
 
-        //Update Title
-        updateWindowTitle();
-
         if(_WasMouseHidden)
         {
             MainApplication::the()->getMainWindow()->setShowCursor(false);
@@ -814,7 +758,13 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
             MainApplication::the()->getMainWindow()->setAttachMouseToCursor(false);
         }
     }
-    _IsDebugActive = EnableDebug;
+    if(_IsDebugActive != EnableDebug)
+    {
+        _IsDebugActive = EnableDebug;
+
+        //Update Title
+        updateWindowTitle();
+    }
 }
 
 void ApplicationPlayer::updateWindowTitle(void)
@@ -822,11 +772,11 @@ void ApplicationPlayer::updateWindowTitle(void)
     std::string MainWindowTitle(MainApplication::the()->getProject()->getMainWindowTitle());
     if(_IsDebugActive)
     {
-        MainWindowTitle += "(Debug)";
+        MainWindowTitle += " - " + MainApplication::the()->getProject()->getFilePath().string() + " (Debug)";
     }
     if(MainApplication::the()->getProject()->isInputBlocked())
     {
-        MainWindowTitle += "(Input Blocked)";
+        MainWindowTitle += " (Input Blocked)";
     }
     MainApplication::the()->getMainWindow()->setTitle(MainWindowTitle);
 }
@@ -930,10 +880,10 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
     }
     else if(details->getSource() == _PauseActiveUpdatesItem)
     {
-        MainApplication::the()->getProject()->togglePauseActiveUpdates();
+        toggleSceneInputBlocking();
 
         //Update the Menu Item
-        if(MainApplication::the()->getProject()->getPauseActiveUpdates())
+        if(MainApplication::the()->getProject()->isInputBlocked())
         {
             _PauseActiveUpdatesItem->setText("Unpause Active Updates");
         }
@@ -985,53 +935,6 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
             _DrawPhysicsCharacteristicsItem->setText("Hide Physics Characteristics");
         }
     }
-    else if(details->getSource() == _ModeComboBox)
-    {
-        int index = _ModeComboBox->getSelectedIndex();
-        _HierarchyPanel->setView(index);
-        _ContentPanel->setView(index);
-    }
-    else if(details->getSource() == _EditProjectButton)
-    {
-        openEditor(MainApplication::the()->getProject());
-    }
-    else if(details->getSource() == _OpenFileButton)
-    {
-
-        std::vector<WindowEventProducer::FileDialogFilter> Filters;
-        Filters.push_back(WindowEventProducer::FileDialogFilter("Lua Files","lua"));
-        Filters.push_back(WindowEventProducer::FileDialogFilter("All","*"));
-
-
-        std::vector<BoostPath> FilesToOpen;
-        FilesToOpen = MainApplication::the()->getMainWindow()->openFileDialog("Open File Window",
-                                                                                           Filters,
-                                                                                           BoostPath(".."),
-                                                                                           true);
-
-        for(std::vector<BoostPath>::iterator Itor(FilesToOpen.begin()) ; Itor != FilesToOpen.end(); ++Itor)
-        {
-            _ContentPanel->addTabWithText(*Itor);
-        }
-    }
-    else if(details->getSource() == _SaveFileButton)
-    {
-        std::vector<WindowEventProducer::FileDialogFilter> Filters;
-        Filters.push_back(WindowEventProducer::FileDialogFilter("Lua Files","lua"));
-        Filters.push_back(WindowEventProducer::FileDialogFilter("All","*"));
-
-        BoostPath SavePath = MainApplication::the()->getMainWindow()->saveFileDialog("Save File Window",
-                                                                                                  Filters,
-                                                                                                  std::string("NewLuaFile.lua"),
-                                                                                                  BoostPath(".."),
-                                                                                                  true);
-
-        _ContentPanel->saveTextFile(SavePath);
-    }
-    else
-    {
-        //do nothing
-    }
 }
 
 
@@ -1046,8 +949,6 @@ void ApplicationPlayer::handlePlayerKeyTyped(KeyEventDetails* const details)
 
     if(_IsDebugActive)
     {
-
-
         if(isNumericKey(static_cast<KeyEventDetails::Key>(details->getKey())) && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_SHIFT)
         {
             //Switch To scene #
@@ -1056,37 +957,6 @@ void ApplicationPlayer::handlePlayerKeyTyped(KeyEventDetails* const details)
             {
                 MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneNumber));
             }
-        }
-
-        //if(details->getKey() == KeyEventDetails::KEY_1 && (details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND))
-        //{
-            //MainInternalWindow->setFocusedComponent(_HelperPanel->_CodeTextArea);
-            //_HelperPanel->_InfoTabPanel->setSelectedIndex(0);
-
-        //}
-
-        if(details->getKey() == KeyEventDetails::KEY_T && (details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND))
-        {
-            _ContentPanel->setIsSplit(!_ContentPanel->getIsSplit());
-        }
-
-        //Pause Active Updates
-        //else if(details->getKey() == KeyEventDetails::KEY_SPACE)
-        //{
-        //MainApplication::the()->getProject()->togglePauseActiveUpdates();
-        //}
-
-        ////Toggle Input Blocking
-        else if(details->getKey() == KeyEventDetails::KEY_I && (details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND))
-        {
-            toggleSceneInputBlocking();
-        }
-
-        //Scene Activation
-        if(details->getKey() == KeyEventDetails::KEY_E && (details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND))
-        {
-            //Reset the Project
-            MainApplication::the()->getProject()->reset();
         }
     }
 }
@@ -1806,7 +1676,14 @@ void ApplicationPlayer::openEditor(FieldContainer* FCToEdit)
 
 void ApplicationPlayer::openEditor(void)
 {
-    DebuggerDrawingSurface->openWindow(_GenericEditorDialog);
+    if(getFCEditedContainer(_GenericEditorDialog) == NULL)
+    {
+        openEditor(MainApplication::the()->getProject());
+    }
+    else
+    {
+        DebuggerDrawingSurface->openWindow(_GenericEditorDialog);
+    }
 }
 
 void ApplicationPlayer::createGenericEditor(void)
@@ -2585,10 +2462,6 @@ void ApplicationPlayer::selectNode(const Pnt2f& ViewportPoint)
     }
 }
 
-void ApplicationPlayer::setupPopupMenu()
-{
-}
-
 void ApplicationPlayer::handleComboBoxSelectionChanged(ComboBoxSelectionEventDetails* const details)
 {
     setDebugView(details->getCurrentIndex());
@@ -2602,6 +2475,11 @@ void ApplicationPlayer::handleUndoButtonAction(ActionEventDetails* const details
 void ApplicationPlayer::handleRedoButtonAction(ActionEventDetails* const details)
 {
 	getUndoManager()->redo();
+}
+
+void ApplicationPlayer::handleEditProjectAction(ActionEventDetails* const details)
+{
+    openEditor();
 }
 
 OSG_END_NAMESPACE
