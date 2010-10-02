@@ -44,6 +44,10 @@
 #include <OpenSG/OSGVideoManager.h>
 %}
 
+std::string getKabalaEngineVersion(void);
+std::string getKabalaEngineBuildType(void);
+std::string getKabalaEngineBuildRepositoryRevision(void);
+
 namespace OSG {
     class Scene;
     class Project;

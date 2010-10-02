@@ -1755,6 +1755,57 @@ SWIGINTERN void OSG_ApplicationPlayer_openEditor(OSG::FieldContainerRefPtr FCToE
 #ifdef __cplusplus
 extern "C" {
 #endif
+static int _wrap_getKabalaEngineVersion(lua_State* L) {
+  int SWIG_arg = 0;
+  std::string result;
+  
+  SWIG_check_num_args("getKabalaEngineVersion",0,0)
+  result = getKabalaEngineVersion();
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_getKabalaEngineBuildType(lua_State* L) {
+  int SWIG_arg = 0;
+  std::string result;
+  
+  SWIG_check_num_args("getKabalaEngineBuildType",0,0)
+  result = getKabalaEngineBuildType();
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_getKabalaEngineBuildRepositoryRevision(lua_State* L) {
+  int SWIG_arg = 0;
+  std::string result;
+  
+  SWIG_check_num_args("getKabalaEngineBuildRepositoryRevision",0,0)
+  result = getKabalaEngineBuildRepositoryRevision();
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_new_SceneRefPtr__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   OSG::SceneRefPtr *result = 0 ;
@@ -12430,6 +12481,9 @@ static swig_lua_class _wrap_class_OSG_ApplicationPlayer = { "ApplicationPlayer",
 #endif
 
 static const struct luaL_reg swig_commands[] = {
+    { "getKabalaEngineVersion", _wrap_getKabalaEngineVersion},
+    { "getKabalaEngineBuildType", _wrap_getKabalaEngineBuildType},
+    { "getKabalaEngineBuildRepositoryRevision", _wrap_getKabalaEngineBuildRepositoryRevision},
     { "SceneRefPtr_dcast", _wrap_SceneRefPtr_dcast},
     { "ProjectRefPtr_dcast", _wrap_ProjectRefPtr_dcast},
     { "SceneObjectRefPtr_dcast", _wrap_SceneObjectRefPtr_dcast},
