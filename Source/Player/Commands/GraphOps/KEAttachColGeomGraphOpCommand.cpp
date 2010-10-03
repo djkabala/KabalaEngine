@@ -85,6 +85,9 @@ void AttachColGeomGraphOpCommand::execute(void)
     TheGraphOp->setMatchMaskCondition(MainApplication::the()->getSettings().get<UInt8>("player.debugger.col_geom_graph_op.match_mask_condition"));
     TheGraphOp->setCreateGeomType(MainApplication::the()->getSettings().get<UInt32>("player.debugger.col_geom_graph_op.create_geom_type"));
 
+    TheGraphOp->setCollideMask(MainApplication::the()->getSettings().get<UInt32>("player.debugger.col_geom_graph_op.collide_mask"));
+    TheGraphOp->setCategoryMask(MainApplication::the()->getSettings().get<UInt32>("player.debugger.col_geom_graph_op.category_mask"));
+
 	TheGraphOp->traverse(_RootNode);
 }
 
