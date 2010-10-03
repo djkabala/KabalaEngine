@@ -219,6 +219,7 @@ void ApplicationPlayer::createDebugInterface(void)
     _UndoItem = MenuItem::create();				
     _RedoItem = MenuItem::create();
     _EditProjectItem = MenuItem::create();
+    _OpenEditorItem = MenuItem::create();
 
     _NextSceneItem = MenuItem::create();				
     _PrevSceneItem = MenuItem::create();				
@@ -280,9 +281,12 @@ void ApplicationPlayer::createDebugInterface(void)
     _RedoItem->setMnemonicKey(KeyEventDetails::KEY_R);
 
     _EditProjectItem->setText("Edit Project");
-    _EditProjectItem->setAcceleratorKey(KeyEventDetails::KEY_E);
-    _EditProjectItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
-    _EditProjectItem->setMnemonicKey(KeyEventDetails::KEY_E);
+    _EditProjectItem->setMnemonicKey(KeyEventDetails::KEY_P);
+    
+    _OpenEditorItem->setText("Open Editor");
+    _OpenEditorItem->setAcceleratorKey(KeyEventDetails::KEY_E);
+    _OpenEditorItem->setAcceleratorModifiers(KeyEventDetails::KEY_MODIFIER_COMMAND);
+    _OpenEditorItem->setMnemonicKey(KeyEventDetails::KEY_E);
 
     _NextSceneItem ->setText("Next");
     _NextSceneItem ->setAcceleratorKey(KeyEventDetails::KEY_TAB);
@@ -409,6 +413,7 @@ void ApplicationPlayer::createDebugInterface(void)
     _EditMenu->addItem(_RedoItem);
     _EditMenu->addSeparator();
     _EditMenu->addItem(_EditProjectItem);
+    _EditMenu->addItem(_OpenEditorItem);
 
 
     _SceneMenu = Menu::create();
@@ -493,6 +498,7 @@ void ApplicationPlayer::createDebugInterface(void)
     _UndoItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleUndoButtonAction, this, _1));
     _RedoItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleRedoButtonAction, this, _1));
     _EditProjectItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleEditProjectAction, this, _1));
+    _OpenEditorItem->connectActionPerformed(boost::bind(&ApplicationPlayer::handleOpenEditorAction, this, _1));
     
     _TheUndoManager->connectStateChanged(boost::bind(&ApplicationPlayer::handleCommandManagerStateChanged, this, _1));
 
@@ -1036,8 +1042,12 @@ void ApplicationPlayer::toggleStatForeground(StatisticsForeground* const TheFore
         _DebugViewport->removeFromForegrounds(Index);
 
         StatCollector::setGlobalCollector(NULL);
+        MainApplication::the()->getMainWindow()->getRenderAction()->setStatCollector(NULL);
 
         _StatisticsResetConnection.disconnect();
+
+        //Set the window's render action to manage reseting the statistics
+        MainApplication::the()->getMainWindow()->getRenderAction()->setManageStatReset(false);
     }
     else
     {
@@ -1049,6 +1059,7 @@ void ApplicationPlayer::toggleStatForeground(StatisticsForeground* const TheFore
 
         //Set the Global stat collector
         StatCollector::setGlobalCollector(TheForeground->getCollector());
+        MainApplication::the()->getMainWindow()->getRenderAction()->setStatCollector(StatCollector::getGlobalCollector());
 
         //Add callback for resetting the statistics
         if(!_StatisticsResetConnection.connected())
@@ -1057,6 +1068,10 @@ void ApplicationPlayer::toggleStatForeground(StatisticsForeground* const TheFore
                 MainApplication::the()->getMainWindow()->connectUpdate(boost::bind(&ApplicationPlayer::handleStatisticsReset, this, _1),
                                                                        boost::signals2::at_front);
         }
+
+        //Set the window's render action to NOT manage the reseting of statistics
+        //That will be managed by this ApplicationPlayer now
+        MainApplication::the()->getMainWindow()->getRenderAction()->setManageStatReset(false);
     }
 }
 
@@ -1094,7 +1109,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Basic Statistics
     _DebugBasicStatForeground = SimpleStatisticsForeground::create();
     _DebugBasicStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
-    _DebugBasicStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+    _DebugBasicStatForeground->setVerticalAlign(SimpleStatisticsForeground::Top);
     _DebugBasicStatForeground->setSize(StatFontSize);
     _DebugBasicStatForeground->setColor(StatColor);
     _DebugBasicStatForeground->setShadowColor(StatShadowColor);
@@ -1102,80 +1117,97 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugBasicStatForeground->setBorderColor(StatBorderColor);
     _DebugBasicStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
     _DebugBasicStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
-    _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+    _DebugBasicStatForeground->addText   (" ");
+    _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "Geometry Nodes: %d");
     _DebugBasicStatForeground->getCollector()->getElem(RenderAction::statNGeometries, true);
-    _DebugBasicStatForeground->addElement(RenderAction::statNTriangles, "%d triangles drawn");
+    _DebugBasicStatForeground->addText   (" ");
+    _DebugBasicStatForeground->addElement(RenderAction::statNTriangles, "Triangles: %d");
     _DebugBasicStatForeground->getCollector()->getElem(RenderAction::statNTriangles, true);
 
     //Rendering Statistics
     _DebugRenderStatForeground = SimpleStatisticsForeground::create();
     _DebugRenderStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
-    _DebugRenderStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+    _DebugRenderStatForeground->setVerticalAlign(SimpleStatisticsForeground::Top);
     _DebugRenderStatForeground->setSize(StatFontSize);
     _DebugRenderStatForeground->setColor(StatColor);
     _DebugRenderStatForeground->setShadowColor(StatShadowColor);
     _DebugRenderStatForeground->setBgColor(StatBackgroundColor);
     _DebugRenderStatForeground->setBorderColor(StatBorderColor);
     //Drawing Statistics
-    _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
+    _DebugRenderStatForeground->addText   ("Timing:");
+    _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "    Draw FPS: %r.3f");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "Trav FPS: %r.3f");
-    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statTravTime, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+    _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "    Trav FPS: %r.3f");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNGeometries, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "DrawTime: %.3f s");
+    _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "    DrawTime: %.3f s");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "TravTime: %.3f s");
+    _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "   TravTime: %.3f s");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statTravTime, true);
 
     //Nodes
-    _DebugRenderStatForeground->addElement(RenderPartition::statCullTestedNodes, "%d Nodes culltested");
+    _DebugRenderStatForeground->addText   ("Scene Graph:");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statTravTime, true);
+    _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "    Drawn geometries: %d");
+    _DebugRenderStatForeground->addElement(RenderPartition::statCullTestedNodes, "    Nodes culltested: %d");
     _DebugRenderStatForeground->getCollector()->getElem(RenderPartition::statCullTestedNodes, true);
-    _DebugRenderStatForeground->addElement(RenderPartition::statCulledNodes, "%d Nodes culled");
+    _DebugRenderStatForeground->addElement(RenderPartition::statCulledNodes, "    Nodes culled: %d");
     _DebugRenderStatForeground->getCollector()->getElem(RenderPartition::statCulledNodes, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statNMatrices, "%d matrix changes");
+    _DebugRenderStatForeground->addElement(RenderAction::statNMatrices, "    Matrix changes: %d");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNMatrices, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
-    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNGeometries, true);
+    //_DebugRenderStatForeground->addElement(RenderAction::statNGeometries, "%d Nodes drawn");
+    //_DebugRenderStatForeground->getCollector()->getElem(RenderActiohn::statNGeometries, true);
     //_DebugRenderStatForeground->addElement(RenderAction::statNTransGeometries, "%d transparent Nodes drawn");
 
     //Materials
-    //_DebugRenderStatForeground->addElement(RenderAction::statNMaterials, "%d material changes");
-    _DebugRenderStatForeground->addElement(RenderAction::statNShaders, "%d shader changes");
+    _DebugRenderStatForeground->addText   ("Materials:");
+    _DebugRenderStatForeground->addElement(RenderAction::statNStates, "    Material changes: %d");
+    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNStates, true);
+    _DebugRenderStatForeground->addElement(RenderAction::statNShaders, "    Shader changes: %d");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNShaders, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statNShaderParams, "%d shader param changes");
+    _DebugRenderStatForeground->addElement(RenderAction::statNShaderParams, "    Shader parameter changes: %d");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNShaderParams, true);
 
     //Drawn primities
-    _DebugRenderStatForeground->addElement(RenderAction::statNTriangles, "%d triangles drawn");
+    _DebugRenderStatForeground->addText   ("Primitives:");
+    _DebugRenderStatForeground->addElement(RenderAction::statNTriangles, "    Triangles: %d");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNTriangles, true);
-    _DebugRenderStatForeground->addElement(Drawable::statNLines, "%d lines drawn");
+    _DebugRenderStatForeground->addElement(Drawable::statNLines, "    Lines: %d");
     _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNLines, true);
-    _DebugRenderStatForeground->addElement(Drawable::statNPoints, "%d points drawn");
+    _DebugRenderStatForeground->addElement(Drawable::statNPoints, "    Points: %d");
     _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNPoints, true);
-    _DebugRenderStatForeground->addElement(Drawable::statNPrimitives,"%d primitive groups drawn");
+    _DebugRenderStatForeground->addElement(Drawable::statNPrimitives,"    Primitives: %d");
     _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNPrimitives, true);
-    _DebugRenderStatForeground->addElement(Drawable::statNVertices, "%d vertices transformed");
+    _DebugRenderStatForeground->addElement(Drawable::statNVertices, "    Verticies: %d");
     _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNVertices, true);
-    _DebugRenderStatForeground->addElement(Drawable::statNGeoBytes, "%d bytes of geometry used");
+    _DebugRenderStatForeground->addElement(Drawable::statNGeoBytes, "    Geometry memory: %d bytes");
     _DebugRenderStatForeground->getCollector()->getElem(Drawable::statNGeoBytes, true);
 
     //Textures
-    _DebugRenderStatForeground->addElement(TextureObjChunk::statNTextures, "%d textures used");
+    _DebugRenderStatForeground->addText   ("Textures:");
+    _DebugRenderStatForeground->addElement(TextureObjChunk::statNTextures, "    Textures: %d");
     _DebugRenderStatForeground->getCollector()->getElem(TextureObjChunk::statNTextures, true);
-    _DebugRenderStatForeground->addElement(TextureObjChunk::statNTexBytes, "%MB MB of texture used");
+    _DebugRenderStatForeground->addElement(TextureObjChunk::statNTexBytes, "    Texture memory: %MB");
     _DebugRenderStatForeground->getCollector()->getElem(TextureObjChunk::statNTexBytes, true);
 
     //Lights
-    _DebugRenderStatForeground->addElement(PointLight::statNPointLights,
-                                           "%d point lights");
+    _DebugRenderStatForeground->addText   ("Lights:");
+    _DebugRenderStatForeground->addElement(PointLight::statNPointLights, "    %d point lights");
     _DebugRenderStatForeground->getCollector()->getElem(PointLight::statNPointLights, true);
-    _DebugRenderStatForeground->addElement(DirectionalLight::statNDirectionalLights,
-                                           "%d directional lights");
+    _DebugRenderStatForeground->addElement(DirectionalLight::statNDirectionalLights, "    %d directional lights");
     _DebugRenderStatForeground->getCollector()->getElem(DirectionalLight::statNDirectionalLights, true);
-    _DebugRenderStatForeground->addElement(SpotLight::statNSpotLights,
-                                           "%d spot lights");
+    _DebugRenderStatForeground->addElement(SpotLight::statNSpotLights, "    %d spot lights");
     _DebugRenderStatForeground->getCollector()->getElem(SpotLight::statNSpotLights, true);
+
+    //Change List
+    _DebugRenderStatForeground->addText   ("ChangeList: ");
+    _DebugRenderStatForeground->addElement(ChangeList::statNChangedStoreSize, "    ChangeStore entries: %d");
+    _DebugRenderStatForeground->getCollector()->getElem(ChangeList::statNChangedStoreSize, true);
+    _DebugRenderStatForeground->addElement(ChangeList::statNCreatedStoreSize, "    CreatedStore entries: %d");
+    _DebugRenderStatForeground->getCollector()->getElem(ChangeList::statNCreatedStoreSize, true);
+    _DebugRenderStatForeground->addElement(ChangeList::statNUnCommittedStoreSize, "    UncommitedStore entries: %d");
+    _DebugRenderStatForeground->getCollector()->getElem(ChangeList::statNUnCommittedStoreSize, true);
+    _DebugRenderStatForeground->addElement(ChangeList::statNPoolSize, "    Pool entries: %d");
+    _DebugRenderStatForeground->getCollector()->getElem(ChangeList::statNPoolSize, true);
 
     //Occlusion
     //_DebugRenderStatForeground->addElement(OcclusionTestingTreeBuilder::statNOccNodes,
@@ -1192,7 +1224,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Physics Statistics
     _DebugPhysicsStatForeground = SimpleStatisticsForeground::create();
     _DebugPhysicsStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
-    _DebugPhysicsStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+    _DebugPhysicsStatForeground->setVerticalAlign(SimpleStatisticsForeground::Top);
     _DebugPhysicsStatForeground->setSize(StatFontSize);
     _DebugPhysicsStatForeground->setColor(StatColor);
     _DebugPhysicsStatForeground->setShadowColor(StatShadowColor);
@@ -1218,7 +1250,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Particle System Statistics
     _DebugParticleSystemStatForeground = SimpleStatisticsForeground::create();
     _DebugParticleSystemStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
-    _DebugParticleSystemStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+    _DebugParticleSystemStatForeground->setVerticalAlign(SimpleStatisticsForeground::Top);
     _DebugParticleSystemStatForeground->setSize(StatFontSize);
     _DebugParticleSystemStatForeground->setColor(StatColor);
     _DebugParticleSystemStatForeground->setShadowColor(StatShadowColor);
@@ -1240,7 +1272,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Animation Statistics
     _DebugAnimationStatForeground = SimpleStatisticsForeground::create();
     _DebugAnimationStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
-    _DebugAnimationStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+    _DebugAnimationStatForeground->setVerticalAlign(SimpleStatisticsForeground::Top);
     _DebugAnimationStatForeground->setSize(StatFontSize);
     _DebugAnimationStatForeground->setColor(StatColor);
     _DebugAnimationStatForeground->setShadowColor(StatShadowColor);
@@ -1260,7 +1292,7 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     //Configurable Statistics
     _ConfigurableStatForeground = SimpleStatisticsForeground::create();
     _ConfigurableStatForeground->setHorizontalAlign(SimpleStatisticsForeground::Right);
-    _ConfigurableStatForeground->setVerticalAlign(SimpleStatisticsForeground::Middle);
+    _ConfigurableStatForeground->setVerticalAlign(SimpleStatisticsForeground::Top);
     _ConfigurableStatForeground->setSize(StatFontSize);
     _ConfigurableStatForeground->setColor(StatColor);
     _ConfigurableStatForeground->setShadowColor(StatShadowColor);
@@ -2478,6 +2510,11 @@ void ApplicationPlayer::handleRedoButtonAction(ActionEventDetails* const details
 }
 
 void ApplicationPlayer::handleEditProjectAction(ActionEventDetails* const details)
+{
+    openEditor(MainApplication::the()->getProject());
+}
+
+void ApplicationPlayer::handleOpenEditorAction(ActionEventDetails* const details)
 {
     openEditor();
 }
