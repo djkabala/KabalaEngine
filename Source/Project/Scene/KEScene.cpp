@@ -323,7 +323,7 @@ void Scene::attachPhysics(void)
                 const std::vector<PhysicsGeom*>& FoundGeoms(PhysicsFinder.getFoundGeoms());
                 for(UInt32 i(0) ; i<FoundGeoms.size() ; ++i)
                 {
-                    if(FoundGeoms[i]->getSpace() == NULL &&
+                    if(/*FoundGeoms[i]->getSpace() == NULL &&*/
                        FoundGeoms[i]->getSpace() != getPhysicsHandler()->getSpaces(0))
                     {
                         //If the Goem has no parent space then add it to this scenes space
