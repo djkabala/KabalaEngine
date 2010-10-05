@@ -1707,6 +1707,9 @@ SWIGINTERN void OSG_Project_setActiveSceneOnEvent__SWIG_0(OSG::Project *self,OSG
 SWIGINTERN void OSG_Project_setActiveSceneOnEvent__SWIG_1(OSG::Project *self,OSG::SceneRefPtr TheScene,OSG::FieldContainerRefPtr EventProducer,std::string const &EventName){
             self->setActiveSceneOnEvent(TheScene, EventProducer, EventName);
         }
+SWIGINTERN OSG::WindowEventProducerRefPtr OSG_Project_getEventProducer(OSG::Project const *self){
+            return self->getEventProducer();
+        }
 SWIGINTERN OSG::SceneObjectRefPtr OSG_SceneObjectRefPtr_dcast(OSG::FieldContainerRefPtr const oIn){
             return OSG::dynamic_pointer_cast<OSG::SceneObject>(oIn);
         }
@@ -3463,6 +3466,33 @@ static int _wrap_ProjectRefPtr_setActiveSceneOnEvent(lua_State* L) {
 }
 
 
+static int _wrap_ProjectRefPtr_getEventProducer(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::ProjectRefPtr *arg1 = (OSG::ProjectRefPtr *) 0 ;
+  OSG::WindowEventProducerRefPtr result;
+  
+  SWIG_check_num_args("getEventProducer",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getEventProducer",1,"OSG::ProjectRefPtr const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__ProjectRefPtr,0))){
+    SWIG_fail_ptr("ProjectRefPtr_getEventProducer",1,SWIGTYPE_p_OSG__ProjectRefPtr);
+  }
+  
+  result = OSG_Project_getEventProducer((OSG::Project*)(arg1)->operator ->());
+  {
+    OSG::WindowEventProducerRefPtr * resultptr = new OSG::WindowEventProducerRefPtr((const OSG::WindowEventProducerRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__WindowEventProducerRefPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_ProjectRefPtr_addAttachment__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   OSG::ProjectRefPtr *arg1 = (OSG::ProjectRefPtr *) 0 ;
@@ -4626,6 +4656,7 @@ static swig_lua_method swig_OSG_ProjectRefPtr_methods[] = {
     {"setActiveScene", _wrap_ProjectRefPtr_setActiveScene}, 
     {"getActiveScene", _wrap_ProjectRefPtr_getActiveScene}, 
     {"setActiveSceneOnEvent", _wrap_ProjectRefPtr_setActiveSceneOnEvent}, 
+    {"getEventProducer", _wrap_ProjectRefPtr_getEventProducer}, 
     {"addAttachment", _wrap_ProjectRefPtr_addAttachment}, 
     {"subAttachment", _wrap_ProjectRefPtr_subAttachment}, 
     {"findAttachment", _wrap_ProjectRefPtr_findAttachment}, 
@@ -5064,6 +5095,33 @@ static int _wrap_Project_setActiveSceneOnEvent(lua_State* L) {
 }
 
 
+static int _wrap_Project_getEventProducer(lua_State* L) {
+  int SWIG_arg = 0;
+  OSG::Project *arg1 = (OSG::Project *) 0 ;
+  OSG::WindowEventProducerRefPtr result;
+  
+  SWIG_check_num_args("getEventProducer",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("getEventProducer",1,"OSG::Project const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OSG__Project,0))){
+    SWIG_fail_ptr("Project_getEventProducer",1,SWIGTYPE_p_OSG__Project);
+  }
+  
+  result = OSG_Project_getEventProducer((OSG::Project const *)arg1);
+  {
+    OSG::WindowEventProducerRefPtr * resultptr = new OSG::WindowEventProducerRefPtr((const OSG::WindowEventProducerRefPtr &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_OSG__WindowEventProducerRefPtr,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static swig_lua_method swig_OSG_Project_methods[] = {
     {"start", _wrap_Project_start}, 
     {"reset", _wrap_Project_reset}, 
@@ -5075,6 +5133,7 @@ static swig_lua_method swig_OSG_Project_methods[] = {
     {"setActiveScene", _wrap_Project_setActiveScene}, 
     {"getActiveScene", _wrap_Project_getActiveScene}, 
     {"setActiveSceneOnEvent", _wrap_Project_setActiveSceneOnEvent}, 
+    {"getEventProducer", _wrap_Project_getEventProducer}, 
     {0,0}
 };
 static swig_lua_attribute swig_OSG_Project_attributes[] = {
@@ -13001,7 +13060,6 @@ static swig_type_info _swigt__p_OSG__AttachmentContainerRefPtr = {"_p_OSG__Attac
 static swig_type_info _swigt__p_OSG__SoundGroupRefPtr = {"_p_OSG__SoundGroupRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__SoundRefPtr = {"_p_OSG__SoundRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__ComponentRefPtr = {"_p_OSG__ComponentRefPtr", 0, 0, 0, 0, 0};
-static swig_type_info _swigt__p_OSG__WindowEventProducerRefPtr = {"_p_OSG__WindowEventProducerRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__ViewportRefPtr = {"_p_OSG__ViewportRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__VideoWrapperRefPtr = {"_p_OSG__VideoWrapperRefPtr", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__Distribution1DRefPtr = {"_p_OSG__Distribution1DRefPtr", 0, 0, 0, 0, 0};
@@ -13058,6 +13116,7 @@ static swig_type_info _swigt__p_OSG__TypeBase = {"_p_OSG__TypeBase", "OSG::TypeB
 static swig_type_info _swigt__p_OSG__DataType = {"_p_OSG__DataType", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__FieldType = {"_p_OSG__FieldType", 0, 0, 0, 0, 0};
 static swig_type_info _swigt__p_OSG__ReflexiveContainerType = {"_p_OSG__ReflexiveContainerType", 0, 0, 0, 0, 0};
+static swig_type_info _swigt__p_OSG__WindowEventProducerRefPtr = {"_p_OSG__WindowEventProducerRefPtr", "OSG::WindowEventProducerRefPtr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ParentContainer = {"_p_ParentContainer", "ParentContainer *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_PlaneSet = {"_p_PlaneSet", "PlaneSet *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_PointType = {"_p_PointType", "PointType *", 0, 0, (void*)0, 0};
@@ -13232,7 +13291,6 @@ static swig_cast_info _swigc__p_OSG__AttachmentContainer[] = {  {&_swigt__p_OSG_
 static swig_cast_info _swigc__p_OSG__SoundGroupRefPtr[] = {{&_swigt__p_OSG__SoundGroupRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__SoundRefPtr[] = {{&_swigt__p_OSG__SoundRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__ComponentRefPtr[] = {{&_swigt__p_OSG__ComponentRefPtr, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OSG__WindowEventProducerRefPtr[] = {{&_swigt__p_OSG__WindowEventProducerRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__ViewportRefPtr[] = {{&_swigt__p_OSG__ViewportRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__VideoWrapperRefPtr[] = {{&_swigt__p_OSG__VideoWrapperRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__Distribution1DRefPtr[] = {{&_swigt__p_OSG__Distribution1DRefPtr, 0, 0, 0},{0, 0, 0, 0}};
@@ -13290,6 +13348,7 @@ static swig_cast_info _swigc__p_OSG__DataType[] = {{&_swigt__p_OSG__DataType, 0,
 static swig_cast_info _swigc__p_OSG__FieldType[] = {{&_swigt__p_OSG__FieldType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__ReflexiveContainerType[] = {{&_swigt__p_OSG__ReflexiveContainerType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OSG__TypeBase[] = {  {&_swigt__p_OSG__DataType, _p_OSG__DataTypeTo_p_OSG__TypeBase, 0, 0},  {&_swigt__p_OSG__BehaviorType, _p_OSG__BehaviorTypeTo_p_OSG__TypeBase, 0, 0},  {&_swigt__p_OSG__LuaBehaviorType, _p_OSG__LuaBehaviorTypeTo_p_OSG__TypeBase, 0, 0},  {&_swigt__p_OSG__TypeBase, 0, 0, 0},  {&_swigt__p_OSG__FieldType, _p_OSG__FieldTypeTo_p_OSG__TypeBase, 0, 0},  {&_swigt__p_OSG__EventProducerType, _p_OSG__EventProducerTypeTo_p_OSG__TypeBase, 0, 0},  {&_swigt__p_OSG__ReflexiveContainerType, _p_OSG__ReflexiveContainerTypeTo_p_OSG__TypeBase, 0, 0},  {&_swigt__p_OSG__FieldContainerType, _p_OSG__FieldContainerTypeTo_p_OSG__TypeBase, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OSG__WindowEventProducerRefPtr[] = {  {&_swigt__p_OSG__WindowEventProducerRefPtr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ParentContainer[] = {  {&_swigt__p_ParentContainer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_PlaneSet[] = {  {&_swigt__p_PlaneSet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_PointType[] = {  {&_swigt__p_PointType, 0, 0, 0},{0, 0, 0, 0}};

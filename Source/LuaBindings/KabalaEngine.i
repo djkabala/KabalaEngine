@@ -193,6 +193,11 @@ namespace OSG {
         {
             self->setActiveSceneOnEvent(TheScene, EventProducer, EventName);
         }
+        
+        WindowEventProducerRefPtr getEventProducer(void) const
+        {
+            return self->getEventProducer();
+        }
     };
     
     /******************************************************/
