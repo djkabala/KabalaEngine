@@ -117,6 +117,31 @@ void ProjectBase::setVersion(const std::string &value)
 
     _sfVersion.setValue(value);
 }
+//! Get the value of the Project::_sfRevisionKey field.
+
+inline
+std::string &ProjectBase::editRevisionKey(void)
+{
+    editSField(RevisionKeyFieldMask);
+
+    return _sfRevisionKey.getValue();
+}
+
+//! Get the value of the Project::_sfRevisionKey field.
+inline
+const std::string &ProjectBase::getRevisionKey(void) const
+{
+    return _sfRevisionKey.getValue();
+}
+
+//! Set the value of the Project::_sfRevisionKey field.
+inline
+void ProjectBase::setRevisionKey(const std::string &value)
+{
+    editSField(RevisionKeyFieldMask);
+
+    _sfRevisionKey.setValue(value);
+}
 //! Get the value of the Project::_sfMainWindowTitle field.
 
 inline
@@ -225,6 +250,22 @@ void ProjectBase::setLuaModule(const BoostPath &value)
     _sfLuaModule.setValue(value);
 }
 
+//! Get the value of the Project::_sfAssets field.
+inline
+AssetStore * ProjectBase::getAssets(void) const
+{
+    return _sfAssets.getValue();
+}
+
+//! Set the value of the Project::_sfAssets field.
+inline
+void ProjectBase::setAssets(AssetStore * const value)
+{
+    editSField(AssetsFieldMask);
+
+    _sfAssets.setValue(value);
+}
+
 //! Get the value of the \a index element the Project::_mfScenes field.
 inline
 Scene * ProjectBase::getScenes(const UInt32 index) const
@@ -262,6 +303,9 @@ void ProjectBase::execSync (      ProjectBase *pFrom,
     if(FieldBits::NoField != (VersionFieldMask & whichField))
         _sfVersion.syncWith(pFrom->_sfVersion);
 
+    if(FieldBits::NoField != (RevisionKeyFieldMask & whichField))
+        _sfRevisionKey.syncWith(pFrom->_sfRevisionKey);
+
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
         _sfMainWindowTitle.syncWith(pFrom->_sfMainWindowTitle);
 
@@ -288,6 +332,9 @@ void ProjectBase::execSync (      ProjectBase *pFrom,
                                 syncMode,
                                 uiSyncInfo,
                                 oOffsets);
+
+    if(FieldBits::NoField != (AssetsFieldMask & whichField))
+        _sfAssets.syncWith(pFrom->_sfAssets);
 }
 #endif
 

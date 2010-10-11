@@ -239,6 +239,10 @@ class KE_KABALAENGINE_DLLMAPPING Project : public ProjectBase
     bool _BlockInput;
     bool _Running;
 
+
+    void setFieldContainerIDRange(UInt32 RangeMin, UInt32 RangeMax);
+    UInt32 _IDRangeMin, _IDRangeMax;
+
     /*==========================  PRIVATE  ================================*/
 
   private:
@@ -255,6 +259,7 @@ typedef Project *ProjectP;
 OSG_END_NAMESPACE
 
 #include "Project/Scene/KEScene.h"      // Scenes Class
+#include "Project/KEAssetStore.h"
 #include "KEProjectBase.inl"
 #include "KEProject.inl"
 

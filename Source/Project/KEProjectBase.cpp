@@ -56,6 +56,7 @@
 
 
 #include "Project/Scene/KEScene.h"      // Scenes Class
+#include "Project/KEAssetStore.h"       // Assets Class
 
 #include "KEProjectBase.h"
 #include "KEProject.h"
@@ -86,6 +87,10 @@ OSG_BEGIN_NAMESPACE
     
 */
 
+/*! \var std::string     ProjectBase::_sfRevisionKey
+    
+*/
+
 /*! \var std::string     ProjectBase::_sfMainWindowTitle
     
 */
@@ -111,6 +116,10 @@ OSG_BEGIN_NAMESPACE
 */
 
 /*! \var BoostPath       ProjectBase::_mfLuaDirectories
+    
+*/
+
+/*! \var AssetStore *    ProjectBase::_sfAssets
     
 */
 
@@ -151,6 +160,18 @@ void ProjectBase::classDescInserter(TypeObject &oType)
         (Field::SFDefaultFlags | Field::FStdAccess),
         static_cast<FieldEditMethodSig>(&Project::editHandleVersion),
         static_cast<FieldGetMethodSig >(&Project::getHandleVersion));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFString::Description(
+        SFString::getClassType(),
+        "RevisionKey",
+        "",
+        RevisionKeyFieldId, RevisionKeyFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleRevisionKey),
+        static_cast<FieldGetMethodSig >(&Project::getHandleRevisionKey));
 
     oType.addInitialDesc(pDesc);
 
@@ -237,6 +258,18 @@ void ProjectBase::classDescInserter(TypeObject &oType)
         static_cast<FieldGetMethodSig >(&Project::getHandleLuaDirectories));
 
     oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecAssetStorePtr::Description(
+        SFUnrecAssetStorePtr::getClassType(),
+        "Assets",
+        "",
+        AssetsFieldId, AssetsFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Project::editHandleAssets),
+        static_cast<FieldGetMethodSig >(&Project::getHandleAssets));
+
+    oType.addInitialDesc(pDesc);
 }
 
 
@@ -269,6 +302,16 @@ ProjectBase::TypeObject ProjectBase::_type(
     "The Project.\n"
     "\t<Field\n"
     "\t\tname=\"Version\"\n"
+    "\t\ttype=\"std::string\"\n"
+    "\t\tcategory=\"data\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tdefaultValue=\"\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"RevisionKey\"\n"
     "\t\ttype=\"std::string\"\n"
     "\t\tcategory=\"data\"\n"
     "\t\tcardinality=\"single\"\n"
@@ -349,6 +392,17 @@ ProjectBase::TypeObject ProjectBase::_type(
     "\t\tcategory=\"data\"\n"
     "\t\tcardinality=\"multi\"\n"
     "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Assets\"\n"
+    "\t\ttype=\"AssetStore\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/KEAssetStoreFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEAssetStore.h\"\n"
     "\t\taccess=\"public\"\n"
     "\t>\n"
     "\t</Field>\n"
@@ -756,6 +810,19 @@ const SFString *ProjectBase::getSFVersion(void) const
 }
 
 
+SFString *ProjectBase::editSFRevisionKey(void)
+{
+    editSField(RevisionKeyFieldMask);
+
+    return &_sfRevisionKey;
+}
+
+const SFString *ProjectBase::getSFRevisionKey(void) const
+{
+    return &_sfRevisionKey;
+}
+
+
 SFString *ProjectBase::editSFMainWindowTitle(void)
 {
     editSField(MainWindowTitleFieldMask);
@@ -839,6 +906,19 @@ const MFBoostPath *ProjectBase::getMFLuaDirectories(void) const
     return &_mfLuaDirectories;
 }
 
+
+//! Get the Project::_sfAssets field.
+const SFUnrecAssetStorePtr *ProjectBase::getSFAssets(void) const
+{
+    return &_sfAssets;
+}
+
+SFUnrecAssetStorePtr *ProjectBase::editSFAssets         (void)
+{
+    editSField(AssetsFieldMask);
+
+    return &_sfAssets;
+}
 
 
 
@@ -955,6 +1035,10 @@ UInt32 ProjectBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _sfVersion.getBinSize();
     }
+    if(FieldBits::NoField != (RevisionKeyFieldMask & whichField))
+    {
+        returnValue += _sfRevisionKey.getBinSize();
+    }
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
     {
         returnValue += _sfMainWindowTitle.getBinSize();
@@ -983,6 +1067,10 @@ UInt32 ProjectBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _mfLuaDirectories.getBinSize();
     }
+    if(FieldBits::NoField != (AssetsFieldMask & whichField))
+    {
+        returnValue += _sfAssets.getBinSize();
+    }
 
     return returnValue;
 }
@@ -995,6 +1083,10 @@ void ProjectBase::copyToBin(BinaryDataHandler &pMem,
     if(FieldBits::NoField != (VersionFieldMask & whichField))
     {
         _sfVersion.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (RevisionKeyFieldMask & whichField))
+    {
+        _sfRevisionKey.copyToBin(pMem);
     }
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
     {
@@ -1024,6 +1116,10 @@ void ProjectBase::copyToBin(BinaryDataHandler &pMem,
     {
         _mfLuaDirectories.copyToBin(pMem);
     }
+    if(FieldBits::NoField != (AssetsFieldMask & whichField))
+    {
+        _sfAssets.copyToBin(pMem);
+    }
 }
 
 void ProjectBase::copyFromBin(BinaryDataHandler &pMem,
@@ -1034,6 +1130,10 @@ void ProjectBase::copyFromBin(BinaryDataHandler &pMem,
     if(FieldBits::NoField != (VersionFieldMask & whichField))
     {
         _sfVersion.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (RevisionKeyFieldMask & whichField))
+    {
+        _sfRevisionKey.copyFromBin(pMem);
     }
     if(FieldBits::NoField != (MainWindowTitleFieldMask & whichField))
     {
@@ -1062,6 +1162,10 @@ void ProjectBase::copyFromBin(BinaryDataHandler &pMem,
     if(FieldBits::NoField != (LuaDirectoriesFieldMask & whichField))
     {
         _mfLuaDirectories.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (AssetsFieldMask & whichField))
+    {
+        _sfAssets.copyFromBin(pMem);
     }
 }
 
@@ -1897,6 +2001,7 @@ UInt32  ProjectBase::numSlotsEvent(UInt32 eventId) const
 ProjectBase::ProjectBase(void) :
     Inherited(),
     _sfVersion                (),
+    _sfRevisionKey            (),
     _sfMainWindowTitle        (),
     _sfFilePath               (),
     _mfScenes                 (this,
@@ -1905,13 +2010,15 @@ ProjectBase::ProjectBase(void) :
     _sfInitialScene           (NULL),
     _sfInternalActiveScene    (NULL),
     _sfLuaModule              (),
-    _mfLuaDirectories         ()
+    _mfLuaDirectories         (),
+    _sfAssets                 (NULL)
 {
 }
 
 ProjectBase::ProjectBase(const ProjectBase &source) :
     Inherited(source),
     _sfVersion                (source._sfVersion                ),
+    _sfRevisionKey            (source._sfRevisionKey            ),
     _sfMainWindowTitle        (source._sfMainWindowTitle        ),
     _sfFilePath               (source._sfFilePath               ),
     _mfScenes                 (this,
@@ -1920,7 +2027,8 @@ ProjectBase::ProjectBase(const ProjectBase &source) :
     _sfInitialScene           (NULL),
     _sfInternalActiveScene    (NULL),
     _sfLuaModule              (source._sfLuaModule              ),
-    _mfLuaDirectories         (source._mfLuaDirectories         )
+    _mfLuaDirectories         (source._mfLuaDirectories         ),
+    _sfAssets                 (NULL)
 {
 }
 
@@ -1992,6 +2100,8 @@ void ProjectBase::onCreate(const Project *source)
         pThis->setInitialScene(source->getInitialScene());
 
         pThis->setInternalActiveScene(source->getInternalActiveScene());
+
+        pThis->setAssets(source->getAssets());
     }
 }
 
@@ -2016,6 +2126,31 @@ EditFieldHandlePtr ProjectBase::editHandleVersion        (void)
 
 
     editSField(VersionFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleRevisionKey     (void) const
+{
+    SFString::GetHandlePtr returnValue(
+        new  SFString::GetHandle(
+             &_sfRevisionKey,
+             this->getType().getFieldDesc(RevisionKeyFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleRevisionKey    (void)
+{
+    SFString::EditHandlePtr returnValue(
+        new  SFString::EditHandle(
+             &_sfRevisionKey,
+             this->getType().getFieldDesc(RevisionKeyFieldId),
+             this));
+
+
+    editSField(RevisionKeyFieldMask);
 
     return returnValue;
 }
@@ -2218,6 +2353,34 @@ EditFieldHandlePtr ProjectBase::editHandleLuaDirectories (void)
 
 
     editMField(LuaDirectoriesFieldMask, _mfLuaDirectories);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ProjectBase::getHandleAssets          (void) const
+{
+    SFUnrecAssetStorePtr::GetHandlePtr returnValue(
+        new  SFUnrecAssetStorePtr::GetHandle(
+             &_sfAssets,
+             this->getType().getFieldDesc(AssetsFieldId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ProjectBase::editHandleAssets         (void)
+{
+    SFUnrecAssetStorePtr::EditHandlePtr returnValue(
+        new  SFUnrecAssetStorePtr::EditHandle(
+             &_sfAssets,
+             this->getType().getFieldDesc(AssetsFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Project::setAssets,
+                    static_cast<Project *>(this), _1));
+
+    editSField(AssetsFieldMask);
 
     return returnValue;
 }
@@ -2551,6 +2714,8 @@ void ProjectBase::resolveLinks(void)
     static_cast<Project *>(this)->setInitialScene(NULL);
 
     static_cast<Project *>(this)->setInternalActiveScene(NULL);
+
+    static_cast<Project *>(this)->setAssets(NULL);
 
 #ifdef OSG_MT_CPTR_ASPECT
     AspectOffsetStore oOffsets;

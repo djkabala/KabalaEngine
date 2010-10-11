@@ -200,7 +200,9 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     MenuItemRefPtr _ImportItem ;
     MenuItemRefPtr _ExportItem ;
     MenuItemRefPtr _FocusCamera ;
+    MenuItemRefPtr _OpenEditor;
 
+    //Graph Operation Menus
 	MenuRefPtr     _GraphOpMenu;
 	MenuItemRefPtr _MaskGraphOpItem;
 	MenuItemRefPtr _LodGraphOpItem;
@@ -212,9 +214,41 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	MenuItemRefPtr _SharePtrGraphOpItem;
 	MenuItemRefPtr _AttachColGeomOpItem;
 
+    
+    //Physics Menus
+    MenuRefPtr     _PhysicsMenu;
+	MenuItemRefPtr _PhysicsBodyItem;
+
+    //Geoms
+    MenuRefPtr     _PhysicsGeomMenu;
+	MenuItemRefPtr _PhysicsSphereGeomItem;
+	MenuItemRefPtr _PhysicsBoxGeomItem;
+	MenuItemRefPtr _PhysicsCapsuleGeomItem;
+	MenuItemRefPtr _PhysicsPlaneGeomItem;
+	MenuItemRefPtr _PhysicsRayGeomItem;
+	MenuItemRefPtr _PhysicsTriMeshGeomItem;
+
+    //Spaces
+	MenuItemRefPtr _PhysicsSpaceItem;
+
+    //Joints
+    MenuRefPtr     _PhysicsJointMenu;
+	MenuItemRefPtr _PhysicsAMotorJointItem;
+	MenuItemRefPtr _PhysicsBallJointItem;
+	MenuItemRefPtr _PhysicsHinge2JointItem;
+	MenuItemRefPtr _PhysicsHingeJointItem;
+	MenuItemRefPtr _PhysicsLMotorJointItem;
+	MenuItemRefPtr _PhysicsPistonJointItem;
+	MenuItemRefPtr _PhysicsPlane2DJointItem;
+	MenuItemRefPtr _PhysicsPRJointItem;
+	MenuItemRefPtr _PhysicsPUJointItem;
+	MenuItemRefPtr _PhysicsSliderJointItem;
+	MenuItemRefPtr _PhysicsUniversalJointItem;
+
     void createPopUpMenu(void);
     void updatePopupMenu(void);
     void changeShowHideMenuItem(void);
+    void updatePhysicsMenuItems(void);
 
     void handleLuaGraphTreeSelectionAdded(TreeSelectionEventDetails* const details);
     boost::signals2::connection _LuaGraphTreeSelectionAddedConnection;
@@ -261,6 +295,30 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 	void handleRunMaterialGroupGraphOp(EventDetails* const details);
 	void handleRunSharePtrGraphOp(EventDetails* const details);
 	void handleRunAttachColGeomGraphOp(EventDetails* const details);
+
+	void handleOpenEditorMenuItem(EventDetails* const details);
+    
+	void handlePhysicsBodyMenuItem(EventDetails* const details);
+
+	void handlePhysicsSphereGeomMenuItem(EventDetails* const details);
+	void handlePhysicsBoxGeomMenuItem(EventDetails* const details);
+	void handlePhysicsCapsuleGeomMenuItem(EventDetails* const details);
+	void handlePhysicsPlaneGeomMenuItem(EventDetails* const details);
+	void handlePhysicsRayGeomMenuItem(EventDetails* const details);
+	void handlePhysicsTriMeshGeomMenuItem(EventDetails* const details);
+	void handlePhysicsSpaceMenuItem(EventDetails* const details);
+
+	void handlePhysicsAMotorJointMenuItem(EventDetails* const details);
+	void handlePhysicsBallJointMenuItem(EventDetails* const details);
+	void handlePhysicsHinge2JointMenuItem(EventDetails* const details);
+	void handlePhysicsHingeJointMenuItem(EventDetails* const details);
+	void handlePhysicsLMotorJointMenuItem(EventDetails* const details);
+	void handlePhysicsPistonJointMenuItem(EventDetails* const details);
+	void handlePhysicsPlane2DJointMenuItem(EventDetails* const details);
+	void handlePhysicsPRJointMenuItem(EventDetails* const details);
+	void handlePhysicsPUJointMenuItem(EventDetails* const details);
+	void handlePhysicsSliderJointMenuItem(EventDetails* const details);
+	void handlePhysicsUniversalJointMenuItem(EventDetails* const details);
 
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/

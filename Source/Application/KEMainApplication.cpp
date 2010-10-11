@@ -140,6 +140,7 @@ MainApplication *MainApplication::the(void)
             ("project-file,f", boost::program_options::value<std::string>(), "The Project file to use.")
             ("builder,b", "Start the world builder.")
             ("play,p", "Play the project file.")
+            ("fullscreen,u", "Run in fullscreen.")
             ("debug,d", "Only relevant if -p option is present.  Startup with the dubugger attached.")
 		    ("log-level,l", boost::program_options::value<UInt32>(), "The logging level.  Higher values logs more information. 0=LOG_LOG,1=LOG_FATAL,2=LOG_WARNING,3=LOG_NOTICE,4=LOG_INFO,5=LOG_DEBUG.  This will override the value defined in the settings file.")
 		    ("disable-log,y", boost::program_options::value<bool>(), "Disables all logging.")
@@ -462,9 +463,9 @@ Int32 MainApplication::run(int argc, char **argv)
     setMainWindow(MainWindow);
     setName(getMainWindow(),"__KABALA_ENGINE_WINDOW_EVENT_PRODUCER");
 
-    getMainWindow()->initWindow();
+    getMainWindow()->setFullscreen(OptionsVariableMap.count("fullscreen") || getSettings().get<bool>("basic.window.fullscreen"));
 
-    getMainWindow()->setFullscreen(getSettings().get<bool>("basic.window.fullscreen"));
+    getMainWindow()->initWindow();
 
     _WindowClosingConnection = getMainWindow()->connectWindowClosing(boost::bind(&MainApplication::handleWindowClosing, this, _1));
     _WindowClosedConnection = getMainWindow()->connectWindowClosed(boost::bind(&MainApplication::handleWindowClosed, this, _1));
@@ -496,6 +497,16 @@ Int32 MainApplication::run(int argc, char **argv)
     getMainWindow()->openWindow(WindowPos,
                                 WindowSize,
                                 "Kabala Engine");
+
+        
+    //Store a pointer to the application thread
+    //_ApplicationThread = dynamic_cast<OSG::Thread *>(OSG::ThreadManager::getAppThread());
+    
+    //Create the rendering thread
+    //_RenderThread = OSG::dynamic_pointer_cast<OSG::Thread>(OSG::ThreadManager::the()->getThread("__KABALA_ENGINE_RENDER_THREAD", true));
+    
+    //Create the loading thread
+    //_LoadingThread = OSG::dynamic_pointer_cast<OSG::Thread>(OSG::ThreadManager::the()->getThread("__KABALA_ENGINE_LOADING_THREAD", true));
 
     //Load the Project file, if given
     if(OptionsVariableMap.count("project-file"))
@@ -549,6 +560,14 @@ Int32 MainApplication::run(int argc, char **argv)
         }
     }
 
+    commitChanges();
+    
+    //Start the render thread on aspect 1
+    //_RenderThread->runFunction(MainApplication::mainRenderLoop, 1, NULL);
+    
+    //Start the loading thread on aspect 2
+    //_LoadingThread->runFunction(MainApplication::mainLoadingLoop, 2, NULL);
+
     //Main Loop
     getMainWindow()->mainLoop();
 
@@ -574,6 +593,7 @@ Int32 MainApplication::run(int argc, char **argv)
 
 void MainApplication::initOpenSG(int argc, char **argv)
 {
+    //Ensure that libraries are loaded
     OSG::preloadSharedObject("OSGCluster");
     OSG::preloadSharedObject("OSGContribBackgroundloader");
     OSG::preloadSharedObject("OSGContribComputeBase");
@@ -592,6 +612,12 @@ void MainApplication::initOpenSG(int argc, char **argv)
     OSG::preloadSharedObject("OSGGroup");
     OSG::preloadSharedObject("OSGImageFileIO");
     OSG::preloadSharedObject("OSGTBAnimation");
+
+    //Set the number of aspects
+    //ThreadManager::setNumAspects(2);
+
+    //Set the read/write default to true
+    //ChangeList::setReadWriteDefault(true);
 
     // OSG init
 	OSG::osgInit(argc,argv);
@@ -1139,6 +1165,28 @@ void MainApplication::handleCrashLastExecution(void)
     SLOG << "KabalaEngine crashed the last time it was run at " << boost::posix_time::to_simple_string(DateTimeCrashRun) << std::endl;
 
     removeCrashIndicationFile();
+}
+
+void MainApplication::mainRenderLoop(void* args)
+{
+    OSG::osgSleep(5000);
+    //Render
+    while(true)
+    {
+        //Sync data
+        the()->getApplicationThread()->getChangeList()->applyAndClear();
+
+        //Draw
+        the()->getMainWindow()->draw();
+    }
+}
+
+void MainApplication::mainLoadingLoop(void* args)
+{
+    //Load
+    while(true)
+    {
+    }
 }
 
 /*----------------------- constructors & destructors ----------------------*/

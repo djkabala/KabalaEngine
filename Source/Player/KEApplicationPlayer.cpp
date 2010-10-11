@@ -1115,8 +1115,8 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugBasicStatForeground->setShadowColor(StatShadowColor);
     _DebugBasicStatForeground->setBgColor(StatBackgroundColor);
     _DebugBasicStatForeground->setBorderColor(StatBorderColor);
-    _DebugBasicStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
-    _DebugBasicStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
+    _DebugBasicStatForeground->addElement(WindowEventProducer::statWindowLoopTime, "FPS: %r.3f");
+    _DebugBasicStatForeground->getCollector()->getElem(WindowEventProducer::statWindowLoopTime, true);
     _DebugBasicStatForeground->addText   (" ");
     _DebugBasicStatForeground->addElement(RenderAction::statNGeometries, "Geometry Nodes: %d");
     _DebugBasicStatForeground->getCollector()->getElem(RenderAction::statNGeometries, true);
@@ -1135,14 +1135,27 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugRenderStatForeground->setBorderColor(StatBorderColor);
     //Drawing Statistics
     _DebugRenderStatForeground->addText   ("Timing:");
-    _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "    Draw FPS: %r.3f");
+    _DebugRenderStatForeground->addElement(WindowEventProducer::statWindowLoopTime, "    FPS: %r.3f");
+    _DebugRenderStatForeground->getCollector()->getElem(WindowEventProducer::statWindowLoopTime, true);
+    _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "    Drawing: %.3f s");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "    Trav FPS: %r.3f");
-    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statNGeometries, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statDrawTime, "    DrawTime: %.3f s");
-    _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
-    _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "   TravTime: %.3f s");
+    _DebugRenderStatForeground->addElement(RenderAction::statTravTime, "    Graph Traversal: %.3f s");
     _DebugRenderStatForeground->getCollector()->getElem(RenderAction::statTravTime, true);
+    _DebugRenderStatForeground->addElement(ParticleSystem::statParticleUpdateTime, "    Particle Update: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(ParticleSystem::statParticleUpdateTime, true);
+    _DebugRenderStatForeground->addElement(ParticleSystem::statParticleSortTime, "    Particle Sort: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(ParticleSystem::statParticleSortTime, true);
+    _DebugRenderStatForeground->addElement(PhysicsHandler::statPhysicsTime, "    Physics: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(PhysicsHandler::statPhysicsTime, true);
+    _DebugRenderStatForeground->addElement(PhysicsHandler::statCollisionTime, "        Collision: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(PhysicsHandler::statCollisionTime, true);
+    _DebugRenderStatForeground->addElement(PhysicsHandler::statSimulationTime, "        Simulation: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(PhysicsHandler::statSimulationTime, true);
+    _DebugRenderStatForeground->addElement(PhysicsHandler::statTransformUpdateTime, "        Transform update: %.3f s");
+    _DebugRenderStatForeground->addElement(Animation::statAnimUpdateTime, "    Animation Update: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(Animation::statAnimUpdateTime, true);
+    _DebugRenderStatForeground->addElement(LuaManager::statScriptsRunTime, "    Lua scripts: %.3f s");
+    _DebugRenderStatForeground->getCollector()->getElem(LuaManager::statScriptsRunTime, true);
 
     //Nodes
     _DebugRenderStatForeground->addText   ("Scene Graph:");
@@ -1230,8 +1243,8 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugPhysicsStatForeground->setShadowColor(StatShadowColor);
     _DebugPhysicsStatForeground->setBgColor(StatBackgroundColor);
     _DebugPhysicsStatForeground->setBorderColor(StatBorderColor);
-    _DebugPhysicsStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
-    _DebugPhysicsStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
+    _DebugPhysicsStatForeground->addElement(WindowEventProducer::statWindowLoopTime, "FPS: %r.3f");
+    _DebugPhysicsStatForeground->getCollector()->getElem(WindowEventProducer::statWindowLoopTime, true);
     _DebugPhysicsStatForeground->addElement(PhysicsHandler::statPhysicsTime, "Total Physics: %.3f s");
     _DebugPhysicsStatForeground->getCollector()->getElem(PhysicsHandler::statPhysicsTime, true);
     _DebugPhysicsStatForeground->addElement(PhysicsHandler::statCollisionTime, "Collision: %.3f s");
@@ -1256,8 +1269,8 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugParticleSystemStatForeground->setShadowColor(StatShadowColor);
     _DebugParticleSystemStatForeground->setBgColor(StatBackgroundColor);
     _DebugParticleSystemStatForeground->setBorderColor(StatBorderColor);
-    _DebugParticleSystemStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
-    _DebugParticleSystemStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
+    _DebugParticleSystemStatForeground->addElement(WindowEventProducer::statWindowLoopTime, "FPS: %r.3f");
+    _DebugParticleSystemStatForeground->getCollector()->getElem(WindowEventProducer::statWindowLoopTime, true);
     _DebugParticleSystemStatForeground->addElement(ParticleSystem::statNParticles, "%d Particles");
     _DebugParticleSystemStatForeground->getCollector()->getElem(ParticleSystem::statNParticlesCreated, true);
     _DebugParticleSystemStatForeground->addElement(ParticleSystem::statNParticlesCreated, "%d Particles created");
@@ -1278,8 +1291,8 @@ void ApplicationPlayer::initDebugStatForegrounds(void)
     _DebugAnimationStatForeground->setShadowColor(StatShadowColor);
     _DebugAnimationStatForeground->setBgColor(StatBackgroundColor);
     _DebugAnimationStatForeground->setBorderColor(StatBorderColor);
-    _DebugAnimationStatForeground->addElement(RenderAction::statDrawTime, "Draw FPS: %r.3f");
-    _DebugAnimationStatForeground->getCollector()->getElem(RenderAction::statDrawTime, true);
+    _DebugAnimationStatForeground->addElement(WindowEventProducer::statWindowLoopTime, "FPS: %r.3f");
+    _DebugAnimationStatForeground->getCollector()->getElem(WindowEventProducer::statWindowLoopTime, true);
     _DebugAnimationStatForeground->addElement(Animation::statAnimUpdateTime, "Animation Update Time: %.3f s");
     _DebugAnimationStatForeground->getCollector()->getElem(Animation::statAnimUpdateTime, true);
     _DebugAnimationStatForeground->addElement(Animation::statNAnimations, "%d animations");
@@ -1566,6 +1579,7 @@ void ApplicationPlayer::createDebugCameraAnim(void)
 
     //Animation Group
     _DebugCameraAnimationGroup = AnimationGroup::create();
+    _DebugCameraAnimationGroup->setCycling(1);
     _DebugCameraAnimationGroup->pushToAnimations(_DebugCameraTransAnimation);
     //_DebugCameraAnimationGroup->pushToAnimations(_DebugCameraFovAnimation);
 }

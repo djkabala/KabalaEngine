@@ -111,6 +111,13 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
      const ApplicationMode*  getStartScreenMode(void) const;
            ApplicationMode*  getCurrentMode    (void);
      const ApplicationMode*  getCurrentMode    (void) const;
+
+           Thread* getApplicationThread(void);
+     const Thread* getApplicationThread(void) const;
+           Thread* getRenderThread     (void);
+     const Thread* getRenderThread     (void) const;
+           Thread* getLoadingThread    (void);
+     const Thread* getLoadingThread    (void) const;
      
      void setSettings       ( const ApplicationSettings &value );
      void setSettingsLoadFile( const BoostPath &value );
@@ -158,7 +165,7 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 
      ApplicationSettings        _Settings;
      BoostPath                  _SettingsPath;
-     WindowEventProducerRefPtr  _MainWindow;
+     WindowEventProducerMTRecPtr  _MainWindow;
      ProjectRefPtr              _Project;
      ApplicationModeRefPtr      _BuilderMode;
      ApplicationModeRefPtr      _StartScreenMode;
@@ -235,6 +242,12 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
     /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
   private:
+    ThreadRefPtr _ApplicationThread;
+    ThreadRefPtr _RenderThread;
+    ThreadRefPtr _LoadingThread;
+
+    static void mainRenderLoop(void* args);
+    static void mainLoadingLoop(void* args);
 
     void operator =(const MainApplication &source);
     MainApplication(void);

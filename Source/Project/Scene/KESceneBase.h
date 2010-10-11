@@ -68,6 +68,7 @@
 #include "Project/SceneObject/KESceneObjectFields.h" // SceneObjects type
 #include "Project/KEProjectFields.h"    // ParentProject type
 #include <OpenSG/OSGFieldContainerFields.h> // ObjectStore type
+#include "Project/KEAssetStoreFields.h" // Assets type
 #include <OpenSG/OSGViewportFields.h>   // Viewports type
 #include <OpenSG/OSGUIDrawingSurfaceFields.h> // UIDrawingSurfaces type
 #include <OpenSG/OSGAnimationFields.h>  // Animations type
@@ -173,7 +174,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
         SceneObjectsFieldId = Inherited::NextFieldId,
         ParentProjectFieldId = SceneObjectsFieldId + 1,
         ObjectStoreFieldId = ParentProjectFieldId + 1,
-        ViewportsFieldId = ObjectStoreFieldId + 1,
+        AssetsFieldId = ObjectStoreFieldId + 1,
+        ViewportsFieldId = AssetsFieldId + 1,
         UIDrawingSurfacesFieldId = ViewportsFieldId + 1,
         AnimationsFieldId = UIDrawingSurfacesFieldId + 1,
         InitialAnimationsFieldId = AnimationsFieldId + 1,
@@ -191,6 +193,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
         (TypeTraits<BitVector>::One << ParentProjectFieldId);
     static const OSG::BitVector ObjectStoreFieldMask =
         (TypeTraits<BitVector>::One << ObjectStoreFieldId);
+    static const OSG::BitVector AssetsFieldMask =
+        (TypeTraits<BitVector>::One << AssetsFieldId);
     static const OSG::BitVector ViewportsFieldMask =
         (TypeTraits<BitVector>::One << ViewportsFieldId);
     static const OSG::BitVector UIDrawingSurfacesFieldMask =
@@ -215,6 +219,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     typedef MFUnrecChildSceneObjectPtr MFSceneObjectsType;
     typedef SFParentFieldContainerPtr SFParentProjectType;
     typedef MFUnrecFieldContainerPtr MFObjectStoreType;
+    typedef SFUnrecAssetStorePtr SFAssetsType;
     typedef MFUnrecViewportPtr MFViewportsType;
     typedef MFUnrecUIDrawingSurfacePtr MFUIDrawingSurfacesType;
     typedef MFUnrecAnimationPtr MFAnimationsType;
@@ -285,6 +290,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
                   MFUnrecChildSceneObjectPtr *editMFSceneObjects   (void);
             const MFUnrecFieldContainerPtr *getMFObjectStore    (void) const;
                   MFUnrecFieldContainerPtr *editMFObjectStore    (void);
+            const SFUnrecAssetStorePtr *getSFAssets         (void) const;
+                  SFUnrecAssetStorePtr *editSFAssets         (void);
             const MFUnrecViewportPtr  *getMFViewports      (void) const;
                   MFUnrecViewportPtr  *editMFViewports      (void);
             const MFUnrecUIDrawingSurfacePtr *getMFUIDrawingSurfaces(void) const;
@@ -308,6 +315,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
 
                   FieldContainer * getObjectStore    (const UInt32 index) const;
 
+                  AssetStore * getAssets         (void) const;
+
                   Viewport * getViewports      (const UInt32 index) const;
 
                   UIDrawingSurface * getUIDrawingSurfaces(const UInt32 index) const;
@@ -330,6 +339,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
+            void setAssets         (AssetStore * const value);
             void setLuaModule      (const BoostPath &value);
             void setPhysicsHandler (PhysicsHandler * const value);
             void setPhysicsWorld   (PhysicsWorld * const value);
@@ -791,6 +801,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     MFUnrecChildSceneObjectPtr _mfSceneObjects;
     SFParentFieldContainerPtr _sfParentProject;
     MFUnrecFieldContainerPtr _mfObjectStore;
+    SFUnrecAssetStorePtr _sfAssets;
     MFUnrecViewportPtr _mfViewports;
     MFUnrecUIDrawingSurfacePtr _mfUIDrawingSurfaces;
     MFUnrecAnimationPtr _mfAnimations;
@@ -853,6 +864,8 @@ class KE_KABALAENGINE_DLLMAPPING SceneBase : public AttachmentContainer
     EditFieldHandlePtr editHandleParentProject  (void);
     GetFieldHandlePtr  getHandleObjectStore     (void) const;
     EditFieldHandlePtr editHandleObjectStore    (void);
+    GetFieldHandlePtr  getHandleAssets          (void) const;
+    EditFieldHandlePtr editHandleAssets         (void);
     GetFieldHandlePtr  getHandleViewports       (void) const;
     EditFieldHandlePtr editHandleViewports      (void);
     GetFieldHandlePtr  getHandleUIDrawingSurfaces (void) const;

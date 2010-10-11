@@ -40,6 +40,7 @@
 #include "Application/Logging/KELogEventDetails.h"
 #include "KEVersion.h"
 #include <OpenSG/OSGPlatformUtils.h>
+#include <OpenSG/OSGWindowEventProducer.h> // MainWindowEventProducer type
 
 OSG_BEGIN_NAMESPACE
 
@@ -241,6 +242,42 @@ BoostPath MainApplication::getLoggingDir(void) const
 {
     return BoostPath(getUserAppDataDir()
                    / BoostPath("Logs"));
+}
+
+inline
+Thread*  MainApplication::getApplicationThread(void)
+{
+    return _ApplicationThread;
+}
+
+inline
+const Thread*  MainApplication::getApplicationThread(void) const
+{
+    return _ApplicationThread;
+}
+
+inline
+Thread*  MainApplication::getRenderThread(void)
+{
+    return _RenderThread;
+}
+
+inline
+const Thread*  MainApplication::getRenderThread(void) const
+{
+    return _RenderThread;
+}
+
+inline
+Thread*  MainApplication::getLoadingThread(void)
+{
+    return _LoadingThread;
+}
+
+inline
+const Thread*  MainApplication::getLoadingThread(void) const
+{
+    return _LoadingThread;
 }
 
 OSG_END_NAMESPACE

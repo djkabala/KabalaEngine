@@ -92,6 +92,22 @@ OSG::UInt16 SceneBase::getClassGroupId(void)
 
 /*------------------------------ get -----------------------------------*/
 
+
+//! Get the value of the Scene::_sfAssets field.
+inline
+AssetStore * SceneBase::getAssets(void) const
+{
+    return _sfAssets.getValue();
+}
+
+//! Set the value of the Scene::_sfAssets field.
+inline
+void SceneBase::setAssets(AssetStore * const value)
+{
+    editSField(AssetsFieldMask);
+
+    _sfAssets.setValue(value);
+}
 //! Get the value of the Scene::_sfLuaModule field.
 
 inline
@@ -249,6 +265,9 @@ void SceneBase::execSync (      SceneBase *pFrom,
                                 syncMode,
                                 uiSyncInfo,
                                 oOffsets);
+
+    if(FieldBits::NoField != (AssetsFieldMask & whichField))
+        _sfAssets.syncWith(pFrom->_sfAssets);
 
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))
         _mfViewports.syncWith(pFrom->_mfViewports,

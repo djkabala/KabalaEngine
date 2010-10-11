@@ -108,19 +108,27 @@ ProjectRefPtr Project::create(const BoostPath& ProjectFile)
     FCFileType::FCPtrStore NewContainers;
     NewContainers = FCFileHandler::the()->read(ProjectFile);
 
+    UInt32 IDMin(TypeTraits<UInt32>::getMax()), IDMax(0);
+    ProjectRecPtr TheProject(NULL);
+
     for(FCFileType::FCPtrStore::iterator Itor(NewContainers.begin()) ; Itor!= NewContainers.end() ; ++Itor)
     {
+        IDMin = osgMin((*Itor)->getId(), IDMin);
+        IDMax = osgMax((*Itor)->getId(), IDMax);
+
         if((*Itor)->getType() == Project::getClassType())
         {
             dynamic_pointer_cast<Project>(*Itor)->setFilePath(ProjectFile);
 
-            //Attach the FilePath to me
-            //FilePathAttachment::setFilePath(dynamic_pointer_cast<Project>(*Itor), ProjectFile);
-
-            return dynamic_pointer_cast<Project>(*Itor);
+            TheProject = dynamic_pointer_cast<Project>(*Itor);
         }
     }
-    return NULL;
+    if(TheProject != NULL)
+    {
+        TheProject->setFieldContainerIDRange(IDMin, IDMax);
+    }
+
+    return TheProject;
 }
 
 /***************************************************************************\

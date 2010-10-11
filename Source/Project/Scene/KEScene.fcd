@@ -52,6 +52,17 @@ The Scene.
 	>
 	</Field>
 	<Field
+		name="Assets"
+		type="AssetStore"
+		category="pointer"
+		cardinality="single"
+		visibility="external"
+		fieldHeader="Project/KEAssetStoreFields.h"
+		typeHeader="Project/KEAssetStore.h"
+		access="public"
+	>
+	</Field>
+	<Field
 		name="Viewports"
 		type="Viewport"
 		category="pointer"

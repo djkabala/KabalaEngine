@@ -58,6 +58,7 @@
 #include "Project/SceneObject/KESceneObject.h" // SceneObjects Class
 #include "Project/KEProjectFields.h"    // ParentProject Class
 #include <OpenSG/OSGFieldContainer.h>   // ObjectStore Class
+#include "Project/KEAssetStore.h"       // Assets Class
 #include <OpenSG/OSGViewport.h>         // Viewports Class
 #include <OpenSG/OSGUIDrawingSurface.h> // UIDrawingSurfaces Class
 #include <OpenSG/OSGAnimation.h>        // Animations Class
@@ -99,6 +100,10 @@ OSG_BEGIN_NAMESPACE
 */
 
 /*! \var FieldContainer * SceneBase::_mfObjectStore
+    
+*/
+
+/*! \var AssetStore *    SceneBase::_sfAssets
     
 */
 
@@ -211,6 +216,18 @@ void SceneBase::classDescInserter(TypeObject &oType)
         (Field::MFDefaultFlags | Field::FStdAccess),
         static_cast<FieldEditMethodSig>(&Scene::editHandleObjectStore),
         static_cast<FieldGetMethodSig >(&Scene::getHandleObjectStore));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecAssetStorePtr::Description(
+        SFUnrecAssetStorePtr::getClassType(),
+        "Assets",
+        "",
+        AssetsFieldId, AssetsFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&Scene::editHandleAssets),
+        static_cast<FieldGetMethodSig >(&Scene::getHandleAssets));
 
     oType.addInitialDesc(pDesc);
 
@@ -385,6 +402,17 @@ SceneBase::TypeObject SceneBase::_type(
     "\t\tcategory=\"pointer\"\n"
     "\t\tcardinality=\"multi\"\n"
     "\t\tvisibility=\"external\"\n"
+    "\t\taccess=\"public\"\n"
+    "\t>\n"
+    "\t</Field>\n"
+    "\t<Field\n"
+    "\t\tname=\"Assets\"\n"
+    "\t\ttype=\"AssetStore\"\n"
+    "\t\tcategory=\"pointer\"\n"
+    "\t\tcardinality=\"single\"\n"
+    "\t\tvisibility=\"external\"\n"
+    "\t\tfieldHeader=\"Project/KEAssetStoreFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEAssetStore.h\"\n"
     "\t\taccess=\"public\"\n"
     "\t>\n"
     "\t</Field>\n"
@@ -886,6 +914,19 @@ MFUnrecFieldContainerPtr *SceneBase::editMFObjectStore    (void)
     editMField(ObjectStoreFieldMask, _mfObjectStore);
 
     return &_mfObjectStore;
+}
+
+//! Get the Scene::_sfAssets field.
+const SFUnrecAssetStorePtr *SceneBase::getSFAssets(void) const
+{
+    return &_sfAssets;
+}
+
+SFUnrecAssetStorePtr *SceneBase::editSFAssets         (void)
+{
+    editSField(AssetsFieldMask);
+
+    return &_sfAssets;
 }
 
 //! Get the Scene::_mfViewports field.
@@ -1398,6 +1439,10 @@ UInt32 SceneBase::getBinSize(ConstFieldMaskArg whichField)
     {
         returnValue += _mfObjectStore.getBinSize();
     }
+    if(FieldBits::NoField != (AssetsFieldMask & whichField))
+    {
+        returnValue += _sfAssets.getBinSize();
+    }
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))
     {
         returnValue += _mfViewports.getBinSize();
@@ -1455,6 +1500,10 @@ void SceneBase::copyToBin(BinaryDataHandler &pMem,
     {
         _mfObjectStore.copyToBin(pMem);
     }
+    if(FieldBits::NoField != (AssetsFieldMask & whichField))
+    {
+        _sfAssets.copyToBin(pMem);
+    }
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))
     {
         _mfViewports.copyToBin(pMem);
@@ -1509,6 +1558,10 @@ void SceneBase::copyFromBin(BinaryDataHandler &pMem,
     if(FieldBits::NoField != (ObjectStoreFieldMask & whichField))
     {
         _mfObjectStore.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (AssetsFieldMask & whichField))
+    {
+        _sfAssets.copyFromBin(pMem);
     }
     if(FieldBits::NoField != (ViewportsFieldMask & whichField))
     {
@@ -2384,6 +2437,7 @@ SceneBase::SceneBase(void) :
                           SceneObject::ParentSceneFieldId),
     _sfParentProject          (NULL),
     _mfObjectStore            (),
+    _sfAssets                 (NULL),
     _mfViewports              (),
     _mfUIDrawingSurfaces      (),
     _mfAnimations             (),
@@ -2403,6 +2457,7 @@ SceneBase::SceneBase(const SceneBase &source) :
                           SceneObject::ParentSceneFieldId),
     _sfParentProject          (NULL),
     _mfObjectStore            (),
+    _sfAssets                 (NULL),
     _mfViewports              (),
     _mfUIDrawingSurfaces      (),
     _mfAnimations             (),
@@ -2563,6 +2618,8 @@ void SceneBase::onCreate(const Scene *source)
             ++ObjectStoreIt;
         }
 
+        pThis->setAssets(source->getAssets());
+
         MFUnrecViewportPtr::const_iterator ViewportsIt  =
             source->_mfViewports.begin();
         MFUnrecViewportPtr::const_iterator ViewportsEnd =
@@ -2713,6 +2770,34 @@ EditFieldHandlePtr SceneBase::editHandleObjectStore    (void)
                     static_cast<Scene *>(this)));
 
     editMField(ObjectStoreFieldMask, _mfObjectStore);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr SceneBase::getHandleAssets          (void) const
+{
+    SFUnrecAssetStorePtr::GetHandlePtr returnValue(
+        new  SFUnrecAssetStorePtr::GetHandle(
+             &_sfAssets,
+             this->getType().getFieldDesc(AssetsFieldId),
+             const_cast<SceneBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr SceneBase::editHandleAssets         (void)
+{
+    SFUnrecAssetStorePtr::EditHandlePtr returnValue(
+        new  SFUnrecAssetStorePtr::EditHandle(
+             &_sfAssets,
+             this->getType().getFieldDesc(AssetsFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&Scene::setAssets,
+                    static_cast<Scene *>(this), _1));
+
+    editSField(AssetsFieldMask);
 
     return returnValue;
 }
@@ -3335,6 +3420,8 @@ void SceneBase::resolveLinks(void)
     static_cast<Scene *>(this)->clearSceneObjects();
 
     static_cast<Scene *>(this)->clearObjectStore();
+
+    static_cast<Scene *>(this)->setAssets(NULL);
 
     static_cast<Scene *>(this)->clearViewports();
 

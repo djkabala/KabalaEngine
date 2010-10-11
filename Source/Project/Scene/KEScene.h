@@ -296,6 +296,7 @@ OSG_END_NAMESPACE
 #include <OpenSG/OSGPhysicsHandler.h>
 #include "Project/KEProject.h"
 #include "Project/SceneObject/KESceneObject.h"
+#include "Project/KEAssetStore.h"
 
 #include "KESceneBase.inl"
 #include "KEScene.inl"

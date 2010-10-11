@@ -36,122 +36,78 @@
 //---------------------------------------------------------------------------
 //  Includes
 //---------------------------------------------------------------------------
-#include "Application/KEMainApplication.h"
-#include <OpenSG/OSGWindowEventProducer.h>
+
+#include <cstdlib>
+#include <cstdio>
+
+#define KE_COMPILEKABALAENGINELIB
+
+#include <OpenSG/OSGConfig.h>
+
+#include "KEAssetStore.h"
 
 OSG_BEGIN_NAMESPACE
 
-inline
-void Project::setActiveSceneOnEvent(Scene* const TheScene,
-                                    ReflexiveContainer* EventProducer,
-                                    UInt32 EventId)
-{
-    _TriggeringSceneChangeEventConnection.disconnect();
-    _TriggeringSceneChangeEventConnection = EventProducer->connectEvent(EventId, boost::bind(&Project::handleTriggeringSceneChangeEvent, this, _1, TheScene));
-}
+// Documentation for this class is emitted in the
+// OSGAssetStoreBase.cpp file.
+// To modify it, please change the .fcd file (OSGAssetStore.fcd) and
+// regenerate the base file.
 
-inline
-void Project::addViewport(const ViewportRefPtr& port)
-{
-    MainApplication::the()->getMainWindow()->addPort(port);
-}
+/***************************************************************************\
+ *                           Class variables                               *
+\***************************************************************************/
 
-inline
-void Project::insertViewport(const ViewportRefPtr& port, UInt32 index)
-{
-    MainApplication::the()->getMainWindow()->insertPort(index, port);
-}
+/***************************************************************************\
+ *                           Class methods                                 *
+\***************************************************************************/
 
-inline
-void Project::removeViewport(const ViewportRefPtr& port)
+void AssetStore::initMethod(InitPhase ePhase)
 {
-    MainApplication::the()->getMainWindow()->subPortByObj(port);
-}
+    Inherited::initMethod(ePhase);
 
-inline
-void Project::clearViewports(void)
-{
-    MainApplication::the()->getMainWindow()->clearPorts();
-}
-
-inline
-UInt32 Project::numViewports(void) const
-{
-    return MainApplication::the()->getMainWindow()->getMFPort()->size();
-}
-
-inline
-Viewport* Project::getViewport(UInt32 index) const
-{
-    return MainApplication::the()->getMainWindow()->getPort(index);
+    if(ePhase == TypeObject::SystemPost)
+    {
+    }
 }
 
 
-inline
-void Project::blockInput(bool block)
+/***************************************************************************\
+ *                           Instance methods                              *
+\***************************************************************************/
+
+/*-------------------------------------------------------------------------*\
+ -  private                                                                 -
+\*-------------------------------------------------------------------------*/
+
+/*----------------------- constructors & destructors ----------------------*/
+
+AssetStore::AssetStore(void) :
+    Inherited()
 {
-    _BlockInput = block;
 }
 
-inline
-bool Project::isInputBlocked(void) const
+AssetStore::AssetStore(const AssetStore &source) :
+    Inherited(source)
 {
-    return _BlockInput;
 }
 
-inline
-Scene* Project::getActiveScene(void) const
+AssetStore::~AssetStore(void)
 {
-	return getInternalActiveScene();
 }
 
-inline
-Scene* Project::getLastActiveScene(void) const
+/*----------------------------- class specific ----------------------------*/
+
+void AssetStore::changed(ConstFieldMaskArg whichField, 
+                            UInt32            origin,
+                            BitVector         details)
 {
-	return _LastActiveScene;
+    Inherited::changed(whichField, origin, details);
 }
 
-inline
-bool Project::getPauseActiveUpdates(void) const
+void AssetStore::dump(      UInt32    ,
+                         const BitVector ) const
 {
-    return _PauseActiveUpdates;
-}
-
-inline
-void Project::pauseActiveUpdates(void)
-{
-    _PauseActiveUpdates = true;
-}
-
-inline
-void Project::unpauseActiveUpdates(void)
-{
-    _PauseActiveUpdates = false;
-}
-
-inline
-void Project::togglePauseActiveUpdates(void)
-{
-    _PauseActiveUpdates = !_PauseActiveUpdates;
-}
-
-inline
-void Project::resetScene(Scene* const TheScene)
-{
-    TheScene->reset();
-}
-
-inline
-bool Project::isRunning(void) const
-{
-    return _Running;
-}
-
-inline
-void Project::setFieldContainerIDRange(UInt32 RangeMin, UInt32 RangeMax)
-{
-    _IDRangeMin = RangeMin;
-    _IDRangeMax = RangeMax;
+    SLOG << "Dump AssetStore NI" << std::endl;
 }
 
 OSG_END_NAMESPACE

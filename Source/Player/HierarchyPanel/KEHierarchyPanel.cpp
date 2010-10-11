@@ -70,6 +70,9 @@
 #include <OpenSG/OSGMenuButton.h>
 #include <OpenSG/OSGBorderLayout.h>
 #include <OpenSG/OSGCardLayout.h>
+
+#include <OpenSG/OSGPhysics.h>
+
 #include "Player/LuaGraphTreeModel/KELuaGraphTreeModel.h"
 
 #include "Player/Commands/KEShowHideCommand.h"
@@ -179,6 +182,7 @@ void HierarchyPanel::createPopUpMenu(void)
 	_PasteItem = MenuItem::create();
 	_PasteInstanceItem = MenuItem::create();
 	_FocusCamera = MenuItem::create();
+    _OpenEditor = MenuItem::create();
 
 	_GraphOpMenu = Menu::create();
 	_MaskGraphOpItem = MenuItem::create();
@@ -189,48 +193,53 @@ void HierarchyPanel::createPopUpMenu(void)
 	_XformPushGraphOpItem = MenuItem::create();
 	_MaterialGroupGraphOpItem = MenuItem::create();
 	_SharePtrGraphOpItem = MenuItem::create(); 
-	_AttachColGeomOpItem = MenuItem::create(); 
+	_AttachColGeomOpItem = MenuItem::create();
+
+    //Physics Menus
+    _PhysicsMenu = Menu::create();
+	_PhysicsBodyItem = MenuItem::create();
+
+    //Geoms
+    _PhysicsGeomMenu = Menu::create();
+	_PhysicsSphereGeomItem = MenuItem::create();
+	_PhysicsBoxGeomItem = MenuItem::create();
+	_PhysicsCapsuleGeomItem = MenuItem::create();
+	_PhysicsPlaneGeomItem = MenuItem::create();
+	_PhysicsRayGeomItem = MenuItem::create();
+	_PhysicsTriMeshGeomItem = MenuItem::create();
+
+    //Spaces
+	_PhysicsSpaceItem = MenuItem::create();
+
+    //Joints
+    _PhysicsJointMenu = Menu::create();
+	_PhysicsAMotorJointItem = MenuItem::create();
+	_PhysicsBallJointItem = MenuItem::create();
+	_PhysicsHinge2JointItem = MenuItem::create();
+	_PhysicsHingeJointItem = MenuItem::create();
+	_PhysicsLMotorJointItem = MenuItem::create();
+	_PhysicsPistonJointItem = MenuItem::create();
+	_PhysicsPlane2DJointItem = MenuItem::create();
+	_PhysicsPRJointItem = MenuItem::create();
+	_PhysicsPUJointItem = MenuItem::create();
+	_PhysicsSliderJointItem = MenuItem::create();
+	_PhysicsUniversalJointItem = MenuItem::create();
 
 	// _HierarchyPanelPopupMenu up menu items
 
     _ShowHideItem->setText("Hide");
-
     _ShowRecursiveItem->setText("Show all below");
-
     _DeleteItem->setText("Delete");
-
     _ImportItem->setText("Import");
-
     _ExportItem->setText("Export");
-
     _CutItem->setText("Cut");
-
     _CopyItem->setText("Copy");
-
     _PasteItem->setText("Paste");
-
     _PasteInstanceItem->setText("Paste Instance");
-
     _FocusCamera->setText("Focus Camera All");
+    _OpenEditor->setText("Open Editor");
 
-	_HierarchyPanelPopupMenu = PopupMenu::create();
-
-    _HierarchyPanelPopupMenu->addItem(_ShowHideItem);
-    _HierarchyPanelPopupMenu->addItem(_ShowRecursiveItem);
-    _HierarchyPanelPopupMenu->addSeparator();
-    _HierarchyPanelPopupMenu->addItem(_CutItem);	
-    _HierarchyPanelPopupMenu->addItem(_CopyItem);	
-    _HierarchyPanelPopupMenu->addItem(_PasteItem);	
-    _HierarchyPanelPopupMenu->addItem(_PasteInstanceItem);	
-    _HierarchyPanelPopupMenu->addItem(_DeleteItem);	
-    _HierarchyPanelPopupMenu->addSeparator();
-    _HierarchyPanelPopupMenu->addItem(_ImportItem);	
-    _HierarchyPanelPopupMenu->addItem(_ExportItem);	
-    _HierarchyPanelPopupMenu->addSeparator();
-    _HierarchyPanelPopupMenu->addItem(_FocusCamera);	
-	_SceneGraphPopupMenuWillBecomeVisibleConnection = _HierarchyPanelPopupMenu->connectPopupMenuWillBecomeVisible(boost::bind(&HierarchyPanel::handleSceneGraphPopupMenuWillBecomeVisible, this, _1));
-
-	setPopupMenu(_HierarchyPanelPopupMenu);
+    //Graph Op Menu Items Text
 	_GraphOpMenu->setText("Graph Ops");
 	_MaskGraphOpItem->setText("Traversal Mask Graph Op");
 	_LodGraphOpItem->setText("LOD Graph Op");
@@ -242,6 +251,33 @@ void HierarchyPanel::createPopUpMenu(void)
 	_SharePtrGraphOpItem->setText("Share Ptr Graph Op");
 	_AttachColGeomOpItem->setText("Attach Col Geom Graph Op");
 
+    //Physics Menu Items Text
+	_PhysicsMenu->setText("Physics");
+	_PhysicsBodyItem->setText("Add Dynamics Body");
+	_PhysicsGeomMenu->setText("Collision Geometry");
+	_PhysicsJointMenu->setText("Joints");
+
+    //Physics Geom Menu Items Text
+	_PhysicsSphereGeomItem->setText("Sphere");
+	_PhysicsBoxGeomItem->setText("Box");
+	_PhysicsCapsuleGeomItem->setText("Capsule");
+	_PhysicsPlaneGeomItem->setText("Plane");
+	_PhysicsRayGeomItem->setText("Ray");
+	_PhysicsTriMeshGeomItem->setText("Triangle Mesh");
+	_PhysicsSpaceItem->setText("Space");
+
+    //Physics Joint Menu Items Text
+	_PhysicsAMotorJointItem->setText("Angular Motor");
+	_PhysicsBallJointItem->setText("Ball");
+	_PhysicsHinge2JointItem->setText("Two Hinges");
+	_PhysicsHingeJointItem->setText("Hinge");
+	_PhysicsLMotorJointItem->setText("Linear Motor");
+	_PhysicsPistonJointItem->setText("Piston");
+	_PhysicsPlane2DJointItem->setText("2D Plane");
+	_PhysicsPRJointItem->setText("Prismatic and Rotoide");
+	_PhysicsPUJointItem->setText("Prismatic and Universal ");
+	_PhysicsSliderJointItem->setText("Slider");
+	_PhysicsUniversalJointItem->setText("Universal");
 
 	_ShowHideItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleShowHideToggleSelectedNode, this, _1));
 	_ShowRecursiveItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleShowHideSelectedNodeRecursize, this, _1));
@@ -253,7 +289,9 @@ void HierarchyPanel::createPopUpMenu(void)
 	_PasteItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePasteOntoSelectedNode, this, _1));
 	_PasteInstanceItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePasteInstOntoSelectedNode, this, _1));
 	_FocusCamera->connectActionPerformed(boost::bind(&HierarchyPanel::handleFocusCameraOnSelectedNode, this, _1));
+    _OpenEditor->connectActionPerformed(boost::bind(&HierarchyPanel::handleOpenEditorMenuItem, this, _1));
 
+    //Graph Op MenuItem Connections
 	_MaskGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunTravMaskGraphOp, this, _1));
 	_LodGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunLODGraphOp, this, _1));
 	_GeoMergeGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunGeoMergeGraphOp, this, _1));
@@ -263,6 +301,31 @@ void HierarchyPanel::createPopUpMenu(void)
 	_MaterialGroupGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunMaterialGroupGraphOp, this, _1));
 	_SharePtrGraphOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunSharePtrGraphOp, this, _1));
 	_AttachColGeomOpItem->connectActionPerformed(boost::bind(&HierarchyPanel::handleRunAttachColGeomGraphOp, this, _1));
+
+    //Physics MenuItem connections
+    _PhysicsBodyItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsBodyMenuItem, this, _1));
+
+    //Physics Geom MenuItem connections
+    _PhysicsSphereGeomItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsSphereGeomMenuItem, this, _1));
+    _PhysicsBoxGeomItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsBoxGeomMenuItem, this, _1));
+    _PhysicsCapsuleGeomItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsCapsuleGeomMenuItem, this, _1));
+    _PhysicsPlaneGeomItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsPlaneGeomMenuItem, this, _1));
+    _PhysicsRayGeomItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsRayGeomMenuItem, this, _1));
+    _PhysicsTriMeshGeomItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsTriMeshGeomMenuItem, this, _1));
+    _PhysicsSpaceItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsSpaceMenuItem, this, _1));
+
+    //Physics Joint MenuItem connections
+    _PhysicsAMotorJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsAMotorJointMenuItem, this, _1));
+    _PhysicsBallJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsBallJointMenuItem, this, _1));
+    _PhysicsHinge2JointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsHinge2JointMenuItem, this, _1));
+    _PhysicsHingeJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsHingeJointMenuItem, this, _1));
+    _PhysicsLMotorJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsLMotorJointMenuItem, this, _1));
+    _PhysicsPistonJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsPistonJointMenuItem, this, _1));
+    _PhysicsPlane2DJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsPlane2DJointMenuItem, this, _1));
+    _PhysicsPRJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsPRJointMenuItem, this, _1));
+    _PhysicsPUJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsPUJointMenuItem, this, _1));
+    _PhysicsSliderJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsSliderJointMenuItem, this, _1));
+    _PhysicsUniversalJointItem->connectActionPerformed(boost::bind(&HierarchyPanel::handlePhysicsUniversalJointMenuItem, this, _1));
 
 	_HierarchyPanelPopupMenu = PopupMenu::create();
 
@@ -275,13 +338,18 @@ void HierarchyPanel::createPopUpMenu(void)
     _HierarchyPanelPopupMenu->addItem(_PasteInstanceItem);	
 	_HierarchyPanelPopupMenu->addItem(_DeleteItem);	
 	_HierarchyPanelPopupMenu->addSeparator();
-	_HierarchyPanelPopupMenu->addItem(_GraphOpMenu);	
+	_HierarchyPanelPopupMenu->addItem(_GraphOpMenu);
+	_HierarchyPanelPopupMenu->addSeparator();
+	_HierarchyPanelPopupMenu->addItem(_PhysicsMenu);	
     _HierarchyPanelPopupMenu->addSeparator();
     _HierarchyPanelPopupMenu->addItem(_ImportItem);	
     _HierarchyPanelPopupMenu->addItem(_ExportItem);	
     _HierarchyPanelPopupMenu->addSeparator();
     _HierarchyPanelPopupMenu->addItem(_FocusCamera);
+    _HierarchyPanelPopupMenu->addSeparator();
+    _HierarchyPanelPopupMenu->addItem(_OpenEditor);	
 
+    //Graph Op Menu
 	_GraphOpMenu->addItem(_MaskGraphOpItem);
 	_GraphOpMenu->addItem(_LodGraphOpItem);
 	_GraphOpMenu->addItem(_GeoMergeGraphOpItem);
@@ -291,14 +359,43 @@ void HierarchyPanel::createPopUpMenu(void)
 	_GraphOpMenu->addItem(_MaterialGroupGraphOpItem);
 	_GraphOpMenu->addItem(_SharePtrGraphOpItem);
 	_GraphOpMenu->addItem(_AttachColGeomOpItem);
+    
+    //Physics Menu
+	_PhysicsMenu->addItem(_PhysicsBodyItem);
+	_PhysicsMenu->addItem(_PhysicsGeomMenu);
+	_PhysicsMenu->addItem(_PhysicsJointMenu);
+    
+    //Physics Geom Menu
+	_PhysicsGeomMenu->addItem(_PhysicsSphereGeomItem);
+	_PhysicsGeomMenu->addItem(_PhysicsBoxGeomItem);
+	_PhysicsGeomMenu->addItem(_PhysicsCapsuleGeomItem);
+	_PhysicsGeomMenu->addItem(_PhysicsPlaneGeomItem);
+	_PhysicsGeomMenu->addItem(_PhysicsRayGeomItem);
+	_PhysicsGeomMenu->addItem(_PhysicsTriMeshGeomItem);
+	_PhysicsGeomMenu->addItem(_PhysicsSpaceItem);
+    
+    //Physics Joint Menu
+	_PhysicsJointMenu->addItem(_PhysicsBallJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsHingeJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsPistonJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsSliderJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsUniversalJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsLMotorJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsAMotorJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsHinge2JointItem);
+	_PhysicsJointMenu->addItem(_PhysicsPRJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsPUJointItem);
+	_PhysicsJointMenu->addItem(_PhysicsPlane2DJointItem);
 
-	this->setPopupMenu(_HierarchyPanelPopupMenu);
+	_SceneGraphPopupMenuWillBecomeVisibleConnection = _HierarchyPanelPopupMenu->connectPopupMenuWillBecomeVisible(boost::bind(&HierarchyPanel::handleSceneGraphPopupMenuWillBecomeVisible, this, _1));
+
+	setPopupMenu(_HierarchyPanelPopupMenu);
 
 }
 
 void HierarchyPanel::setView(UInt32 Index)
 {
-        _CardLayout->setCard(Index);
+    _CardLayout->setCard(Index);
 }
 
 void HierarchyPanel::handleShowHideToggleSelectedNode(EventDetails* const details)
@@ -538,6 +635,91 @@ void HierarchyPanel::handleRunAttachColGeomGraphOp(EventDetails* const details)
 	_ApplicationPlayer->getCommandManager()->executeCommand(TheGraphOpCommand);
 }
 
+void HierarchyPanel::handleOpenEditorMenuItem(EventDetails* const details)
+{
+    if(_SelectedNode != NULL)
+    {
+        _ApplicationPlayer->openEditor(_SelectedNode);
+    }
+}
+
+//Physics Menu Item Handlers
+void HierarchyPanel::handlePhysicsBodyMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsSphereGeomMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsBoxGeomMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsCapsuleGeomMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsPlaneGeomMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsRayGeomMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsTriMeshGeomMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsSpaceMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsAMotorJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsBallJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsHinge2JointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsHingeJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsLMotorJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsPistonJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsPlane2DJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsPRJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsPUJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsSliderJointMenuItem(EventDetails* const details)
+{
+}
+
+void HierarchyPanel::handlePhysicsUniversalJointMenuItem(EventDetails* const details)
+{
+}
+
 void HierarchyPanel::createLuaGraphTree()
 {
 	_TheLuaGraphTree = Tree::create();
@@ -640,38 +822,124 @@ void HierarchyPanel::updatePopupMenu(void)
 {
 	changeShowHideMenuItem();
     //Update Show/Hide
-		_ShowHideItem->setEnabled(_SelectedNode != NULL);
+    _ShowHideItem->setEnabled(_SelectedNode != NULL);
 
     //Update Show Recursive
-		_ShowRecursiveItem->setEnabled(_SelectedNode != NULL);
+    _ShowRecursiveItem->setEnabled(_SelectedNode != NULL);
 
-	//Update Paste
-		_PasteItem->setEnabled(_ApplicationPlayer->getClonedNodeInCopyClipboard() != NULL);
+    //Update Paste
+    _PasteItem->setEnabled(_ApplicationPlayer->getClonedNodeInCopyClipboard() != NULL);
 
-	//Update Paste Instance
-		_PasteInstanceItem->setEnabled(_ApplicationPlayer->getClonedNodeInCopyClipboard() != NULL);
+    //Update Paste Instance
+    _PasteInstanceItem->setEnabled(_ApplicationPlayer->getClonedNodeInCopyClipboard() != NULL);
 
-	//Update Copy
-		_CopyItem->setEnabled(_SelectedNode != NULL);
+    //Update Copy
+    _CopyItem->setEnabled(_SelectedNode != NULL);
 
-	//Update Cut
-		_CutItem->setEnabled(_SelectedNode != NULL);
+    //Update Cut
+    _CutItem->setEnabled(_SelectedNode != NULL);
 
-	//Update Delete
-		_DeleteItem->setEnabled(_SelectedNode != NULL);
+    //Update Delete
+    _DeleteItem->setEnabled(_SelectedNode != NULL);
 
     //Update Camera Focusing
-        if(_SelectedNode != NULL)
+    if(_SelectedNode != NULL)
+    {
+        _FocusCamera->setText("Focus Camera Here");
+    }
+    else
+    {
+        _FocusCamera->setText("Focus Camera All");
+    }
+    _GraphOpMenu->setEnabled(_SelectedNode != NULL);
+
+
+    updatePhysicsMenuItems();
+}
+
+void HierarchyPanel::updatePhysicsMenuItems(void)
+{
+    if(_SelectedNode == NULL)
+    {
+        if(_PhysicsMenu->getEnabled()) { _PhysicsMenu->setEnabled(false); }
+    }
+    else
+    {
+        if(!_PhysicsMenu->getEnabled()) { _PhysicsMenu->setEnabled(true); }
+        //Body
+        //Determine if this node can have a Physics body attached to it
+        if(_SelectedNode->getCore()->getType() == Transform::getClassType())
         {
-            _FocusCamera->setText("Focus Camera Here");
+            if(!_PhysicsBodyItem->getEnabled()) { _PhysicsBodyItem->setEnabled(true); }
+
+            //Determine if this node already has a Physics Body attached
+            PhysicsBody* Body = dynamic_cast<PhysicsBody*>(_SelectedNode->findAttachment(PhysicsBody::getClassType()));
+            if(Body == NULL)
+            {
+                _PhysicsBodyItem->setText("Add Dynamics Body");
+            }
+            else
+            {
+                _PhysicsBodyItem->setText("Remove Dynamics Body");
+            }
         }
         else
         {
-            _FocusCamera->setText("Focus Camera All");
+            if(_PhysicsBodyItem->getEnabled()) { _PhysicsBodyItem->setEnabled(false); }
         }
-		_GraphOpMenu->setEnabled(_SelectedNode != NULL);
 
+        //Geoms
+        if(!_PhysicsBodyItem->getEnabled()) { _PhysicsBodyItem->setEnabled(true); }
 
+        //Determine if this node already has Physics Geoms attached
+        PhysicsGeom* Geom = dynamic_cast<PhysicsGeom*>(_SelectedNode->findAttachment(PhysicsGeom::getClassType()));
+        if(Geom == NULL)
+        {
+            _PhysicsSphereGeomItem->setText("Add Sphere");
+            _PhysicsBoxGeomItem->setText("Add Box");
+            _PhysicsCapsuleGeomItem->setText("Add Capsule");
+            _PhysicsPlaneGeomItem->setText("Add Plane");
+            _PhysicsRayGeomItem->setText("Add Ray");
+            _PhysicsTriMeshGeomItem->setText("Add Triangle Mesh");
+            _PhysicsSpaceItem->setText("Add Space");
+            
+            if(!_PhysicsSphereGeomItem->getEnabled()) { _PhysicsSphereGeomItem->setEnabled(true); }
+            if(!_PhysicsBoxGeomItem->getEnabled()) { _PhysicsBoxGeomItem->setEnabled(true); }
+            if(!_PhysicsCapsuleGeomItem->getEnabled()) { _PhysicsCapsuleGeomItem->setEnabled(true); }
+            if(!_PhysicsPlaneGeomItem->getEnabled()) { _PhysicsPlaneGeomItem->setEnabled(true); }
+            if(!_PhysicsRayGeomItem->getEnabled()) { _PhysicsRayGeomItem->setEnabled(true); }
+            if(!_PhysicsTriMeshGeomItem->getEnabled()) { _PhysicsTriMeshGeomItem->setEnabled(true); }
+            if(!_PhysicsSpaceItem->getEnabled()) { _PhysicsSpaceItem->setEnabled(true); }
+        }
+        else
+        {
+            _PhysicsSphereGeomItem->setText("Remove Sphere");
+            _PhysicsBoxGeomItem->setText("Remove Box");
+            _PhysicsCapsuleGeomItem->setText("Remove Capsule");
+            _PhysicsPlaneGeomItem->setText("Remove Plane");
+            _PhysicsRayGeomItem->setText("Remove Ray");
+            _PhysicsTriMeshGeomItem->setText("Remove Triangle Mesh");
+            _PhysicsSpaceItem->setText("Remove Space");
+
+            if(_PhysicsSphereGeomItem->getEnabled()) { _PhysicsSphereGeomItem->setEnabled(false); }
+            if(_PhysicsBoxGeomItem->getEnabled()) { _PhysicsBoxGeomItem->setEnabled(false); }
+            if(_PhysicsCapsuleGeomItem->getEnabled()) { _PhysicsCapsuleGeomItem->setEnabled(false); }
+            if(_PhysicsPlaneGeomItem->getEnabled()) { _PhysicsPlaneGeomItem->setEnabled(false); }
+            if(_PhysicsRayGeomItem->getEnabled()) { _PhysicsRayGeomItem->setEnabled(false); }
+            if(_PhysicsTriMeshGeomItem->getEnabled()) { _PhysicsTriMeshGeomItem->setEnabled(false); }
+            if(_PhysicsSpaceItem->getEnabled()) { _PhysicsSpaceItem->setEnabled(false); }
+            
+            if(Geom->getType() == PhysicsSphereGeom::getClassType()) { _PhysicsSphereGeomItem->setEnabled(true); }
+            if(Geom->getType() == PhysicsBoxGeom::getClassType()) { _PhysicsBoxGeomItem->setEnabled(true); }
+            if(Geom->getType() == PhysicsCapsuleGeom::getClassType()) { _PhysicsCapsuleGeomItem->setEnabled(true); }
+            if(Geom->getType() == PhysicsPlaneGeom::getClassType()) { _PhysicsPlaneGeomItem->setEnabled(true); }
+            if(Geom->getType() == PhysicsRayGeom::getClassType()) { _PhysicsRayGeomItem->setEnabled(true); }
+            if(Geom->getType() == PhysicsTriMeshGeom::getClassType()) { _PhysicsTriMeshGeomItem->setEnabled(true); }
+            if(Geom->getType() == PhysicsSpace::getClassType()) { _PhysicsSpaceItem->setEnabled(true); }
+        }
+
+        //Joints
+    }
 }
 
 void HierarchyPanel::changeShowHideMenuItem(void)
@@ -681,11 +949,11 @@ void HierarchyPanel::changeShowHideMenuItem(void)
 		UInt32 maskval = _SelectedNode->getTravMask();
 		if(!maskval && (_ShowHideItem->getText()== "Hide"))
         {
-                _ShowHideItem->setText("Show");
+            _ShowHideItem->setText("Show");
         }
 		else if(maskval && (_ShowHideItem->getText()== "Show"))
         {
-                _ShowHideItem->setText("Hide");
+            _ShowHideItem->setText("Hide");
         }
 	}
 }

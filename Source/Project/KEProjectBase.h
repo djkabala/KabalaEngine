@@ -68,6 +68,7 @@
 #include <OpenSG/OSGBaseFields.h>       // Version type
 #include <OpenSG/OSGBoostPathFields.h>  // FilePath type
 #include "Project/Scene/KESceneFields.h" // Scenes type
+#include "Project/KEAssetStoreFields.h" // Assets type
 
 #include "KEProjectFields.h"
 
@@ -163,18 +164,22 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     enum
     {
         VersionFieldId = Inherited::NextFieldId,
-        MainWindowTitleFieldId = VersionFieldId + 1,
+        RevisionKeyFieldId = VersionFieldId + 1,
+        MainWindowTitleFieldId = RevisionKeyFieldId + 1,
         FilePathFieldId = MainWindowTitleFieldId + 1,
         ScenesFieldId = FilePathFieldId + 1,
         InitialSceneFieldId = ScenesFieldId + 1,
         InternalActiveSceneFieldId = InitialSceneFieldId + 1,
         LuaModuleFieldId = InternalActiveSceneFieldId + 1,
         LuaDirectoriesFieldId = LuaModuleFieldId + 1,
-        NextFieldId = LuaDirectoriesFieldId + 1
+        AssetsFieldId = LuaDirectoriesFieldId + 1,
+        NextFieldId = AssetsFieldId + 1
     };
 
     static const OSG::BitVector VersionFieldMask =
         (TypeTraits<BitVector>::One << VersionFieldId);
+    static const OSG::BitVector RevisionKeyFieldMask =
+        (TypeTraits<BitVector>::One << RevisionKeyFieldId);
     static const OSG::BitVector MainWindowTitleFieldMask =
         (TypeTraits<BitVector>::One << MainWindowTitleFieldId);
     static const OSG::BitVector FilePathFieldMask =
@@ -189,10 +194,13 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
         (TypeTraits<BitVector>::One << LuaModuleFieldId);
     static const OSG::BitVector LuaDirectoriesFieldMask =
         (TypeTraits<BitVector>::One << LuaDirectoriesFieldId);
+    static const OSG::BitVector AssetsFieldMask =
+        (TypeTraits<BitVector>::One << AssetsFieldId);
     static const OSG::BitVector NextFieldMask =
         (TypeTraits<BitVector>::One << NextFieldId);
         
     typedef SFString          SFVersionType;
+    typedef SFString          SFRevisionKeyType;
     typedef SFString          SFMainWindowTitleType;
     typedef SFBoostPath       SFFilePathType;
     typedef MFUnrecChildScenePtr MFScenesType;
@@ -200,6 +208,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     typedef SFUnrecScenePtr   SFInternalActiveSceneType;
     typedef SFBoostPath       SFLuaModuleType;
     typedef MFBoostPath       MFLuaDirectoriesType;
+    typedef SFUnrecAssetStorePtr SFAssetsType;
 
     enum
     {
@@ -261,6 +270,9 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
                   SFString            *editSFVersion        (void);
             const SFString            *getSFVersion         (void) const;
 
+                  SFString            *editSFRevisionKey    (void);
+            const SFString            *getSFRevisionKey     (void) const;
+
                   SFString            *editSFMainWindowTitle(void);
             const SFString            *getSFMainWindowTitle (void) const;
 
@@ -275,10 +287,15 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
 
                   MFBoostPath         *editMFLuaDirectories (void);
             const MFBoostPath         *getMFLuaDirectories  (void) const;
+            const SFUnrecAssetStorePtr *getSFAssets         (void) const;
+                  SFUnrecAssetStorePtr *editSFAssets         (void);
 
 
                   std::string         &editVersion        (void);
             const std::string         &getVersion         (void) const;
+
+                  std::string         &editRevisionKey    (void);
+            const std::string         &getRevisionKey     (void) const;
 
                   std::string         &editMainWindowTitle(void);
             const std::string         &getMainWindowTitle (void) const;
@@ -296,16 +313,20 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
                   BoostPath           &editLuaDirectories (const UInt32 index);
             const BoostPath           &getLuaDirectories  (const UInt32 index) const;
 
+                  AssetStore * getAssets         (void) const;
+
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
             void setVersion        (const std::string &value);
+            void setRevisionKey    (const std::string &value);
             void setMainWindowTitle(const std::string &value);
             void setFilePath       (const BoostPath &value);
             void setInitialScene   (Scene * const value);
             void setLuaModule      (const BoostPath &value);
+            void setAssets         (AssetStore * const value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -732,6 +753,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     /*! \{                                                                 */
 
     SFString          _sfVersion;
+    SFString          _sfRevisionKey;
     SFString          _sfMainWindowTitle;
     SFBoostPath       _sfFilePath;
     MFUnrecChildScenePtr _mfScenes;
@@ -739,6 +761,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     SFUnrecScenePtr   _sfInternalActiveScene;
     SFBoostPath       _sfLuaModule;
     MFBoostPath       _mfLuaDirectories;
+    SFUnrecAssetStorePtr _sfAssets;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -777,6 +800,8 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
 
     GetFieldHandlePtr  getHandleVersion         (void) const;
     EditFieldHandlePtr editHandleVersion        (void);
+    GetFieldHandlePtr  getHandleRevisionKey     (void) const;
+    EditFieldHandlePtr editHandleRevisionKey    (void);
     GetFieldHandlePtr  getHandleMainWindowTitle (void) const;
     EditFieldHandlePtr editHandleMainWindowTitle(void);
     GetFieldHandlePtr  getHandleFilePath        (void) const;
@@ -791,6 +816,8 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     EditFieldHandlePtr editHandleLuaModule      (void);
     GetFieldHandlePtr  getHandleLuaDirectories  (void) const;
     EditFieldHandlePtr editHandleLuaDirectories (void);
+    GetFieldHandlePtr  getHandleAssets          (void) const;
+    EditFieldHandlePtr editHandleAssets         (void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
