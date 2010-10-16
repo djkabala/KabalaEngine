@@ -51,6 +51,7 @@
 #include "Project/Scene/KESceneFields.h" // Scene type
 #include "Application/KEApplicationModeFields.h"
 #include "Application/Logging/KELogEventDetailsFields.h"
+#include <OpenSG/OSGViewportFields.h>
 
 #include <boost/function.hpp>
 #include "OSGEventDescription.h"
@@ -189,6 +190,12 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 
      ProjectRefPtr createDefaultProject(void);
      SceneRefPtr createDefaultScene(void);
+     ViewportTransitPtr createLoadingViewport(void);
+
+     void attachLoadingScreen(void);
+     void activateLoadingScreen(void);
+     void detachLoadingScreen(void);
+     void dectivateLoadingScreen(void);
 
      BoostPath getCrashIndicationFilePath(void) const;
      void createCrashIndicationFile(void);
@@ -245,6 +252,8 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
     ThreadRefPtr _ApplicationThread;
     ThreadRefPtr _RenderThread;
     ThreadRefPtr _LoadingThread;
+
+    ViewportRefPtr _LoadingViewport;
 
     static void mainRenderLoop(void* args);
     static void mainLoadingLoop(void* args);

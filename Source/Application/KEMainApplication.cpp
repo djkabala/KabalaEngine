@@ -51,7 +51,9 @@
 #include <OpenSG/OSGSimpleGeometry.h>
 #include <OpenSG/OSGGroup.h>
 #include <OpenSG/OSGSolidBackground.h>
-#include <OpenSG/OSGImageForeground.h>
+#include <OpenSG/OSGTextureBackground.h>
+#include <OpenSG/OSGTextureObjChunk.h>
+#include <OpenSG/OSGImageFileHandler.h>
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGTransform.h>
 #include <OpenSG/OSGPointLight.h>
@@ -166,6 +168,13 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
 
     TheSettings.put<bool>("basic.load_most_recent_project", true, overwriteIfDefined);
     TheSettings.put<std::string>("basic.initial_mode", "play", overwriteIfDefined);
+
+    TheSettings.put<Real32>("basic.loading_viewport.camera.near_plane", 1.0f, overwriteIfDefined);
+    TheSettings.put<Real32>("basic.loading_viewport.camera.far_plane", 100.0f, overwriteIfDefined);
+    TheSettings.put<Real32>("basic.loading_viewport.camera.fov", 60.0f, overwriteIfDefined);
+    TheSettings.put<Pnt3f> ("basic.loading_viewport.camera.position", Pnt3f(0.0f,0.0f, 0.0f), overwriteIfDefined);
+    TheSettings.put<Color3r>("basic.loading_viewport.background.color", Color3r(0.0f,0.0f, 0.0f), overwriteIfDefined);
+    TheSettings.put<BoostPath>("basic.loading_viewport.background.image_path", BoostPath(""), overwriteIfDefined);
 
     TheSettings.put<Real32>("basic.default_scene.camera.near_plane", 0.1f, overwriteIfDefined);
     TheSettings.put<Real32>("basic.default_scene.camera.far_plane", 5000.0f, overwriteIfDefined);
@@ -508,6 +517,9 @@ Int32 MainApplication::run(int argc, char **argv)
     //Create the loading thread
     //_LoadingThread = OSG::dynamic_pointer_cast<OSG::Thread>(OSG::ThreadManager::the()->getThread("__KABALA_ENGINE_LOADING_THREAD", true));
 
+    //Draw the loading thread
+    activateLoadingScreen();
+
     //Load the Project file, if given
     if(OptionsVariableMap.count("project-file"))
     {
@@ -527,6 +539,9 @@ Int32 MainApplication::run(int argc, char **argv)
         //Project Failed to load, or file didn't exist
         setProject(createDefaultProject());
     }
+
+    //Detach the loading screen
+    detachLoadingScreen();
 
     if(OptionsVariableMap.count("builder"))
     {
@@ -559,8 +574,6 @@ Int32 MainApplication::run(int argc, char **argv)
             attachStartScreen();
         }
     }
-
-    commitChanges();
     
     //Start the render thread on aspect 1
     //_RenderThread->runFunction(MainApplication::mainRenderLoop, 1, NULL);
@@ -1166,6 +1179,104 @@ void MainApplication::handleCrashLastExecution(void)
 
     removeCrashIndicationFile();
 }
+
+ViewportTransitPtr MainApplication::createLoadingViewport(void)
+{
+    //Camera Transformation Node
+    Matrix CameraTransformMatrix;
+    CameraTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.loading_viewport.camera.position"));
+    TransformRefPtr CameraBeaconTransform = Transform::create();
+
+    NodeRefPtr CameraBeaconNode = Node::create();
+    CameraBeaconNode->setCore(CameraBeaconTransform);
+
+    //Camera
+    PerspectiveCameraRefPtr DefaultCamera = PerspectiveCamera::create();
+
+    DefaultCamera->setFov(getSettings().get<Real32>("basic.loading_viewport.camera.fov"));
+    DefaultCamera->setNear(getSettings().get<Real32>("basic.loading_viewport.camera.near_plane"));
+    DefaultCamera->setFar(getSettings().get<Real32>("basic.loading_viewport.camera.far_plane"));
+    DefaultCamera->setBeacon(CameraBeaconNode);
+
+    // Root Node
+    NodeRefPtr DefaultNode = Node::create();
+    DefaultNode->setCore(OSG::Group::create());
+    DefaultNode->addChild(CameraBeaconNode);
+
+    //Background
+    BoostPath LoadingImagePath = getSettings().get<BoostPath>("basic.loading_viewport.background.image_path");
+
+    BackgroundRefPtr DefaultBackground;
+    if(!LoadingImagePath.empty())
+    {
+        if(boost::filesystem::exists(LoadingImagePath))
+        {
+            ImageRefPtr LoadingImage = ImageFileHandler::the()->read(LoadingImagePath.string().c_str());
+            if(LoadingImage != NULL)
+            {
+                TextureObjChunkRefPtr LoadingTexture = TextureObjChunk::create();
+                LoadingTexture->setImage(LoadingImage);
+                LoadingTexture->setMinFilter(GL_LINEAR);
+
+                DefaultBackground = TextureBackground::create();
+                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->setTexture(LoadingTexture);
+                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->editMFTexCoords()->push_back(Pnt2f(0.0f,0.0f));
+                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->editMFTexCoords()->push_back(Pnt2f(1.0f,0.0f));
+                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->editMFTexCoords()->push_back(Pnt2f(1.0f,1.0f));
+                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->editMFTexCoords()->push_back(Pnt2f(0.0f,1.0f));
+            }
+            else
+            {
+                SWARNING << "Failed to load 'loading image' from: " << LoadingImagePath.string() << std::endl;
+            }
+        }
+        else
+        {
+            SWARNING << "Loading image file does not exist: " << LoadingImagePath.string() << std::endl;
+        }
+    }
+
+    //If the image failed to load
+    if(DefaultBackground == NULL)
+    {
+        DefaultBackground = SolidBackground::create();
+        dynamic_pointer_cast<SolidBackground>(DefaultBackground)->setColor(getSettings().get<Color3r>("basic.loading_viewport.background.color"));
+    }
+
+    //Viewport
+    ViewportRefPtr DefaultViewport = Viewport::create();
+    DefaultViewport->setSize(0.0,0.0,1.0,1.0);
+    DefaultViewport->setCamera(DefaultCamera);
+    DefaultViewport->setBackground(DefaultBackground);
+    DefaultViewport->setRoot(DefaultNode);
+
+    return ViewportTransitPtr(DefaultViewport);
+}
+
+ void MainApplication::attachLoadingScreen(void)
+ {
+     if(_LoadingViewport == NULL)
+     {
+         _LoadingViewport = createLoadingViewport();
+     }
+     getMainWindow()->addPort(_LoadingViewport);
+ }
+
+ void MainApplication::activateLoadingScreen(void)
+ {
+     attachLoadingScreen();
+     getMainWindow()->draw();
+ }
+ 
+ void MainApplication::detachLoadingScreen(void)
+ {
+     getMainWindow()->subPortByObj(_LoadingViewport);
+ }
+
+ void MainApplication::dectivateLoadingScreen(void)
+ {
+     detachLoadingScreen();
+ }
 
 void MainApplication::mainRenderLoop(void* args)
 {
