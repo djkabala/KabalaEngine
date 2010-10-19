@@ -46,4 +46,17 @@
 
 #define BOOST_SMART_PTR_HPP
 
+//Build with support for the run-time debugger
+#cmakedefine BUILD_WITH_RUNTIME_DEBUGGER
+
+//Build with support for World Builder
+#cmakedefine BUILD_WITH_WORLD_BUILDER
+
+//Build with support for the player
+#cmakedefine BUILD_WITH_PLAYER
+
+//Build with support for the start screen
+#cmakedefine BUILD_WITH_START_SCREEN
+
+
 #endif /* _KECONFIG_H_ */
