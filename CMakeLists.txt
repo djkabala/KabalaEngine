@@ -482,7 +482,13 @@ IF(INCLUDE_APP_DATA)
         DESTINATION share/KabalaEngine/Data/Info
         COMPONENT Application
         )
+        
     #Installing the Model Set
+    INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/Data/UI
+        DESTINATION share/KabalaEngine/Data
+        COMPONENT Data)
+        
+    #Installing the UI Data
     INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/Data/Models
         DESTINATION share/KabalaEngine/Data
         COMPONENT Data)

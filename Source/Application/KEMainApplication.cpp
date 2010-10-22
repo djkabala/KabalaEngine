@@ -67,7 +67,7 @@
 #include "Project/Scene/KEScene.h"
 
 // UserInterface Headers
-#include <OpenSG/OSGLookAndFeelManager.h>
+#include "Application/KELookAndFeel.h"
 
 //TODO: Uncomment
 //#include "KEApplicationBuilder.h"
@@ -158,7 +158,8 @@ MainApplication *MainApplication::the(void)
 
 void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, bool overwriteIfDefined)
 {
-    TheSettings.put("basic.data.directory", BoostPath("./share") / EngineAppDataDirectory, overwriteIfDefined);
+    TheSettings.put<BoostPath>("basic.data.directory", BoostPath("./share") / EngineAppDataDirectory, overwriteIfDefined);
+    TheSettings.put<BoostPath>("basic.data.look_and_feel.path", BoostPath("./UI/LookAndFeel.xml") , overwriteIfDefined);
     
     TheSettings.put("basic.window.position",   Pnt2f(-1.0f,-1.0f), overwriteIfDefined);
     TheSettings.put("basic.window.size",       Vec2f(0.85f,0.85f), overwriteIfDefined);
@@ -480,7 +481,7 @@ Int32 MainApplication::run(int argc, char **argv)
     _WindowClosedConnection = getMainWindow()->connectWindowClosed(boost::bind(&MainApplication::handleWindowClosed, this, _1));
 
     // Initialize the LookAndFeelManager to enable default settings
-    LookAndFeelManager::the()->getLookAndFeel()->init();
+    KELookAndFeel::the()->init();
 
 
     //Open Window

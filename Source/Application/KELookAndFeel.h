@@ -1,16 +1,16 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
- *               Copyright (C) 2009-2010 by David Kabala                     *
+ *                         www.vrac.iastate.edu                              *
  *                                                                           *
- *   authors:  David Kabala (djkabala@gmail.com)                             *
+ *   Authors: David Kabala (dkabala@vrac.iastate.edu)                        *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
  *                                License                                    *
  *                                                                           *
  * This library is free software; you can redistribute it and/or modify it   *
- * under the terms of the GNU General Public License as published            *
+ * under the terms of the GNU Library General Public License as published    *
  * by the Free Software Foundation, version 3.                               *
  *                                                                           *
  * This library is distributed in the hope that it will be useful, but       *
@@ -18,7 +18,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
  * Library General Public License for more details.                          *
  *                                                                           *
- * You should have received a copy of the GNU General Public                 *
+ * You should have received a copy of the GNU Library General Public         *
  * License along with this library; if not, write to the Free Software       *
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.                 *
  *                                                                           *
@@ -33,29 +33,60 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 
-#ifndef _KECONFIG_H_
-#define _KECONFIG_H_
-
+#ifndef _KELOOKANDFEEL_H_
+#define _KELOOKANDFEEL_H_
 #ifdef __sgi
 #pragma once
 #endif
 
 #include <OpenSG/OSGConfig.h>
-#include "KEKabalaEngineDef.h"
+#include "KEConfig.h"
 
-#define BOOST_SMART_PTR_HPP
+OSG_BEGIN_NAMESPACE
 
-//Build with support for the run-time debugger
-#cmakedefine BUILD_WITH_RUNTIME_DEBUGGER
+/*! \brief KELookAndFeel class. See \ref 
+           PageKabalaEngineKELookAndFeel for a description.
+*/
 
-//Build with support for World Builder
-#cmakedefine BUILD_WITH_WORLD_BUILDER
+class KE_KABALAENGINE_DLLMAPPING KELookAndFeel
+{
+  private:
+    /*==========================  PUBLIC  =================================*/
+      static KELookAndFeel* _Instance;
+  public:
 
-//Build with support for the player
-#cmakedefine BUILD_WITH_PLAYER
+      static KELookAndFeel* the(void);
 
-//Build with support for the start screen
-#cmakedefine BUILD_WITH_START_SCREEN
+      bool init(void);
+
+    /*! \}                                                                 */
+    /*=========================  PROTECTED  ===============================*/
+  protected:
+
+    /*---------------------------------------------------------------------*/
+    /*! \name                  Constructors                                */
+    /*! \{                                                                 */
 
 
-#endif /* _KECONFIG_H_ */
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                   Destructors                                */
+    /*! \{                                                                 */
+
+    virtual ~KELookAndFeel(void); 
+    /*! \}                                                                 */
+    /*==========================  PRIVATE  ================================*/
+  private:
+
+    void operator =(const KELookAndFeel &source);
+    KELookAndFeel(void);
+    KELookAndFeel(const KELookAndFeel &source);
+};
+
+typedef KELookAndFeel *KELookAndFeelP;
+
+OSG_END_NAMESPACE
+
+#include "KELookAndFeel.inl"
+
+#endif /* _KEMAINAPPLICATION_H_ */
