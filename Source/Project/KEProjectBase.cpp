@@ -447,6 +447,14 @@ ProjectBase::TypeObject ProjectBase::_type(
     "\t>\n"
     "\t</ProducedEvent>\n"
     "\t<ProducedEvent\n"
+    "\t\tname=\"ScenesChanged\"\n"
+    "\t\tdetailsType=\"ProjectEventDetails\"\n"
+    "\t\tfieldHeader=\"Project/KEProjectEventDetailsFields.h\"\n"
+    "\t\ttypeHeader=\"Project/KEProjectEventDetails.h\"\n"
+    "\t\tconsumable=\"true\"\n"
+    "\t>\n"
+    "\t</ProducedEvent>\n"
+    "\t<ProducedEvent\n"
     "\t\tname=\"WindowOpened\"\n"
     "\t\tdetailsType=\"WindowEventDetails\"\n"
     "\t\tconsumable=\"true\"\n"
@@ -614,6 +622,13 @@ EventDescription *ProjectBase::_eventDesc[] =
                           FieldTraits<ProjectEventDetails *>::getType(),
                           true,
                           static_cast<EventGetMethod>(&ProjectBase::getHandleSceneChangedSignal)),
+
+    new EventDescription("ScenesChanged", 
+                          "",
+                          ScenesChangedEventId, 
+                          FieldTraits<ProjectEventDetails *>::getType(),
+                          true,
+                          static_cast<EventGetMethod>(&ProjectBase::getHandleScenesChangedSignal)),
 
     new EventDescription("WindowOpened", 
                           "",
@@ -1322,6 +1337,12 @@ void ProjectBase::produceEvent(UInt32 eventId, EventDetails* const e)
         _SceneChangedEvent.set_combiner(ConsumableEventCombiner(e));
         _SceneChangedEvent(dynamic_cast<SceneChangedEventDetailsType* const>(e), SceneChangedEventId);
         break;
+    case ScenesChangedEventId:
+        OSG_ASSERT(dynamic_cast<ScenesChangedEventDetailsType* const>(e));
+
+        _ScenesChangedEvent.set_combiner(ConsumableEventCombiner(e));
+        _ScenesChangedEvent(dynamic_cast<ScenesChangedEventDetailsType* const>(e), ScenesChangedEventId);
+        break;
     case WindowOpenedEventId:
         OSG_ASSERT(dynamic_cast<WindowOpenedEventDetailsType* const>(e));
 
@@ -1475,6 +1496,9 @@ boost::signals2::connection ProjectBase::connectEvent(UInt32 eventId,
     case SceneChangedEventId:
         return _SceneChangedEvent.connect(listener, at);
         break;
+    case ScenesChangedEventId:
+        return _ScenesChangedEvent.connect(listener, at);
+        break;
     case WindowOpenedEventId:
         return _WindowOpenedEvent.connect(listener, at);
         break;
@@ -1569,6 +1593,9 @@ boost::signals2::connection  ProjectBase::connectEvent(UInt32 eventId,
     case SceneChangedEventId:
         return _SceneChangedEvent.connect(group, listener, at);
         break;
+    case ScenesChangedEventId:
+        return _ScenesChangedEvent.connect(group, listener, at);
+        break;
     case WindowOpenedEventId:
         return _WindowOpenedEvent.connect(group, listener, at);
         break;
@@ -1660,6 +1687,9 @@ void  ProjectBase::disconnectEvent(UInt32 eventId, const BaseEventType::group_ty
     case SceneChangedEventId:
         _SceneChangedEvent.disconnect(group);
         break;
+    case ScenesChangedEventId:
+        _ScenesChangedEvent.disconnect(group);
+        break;
     case WindowOpenedEventId:
         _WindowOpenedEvent.disconnect(group);
         break;
@@ -1747,6 +1777,9 @@ void  ProjectBase::disconnectAllSlotsEvent(UInt32 eventId)
         break;
     case SceneChangedEventId:
         _SceneChangedEvent.disconnect_all_slots();
+        break;
+    case ScenesChangedEventId:
+        _ScenesChangedEvent.disconnect_all_slots();
         break;
     case WindowOpenedEventId:
         _WindowOpenedEvent.disconnect_all_slots();
@@ -1836,6 +1869,9 @@ bool  ProjectBase::isEmptyEvent(UInt32 eventId) const
     case SceneChangedEventId:
         return _SceneChangedEvent.empty();
         break;
+    case ScenesChangedEventId:
+        return _ScenesChangedEvent.empty();
+        break;
     case WindowOpenedEventId:
         return _WindowOpenedEvent.empty();
         break;
@@ -1924,6 +1960,9 @@ UInt32  ProjectBase::numSlotsEvent(UInt32 eventId) const
         break;
     case SceneChangedEventId:
         return _SceneChangedEvent.num_slots();
+        break;
+    case ScenesChangedEventId:
+        return _ScenesChangedEvent.num_slots();
         break;
     case WindowOpenedEventId:
         return _WindowOpenedEvent.num_slots();
@@ -2436,6 +2475,17 @@ GetEventHandlePtr ProjectBase::getHandleSceneChangedSignal(void) const
         new  GetTypedEventHandle<SceneChangedEventType>(
              const_cast<SceneChangedEventType *>(&_SceneChangedEvent),
              _producerType.getEventDescription(SceneChangedEventId),
+             const_cast<ProjectBase *>(this)));
+
+    return returnValue;
+}
+
+GetEventHandlePtr ProjectBase::getHandleScenesChangedSignal(void) const
+{
+    GetEventHandlePtr returnValue(
+        new  GetTypedEventHandle<ScenesChangedEventType>(
+             const_cast<ScenesChangedEventType *>(&_ScenesChangedEvent),
+             _producerType.getEventDescription(ScenesChangedEventId),
              const_cast<ProjectBase *>(this)));
 
     return returnValue;

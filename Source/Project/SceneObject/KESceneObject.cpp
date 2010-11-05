@@ -119,7 +119,7 @@ void SceneObject::InitializeBehaviorEvents()
 	{
         if(!getBehaviors(i)->eventsAreInitted())
 		{
-    		getBehaviors(i)->initEvents(SceneObjectUnrecPtr(this));
+    		getBehaviors(i)->initEvents(this);
         }
 	}
 }
@@ -132,9 +132,24 @@ void SceneObject::InitializeBehaviorLinks()
 	{
 		if(!getBehaviors(i)->isLinked())
 		{
-			getBehaviors(i)->initLinks(SceneObjectUnrecPtr(this));
+			getBehaviors(i)->initLinks(this);
 		}
 	}
+}
+    
+bool SceneObject::isDecendentNode(Node* const TheNode) const
+{
+    Node* ParentNode(TheNode);
+    while(ParentNode != NULL)
+    {
+        if(ParentNode == getNode())
+        {
+            return true;
+        }
+        ParentNode = ParentNode->getParent();
+    }
+
+    return false;
 }
 
 /*-------------------------------------------------------------------------*\
@@ -165,15 +180,15 @@ void SceneObject::changed(ConstFieldMaskArg whichField,
 {
     Inherited::changed(whichField, origin, details);
     
-    if((whichField & ParentSceneFieldMask) && getParentScene() != NULL)
-	{
-		//should be ReInitializeAll();
-        getParentScene()->checkBehaviorInitialization();
-	}
-    if((whichField & BehaviorsFieldMask) && getParentScene() != NULL)
-    {
-	    getParentScene()->checkBehaviorInitialization();
-    }
+ //   if((whichField & ParentSceneFieldMask) && getParentScene() != NULL)
+	//{
+	//	//should be ReInitializeAll();
+ //       getParentScene()->checkBehaviorInitialization();
+	//}
+ //   if((whichField & BehaviorsFieldMask) && getParentScene() != NULL)
+ //   {
+	//    getParentScene()->checkBehaviorInitialization();
+ //   }
 }
 
 void SceneObject::dump(      UInt32    ,

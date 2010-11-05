@@ -92,6 +92,7 @@ const Project* MainApplication::getProject(void) const
     return _Project;
 }
 
+#ifdef BUILD_WITH_WORLD_BUILDER
 inline
 ApplicationMode* MainApplication::getBuilderMode(void)
 {
@@ -103,6 +104,7 @@ const ApplicationMode*  MainApplication::getBuilderMode(void) const
 {
     return _BuilderMode;
 }
+#endif
 
 inline
 ApplicationMode* MainApplication::getPlayerMode(void)

@@ -3,22 +3,8 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-AboutKabalaEngineCommand::AboutKabalaEngineCommand(ApplicationBuilderPtr TheApplicationBuilder) : Inherited(),
-_TheApplicationBuilder(TheApplicationBuilder)
+AboutKabalaEngineCommand::AboutKabalaEngineCommand(void) : Inherited()
 {
-}
-
-inline
-AboutKabalaEngineCommand::AboutKabalaEngineCommand(const AboutKabalaEngineCommand& source) : Inherited(source),
-_TheApplicationBuilder(source._TheApplicationBuilder)
-{
-}
-
-inline 
-void AboutKabalaEngineCommand::operator =(const AboutKabalaEngineCommand& source)
-{
-	Inherited::operator=(source);
-	_TheApplicationBuilder = source._TheApplicationBuilder;
 }
 
 inline 

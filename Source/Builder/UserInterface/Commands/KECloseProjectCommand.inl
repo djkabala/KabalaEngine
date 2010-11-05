@@ -3,14 +3,12 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-CloseProjectCommand::CloseProjectCommand(ApplicationBuilderPtr TheApplicationBuilder) : Inherited(),
-_TheApplicationBuilder(TheApplicationBuilder)
+CloseProjectCommand::CloseProjectCommand(void) : Inherited()
 {
 }
 
 inline
-CloseProjectCommand::CloseProjectCommand(const CloseProjectCommand& source) : Inherited(source),
-_TheApplicationBuilder(source._TheApplicationBuilder)
+CloseProjectCommand::CloseProjectCommand(const CloseProjectCommand& source) : Inherited(source)
 {
 }
 
@@ -18,7 +16,6 @@ inline
 void CloseProjectCommand::operator =(const CloseProjectCommand& source)
 {
 	Inherited::operator=(source);
-	_TheApplicationBuilder = source._TheApplicationBuilder;
 }
 
 inline 

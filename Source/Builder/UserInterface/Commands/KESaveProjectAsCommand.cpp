@@ -45,8 +45,9 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KESaveProjectAsCommand.h"
-#include <OpenSG/Input/OSGWindowEventProducer.h>
+#include <OpenSG/OSGWindowEventProducer.h>
 #include <boost/filesystem/operations.hpp>
+#include <OpenSG/OSGNameAttachment.h>
 
 #include "Project/KEProject.h"
 #include "Application/KEMainApplication.h"
@@ -70,9 +71,9 @@ CommandType SaveProjectAsCommand::_Type("SaveProjectAsCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-SaveProjectAsCommandPtr SaveProjectAsCommand::create(ApplicationBuilderPtr TheApplicationBuilder)
+SaveProjectAsCommandPtr SaveProjectAsCommand::create(void)
 {
-	return Ptr(new SaveProjectAsCommand(TheApplicationBuilder));
+	return Ptr(new SaveProjectAsCommand());
 }
 
 /***************************************************************************\
@@ -87,16 +88,26 @@ void SaveProjectAsCommand::execute(void)
 
 
 	//Project File
-	Path InitialProjectFilePath(MainApplication::the()->getProject()->getFilePath());
+	BoostPath InitialProjectFilePath(MainApplication::the()->getProject()->getFilePath());
 	if(!boost::filesystem::exists(InitialProjectFilePath))
 	{
-		InitialProjectFilePath = Path("./KEProject.xml");
+        const Char8* ProjectName(getName(MainApplication::the()->getProject()));
+        InitialProjectFilePath = BoostPath(std::string("./") + 
+                                           ( ProjectName ? ProjectName : "Project") +
+                                           ".xml");
 	}
 
-	Path ProjectFilePath;
-    ProjectFilePath = MainApplication::the()->getMainWindowEventProducer()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath.filename(),InitialProjectFilePath.parent_path(), true);
+	BoostPath ProjectFilePath;
+    ProjectFilePath = MainApplication::the()->getMainWindow()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath.filename(),InitialProjectFilePath.parent_path(), true);
 
-	MainApplication::the()->saveProject(ProjectFilePath);
+    if(!ProjectFilePath.empty())
+    {
+        if(ProjectFilePath.extension().empty())
+        {
+            ProjectFilePath = ProjectFilePath.string() + ".xml";
+        }
+	    MainApplication::the()->saveProject(ProjectFilePath);
+	}
 }
 
 std::string SaveProjectAsCommand::getCommandDescription(void) const

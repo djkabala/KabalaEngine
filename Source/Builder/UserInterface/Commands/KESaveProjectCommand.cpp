@@ -45,9 +45,10 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KESaveProjectCommand.h"
-#include <OpenSG/Input/OSGWindowEventProducer.h>
+#include <OpenSG/OSGWindowEventProducer.h>
 #include <boost/filesystem/operations.hpp>
 #include "Application/KEMainApplication.h"
+#include <OpenSG/OSGNameAttachment.h>
 
 #include "Project/KEProject.h"
 
@@ -70,7 +71,7 @@ CommandType SaveProjectCommand::_Type("SaveProjectCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-SaveProjectCommandPtr SaveProjectCommand::create(ApplicationBuilderPtr TheApplicationBuilder)
+SaveProjectCommandPtr SaveProjectCommand::create(ApplicationBuilder* const TheApplicationBuilder)
 {
 	return Ptr(new SaveProjectCommand(TheApplicationBuilder));
 }
@@ -81,24 +82,30 @@ SaveProjectCommandPtr SaveProjectCommand::create(ApplicationBuilderPtr TheApplic
 
 void SaveProjectCommand::execute(void)
 {
+    BoostPath FileToSave(MainApplication::the()->getProject()->getFilePath());
     if(!boost::filesystem::exists(MainApplication::the()->getProject()->getFilePath()))
 	{
-		std::vector<WindowEventProducer::FileDialogFilter> KEProjectFileFilters;
-		KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("Project File","xml"));
-		KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("All Files","*"));
+
+	    std::vector<WindowEventProducer::FileDialogFilter> KEProjectFileFilters;
+	    KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("Project File","xml"));
+	    KEProjectFileFilters.push_back(WindowEventProducer::FileDialogFilter("All Files","*"));
 
 
-		//Project File
-		Path InitialProjectFilePath("./KEProject.xml");
+	    //Project File
+	    BoostPath InitialProjectFilePath(MainApplication::the()->getProject()->getFilePath());
+	    if(!boost::filesystem::exists(InitialProjectFilePath))
+	    {
+            const Char8* ProjectName(getName(MainApplication::the()->getProject()));
+            InitialProjectFilePath = BoostPath(std::string("./") + 
+                                               ( ProjectName ? ProjectName : "Project") +
+                                               ".xml");
+	    }
 
-		Path ProjectFilePath;
-		ProjectFilePath = MainApplication::the()->getMainWindowEventProducer()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath.filename(),InitialProjectFilePath.parent_path(), true);
-
-		MainApplication::the()->saveProject(ProjectFilePath);
-	}
-	else
-	{
-		_TheApplicationBuilder->saveProject();
+        FileToSave = MainApplication::the()->getMainWindow()->saveFileDialog("Save Project As ...",KEProjectFileFilters,InitialProjectFilePath.filename(),InitialProjectFilePath.parent_path(), true);
+    }
+    if(!FileToSave.empty())
+    {
+	    MainApplication::the()->saveProject(FileToSave);
 	}
 }
 

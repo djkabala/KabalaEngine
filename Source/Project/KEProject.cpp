@@ -65,6 +65,7 @@
 #include <OpenSG/OSGLuaManager.h>
 #include <OpenSG/OSGWindowUtils.h>
 #include <OpenSG/OSGParticleSystem.h>
+#include <OpenSG/OSGNameAttachment.h>
 
 #include <boost/filesystem/operations.hpp>
 
@@ -745,6 +746,12 @@ void Project::changed(ConstFieldMaskArg whichField,
                       BitVector         details)
 {
     Inherited::changed(whichField, origin, details);
+
+    if(whichField & ScenesFieldMask)
+    {
+        ProjectEventDetailsUnrecPtr Details = ProjectEventDetails::create(this, getTimeStamp());
+        produceScenesChanged(Details);
+    }
 }
 
 void Project::dump(      UInt32    ,

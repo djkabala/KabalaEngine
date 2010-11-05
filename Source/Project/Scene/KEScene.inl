@@ -72,5 +72,18 @@ bool Scene::isStarted(void) const
     return _IsStarted;
 }
 
+inline
+Viewport* Scene::getPrimaryViewport(void) const
+{
+    if(getMFViewports()->size() == 0)
+    {
+        return NULL;
+    }
+    else
+    {
+        return getMFViewports()->front();
+    }
+}
+
 OSG_END_NAMESPACE
 

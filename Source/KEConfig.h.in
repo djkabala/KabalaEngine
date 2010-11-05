@@ -51,6 +51,9 @@
 //Build with support for World Builder
 #cmakedefine BUILD_WITH_WORLD_BUILDER
 
+//Build with support for input logging in the World Builder
+#cmakedefine BUILD_WITH_WORLD_BUILDER_INPUT_LOGGING
+
 //Build with support for the player
 #cmakedefine BUILD_WITH_PLAYER
 

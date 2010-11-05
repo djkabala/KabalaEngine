@@ -87,6 +87,20 @@ void Behavior::initMethod(InitPhase ePhase)
  *                           Instance methods                              *
 \***************************************************************************/
 
+bool Behavior::eventsAreInitted(void) const
+{
+	return Behavior::_EventsInitted;
+}
+
+bool Behavior::isLinked(void) const
+{
+    if(_BehaviorType == NULL)
+    {
+        return true;
+    }
+	return Behavior::_LinksMade == _BehaviorType->getEventLinks().size();
+}
+
 void Behavior::handleDepBehaviorEvent(EventDetails* const details, UInt32 ID)
 {
 	depBehaviorProducedEvent(details, ID);
@@ -104,21 +118,25 @@ void Behavior::checkListenerAttachment()
 
 void Behavior::attachHandlers (Scene* const eventProducer)
 {
+    if(_BehaviorType == NULL)
+    {
+        return;
+    }
     
-	for(UInt32 i = 0; i < theBehaviorType->_bDependencies.size(); i++)
+	for(UInt32 i = 0; i < _BehaviorType->_bDependencies.size(); i++)
 	{
-		if(theBehaviorType->_bDependencies[i]->attachedScene == getParentSceneObject()->getParentScene())
+		if(_BehaviorType->_bDependencies[i]->attachedScene == getParentSceneObject()->getParentScene())
 		{
-			for(UInt32 c = 0; c < theBehaviorType->_bEventLinks.size(); c++)
+			for(UInt32 c = 0; c < _BehaviorType->_bEventLinks.size(); c++)
 			{
-				for(UInt32 d = 0; d < theBehaviorType->_bDependencies[i]->_bEvents.size(); d++)
+				for(UInt32 d = 0; d < _BehaviorType->_bDependencies[i]->_bEvents.size(); d++)
 				{
-					if(theBehaviorType->_bDependencies[i]->hasEvent(theBehaviorType->_bEventLinks[c]))
+					if(_BehaviorType->_bDependencies[i]->hasEvent(_BehaviorType->_bEventLinks[c]))
 					{
-                        UInt32 EventID(theBehaviorType->_bDependencies[i]->findEventID(theBehaviorType->_bEventLinks[c]));
+                        UInt32 EventID(_BehaviorType->_bDependencies[i]->findEventID(_BehaviorType->_bEventLinks[c]));
                         eventProducer->connectGenericEvent(EventID,
                                                            boost::bind(&Behavior::handleDepBehaviorEvent, this, _1, EventID));
-                        linksMade++;
+                        _LinksMade++;
 					}
 				}
 			}
@@ -190,15 +208,17 @@ void Behavior::produceEvent(UInt32 id, GenericEventDetails* const eventData)
 
 Behavior::Behavior(void) :
     Inherited(),
-	linksMade(0),
-    eventsInitted(false)
+    _BehaviorType(NULL),
+	_LinksMade(0),
+    _EventsInitted(false)
 {
 }
 
 Behavior::Behavior(const Behavior &source) :
     Inherited(source),
-	linksMade(0),
-    eventsInitted(false)
+    _BehaviorType(NULL),
+	_LinksMade(0),
+    _EventsInitted(false)
 {
 }
 

@@ -34,21 +34,20 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
-#include "Builder/KEApplicationBuilder.h"
+#include <OpenSG/OSGCommand.h>
 
 OSG_BEGIN_NAMESPACE
 
 class SaveProjectAsCommand;
-typedef boost::intrusive_ptr<SaveProjectAsCommand> SaveProjectAsCommandPtr;
+typedef boost::shared_ptr<SaveProjectAsCommand> SaveProjectAsCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING SaveProjectAsCommand: public Command
+class KE_KABALAENGINE_DLLMAPPING SaveProjectAsCommand: public Command
 {
 protected:
 	typedef Command Inherited;
 	typedef SaveProjectAsCommandPtr Ptr;
 
-	SaveProjectAsCommand(ApplicationBuilderPtr TheApplicationBuilder);
+	SaveProjectAsCommand(void);
 
 	SaveProjectAsCommand(const SaveProjectAsCommand& source);
 
@@ -57,8 +56,6 @@ protected:
 	static CommandType _Type;
 	
 	virtual void execute(void);
-
-	ApplicationBuilderPtr _TheApplicationBuilder;
 public:
 
 	virtual std::string getCommandDescription(void) const;
@@ -69,7 +66,7 @@ public:
 
 	virtual ~SaveProjectAsCommand(void);
 	
-	static SaveProjectAsCommandPtr create(ApplicationBuilderPtr TheApplicationBuilder);
+	static SaveProjectAsCommandPtr create(void);
 };
 
 OSG_END_NAMESPACE

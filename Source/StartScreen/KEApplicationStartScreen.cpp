@@ -263,6 +263,7 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
     GraphicsRefPtr StartScreenUIGraphics = OSG::Graphics2D::create();
 
     UIFontRefPtr ButtonFont = OSG::UIFont::create();
+    ButtonFont->setGlyphPixelSize(32);
     ButtonFont->setSize(32);
 
     ButtonRefPtr BuilderButton = ::OSG::Button::create();
@@ -293,6 +294,7 @@ ForegroundRefPtr ApplicationStartScreen::createInterface(void)
 
     //Font
     UIFontRefPtr LabelFont = UIFont::create();
+    LabelFont->setGlyphPixelSize(16);
     LabelFont->setSize(16);
 
     //Version Label

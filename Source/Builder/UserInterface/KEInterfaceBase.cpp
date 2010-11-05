@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,112 +47,124 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEINTERFACEINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
 
 #include "KEInterfaceBase.h"
 #include "KEInterface.h"
 
+#include <boost/bind.hpp>
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector InterfaceBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
+
+/*! \class OSG::Interface
+    The Interface.
+ */
+
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
 
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
 
-FieldContainerType InterfaceBase::_type(
-    "Interface",
-    "Panel",
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<Interface *>::_type("InterfacePtr", "AttachmentContainerPtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(Interface *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           Interface *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           Interface *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void InterfaceBase::classDescInserter(TypeObject &oType)
+{
+}
+
+
+InterfaceBase::TypeObject InterfaceBase::_type(
+    InterfaceBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
     NULL,
-    NULL, 
     Interface::initMethod,
-    NULL,
-    0);
-
-//OSG_FIELD_CONTAINER_DEF(InterfaceBase, InterfacePtr)
+    Interface::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&Interface::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"Interface\"\n"
+    "\tparent=\"AttachmentContainer\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"abstract\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"true\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The Interface.\n"
+    "</FieldContainer>\n",
+    "The Interface.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &InterfaceBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &InterfaceBase::getType(void) const 
+FieldContainerType &InterfaceBase::getType(void)
 {
     return _type;
-} 
-
-
-UInt32 InterfaceBase::getContainerSize(void) const 
-{ 
-    return sizeof(Interface); 
 }
 
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void InterfaceBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &InterfaceBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<InterfaceBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void InterfaceBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 InterfaceBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((InterfaceBase *) &other, whichField, sInfo);
-}
-void InterfaceBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
-{
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return sizeof(Interface);
 }
 
-void InterfaceBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
-{
-    Inherited::onDestroyAspect(uiId, uiAspect);
+/*------------------------- decorator get ------------------------------*/
 
-}
-#endif
 
-/*------------------------- constructors ----------------------------------*/
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
 
-InterfaceBase::InterfaceBase(void) :
-    Inherited() 
-{
-}
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-InterfaceBase::InterfaceBase(const InterfaceBase &source) :
-    Inherited                 (source)
-{
-}
-
-/*-------------------------- destructors ----------------------------------*/
-
-InterfaceBase::~InterfaceBase(void)
-{
-}
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 InterfaceBase::getBinSize(const BitVector &whichField)
+UInt32 InterfaceBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -159,67 +172,69 @@ UInt32 InterfaceBase::getBinSize(const BitVector &whichField)
     return returnValue;
 }
 
-void InterfaceBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void InterfaceBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
-
 }
 
-void InterfaceBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void InterfaceBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
-
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void InterfaceBase::executeSyncImpl(      InterfaceBase *pOther,
-                                        const BitVector         &whichField)
+
+
+/*------------------------- constructors ----------------------------------*/
+
+InterfaceBase::InterfaceBase(void) :
+    Inherited()
 {
-
-    Inherited::executeSyncImpl(pOther, whichField);
-
-
-}
-#else
-void InterfaceBase::executeSyncImpl(      InterfaceBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-
-
 }
 
-void InterfaceBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+InterfaceBase::InterfaceBase(const InterfaceBase &source) :
+    Inherited(source)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+}
 
+
+/*-------------------------- destructors ----------------------------------*/
+
+InterfaceBase::~InterfaceBase(void)
+{
+}
+
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void InterfaceBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Interface *pThis = static_cast<Interface *>(this);
+
+    pThis->execSync(static_cast<Interface *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
 
-OSG_END_NAMESPACE
+void InterfaceBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
 
-OSG_BEGIN_NAMESPACE
+}
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<InterfacePtr>::_type("InterfacePtr", "PanelPtr");
-#endif
-
-OSG_DLLEXPORT_SFIELD_DEF1(InterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(InterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
 
 OSG_END_NAMESPACE
-

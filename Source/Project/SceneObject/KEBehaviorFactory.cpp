@@ -111,7 +111,7 @@ BehaviorTransitPtr BehaviorFactoryBase::createBehavior(std::string Name)
 
 	BehaviorTransitPtr newBehavior = dynamic_pointer_cast<Behavior>(BehaviorTypeBase->getFieldContainerType()->createContainer());
 
-	newBehavior->theBehaviorType = BehaviorTypeBase;
+	newBehavior->_BehaviorType = BehaviorTypeBase;
 
 	return newBehavior;
 }

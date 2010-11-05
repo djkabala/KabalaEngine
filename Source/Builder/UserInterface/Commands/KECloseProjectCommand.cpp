@@ -65,9 +65,9 @@ CommandType CloseProjectCommand::_Type("CloseProjectCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-CloseProjectCommandPtr CloseProjectCommand::create(ApplicationBuilderPtr TheApplicationBuilder)
+CloseProjectCommandPtr CloseProjectCommand::create(void)
 {
-	return Ptr(new CloseProjectCommand(TheApplicationBuilder));
+	return Ptr(new CloseProjectCommand());
 }
 
 /***************************************************************************\
@@ -81,7 +81,7 @@ void CloseProjectCommand::execute(void)
 
 std::string CloseProjectCommand::getCommandDescription(void) const
 {
-	return std::string("CloseProject");
+	return std::string("Close Project");
 }
 
 const CommandType &CloseProjectCommand::getType(void) const
@@ -99,19 +99,4 @@ CloseProjectCommand::~CloseProjectCommand(void)
 }
 
 /*----------------------------- class specific ----------------------------*/
-
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
 

@@ -170,12 +170,14 @@ class KE_KABALAENGINE_DLLMAPPING ContentPanel : public ContentPanelBase
     void handleSceneEditorPanelMouseDragged(MouseEventDetails* const details);
     void handleSceneEditorPanelMouseClicked(MouseEventDetails* const details);
     void handleSceneEditorPanelMousePressed(MouseEventDetails* const details);
+    void handleSceneEditorPanelMouseMoved(MouseEventDetails* const details);
     void handleSceneEditorPanelMouseReleased(MouseEventDetails* const details);
     void handleSceneEditorPanelMouseWheelMoved(MouseWheelEventDetails* const details);
     void handleSceneEditorPanelKeyTyped(KeyEventDetails* const details);
     boost::signals2::connection _SceneEditorPanelMouseDraggedConnection,
                                 _SceneEditorPanelMouseClickedConnection,
                                 _SceneEditorPanelMousePressedConnection,
+                                _SceneEditorPanelMouseMovedConnection,
                                 _SceneEditorPanelMouseReleasedConnection,
                                 _SceneEditorPanelMouseWheelMovedConnection,
                                 _SceneEditorPanelKeyTypedConnection;

@@ -70,6 +70,8 @@
 //#include <OpenSG/OSGGeometryUtils.h>
 #include <OpenSG/OSGFCPtrFieldEditor.h>
 #include <OpenSG/OSGFCPtrEditorRootedStore.h>
+#include <OpenSG/OSGMaterialChunkOverrideGroup.h>
+#include <OpenSG/OSGPolygonChunk.h>
 
 // the general scene file loading handler
 #include <OpenSG/OSGSceneFileHandler.h>
@@ -88,6 +90,8 @@
 #include "Player/Commands/KELoadProjectCommand.h"
 #include "Player/Commands/KESaveProjectCommand.h"
 
+#include <OpenSG/OSGStackedTransform.h>
+#include <OpenSG/OSGTransformationElement.h>
 
 #include <OpenSG/OSGGraphics2D.h>
 #include <OpenSG/OSGComboBox.h>
@@ -668,23 +672,23 @@ void ApplicationPlayer::attachDebugInterface(void)
     createDebugInterface();							// Allocate memory to the various pointers in the debug interface when the ApplicationPlayer is started
 
     if( MainApplication::the()->getProject()->getActiveScene()->getMFViewports()->size() == 0 ||
-        MainApplication::the()->getProject()->getActiveScene()->getViewports(0) == NULL)
+        MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport() == NULL)
     {
         SWARNING << "ApplicationPlayer::attachDebugInterface(): No Viewports in current scene.  There should be at least one defined." << std::endl;
     }
     else
     {
-        if(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot() == NULL)
+        if(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot() == NULL)
         {
             SWARNING << "ApplicationPlayer::attachDebugInterface(): No root for current viewport!" << std::endl;
         }
         else
         {
-            if(_HierarchyPanel->getSceneGraphTreeModel()->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
+            if(_HierarchyPanel->getSceneGraphTreeModel()->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot())
             {
                 SWARNING << "Setting Root of SceneGraph tree model" <<
                     std::endl;
-                _HierarchyPanel->getSceneGraphTreeModel()->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+                _HierarchyPanel->getSceneGraphTreeModel()->setRoot(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot());
             }
         }
 
@@ -733,6 +737,17 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
         //Turn on Input Blocking
         setSceneInputBlocking(MainApplication::the()->getSettings().get<bool>("player.debugger.block_scene_input"));
 
+        //Get Active Drawing Surfaces
+        SceneUnrecPtr ActiveScene(MainApplication::the()->getProject()->getActiveScene());
+        for(UInt32 i(0) ; i<ActiveScene->getMFUIDrawingSurfaces()->size() ; ++i)
+        {
+            if(ActiveScene->getUIDrawingSurfaces(i)->getActive())
+            {
+                ActiveScene->getUIDrawingSurfaces(i)->setActive(false);
+                _DebugActiveDrawingSurfaces.push_back(ActiveScene->getUIDrawingSurfaces(i));
+            }
+        }
+
         _WasMouseHidden = !MainApplication::the()->getMainWindow()->getShowCursor();
         if(_WasMouseHidden)
         {
@@ -754,6 +769,13 @@ void ApplicationPlayer::enableDebug(bool EnableDebug)
 
         //Turn off Input Blocking
         setSceneInputBlocking(false);
+
+        //Get Active Drawing Surfaces
+        for(UInt32 i(0) ; i<_DebugActiveDrawingSurfaces.size() ; ++i)
+        {
+            _DebugActiveDrawingSurfaces[i]->setActive(true);
+        }
+        _DebugActiveDrawingSurfaces.clear();
 
         if(_WasMouseHidden)
         {
@@ -932,7 +954,7 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
 
         //Update the Menu Item
         //Add the Physics Drawable Node to the project
-        if(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot()->findChild(getPhysicsDrawableNode()) < 0)
+        if(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot()->findChild(getPhysicsDrawableNode()) < 0)
         {
             _DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics");
         }
@@ -947,6 +969,12 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
 
 void ApplicationPlayer::handlePlayerKeyTyped(KeyEventDetails* const details)
 {
+    if(details->getKey() == KeyEventDetails::KEY_ESCAPE ||
+       (details->getKey() == KeyEventDetails::KEY_B && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_SHIFT))
+    {
+        MainApplication::the()->attachBuilder();
+        return;
+    }
     if(details->getKey() == KeyEventDetails::KEY_D && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_SHIFT)
     {
         enableDebug(!_IsDebugActive);
@@ -989,7 +1017,7 @@ void ApplicationPlayer::toggleDrawBoundingVolumes(void)
 
 void ApplicationPlayer::toggleDrawPhysicsCharacteristics(void)
 {
-    NodeRefPtr CurrentRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+    NodeRefPtr CurrentRoot(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot());
     NodeRefPtr PhysNode(getPhysicsDrawableNode());
 
     //Get the Root Node of the Project
@@ -1346,9 +1374,9 @@ void ApplicationPlayer::updateDebugUI(void)
     //TODO: Update the Scene Node Tree
     if(MainApplication::the()->getProject() != NULL &&
         MainApplication::the()->getProject()->getActiveScene() != NULL &&
-        _HierarchyPanel->getSceneGraphTreeModel()->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot())
+        _HierarchyPanel->getSceneGraphTreeModel()->getRootNode() != MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot())
     {
-        _HierarchyPanel->getSceneGraphTreeModel()->setRoot(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot());
+        _HierarchyPanel->getSceneGraphTreeModel()->setRoot(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot());
     }
     else
     {
@@ -1414,7 +1442,7 @@ void ApplicationPlayer::attachDebugViewport(void)
 
 void ApplicationPlayer::attachDebugViewportCamera(void)
 {
-    _SceneViewport = MainApplication::the()->getProject()->getActiveScene()->getViewports(0);
+    _SceneViewport = MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport();
 
     //Update The Camera
     _SceneViewportCamera = _SceneViewport->getCamera();
@@ -1502,7 +1530,7 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     _XFormManipMgr.setViewport(DebugViewport);
 
     //Setup the Navigator
-    _DebugSceneNavigator.setMode(Navigator::TRACKBALL);
+    _DebugSceneNavigator.setMode(Navigator::NAVBALL);
     _DebugSceneNavigator.setViewport(DebugViewport);
     _DebugSceneNavigator.setCameraTransformation(_DebugCameraBeacon);
 
@@ -1737,6 +1765,7 @@ void ApplicationPlayer::createGenericEditor(void)
     _GenericEditorDialog = createDefaultFCTreeEditorDialog(MainApplication::the()->getProject(), _TheCommandManager);
     _GenericEditorDialog->setTitle(std::string("Edit ") + MainApplication::the()->getProject()->getType().getCName());
     _GenericEditorDialog->setAllwaysOnTop(true);
+    _GenericEditorDialog->setModal(false);
     _GenericEditorDialog->setResizable(true);
     _GenericEditorDialog->setMaximizable(true);
 }
@@ -1831,13 +1860,15 @@ void ApplicationPlayer::updateXFormManipulator(void)
     Node* XFormTargetNode(NULL);
     if(_SelectedNode != NULL)
     {
-        if(_SelectedNode->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+        if(_SelectedNode->getCore()->getType().isDerivedFrom(Transform::getClassType()) || 
+           _SelectedNode->getCore()->getType().isDerivedFrom(StackedTransform::getClassType()))
         {
             XFormTargetNode = _SelectedNode;
         }
         else if(_SelectedNode->getParent() != NULL &&
                 _SelectedNode->getParent()->getNChildren() == 1 &&
-                _SelectedNode->getParent()->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+                (_SelectedNode->getParent()->getCore()->getType().isDerivedFrom(Transform::getClassType()) ||
+                _SelectedNode->getCore()->getType().isDerivedFrom(StackedTransform::getClassType())))
         {
             XFormTargetNode = _SelectedNode->getParent();
         }
@@ -1866,8 +1897,6 @@ void ApplicationPlayer::updateXFormManipulator(void)
                            MainApplication::the()->getSettings().get<Real32>("player.debugger.transform_manip.axis.relative_length"));
 
         _XFormManipMgr.setTarget(XFormTargetNode);
-        _XFormManipMgr.setLength(Vec3f(AxisScaling,AxisScaling,AxisScaling));
-        _XFormManipNodeCore->setTarget(XFormTargetNode);
         _XFormManipNode->setTravMask(DEBUG_GRAPH_DRAWN | DEBUG_GRAPH_INTERSECTABLE);
         if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.axis.draw"))
         {
@@ -1877,7 +1906,6 @@ void ApplicationPlayer::updateXFormManipulator(void)
     else
     {
         _XFormManipMgr.setTarget(NULL);
-        _XFormManipNodeCore->setTarget(NULL);
         _XFormManipNode->setTravMask(DEBUG_GRAPH_NONE);
         if(MainApplication::the()->getSettings().get<bool>("player.debugger.selected_node.axis.draw"))
         {
@@ -1888,9 +1916,24 @@ void ApplicationPlayer::updateXFormManipulator(void)
 
 void ApplicationPlayer::focusSelectedNode(void)
 {
-	showAll(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getCamera(),
+	showAll(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getCamera(),
             getSelectedNode(),
-            MainApplication::the()->getProject()->getActiveScene()->getViewports(0));
+            MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport());
+
+    //Update the navigator with the focus
+    updateNavigatorFocus();
+}
+
+void ApplicationPlayer::updateNavigatorFocus(void)
+{
+    if(getSelectedNode() != NULL)
+    {
+        //BoxVolume NodeVolume;
+        //getSelectedNode()->getWorldVolume(NodeVolume);
+        //Update the rotation center for trackball navigator
+        //_DebugSceneNavigator.getTrackballEngine().setRotationCenter(NodeVolume.getMax() - NodeVolume.getMin());
+    }
+    
 }
 
 void ApplicationPlayer::showAll(CameraRefPtr TheCameraOrig,
@@ -1900,7 +1943,7 @@ void ApplicationPlayer::showAll(CameraRefPtr TheCameraOrig,
     NodeRefPtr FocusNode(Scene);
 	if(FocusNode==NULL)
 	{
-        FocusNode = MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot();
+        FocusNode = MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot();
     }
 
 	if(TheCameraOrig!=NULL)
@@ -2059,7 +2102,7 @@ void ApplicationPlayer::updateWireframeNode(void)
         dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeRoot(_SelectedNode);
 
         //Use the traversal mask that the viewport this node is in is using
-        dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeTravMask(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getTravMask());
+        dynamic_cast<VisitSubTree*>(_WireframeMatGroupNode->getChild(0)->getCore())->setSubTreeTravMask(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getTravMask());
 
     }
 
@@ -2146,12 +2189,12 @@ void ApplicationPlayer::updateHighlightNode(void)
 void ApplicationPlayer::createXFormManipulator(void)
 {
     _XFormManipMgr.setUniformScale(true);
-    _XFormManipNodeCore = ReplicateTransform::create();
+    _XFormManipMgr.setManipulatorScreenDepth(8.0f);
 
-    _XFormManipNode = Node::create();
-    _XFormManipNode->setCore(_XFormManipNodeCore);
-    _XFormManipNode->addChild(_XFormManipMgr.createManipulator(OSG::ManipulatorManager::TRANSLATE));
 
+    //X Form root node
+    _XFormManipNode = makeCoredNode<Group>();
+    _XFormManipNode->addChild(_XFormManipMgr.createManipulator(ManipulatorManager::TRANSLATE));
     _XFormManipNode->setTravMask(DEBUG_GRAPH_NONE);
 }
 
@@ -2483,13 +2526,13 @@ void ApplicationPlayer::createHighlightTriMeshNode(void)
 void ApplicationPlayer::selectNode(const Pnt2f& ViewportPoint)
 {
     Line ViewRay;
-    ViewportRefPtr TheViewport(MainApplication::the()->getProject()->getActiveScene()->getViewports(0));
+    ViewportRefPtr TheViewport(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport());
     TheViewport->getCamera()->calcViewRay( ViewRay, ViewportPoint.x(), ViewportPoint.y(), *TheViewport);
 
-    IntersectAction *CastRayAction = IntersectAction::create();
+    boost::scoped_ptr<IntersectAction> CastRayAction(IntersectAction::create());
 
     CastRayAction->setLine( ViewRay );
-    CastRayAction->setTravMask(MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getTravMask());
+    CastRayAction->setTravMask(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getTravMask());
     CastRayAction->apply( TheViewport->getRoot() );             
 
     //Get the Tree Model

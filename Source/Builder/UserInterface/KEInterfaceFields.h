@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGPanelFields.h>
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class Interface;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! InterfacePtr
+OSG_GEN_CONTAINERPTR(Interface);
 
-typedef FCPtr<PanelPtr, Interface> InterfacePtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<InterfacePtr> : 
-    public FieldTraitsRecurseMapper<InterfacePtr, true>
+struct FieldTraits<Interface *> :
+    public FieldTraitsFCPtrBase<Interface *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFInterfacePtr"; }
-    static const char *getMName(void) { return "MFInterfacePtr"; }
+    typedef FieldTraits<Interface *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFInterfacePtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFInterfacePtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<InterfacePtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<Interface *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecInterfacePtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<Interface *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecInterfacePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Interface *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakInterfacePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Interface *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdInterfacePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Interface *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecInterfacePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Interface *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecInterfacePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Interface *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakInterfacePtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<Interface *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdInterfacePtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Interface *,
+                      RecordedRefCountPolicy  > SFRecInterfacePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Interface *,
+                      UnrecordedRefCountPolicy> SFUnrecInterfacePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Interface *,
+                      WeakRefCountPolicy      > SFWeakInterfacePtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<Interface *,
+                      NoRefCountPolicy        > SFUncountedInterfacePtr;
 
-typedef SField<InterfacePtr> SFInterfacePtr;
-#endif
 
-#ifndef KE_COMPILEINTERFACEINST
-OSG_DLLEXPORT_DECL1(SField, InterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Interface *,
+                      RecordedRefCountPolicy  > MFRecInterfacePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Interface *,
+                      UnrecordedRefCountPolicy> MFUnrecInterfacePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Interface *,
+                      WeakRefCountPolicy      > MFWeakInterfacePtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<Interface *,
+                      NoRefCountPolicy        > MFUncountedInterfacePtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<InterfacePtr> MFInterfacePtr;
-#endif
 
-#ifndef KE_COMPILEINTERFACEINST
-OSG_DLLEXPORT_DECL1(MField, InterfacePtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecInterfacePtr : 
+    public PointerSField<Interface *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecInterfacePtr : 
+    public PointerSField<Interface *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakInterfacePtr :
+    public PointerSField<Interface *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedInterfacePtr :
+    public PointerSField<Interface *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecInterfacePtr :
+    public PointerMField<Interface *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecInterfacePtr :
+    public PointerMField<Interface *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakInterfacePtr :
+    public PointerMField<Interface *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedInterfacePtr :
+    public PointerMField<Interface *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

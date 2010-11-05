@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -54,61 +55,82 @@
 #endif
 
 
+
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
+#include "KEConfig.h"
 
-#include <OpenSG/OSGBaseTypes.h>
-#include <OpenSG/OSGRefPtr.h>
-#include <OpenSG/OSGCoredNodePtr.h>
+//#include "OpenSG/OSGBaseTypes.h"
+
 
 #include "Application/KEApplicationMode.h" // Parent
-#include <Project/KEProjectFields.h> // EditingProject type
+
+#include "Project/KEProjectFields.h"    // EditingProject type
+#include "Builder/UserInterface/MainWindow/KEMainWindowFields.h" // MainWindow type
+#include <OpenSG/OSGListSelectionModelFields.h> // SelectionModel type
 
 #include "KEApplicationBuilderFields.h"
 
 OSG_BEGIN_NAMESPACE
 
 class ApplicationBuilder;
-class BinaryDataHandler;
 
 //! \brief ApplicationBuilder Base Class.
 
-class KE_KABALAENGINELIB_DLLMAPPING ApplicationBuilderBase : public ApplicationMode
+class KE_KABALAENGINE_DLLMAPPING ApplicationBuilderBase : public ApplicationMode
 {
-  private:
-
-    typedef ApplicationMode    Inherited;
-
-    /*==========================  PUBLIC  =================================*/
   public:
 
-    typedef ApplicationBuilderPtr  Ptr;
+    typedef ApplicationMode Inherited;
+    typedef ApplicationMode ParentContainer;
+
+    typedef Inherited::TypeObject TypeObject;
+    typedef TypeObject::InitPhase InitPhase;
+
+    OSG_GEN_INTERNALPTR(ApplicationBuilder);
+    
+    
+
+    /*==========================  PUBLIC  =================================*/
+
+  public:
 
     enum
     {
         EditingProjectFieldId = Inherited::NextFieldId,
-        NextFieldId           = EditingProjectFieldId + 1
+        MainWindowFieldId = EditingProjectFieldId + 1,
+        SelectionModelFieldId = MainWindowFieldId + 1,
+        NextFieldId = SelectionModelFieldId + 1
     };
 
-    static const OSG::BitVector EditingProjectFieldMask;
-
-
-    static const OSG::BitVector MTInfluenceMask;
+    static const OSG::BitVector EditingProjectFieldMask =
+        (TypeTraits<BitVector>::One << EditingProjectFieldId);
+    static const OSG::BitVector MainWindowFieldMask =
+        (TypeTraits<BitVector>::One << MainWindowFieldId);
+    static const OSG::BitVector SelectionModelFieldMask =
+        (TypeTraits<BitVector>::One << SelectionModelFieldId);
+    static const OSG::BitVector NextFieldMask =
+        (TypeTraits<BitVector>::One << NextFieldId);
+        
+    typedef SFUnrecProjectPtr SFEditingProjectType;
+    typedef SFUnrecMainWindowPtr SFMainWindowType;
+    typedef SFUnrecListSelectionModelPtr SFSelectionModelType;
 
     /*---------------------------------------------------------------------*/
     /*! \name                    Class Get                                 */
     /*! \{                                                                 */
 
-    static        FieldContainerType &getClassType    (void); 
-    static        UInt32              getClassTypeId  (void); 
+    static FieldContainerType &getClassType   (void);
+    static UInt32              getClassTypeId (void);
+    static UInt16              getClassGroupId(void);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                FieldContainer Get                            */
     /*! \{                                                                 */
 
-    virtual       FieldContainerType &getType  (void); 
-    virtual const FieldContainerType &getType  (void) const; 
+    virtual       FieldContainerType &getType         (void);
+    virtual const FieldContainerType &getType         (void) const;
 
     virtual       UInt32              getContainerSize(void) const;
 
@@ -117,30 +139,30 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationBuilderBase : public ApplicationM
     /*! \name                    Field Get                                 */
     /*! \{                                                                 */
 
-
-           SFProjectPtr        *editSFEditingProject (void);
-     const SFProjectPtr        *getSFEditingProject (void) const;
-#ifndef OSG_2_PREP
-           SFProjectPtr        *getSFEditingProject (void);
-#endif
+            const SFUnrecProjectPtr   *getSFEditingProject (void) const;
+                  SFUnrecProjectPtr   *editSFEditingProject (void);
+            const SFUnrecMainWindowPtr *getSFMainWindow     (void) const;
 
 
-           ProjectPtr          &editEditingProject (void);
-     const ProjectPtr          &getEditingProject (void) const;
-#ifndef OSG_2_PREP
-           ProjectPtr          &getEditingProject (void);
-#endif
+                  Project * getEditingProject (void) const;
+
+                  MainWindow * getMainWindow     (void) const;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                    Field Set                                 */
     /*! \{                                                                 */
 
-     void setEditingProject ( const ProjectPtr &value );
+            void setEditingProject (Project * const value);
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
-    /*! \name                       Sync                                   */
+    /*! \name                Ptr Field Set                                 */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
     /*! \{                                                                 */
 
     /*! \}                                                                 */
@@ -148,11 +170,11 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationBuilderBase : public ApplicationM
     /*! \name                   Binary Access                              */
     /*! \{                                                                 */
 
-    virtual UInt32 getBinSize (const BitVector         &whichField);
-    virtual void   copyToBin  (      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
-    virtual void   copyFromBin(      BinaryDataHandler &pMem,
-                               const BitVector         &whichField);
+    virtual UInt32 getBinSize (ConstFieldMaskArg  whichField);
+    virtual void   copyToBin  (BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
+    virtual void   copyFromBin(BinaryDataHandler &pMem,
+                               ConstFieldMaskArg  whichField);
 
 
     /*! \}                                                                 */
@@ -160,26 +182,45 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationBuilderBase : public ApplicationM
     /*! \name                   Construction                               */
     /*! \{                                                                 */
 
-    static  ApplicationBuilderPtr      create          (void); 
-    static  ApplicationBuilderPtr      createEmpty     (void); 
+    static  ApplicationBuilderTransitPtr  create          (void);
+    static  ApplicationBuilder           *createEmpty     (void);
+
+    static  ApplicationBuilderTransitPtr  createLocal     (
+                                               BitVector bFlags = FCLocal::All);
+
+    static  ApplicationBuilder            *createEmptyLocal(
+                                              BitVector bFlags = FCLocal::All);
+
+    static  ApplicationBuilderTransitPtr  createDependent  (BitVector bFlags);
 
     /*! \}                                                                 */
-
     /*---------------------------------------------------------------------*/
     /*! \name                       Copy                                   */
     /*! \{                                                                 */
 
-    virtual FieldContainerPtr     shallowCopy     (void) const; 
+    virtual FieldContainerTransitPtr shallowCopy     (void) const;
+    virtual FieldContainerTransitPtr shallowCopyLocal(
+                                       BitVector bFlags = FCLocal::All) const;
+    virtual FieldContainerTransitPtr shallowCopyDependent(
+                                                      BitVector bFlags) const;
 
     /*! \}                                                                 */
     /*=========================  PROTECTED  ===============================*/
+
   protected:
+
+    static TypeObject _type;
+
+    static       void   classDescInserter(TypeObject &oType);
+    static const Char8 *getClassname     (void             );
 
     /*---------------------------------------------------------------------*/
     /*! \name                      Fields                                  */
     /*! \{                                                                 */
 
-    SFProjectPtr        _sfEditingProject;
+    SFUnrecProjectPtr _sfEditingProject;
+    SFUnrecMainWindowPtr _sfMainWindow;
+    SFUnrecListSelectionModelPtr _sfSelectionModel;
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
@@ -194,67 +235,110 @@ class KE_KABALAENGINELIB_DLLMAPPING ApplicationBuilderBase : public ApplicationM
     /*! \name                   Destructors                                */
     /*! \{                                                                 */
 
-    virtual ~ApplicationBuilderBase(void); 
+    virtual ~ApplicationBuilderBase(void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     onCreate                                */
+    /*! \{                                                                 */
+
+    void onCreate(const ApplicationBuilder *source = NULL);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Generic Field Access                      */
+    /*! \{                                                                 */
+
+    GetFieldHandlePtr  getHandleEditingProject  (void) const;
+    EditFieldHandlePtr editHandleEditingProject (void);
+    GetFieldHandlePtr  getHandleMainWindow      (void) const;
+    EditFieldHandlePtr editHandleMainWindow     (void);
+    GetFieldHandlePtr  getHandleSelectionModel  (void) const;
+    EditFieldHandlePtr editHandleSelectionModel (void);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Get                                 */
+    /*! \{                                                                 */
+
+                  SFUnrecMainWindowPtr *editSFMainWindow     (void);
+            const SFUnrecListSelectionModelPtr *getSFSelectionModel  (void) const;
+                  SFUnrecListSelectionModelPtr *editSFSelectionModel (void);
+
+
+
+                  ListSelectionModel * getSelectionModel (void) const;
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                    Field Set                                 */
+    /*! \{                                                                 */
+
+            void setMainWindow     (MainWindow * const value);
+            void setSelectionModel (ListSelectionModel * const value);
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                Ptr MField Set                                */
+    /*! \{                                                                 */
 
     /*! \}                                                                 */
     /*---------------------------------------------------------------------*/
     /*! \name                       Sync                                   */
     /*! \{                                                                 */
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-    void executeSyncImpl(      ApplicationBuilderBase *pOther,
-                         const BitVector         &whichField);
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual void execSyncV(      FieldContainer    &oFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField);
-#else
-    void executeSyncImpl(      ApplicationBuilderBase *pOther,
-                         const BitVector         &whichField,
-                         const SyncInfo          &sInfo     );
-
-    virtual void   executeSync(      FieldContainer    &other,
-                               const BitVector         &whichField,
-                               const SyncInfo          &sInfo);
-
-    virtual void execBeginEdit     (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-            void execBeginEditImpl (const BitVector &whichField,
-                                          UInt32     uiAspect,
-                                          UInt32     uiContainerSize);
-
-    virtual void onDestroyAspect(UInt32 uiId, UInt32 uiAspect);
+            void execSync (      ApplicationBuilderBase *pFrom,
+                                 ConstFieldMaskArg  whichField,
+                                 AspectOffsetStore &oOffsets,
+                                 ConstFieldMaskArg  syncMode  ,
+                           const UInt32             uiSyncInfo);
 #endif
 
     /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                     Aspect Create                            */
+    /*! \{                                                                 */
+
+#ifdef OSG_MT_CPTR_ASPECT
+    virtual FieldContainer *createAspectCopy(
+                                    const FieldContainer *pRefAspect) const;
+#endif
+
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Edit                                   */
+    /*! \{                                                                 */
+    /*! \}                                                                 */
+    /*---------------------------------------------------------------------*/
+    /*! \name                       Sync                                   */
+    /*! \{                                                                 */
+
+    virtual void resolveLinks(void);
+
+    /*! \}                                                                 */
     /*==========================  PRIVATE  ================================*/
+
   private:
-
-    friend class FieldContainer;
-
-    static FieldDescription   *_desc[];
-    static FieldContainerType  _type;
-
+    /*---------------------------------------------------------------------*/
 
     // prohibit default functions (move to 'public' if you need one)
     void operator =(const ApplicationBuilderBase &source);
 };
 
-//---------------------------------------------------------------------------
-//   Exported Types
-//---------------------------------------------------------------------------
-
-
 typedef ApplicationBuilderBase *ApplicationBuilderBaseP;
-
-typedef osgIF<ApplicationBuilderBase::isNodeCore,
-              CoredNodePtr<ApplicationBuilder>,
-              FieldContainer::attempt_to_create_CoredNodePtr_on_non_NodeCore_FC
-              >::_IRet ApplicationBuilderNodePtr;
-
-typedef RefPtr<ApplicationBuilderPtr> ApplicationBuilderRefPtr;
 
 OSG_END_NAMESPACE
 
-#endif /* _KEAPPLICATIONBUILDERBASE_H_ */
+#endif /* _OSGAPPLICATIONBUILDERBASE_H_ */
