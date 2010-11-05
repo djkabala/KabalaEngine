@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -51,74 +52,168 @@
 #endif
 
 #include <OpenSG/OSGConfig.h>
-
-#include <OpenSG/OSGFieldContainerPtr.h>
-#include <OpenSG/OSGNodeCoreFieldDataType.h>
 #include "KEKabalaEngineDef.h"
 
-#include "Application/KEApplicationModeFields.h"
+#include <OpenSG/OSGFieldContainerFields.h>
+#include <OpenSG/OSGPointerSField.h>
+#include <OpenSG/OSGPointerMField.h>
+
 
 OSG_BEGIN_NAMESPACE
 
 class ApplicationBuilder;
 
-#if !defined(OSG_DO_DOC)   // created as a dummy class, remove to prevent doubles
-//! ApplicationBuilderPtr
+OSG_GEN_CONTAINERPTR(ApplicationBuilder);
 
-typedef FCPtr<ApplicationModePtr, ApplicationBuilder> ApplicationBuilderPtr;
-
-#endif
-
-#if !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
 /*! \ingroup GrpKabalaEngineFieldTraits
+    \ingroup GrpLibOSGKabalaEngine
  */
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \hideinhierarchy */
-#endif
-
 template <>
-struct FieldDataTraits<ApplicationBuilderPtr> : 
-    public FieldTraitsRecurseMapper<ApplicationBuilderPtr, true>
+struct FieldTraits<ApplicationBuilder *> :
+    public FieldTraitsFCPtrBase<ApplicationBuilder *>
 {
-    static DataType             _type;                       
+  private:
 
-    enum                        { StringConvertable = 0x00 };
-    enum                        { bHasParent        = 0x01 };
+    static DataType             _type;
 
-    static DataType   &getType (void) { return _type;        }
+  public:
 
-    static const char *getSName(void) { return "SFApplicationBuilderPtr"; }
-    static const char *getMName(void) { return "MFApplicationBuilderPtr"; }
+    typedef FieldTraits<ApplicationBuilder *>  Self;
+
+    enum                        { Convertible = NotConvertible };
+
+    static KE_KABALAENGINE_DLLMAPPING DataType &getType(void);
+
+    template<typename RefCountPolicy> inline
+    static const Char8    *getSName     (void);
+
+//    static const char *getSName(void) { return "SFApplicationBuilderPtr"; }
+    template<typename RefCountPolicy> inline
+    static const Char8    *getMName     (void);
+
+//    static const char *getMName(void) { return "MFApplicationBuilderPtr"; }
 };
 
-#if !defined(OSG_DOC_DEV_TRAITS)
-/*! \class  FieldTraitsRecurseMapper<ApplicationBuilderPtr, true>
-    \hideinhierarchy
- */
-#endif
+template<> inline
+const Char8 *FieldTraits<ApplicationBuilder *, 0>::getSName<RecordedRefCountPolicy>(void)
+{
+    return "SFRecApplicationBuilderPtr"; 
+}
 
-#endif // !defined(OSG_DO_DOC) || (OSG_DOC_LEVEL >= 3)
+template<> inline
+const Char8 *FieldTraits<ApplicationBuilder *, 0>::getSName<UnrecordedRefCountPolicy>(void)
+{
+    return "SFUnrecApplicationBuilderPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationBuilder *, 0>::getSName<WeakRefCountPolicy>(void)
+{
+    return "SFWeakApplicationBuilderPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationBuilder *, 0>::getSName<NoRefCountPolicy>(void)
+{
+    return "SFUnrefdApplicationBuilderPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationBuilder *, 0>::getMName<RecordedRefCountPolicy>(void)
+{
+    return "MFRecApplicationBuilderPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationBuilder *, 0>::getMName<UnrecordedRefCountPolicy>(void)
+{
+    return "MFUnrecApplicationBuilderPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationBuilder *, 0>::getMName<WeakRefCountPolicy>(void)
+{
+    return "MFWeakApplicationBuilderPtr"; 
+}
+
+template<> inline
+const Char8 *FieldTraits<ApplicationBuilder *, 0>::getMName<NoRefCountPolicy>(void)
+{
+    return "MFUnrefdApplicationBuilderPtr"; 
+}
 
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldSingle */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationBuilder *,
+                      RecordedRefCountPolicy  > SFRecApplicationBuilderPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationBuilder *,
+                      UnrecordedRefCountPolicy> SFUnrecApplicationBuilderPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationBuilder *,
+                      WeakRefCountPolicy      > SFWeakApplicationBuilderPtr;
+/*! \ingroup GrpKabalaEngineFieldSFields */
+typedef PointerSField<ApplicationBuilder *,
+                      NoRefCountPolicy        > SFUncountedApplicationBuilderPtr;
 
-typedef SField<ApplicationBuilderPtr> SFApplicationBuilderPtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONBUILDERINST
-OSG_DLLEXPORT_DECL1(SField, ApplicationBuilderPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationBuilder *,
+                      RecordedRefCountPolicy  > MFRecApplicationBuilderPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationBuilder *,
+                      UnrecordedRefCountPolicy> MFUnrecApplicationBuilderPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationBuilder *,
+                      WeakRefCountPolicy      > MFWeakApplicationBuilderPtr;
+/*! \ingroup GrpKabalaEngineFieldMFields */
+typedef PointerMField<ApplicationBuilder *,
+                      NoRefCountPolicy        > MFUncountedApplicationBuilderPtr;
 
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_FIELD_TYPEDEFS)
-/*! \ingroup GrpKabalaEngineFieldMulti */
 
-typedef MField<ApplicationBuilderPtr> MFApplicationBuilderPtr;
-#endif
 
-#ifndef KE_COMPILEAPPLICATIONBUILDERINST
-OSG_DLLEXPORT_DECL1(MField, ApplicationBuilderPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING)
-#endif
+
+#else // these are the doxygen hacks
+
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFRecApplicationBuilderPtr : 
+    public PointerSField<ApplicationBuilder *,
+                         RecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUnrecApplicationBuilderPtr : 
+    public PointerSField<ApplicationBuilder *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFWeakApplicationBuilderPtr :
+    public PointerSField<ApplicationBuilder *,
+                         WeakRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldSFields \ingroup GrpLibOSGKabalaEngine */
+struct SFUncountedApplicationBuilderPtr :
+    public PointerSField<ApplicationBuilder *,
+                         NoRefCountPolicy> {};
+
+
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFRecApplicationBuilderPtr :
+    public PointerMField<ApplicationBuilder *,
+                         RecordedRefCountPolicy  > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUnrecApplicationBuilderPtr :
+    public PointerMField<ApplicationBuilder *,
+                         UnrecordedRefCountPolicy> {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFWeakApplicationBuilderPtr :
+    public PointerMField<ApplicationBuilder *,
+                         WeakRefCountPolicy      > {};
+/*! \ingroup GrpKabalaEngineFieldMFields \ingroup GrpLibOSGKabalaEngine */
+struct MFUncountedApplicationBuilderPtr :
+    public PointerMField<ApplicationBuilder *,
+                         NoRefCountPolicy        > {};
+
+
+
+#endif // these are the doxygen hacks
 
 OSG_END_NAMESPACE
 

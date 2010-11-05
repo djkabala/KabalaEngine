@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-#include <OpenSG/OSGConfig.h>
+#include "KEConfig.h"
 
 #include <OpenSG/OSGWindowFields.h>
 #include <boost/program_options.hpp>
@@ -90,7 +90,12 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 	void saveProject(const BoostPath& ProjectFile);
 	void loadProject(const BoostPath& ProjectFile);
 
-	void attachBuilder(void);
+#ifdef BUILD_WITH_WORLD_BUILDER
+	 void attachBuilder(void);
+           ApplicationMode*  getBuilderMode    (void);
+     const ApplicationMode*  getBuilderMode    (void) const;
+     void setBuilderMode    ( ApplicationMode* const value );
+#endif
 
 	void attachPlayer(void);
 
@@ -104,8 +109,6 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
      const WindowEventProducer* getMainWindow(void) const;
            Project*          getProject        (void);
      const Project*          getProject        (void) const;
-           ApplicationMode*  getBuilderMode    (void);
-     const ApplicationMode*  getBuilderMode    (void) const;
            ApplicationMode*  getPlayerMode     (void);
      const ApplicationMode*  getPlayerMode     (void) const;
            ApplicationMode*  getStartScreenMode(void);
@@ -124,7 +127,6 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
      void setSettingsLoadFile( const BoostPath &value );
      void setMainWindow( WindowEventProducer* const value );
      void setProject        ( Project* const value );
-     void setBuilderMode    ( ApplicationMode* const value );
      void setPlayerMode     ( ApplicationMode* const value );
      void setStartScreenMode( ApplicationMode* const value );
      void setCurrentMode    ( ApplicationMode* const value );
@@ -168,7 +170,9 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
      BoostPath                  _SettingsPath;
      WindowEventProducerMTRecPtr  _MainWindow;
      ProjectRefPtr              _Project;
+#ifdef BUILD_WITH_WORLD_BUILDER
      ApplicationModeRefPtr      _BuilderMode;
+#endif
      ApplicationModeRefPtr      _StartScreenMode;
      ApplicationModeRefPtr      _PlayerMode;
      ApplicationModeRefPtr      _CurrentMode;
@@ -182,15 +186,13 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
      static ApplicationSettings createDefaultSettings(void);
      static void applyDefaultSettings(ApplicationSettings& TheSettings, bool overwriteIfDefined = true);
 
+#ifdef BUILD_WITH_WORLD_BUILDER
      void createDefaultBuilderMode(void);
+#endif
 
      void createDefaultPlayerMode(void);
 
      void createDefaultStartScreenMode(void);
-
-     ProjectRefPtr createDefaultProject(void);
-     SceneRefPtr createDefaultScene(void);
-     ViewportTransitPtr createLoadingViewport(void);
 
      void attachLoadingScreen(void);
      void activateLoadingScreen(void);

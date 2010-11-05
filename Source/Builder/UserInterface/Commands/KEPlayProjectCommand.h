@@ -34,14 +34,14 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
+#include <OpenSG/OSGCommand.h>
 
 OSG_BEGIN_NAMESPACE
 
 class PlayProjectCommand;
-typedef boost::intrusive_ptr<PlayProjectCommand> PlayProjectCommandPtr;
+typedef boost::shared_ptr<PlayProjectCommand> PlayProjectCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING PlayProjectCommand: public Command
+class KE_KABALAENGINE_DLLMAPPING PlayProjectCommand: public Command
 {
 protected:
 	typedef Command Inherited;

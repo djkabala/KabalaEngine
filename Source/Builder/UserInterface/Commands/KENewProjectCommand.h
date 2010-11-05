@@ -34,21 +34,20 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
-#include "Builder/KEApplicationBuilder.h"
+#include <OpenSG/OSGCommand.h>
 
 OSG_BEGIN_NAMESPACE
 
 class NewProjectCommand;
-typedef boost::intrusive_ptr<NewProjectCommand> NewProjectCommandPtr;
+typedef boost::shared_ptr<NewProjectCommand> NewProjectCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING NewProjectCommand: public Command
+class KE_KABALAENGINE_DLLMAPPING NewProjectCommand: public Command
 {
 protected:
 	typedef Command Inherited;
 	typedef NewProjectCommandPtr Ptr;
 
-	NewProjectCommand(ApplicationBuilderPtr TheApplicationBuilder);
+	NewProjectCommand(void);
 
 	NewProjectCommand(const NewProjectCommand& source);
 
@@ -57,8 +56,6 @@ protected:
 	static CommandType _Type;
 	
 	virtual void execute(void);
-
-	ApplicationBuilderPtr _TheApplicationBuilder;
 public:
 
 	virtual std::string getCommandDescription(void) const;
@@ -69,7 +66,7 @@ public:
 
 	virtual ~NewProjectCommand(void);
 	
-	static NewProjectCommandPtr create(ApplicationBuilderPtr TheApplicationBuilder);
+	static NewProjectCommandPtr create(void);
 };
 
 OSG_END_NAMESPACE

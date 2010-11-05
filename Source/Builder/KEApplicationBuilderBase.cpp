@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,143 +47,261 @@
  *****************************************************************************
 \*****************************************************************************/
 
-
-#define KE_COMPILEAPPLICATIONBUILDERINST
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <boost/assign/list_of.hpp>
 
 #include <OpenSG/OSGConfig.h>
+
+
+
+#include "Project/KEProject.h"          // EditingProject Class
+#include "Builder/UserInterface/MainWindow/KEMainWindow.h" // MainWindow Class
+#include <OpenSG/OSGListSelectionModel.h> // SelectionModel Class
 
 #include "KEApplicationBuilderBase.h"
 #include "KEApplicationBuilder.h"
 
+#include <boost/bind.hpp>
+#include "Builder/UserInterface/MainWindow/KEMainWindow.h"
+#include "Builder/UserInterface/MainWindow/MainMenu/KEMainMenu.h"
+#include "Builder/UserInterface/MainWindow/MainToolbar/KEMainToolbar.h"
+#include "Builder/UserInterface/MainWindow/StatusBar/KEStatusBar.h"
+#include "Builder/UserInterface/MainWindow/HelpPanel/KEHelpPanel.h"
+#include "Builder/UserInterface/MainWindow/SceneComponentTree/KESceneComponentTree.h"
+#include "Builder/UserInterface/MainWindow/SceneNavigationPanel/KESceneNavigationPanel.h"
+#include "Builder/UserInterface/MainWindow/SceneViewportPanel/KESceneViewportPanel.h"
+#include "Builder/UserInterface/MainWindow/SceneViewportToolbar/KESceneViewportToolbar.h"
+#include "Builder/UserInterface/MainWindow/Editors/KEEditors.h"
+
+#ifdef WIN32 // turn off 'this' : used in base member initializer list warning
+#pragma warning(disable:4355)
+#endif
 
 OSG_BEGIN_NAMESPACE
 
-const OSG::BitVector  ApplicationBuilderBase::EditingProjectFieldMask = 
-    (TypeTraits<BitVector>::One << ApplicationBuilderBase::EditingProjectFieldId);
+/***************************************************************************\
+ *                            Description                                  *
+\***************************************************************************/
 
-const OSG::BitVector ApplicationBuilderBase::MTInfluenceMask = 
-    (Inherited::MTInfluenceMask) | 
-    (static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+/*! \class OSG::ApplicationBuilder
+    The ApplicationBuilder.
+ */
 
+/***************************************************************************\
+ *                        Field Documentation                              *
+\***************************************************************************/
 
-// Field descriptions
-
-/*! \var ProjectPtr      ApplicationBuilderBase::_sfEditingProject
+/*! \var Project *       ApplicationBuilderBase::_sfEditingProject
     
 */
 
-//! ApplicationBuilder description
+/*! \var MainWindow *    ApplicationBuilderBase::_sfMainWindow
+    
+*/
 
-FieldDescription *ApplicationBuilderBase::_desc[] = 
+/*! \var ListSelectionModel * ApplicationBuilderBase::_sfSelectionModel
+    
+*/
+
+
+/***************************************************************************\
+ *                      FieldType/FieldTrait Instantiation                 *
+\***************************************************************************/
+
+#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
+DataType FieldTraits<ApplicationBuilder *>::_type("ApplicationBuilderPtr", "ApplicationModePtr");
+#endif
+
+OSG_FIELDTRAITS_GETTYPE(ApplicationBuilder *)
+
+OSG_EXPORT_PTR_SFIELD_FULL(PointerSField,
+                           ApplicationBuilder *,
+                           0);
+
+OSG_EXPORT_PTR_MFIELD_FULL(PointerMField,
+                           ApplicationBuilder *,
+                           0);
+
+/***************************************************************************\
+ *                         Field Description                               *
+\***************************************************************************/
+
+void ApplicationBuilderBase::classDescInserter(TypeObject &oType)
 {
-    new FieldDescription(SFProjectPtr::getClassType(), 
-                     "EditingProject", 
-                     EditingProjectFieldId, EditingProjectFieldMask,
-                     false,
-                     reinterpret_cast<FieldAccessMethod>(&ApplicationBuilderBase::editSFEditingProject))
-};
+    FieldDescriptionBase *pDesc = NULL;
 
 
-FieldContainerType ApplicationBuilderBase::_type(
-    "ApplicationBuilder",
-    "ApplicationMode",
-    NULL,
-    reinterpret_cast<PrototypeCreateF>(&ApplicationBuilderBase::createEmpty),
+    pDesc = new SFUnrecProjectPtr::Description(
+        SFUnrecProjectPtr::getClassType(),
+        "EditingProject",
+        "",
+        EditingProjectFieldId, EditingProjectFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationBuilder::editHandleEditingProject),
+        static_cast<FieldGetMethodSig >(&ApplicationBuilder::getHandleEditingProject));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecMainWindowPtr::Description(
+        SFUnrecMainWindowPtr::getClassType(),
+        "MainWindow",
+        "",
+        MainWindowFieldId, MainWindowFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationBuilder::editHandleMainWindow),
+        static_cast<FieldGetMethodSig >(&ApplicationBuilder::getHandleMainWindow));
+
+    oType.addInitialDesc(pDesc);
+
+    pDesc = new SFUnrecListSelectionModelPtr::Description(
+        SFUnrecListSelectionModelPtr::getClassType(),
+        "SelectionModel",
+        "",
+        SelectionModelFieldId, SelectionModelFieldMask,
+        false,
+        (Field::SFDefaultFlags | Field::FStdAccess),
+        static_cast<FieldEditMethodSig>(&ApplicationBuilder::editHandleSelectionModel),
+        static_cast<FieldGetMethodSig >(&ApplicationBuilder::getHandleSelectionModel));
+
+    oType.addInitialDesc(pDesc);
+}
+
+
+ApplicationBuilderBase::TypeObject ApplicationBuilderBase::_type(
+    ApplicationBuilderBase::getClassname(),
+    Inherited::getClassname(),
+    "NULL",
+    0,
+    reinterpret_cast<PrototypeCreateF>(&ApplicationBuilderBase::createEmptyLocal),
     ApplicationBuilder::initMethod,
-    _desc,
-    sizeof(_desc));
-
-//OSG_FIELD_CONTAINER_DEF(ApplicationBuilderBase, ApplicationBuilderPtr)
+    ApplicationBuilder::exitMethod,
+    reinterpret_cast<InitalInsertDescFunc>(&ApplicationBuilder::classDescInserter),
+    false,
+    0,
+    "<?xml version=\"1.0\"?>\n"
+    "\n"
+    "<FieldContainer\n"
+    "\tname=\"ApplicationBuilder\"\n"
+    "\tparent=\"ApplicationMode\"\n"
+    "\tlibrary=\"KabalaEngine\"\n"
+    "\tpointerfieldtypes=\"both\"\n"
+    "\tstructure=\"concrete\"\n"
+    "\tsystemcomponent=\"false\"\n"
+    "\tparentsystemcomponent=\"false\"\n"
+    "\tdecoratable=\"false\"\n"
+    "\tuseLocalIncludes=\"false\"\n"
+    "\tlibnamespace=\"KE\"\n"
+    "    authors=\"David Kabala (djkabala@gmail.com)                             \"\n"
+    ">\n"
+    "The ApplicationBuilder.\n"
+    "        <Field\n"
+    "          name=\"EditingProject\"\n"
+    "          type=\"Project\"\n"
+    "\t\t  category=\"pointer\"\n"
+    "          cardinality=\"single\"\n"
+    "          visibility=\"external\"\n"
+    "          access=\"public\"\n"
+    "          defaultValue=\"NULL\"\n"
+    "\t\t  fieldHeader=\"Project/KEProjectFields.h\"\n"
+    "\t\t  typeHeader=\"Project/KEProject.h\"\n"
+    "          >\n"
+    "\t </Field>\n"
+    "     <Field\n"
+    "          name=\"MainWindow\"\n"
+    "          type=\"MainWindow\"\n"
+    "\t\t  category=\"pointer\"\n"
+    "          cardinality=\"single\"\n"
+    "          visibility=\"external\"\n"
+    "          access=\"protected\"\n"
+    "          publicRead=\"true\"\n"
+    "          defaultValue=\"NULL\"\n"
+    "\t\t  fieldHeader=\"Builder/UserInterface/MainWindow/KEMainWindowFields.h\"\n"
+    "\t\t  typeHeader=\"Builder/UserInterface/MainWindow/KEMainWindow.h\"\n"
+    "          >\n"
+    "\t </Field>\n"
+    "     <Field\n"
+    "          name=\"SelectionModel\"\n"
+    "          type=\"ListSelectionModel\"\n"
+    "          category=\"pointer\"\n"
+    "          cardinality=\"single\"\n"
+    "          visibility=\"external\"\n"
+    "          defaultValue=\"NULL\"\n"
+    "          access=\"protected\"\n"
+    "          >\n"
+    "\t </Field>\n"
+    "</FieldContainer>\n",
+    "The ApplicationBuilder.\n"
+    );
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &ApplicationBuilderBase::getType(void) 
-{
-    return _type; 
-} 
-
-const FieldContainerType &ApplicationBuilderBase::getType(void) const 
+FieldContainerType &ApplicationBuilderBase::getType(void)
 {
     return _type;
-} 
-
-
-FieldContainerPtr ApplicationBuilderBase::shallowCopy(void) const 
-{ 
-    ApplicationBuilderPtr returnValue; 
-
-    newPtr(returnValue, dynamic_cast<const ApplicationBuilder *>(this)); 
-
-    return returnValue; 
 }
 
-UInt32 ApplicationBuilderBase::getContainerSize(void) const 
-{ 
-    return sizeof(ApplicationBuilder); 
-}
-
-
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ApplicationBuilderBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField)
+const FieldContainerType &ApplicationBuilderBase::getType(void) const
 {
-    this->executeSyncImpl(static_cast<ApplicationBuilderBase *>(&other),
-                          whichField);
+    return _type;
 }
-#else
-void ApplicationBuilderBase::executeSync(      FieldContainer &other,
-                                    const BitVector      &whichField,                                    const SyncInfo       &sInfo     )
+
+UInt32 ApplicationBuilderBase::getContainerSize(void) const
 {
-    this->executeSyncImpl((ApplicationBuilderBase *) &other, whichField, sInfo);
+    return sizeof(ApplicationBuilder);
 }
-void ApplicationBuilderBase::execBeginEdit(const BitVector &whichField, 
-                                            UInt32     uiAspect,
-                                            UInt32     uiContainerSize) 
+
+/*------------------------- decorator get ------------------------------*/
+
+
+//! Get the ApplicationBuilder::_sfEditingProject field.
+const SFUnrecProjectPtr *ApplicationBuilderBase::getSFEditingProject(void) const
 {
-    this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    return &_sfEditingProject;
 }
 
-void ApplicationBuilderBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
+SFUnrecProjectPtr   *ApplicationBuilderBase::editSFEditingProject (void)
 {
-    Inherited::onDestroyAspect(uiId, uiAspect);
+    editSField(EditingProjectFieldMask);
 
+    return &_sfEditingProject;
 }
-#endif
 
-/*------------------------- constructors ----------------------------------*/
-
-#ifdef OSG_WIN32_ICL
-#pragma warning (disable : 383)
-#endif
-
-ApplicationBuilderBase::ApplicationBuilderBase(void) :
-    _sfEditingProject         (ProjectPtr(NullFC)), 
-    Inherited() 
+//! Get the ApplicationBuilder::_sfMainWindow field.
+const SFUnrecMainWindowPtr *ApplicationBuilderBase::getSFMainWindow(void) const
 {
+    return &_sfMainWindow;
 }
 
-#ifdef OSG_WIN32_ICL
-#pragma warning (default : 383)
-#endif
-
-ApplicationBuilderBase::ApplicationBuilderBase(const ApplicationBuilderBase &source) :
-    _sfEditingProject         (source._sfEditingProject         ), 
-    Inherited                 (source)
+SFUnrecMainWindowPtr *ApplicationBuilderBase::editSFMainWindow     (void)
 {
+    editSField(MainWindowFieldMask);
+
+    return &_sfMainWindow;
 }
 
-/*-------------------------- destructors ----------------------------------*/
-
-ApplicationBuilderBase::~ApplicationBuilderBase(void)
+//! Get the ApplicationBuilder::_sfSelectionModel field.
+const SFUnrecListSelectionModelPtr *ApplicationBuilderBase::getSFSelectionModel(void) const
 {
+    return &_sfSelectionModel;
 }
+
+SFUnrecListSelectionModelPtr *ApplicationBuilderBase::editSFSelectionModel (void)
+{
+    editSField(SelectionModelFieldMask);
+
+    return &_sfSelectionModel;
+}
+
+
+
+
 
 /*------------------------------ access -----------------------------------*/
 
-UInt32 ApplicationBuilderBase::getBinSize(const BitVector &whichField)
+UInt32 ApplicationBuilderBase::getBinSize(ConstFieldMaskArg whichField)
 {
     UInt32 returnValue = Inherited::getBinSize(whichField);
 
@@ -190,13 +309,20 @@ UInt32 ApplicationBuilderBase::getBinSize(const BitVector &whichField)
     {
         returnValue += _sfEditingProject.getBinSize();
     }
-
+    if(FieldBits::NoField != (MainWindowFieldMask & whichField))
+    {
+        returnValue += _sfMainWindow.getBinSize();
+    }
+    if(FieldBits::NoField != (SelectionModelFieldMask & whichField))
+    {
+        returnValue += _sfSelectionModel.getBinSize();
+    }
 
     return returnValue;
 }
 
-void ApplicationBuilderBase::copyToBin(      BinaryDataHandler &pMem,
-                                  const BitVector         &whichField)
+void ApplicationBuilderBase::copyToBin(BinaryDataHandler &pMem,
+                                  ConstFieldMaskArg  whichField)
 {
     Inherited::copyToBin(pMem, whichField);
 
@@ -204,12 +330,18 @@ void ApplicationBuilderBase::copyToBin(      BinaryDataHandler &pMem,
     {
         _sfEditingProject.copyToBin(pMem);
     }
-
-
+    if(FieldBits::NoField != (MainWindowFieldMask & whichField))
+    {
+        _sfMainWindow.copyToBin(pMem);
+    }
+    if(FieldBits::NoField != (SelectionModelFieldMask & whichField))
+    {
+        _sfSelectionModel.copyToBin(pMem);
+    }
 }
 
-void ApplicationBuilderBase::copyFromBin(      BinaryDataHandler &pMem,
-                                    const BitVector    &whichField)
+void ApplicationBuilderBase::copyFromBin(BinaryDataHandler &pMem,
+                                    ConstFieldMaskArg  whichField)
 {
     Inherited::copyFromBin(pMem, whichField);
 
@@ -217,61 +349,305 @@ void ApplicationBuilderBase::copyFromBin(      BinaryDataHandler &pMem,
     {
         _sfEditingProject.copyFromBin(pMem);
     }
-
-
+    if(FieldBits::NoField != (MainWindowFieldMask & whichField))
+    {
+        _sfMainWindow.copyFromBin(pMem);
+    }
+    if(FieldBits::NoField != (SelectionModelFieldMask & whichField))
+    {
+        _sfSelectionModel.copyFromBin(pMem);
+    }
 }
 
-#if !defined(OSG_FIXED_MFIELDSYNC)
-void ApplicationBuilderBase::executeSyncImpl(      ApplicationBuilderBase *pOther,
-                                        const BitVector         &whichField)
+//! create a new instance of the class
+ApplicationBuilderTransitPtr ApplicationBuilderBase::createLocal(BitVector bFlags)
 {
+    ApplicationBuilderTransitPtr fc;
 
-    Inherited::executeSyncImpl(pOther, whichField);
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyLocal(bFlags);
 
-    if(FieldBits::NoField != (EditingProjectFieldMask & whichField))
-        _sfEditingProject.syncWith(pOther->_sfEditingProject);
+        fc = dynamic_pointer_cast<ApplicationBuilder>(tmpPtr);
+    }
 
-
-}
-#else
-void ApplicationBuilderBase::executeSyncImpl(      ApplicationBuilderBase *pOther,
-                                        const BitVector         &whichField,
-                                        const SyncInfo          &sInfo      )
-{
-
-    Inherited::executeSyncImpl(pOther, whichField, sInfo);
-
-    if(FieldBits::NoField != (EditingProjectFieldMask & whichField))
-        _sfEditingProject.syncWith(pOther->_sfEditingProject);
-
-
-
+    return fc;
 }
 
-void ApplicationBuilderBase::execBeginEditImpl (const BitVector &whichField, 
-                                                 UInt32     uiAspect,
-                                                 UInt32     uiContainerSize)
+//! create a new instance of the class, copy the container flags
+ApplicationBuilderTransitPtr ApplicationBuilderBase::createDependent(BitVector bFlags)
 {
-    Inherited::execBeginEditImpl(whichField, uiAspect, uiContainerSize);
+    ApplicationBuilderTransitPtr fc;
 
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopyDependent(bFlags);
+
+        fc = dynamic_pointer_cast<ApplicationBuilder>(tmpPtr);
+    }
+
+    return fc;
+}
+
+//! create a new instance of the class
+ApplicationBuilderTransitPtr ApplicationBuilderBase::create(void)
+{
+    ApplicationBuilderTransitPtr fc;
+
+    if(getClassType().getPrototype() != NULL)
+    {
+        FieldContainerTransitPtr tmpPtr =
+            getClassType().getPrototype()-> shallowCopy();
+
+        fc = dynamic_pointer_cast<ApplicationBuilder>(tmpPtr);
+    }
+
+    return fc;
+}
+
+ApplicationBuilder *ApplicationBuilderBase::createEmptyLocal(BitVector bFlags)
+{
+    ApplicationBuilder *returnValue;
+
+    newPtr<ApplicationBuilder>(returnValue, bFlags);
+
+    returnValue->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+//! create an empty new instance of the class, do not copy the prototype
+ApplicationBuilder *ApplicationBuilderBase::createEmpty(void)
+{
+    ApplicationBuilder *returnValue;
+
+    newPtr<ApplicationBuilder>(returnValue, Thread::getCurrentLocalFlags());
+
+    returnValue->_pFieldFlags->_bNamespaceMask &=
+        ~Thread::getCurrentLocalFlags();
+
+    return returnValue;
+}
+
+
+FieldContainerTransitPtr ApplicationBuilderBase::shallowCopyLocal(
+    BitVector bFlags) const
+{
+    ApplicationBuilder *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ApplicationBuilder *>(this), bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ApplicationBuilderBase::shallowCopyDependent(
+    BitVector bFlags) const
+{
+    ApplicationBuilder *tmpPtr;
+
+    newPtr(tmpPtr, dynamic_cast<const ApplicationBuilder *>(this), ~bFlags);
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask = bFlags;
+
+    return returnValue;
+}
+
+FieldContainerTransitPtr ApplicationBuilderBase::shallowCopy(void) const
+{
+    ApplicationBuilder *tmpPtr;
+
+    newPtr(tmpPtr,
+           dynamic_cast<const ApplicationBuilder *>(this),
+           Thread::getCurrentLocalFlags());
+
+    tmpPtr->_pFieldFlags->_bNamespaceMask &= ~Thread::getCurrentLocalFlags();
+
+    FieldContainerTransitPtr returnValue(tmpPtr);
+
+    return returnValue;
+}
+
+
+
+/*------------------------- constructors ----------------------------------*/
+
+ApplicationBuilderBase::ApplicationBuilderBase(void) :
+    Inherited(),
+    _sfEditingProject         (NULL),
+    _sfMainWindow             (NULL),
+    _sfSelectionModel         (NULL)
+{
+}
+
+ApplicationBuilderBase::ApplicationBuilderBase(const ApplicationBuilderBase &source) :
+    Inherited(source),
+    _sfEditingProject         (NULL),
+    _sfMainWindow             (NULL),
+    _sfSelectionModel         (NULL)
+{
+}
+
+
+/*-------------------------- destructors ----------------------------------*/
+
+ApplicationBuilderBase::~ApplicationBuilderBase(void)
+{
+}
+
+void ApplicationBuilderBase::onCreate(const ApplicationBuilder *source)
+{
+    Inherited::onCreate(source);
+
+    if(source != NULL)
+    {
+        ApplicationBuilder *pThis = static_cast<ApplicationBuilder *>(this);
+
+        pThis->setEditingProject(source->getEditingProject());
+
+        pThis->setMainWindow(source->getMainWindow());
+
+        pThis->setSelectionModel(source->getSelectionModel());
+    }
+}
+
+GetFieldHandlePtr ApplicationBuilderBase::getHandleEditingProject  (void) const
+{
+    SFUnrecProjectPtr::GetHandlePtr returnValue(
+        new  SFUnrecProjectPtr::GetHandle(
+             &_sfEditingProject,
+             this->getType().getFieldDesc(EditingProjectFieldId),
+             const_cast<ApplicationBuilderBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationBuilderBase::editHandleEditingProject (void)
+{
+    SFUnrecProjectPtr::EditHandlePtr returnValue(
+        new  SFUnrecProjectPtr::EditHandle(
+             &_sfEditingProject,
+             this->getType().getFieldDesc(EditingProjectFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&ApplicationBuilder::setEditingProject,
+                    static_cast<ApplicationBuilder *>(this), _1));
+
+    editSField(EditingProjectFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationBuilderBase::getHandleMainWindow      (void) const
+{
+    SFUnrecMainWindowPtr::GetHandlePtr returnValue(
+        new  SFUnrecMainWindowPtr::GetHandle(
+             &_sfMainWindow,
+             this->getType().getFieldDesc(MainWindowFieldId),
+             const_cast<ApplicationBuilderBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationBuilderBase::editHandleMainWindow     (void)
+{
+    SFUnrecMainWindowPtr::EditHandlePtr returnValue(
+        new  SFUnrecMainWindowPtr::EditHandle(
+             &_sfMainWindow,
+             this->getType().getFieldDesc(MainWindowFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&ApplicationBuilder::setMainWindow,
+                    static_cast<ApplicationBuilder *>(this), _1));
+
+    editSField(MainWindowFieldMask);
+
+    return returnValue;
+}
+
+GetFieldHandlePtr ApplicationBuilderBase::getHandleSelectionModel  (void) const
+{
+    SFUnrecListSelectionModelPtr::GetHandlePtr returnValue(
+        new  SFUnrecListSelectionModelPtr::GetHandle(
+             &_sfSelectionModel,
+             this->getType().getFieldDesc(SelectionModelFieldId),
+             const_cast<ApplicationBuilderBase *>(this)));
+
+    return returnValue;
+}
+
+EditFieldHandlePtr ApplicationBuilderBase::editHandleSelectionModel (void)
+{
+    SFUnrecListSelectionModelPtr::EditHandlePtr returnValue(
+        new  SFUnrecListSelectionModelPtr::EditHandle(
+             &_sfSelectionModel,
+             this->getType().getFieldDesc(SelectionModelFieldId),
+             this));
+
+    returnValue->setSetMethod(
+        boost::bind(&ApplicationBuilder::setSelectionModel,
+                    static_cast<ApplicationBuilder *>(this), _1));
+
+    editSField(SelectionModelFieldMask);
+
+    return returnValue;
+}
+
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+void ApplicationBuilderBase::execSyncV(      FieldContainer    &oFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    ApplicationBuilder *pThis = static_cast<ApplicationBuilder *>(this);
+
+    pThis->execSync(static_cast<ApplicationBuilder *>(&oFrom),
+                    whichField,
+                    oOffsets,
+                    syncMode,
+                    uiSyncInfo);
 }
 #endif
 
 
+#ifdef OSG_MT_CPTR_ASPECT
+FieldContainer *ApplicationBuilderBase::createAspectCopy(
+    const FieldContainer *pRefAspect) const
+{
+    ApplicationBuilder *returnValue;
 
-OSG_END_NAMESPACE
+    newAspectCopy(returnValue,
+                  dynamic_cast<const ApplicationBuilder *>(pRefAspect),
+                  dynamic_cast<const ApplicationBuilder *>(this));
 
-#include <OpenSG/OSGSFieldTypeDef.inl>
-#include <OpenSG/OSGMFieldTypeDef.inl>
-
-OSG_BEGIN_NAMESPACE
-
-#if !defined(OSG_DO_DOC) || defined(OSG_DOC_DEV)
-DataType FieldDataTraits<ApplicationBuilderPtr>::_type("ApplicationBuilderPtr", "ApplicationModePtr");
+    return returnValue;
+}
 #endif
 
-OSG_DLLEXPORT_SFIELD_DEF1(ApplicationBuilderPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
-OSG_DLLEXPORT_MFIELD_DEF1(ApplicationBuilderPtr, KE_KABALAENGINELIB_DLLTMPLMAPPING);
+void ApplicationBuilderBase::resolveLinks(void)
+{
+    Inherited::resolveLinks();
+
+    static_cast<ApplicationBuilder *>(this)->setEditingProject(NULL);
+
+    static_cast<ApplicationBuilder *>(this)->setMainWindow(NULL);
+
+    static_cast<ApplicationBuilder *>(this)->setSelectionModel(NULL);
+
+
+}
+
 
 OSG_END_NAMESPACE
-

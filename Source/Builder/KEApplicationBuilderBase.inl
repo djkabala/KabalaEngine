@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
  *                             Kabala Engine                                 *
  *                                                                           *
+ *               Copyright (C) 2009-2010 by David Kabala                     *
  *                                                                           *
- *   contact: djkabala@gmail.com                                             *
+ *   authors:  David Kabala (djkabala@gmail.com)                             *
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
@@ -46,7 +47,6 @@
  *****************************************************************************
 \*****************************************************************************/
 
-#include <OpenSG/OSGConfig.h>
 
 OSG_BEGIN_NAMESPACE
 
@@ -55,99 +55,102 @@ OSG_BEGIN_NAMESPACE
 inline
 OSG::FieldContainerType &ApplicationBuilderBase::getClassType(void)
 {
-    return _type; 
-} 
+    return _type;
+}
 
 //! access the numerical type of the class
 inline
-OSG::UInt32 ApplicationBuilderBase::getClassTypeId(void) 
+OSG::UInt32 ApplicationBuilderBase::getClassTypeId(void)
 {
-    return _type.getId(); 
-} 
-
-//! create a new instance of the class
-inline
-ApplicationBuilderPtr ApplicationBuilderBase::create(void) 
-{
-    ApplicationBuilderPtr fc; 
-
-    if(getClassType().getPrototype() != OSG::NullFC) 
-    {
-        fc = ApplicationBuilderPtr::dcast(
-            getClassType().getPrototype()-> shallowCopy()); 
-    }
-    
-    return fc; 
+    return _type.getId();
 }
 
-//! create an empty new instance of the class, do not copy the prototype
 inline
-ApplicationBuilderPtr ApplicationBuilderBase::createEmpty(void) 
-{ 
-    ApplicationBuilderPtr returnValue; 
-    
-    newPtr(returnValue); 
-
-    return returnValue; 
+OSG::UInt16 ApplicationBuilderBase::getClassGroupId(void)
+{
+    return _type.getGroupId();
 }
-
 
 /*------------------------------ get -----------------------------------*/
 
-//! Get the ApplicationBuilder::_sfEditingProject field.
-inline
-const SFProjectPtr *ApplicationBuilderBase::getSFEditingProject(void) const
-{
-    return &_sfEditingProject;
-}
-
-//! Get the ApplicationBuilder::_sfEditingProject field.
-inline
-SFProjectPtr *ApplicationBuilderBase::editSFEditingProject(void)
-{
-    return &_sfEditingProject;
-}
-
-#ifndef OSG_2_PREP
-//! Get the ApplicationBuilder::_sfEditingProject field.
-inline
-SFProjectPtr *ApplicationBuilderBase::getSFEditingProject(void)
-{
-    return &_sfEditingProject;
-}
-#endif
-
 
 //! Get the value of the ApplicationBuilder::_sfEditingProject field.
 inline
-ProjectPtr &ApplicationBuilderBase::editEditingProject(void)
+Project * ApplicationBuilderBase::getEditingProject(void) const
 {
     return _sfEditingProject.getValue();
 }
-
-//! Get the value of the ApplicationBuilder::_sfEditingProject field.
-inline
-const ProjectPtr &ApplicationBuilderBase::getEditingProject(void) const
-{
-    return _sfEditingProject.getValue();
-}
-
-#ifndef OSG_2_PREP
-//! Get the value of the ApplicationBuilder::_sfEditingProject field.
-inline
-ProjectPtr &ApplicationBuilderBase::getEditingProject(void)
-{
-    return _sfEditingProject.getValue();
-}
-#endif
 
 //! Set the value of the ApplicationBuilder::_sfEditingProject field.
 inline
-void ApplicationBuilderBase::setEditingProject(const ProjectPtr &value)
+void ApplicationBuilderBase::setEditingProject(Project * const value)
 {
+    editSField(EditingProjectFieldMask);
+
     _sfEditingProject.setValue(value);
 }
 
+//! Get the value of the ApplicationBuilder::_sfMainWindow field.
+inline
+MainWindow * ApplicationBuilderBase::getMainWindow(void) const
+{
+    return _sfMainWindow.getValue();
+}
+
+//! Set the value of the ApplicationBuilder::_sfMainWindow field.
+inline
+void ApplicationBuilderBase::setMainWindow(MainWindow * const value)
+{
+    editSField(MainWindowFieldMask);
+
+    _sfMainWindow.setValue(value);
+}
+
+//! Get the value of the ApplicationBuilder::_sfSelectionModel field.
+inline
+ListSelectionModel * ApplicationBuilderBase::getSelectionModel(void) const
+{
+    return _sfSelectionModel.getValue();
+}
+
+//! Set the value of the ApplicationBuilder::_sfSelectionModel field.
+inline
+void ApplicationBuilderBase::setSelectionModel(ListSelectionModel * const value)
+{
+    editSField(SelectionModelFieldMask);
+
+    _sfSelectionModel.setValue(value);
+}
+
+
+#ifdef OSG_MT_CPTR_ASPECT
+inline
+void ApplicationBuilderBase::execSync (      ApplicationBuilderBase *pFrom,
+                                        ConstFieldMaskArg  whichField,
+                                        AspectOffsetStore &oOffsets,
+                                        ConstFieldMaskArg  syncMode,
+                                  const UInt32             uiSyncInfo)
+{
+    Inherited::execSync(pFrom, whichField, oOffsets, syncMode, uiSyncInfo);
+
+    if(FieldBits::NoField != (EditingProjectFieldMask & whichField))
+        _sfEditingProject.syncWith(pFrom->_sfEditingProject);
+
+    if(FieldBits::NoField != (MainWindowFieldMask & whichField))
+        _sfMainWindow.syncWith(pFrom->_sfMainWindow);
+
+    if(FieldBits::NoField != (SelectionModelFieldMask & whichField))
+        _sfSelectionModel.syncWith(pFrom->_sfSelectionModel);
+}
+#endif
+
+
+inline
+const Char8 *ApplicationBuilderBase::getClassname(void)
+{
+    return "ApplicationBuilder";
+}
+OSG_GEN_CONTAINERPTR(ApplicationBuilder);
 
 OSG_END_NAMESPACE
 

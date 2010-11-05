@@ -65,9 +65,9 @@ CommandType RedoCommand::_Type("RedoCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-RedoCommandPtr RedoCommand::create(ApplicationBuilderPtr TheApplicationBuilder)
+RedoCommandPtr RedoCommand::create(UndoManagerPtr TheUndoManager)
 {
-	return Ptr(new RedoCommand(TheApplicationBuilder));
+	return Ptr(new RedoCommand(TheUndoManager));
 }
 
 /***************************************************************************\
@@ -76,8 +76,7 @@ RedoCommandPtr RedoCommand::create(ApplicationBuilderPtr TheApplicationBuilder)
 
 void RedoCommand::execute(void)
 {
-	std::cout << getCommandDescription() << std::endl;
-	_TheApplicationBuilder->getUndoManager()->redo();
+	_UndoManager->redo();
 }
 
 std::string RedoCommand::getCommandDescription(void) const
@@ -100,19 +99,3 @@ RedoCommand::~RedoCommand(void)
 }
 
 /*----------------------------- class specific ----------------------------*/
-
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
-

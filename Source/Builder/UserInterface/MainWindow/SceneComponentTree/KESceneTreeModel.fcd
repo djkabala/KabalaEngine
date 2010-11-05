@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="SceneTreeModel"
+	parent="AbstractTreeModel"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="true"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
+>
+
+	<Field
+		name="InternalRoot"
+		type="Scene"
+        category="pointer"
+		cardinality="single"
+        visibility="external"
+		defaultValue="NULL"
+		fieldHeader="Project/Scene/KESceneFields.h"
+		typeHeader="Project/Scene/KEScene.h"
+		access="protected"
+	>
+   </Field>
+</FieldContainer>

@@ -311,7 +311,6 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     //Transformation Manipulators
     ManipulatorManager _XFormManipMgr;
     NodeRefPtr         _XFormManipNode;
-    ReplicateTransformRefPtr _XFormManipNodeCore;
 
     /*! \}                                                                 */
 
@@ -464,7 +463,11 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
     bool _WasMouseHidden;
     bool _WasMouseAttached;
 
+    std::vector<UIDrawingSurface*> _DebugActiveDrawingSurfaces;
+
     void updateFromSettings(void);
+    
+    void updateNavigatorFocus(void);
 
     /*==========================  PRIVATE  ================================*/
 

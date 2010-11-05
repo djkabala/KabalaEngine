@@ -107,6 +107,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     typedef ProjectEventDetails ProjectStoppedEventDetailsType;
     typedef ProjectEventDetails ProjectResetEventDetailsType;
     typedef ProjectEventDetails SceneChangedEventDetailsType;
+    typedef ProjectEventDetails ScenesChangedEventDetailsType;
     typedef WindowEventDetails WindowOpenedEventDetailsType;
     typedef WindowEventDetails WindowClosingEventDetailsType;
     typedef WindowEventDetails WindowClosedEventDetailsType;
@@ -135,6 +136,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     typedef boost::signals2::signal<void (ProjectEventDetails* const, UInt32), ConsumableEventCombiner> ProjectStoppedEventType;
     typedef boost::signals2::signal<void (ProjectEventDetails* const, UInt32), ConsumableEventCombiner> ProjectResetEventType;
     typedef boost::signals2::signal<void (ProjectEventDetails* const, UInt32), ConsumableEventCombiner> SceneChangedEventType;
+    typedef boost::signals2::signal<void (ProjectEventDetails* const, UInt32), ConsumableEventCombiner> ScenesChangedEventType;
     typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowOpenedEventType;
     typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowClosingEventType;
     typedef boost::signals2::signal<void (WindowEventDetails* const, UInt32), ConsumableEventCombiner> WindowClosedEventType;
@@ -217,7 +219,8 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
         ProjectStoppedEventId = ProjectStoppingEventId + 1,
         ProjectResetEventId = ProjectStoppedEventId + 1,
         SceneChangedEventId = ProjectResetEventId + 1,
-        WindowOpenedEventId = SceneChangedEventId + 1,
+        ScenesChangedEventId = SceneChangedEventId + 1,
+        WindowOpenedEventId = ScenesChangedEventId + 1,
         WindowClosingEventId = WindowOpenedEventId + 1,
         WindowClosedEventId = WindowClosingEventId + 1,
         WindowIconifiedEventId = WindowClosedEventId + 1,
@@ -446,6 +449,17 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     void   disconnectAllSlotsSceneChanged   (void);
     bool   isEmptySceneChanged              (void) const;
     UInt32 numSlotsSceneChanged             (void) const;
+    
+    //ScenesChanged
+    boost::signals2::connection connectScenesChanged  (const ScenesChangedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    boost::signals2::connection connectScenesChanged  (const ScenesChangedEventType::group_type &group,
+                                                       const ScenesChangedEventType::slot_type &listener,
+                                                       boost::signals2::connect_position at= boost::signals2::at_back);
+    void   disconnectScenesChanged          (const ScenesChangedEventType::group_type &group);
+    void   disconnectAllSlotsScenesChanged  (void);
+    bool   isEmptyScenesChanged             (void) const;
+    UInt32 numSlotsScenesChanged            (void) const;
     
     //WindowOpened
     boost::signals2::connection connectWindowOpened   (const WindowOpenedEventType::slot_type &listener,
@@ -720,6 +734,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     ProjectStoppedEventType _ProjectStoppedEvent;
     ProjectResetEventType _ProjectResetEvent;
     SceneChangedEventType _SceneChangedEvent;
+    ScenesChangedEventType _ScenesChangedEvent;
     WindowOpenedEventType _WindowOpenedEvent;
     WindowClosingEventType _WindowClosingEvent;
     WindowClosedEventType _WindowClosedEvent;
@@ -829,6 +844,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     GetEventHandlePtr getHandleProjectStoppedSignal(void) const;
     GetEventHandlePtr getHandleProjectResetSignal(void) const;
     GetEventHandlePtr getHandleSceneChangedSignal(void) const;
+    GetEventHandlePtr getHandleScenesChangedSignal(void) const;
     GetEventHandlePtr getHandleWindowOpenedSignal(void) const;
     GetEventHandlePtr getHandleWindowClosingSignal(void) const;
     GetEventHandlePtr getHandleWindowClosedSignal(void) const;
@@ -885,6 +901,7 @@ class KE_KABALAENGINE_DLLMAPPING ProjectBase : public AttachmentContainer
     void produceProjectStopped      (ProjectStoppedEventDetailsType* const e);
     void produceProjectReset        (ProjectResetEventDetailsType* const e);
     void produceSceneChanged        (SceneChangedEventDetailsType* const e);
+    void produceScenesChanged       (ScenesChangedEventDetailsType* const e);
     void produceWindowOpened        (WindowOpenedEventDetailsType* const e);
     void produceWindowClosing       (WindowClosingEventDetailsType* const e);
     void produceWindowClosed        (WindowClosedEventDetailsType* const e);

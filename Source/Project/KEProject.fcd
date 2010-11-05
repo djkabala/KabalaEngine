@@ -161,6 +161,14 @@ The Project.
 	>
 	</ProducedEvent>
 	<ProducedEvent
+		name="ScenesChanged"
+		detailsType="ProjectEventDetails"
+		fieldHeader="Project/KEProjectEventDetailsFields.h"
+		typeHeader="Project/KEProjectEventDetails.h"
+		consumable="true"
+	>
+	</ProducedEvent>
+	<ProducedEvent
 		name="WindowOpened"
 		detailsType="WindowEventDetails"
 		consumable="true"

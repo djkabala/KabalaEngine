@@ -3,14 +3,12 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-OpenProjectCommand::OpenProjectCommand(ApplicationBuilderPtr TheApplicationBuilder) : Inherited(),
-_TheApplicationBuilder(TheApplicationBuilder)
+OpenProjectCommand::OpenProjectCommand(void) : Inherited()
 {
 }
 
 inline
-OpenProjectCommand::OpenProjectCommand(const OpenProjectCommand& source) : Inherited(source),
-_TheApplicationBuilder(source._TheApplicationBuilder)
+OpenProjectCommand::OpenProjectCommand(const OpenProjectCommand& source) : Inherited(source)
 {
 }
 
@@ -18,7 +16,6 @@ inline
 void OpenProjectCommand::operator =(const OpenProjectCommand& source)
 {
 	Inherited::operator=(source);
-	_TheApplicationBuilder = source._TheApplicationBuilder;
 }
 
 inline 

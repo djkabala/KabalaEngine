@@ -45,11 +45,8 @@
 #include <OpenSG/OSGConfig.h>
 
 #include "KEAboutKabalaEngineCommand.h"
-#include "Builder/UserInterface/KEAboutKEWindow.h"
-#include "Builder/UserInterface/KEBuilderInterface.h"
-#include <OpenSG/UserInterface/OSGInternalWindow.h>
-#include <OpenSG/UserInterface/OSGUIDrawingSurface.h>
-#include <OpenSG/UserInterface/OSGUIDrawUtils.h>
+
+#include "Builder/UserInterface/AboutWindow/KEAboutWindow.h"
 
 OSG_USING_NAMESPACE
 
@@ -70,9 +67,9 @@ CommandType AboutKabalaEngineCommand::_Type("AboutKabalaEngineCommand", "Command
  *                           Class methods                                 *
 \***************************************************************************/
 
-AboutKabalaEngineCommandPtr AboutKabalaEngineCommand::create(ApplicationBuilderPtr TheApplicationBuilder)
+AboutKabalaEngineCommandPtr AboutKabalaEngineCommand::create(void)
 {
-	return Ptr(new AboutKabalaEngineCommand(TheApplicationBuilder));
+	return Ptr(new AboutKabalaEngineCommand());
 }
 
 /***************************************************************************\
@@ -81,19 +78,12 @@ AboutKabalaEngineCommandPtr AboutKabalaEngineCommand::create(ApplicationBuilderP
 
 void AboutKabalaEngineCommand::execute(void)
 {
-	InternalWindowPtr ParentWindow = _TheApplicationBuilder->getInterface()->getParentWindow();
-	InternalWindowPtr AboutWindow = createAboutKabalaEngineWindow();
-
-	beginEditCP(AboutWindow, InternalWindow::PositionFieldMask);
-       AboutWindow->setPosition(calculateAlignment(ParentWindow->getPosition(), ParentWindow->getSize(), AboutWindow->getPreferredSize(), 0.5f,0.5f));
-    endEditCP(AboutWindow, InternalWindow::PositionFieldMask);
-
-	ParentWindow->getDrawingSurface()->openWindow(AboutWindow);
+   openAboutWindow();
 }
 
 std::string AboutKabalaEngineCommand::getCommandDescription(void) const
 {
-	return std::string("AboutKabalaEngine");
+	return std::string("About KabalaEngine");
 }
 
 const CommandType &AboutKabalaEngineCommand::getType(void) const
@@ -111,19 +101,3 @@ AboutKabalaEngineCommand::~AboutKabalaEngineCommand(void)
 }
 
 /*----------------------------- class specific ----------------------------*/
-
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
-

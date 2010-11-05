@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<FieldContainer
+	name="ApplicationBuilder"
+	parent="ApplicationMode"
+	library="KabalaEngine"
+	pointerfieldtypes="both"
+	structure="concrete"
+	systemcomponent="false"
+	parentsystemcomponent="false"
+	decoratable="false"
+	useLocalIncludes="false"
+	libnamespace="KE"
+    authors="David Kabala (djkabala@gmail.com)                             "
+>
+The ApplicationBuilder.
+        <Field
+          name="EditingProject"
+          type="Project"
+		  category="pointer"
+          cardinality="single"
+          visibility="external"
+          access="public"
+          defaultValue="NULL"
+		  fieldHeader="Project/KEProjectFields.h"
+		  typeHeader="Project/KEProject.h"
+          >
+	 </Field>
+     <Field
+          name="MainWindow"
+          type="MainWindow"
+		  category="pointer"
+          cardinality="single"
+          visibility="external"
+          access="protected"
+          publicRead="true"
+          defaultValue="NULL"
+		  fieldHeader="Builder/UserInterface/MainWindow/KEMainWindowFields.h"
+		  typeHeader="Builder/UserInterface/MainWindow/KEMainWindow.h"
+          >
+	 </Field>
+     <Field
+          name="SelectionModel"
+          type="ListSelectionModel"
+          category="pointer"
+          cardinality="single"
+          visibility="external"
+          defaultValue="NULL"
+          access="protected"
+          >
+	 </Field>
+</FieldContainer>

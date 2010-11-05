@@ -42,22 +42,28 @@
  
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
-#include <OpenSG/OSGAttachmentContainer.h>
-#include <OpenSG/OSGNameAttachment.h>
-#include <OpenSG/OSGNode.h>
+#include <OpenSG/OSGAttachmentContainerFields.h>
+#include <OpenSG/OSGCameraFields.h>
+#include <OpenSG/OSGViewportFields.h>
+#include <OpenSG/OSGNodeFields.h>
 
 #include <string>
 
 OSG_USING_NAMESPACE
 
-bool KE_KABALAENGINE_DLLMAPPING attachName (AttachmentContainerRefPtr AttContainer);
+bool KE_KABALAENGINE_DLLMAPPING attachName (AttachmentContainer* const AttContainer);
 
-void KE_KABALAENGINE_DLLMAPPING recurseSetTravMask(NodeRefPtr RootNode, 
+void KE_KABALAENGINE_DLLMAPPING recurseSetTravMask(Node* const RootNode, 
                                                       UInt32 TravMask);
 
-void KE_KABALAENGINE_DLLMAPPING recurseSetTravMasRecord(NodeRefPtr RootNode, 
-                                                           UInt32 TravMask,
-                                                           std::vector<std::pair<NodeRefPtr, UInt32> >& NodesChanged);
+void KE_KABALAENGINE_DLLMAPPING recurseSetTravMasRecord(Node* const RootNode, 
+                                                        UInt32 TravMask,
+                                                        std::vector<std::pair<NodeRefPtr, UInt32> >& NodesChanged);
+
+void KE_KABALAENGINE_DLLMAPPING calcCameraShowAll(Camera* const LocalCamera,
+                                                  Viewport* const LocalViewport,
+                                                  const std::vector<Node* const>& NodesToShow,
+                                                  Matrix& ResultCameraBeacon);
 
 #endif /* _KE_DEFINES_H_ */
 

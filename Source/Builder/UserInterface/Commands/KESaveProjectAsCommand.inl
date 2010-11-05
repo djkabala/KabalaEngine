@@ -3,14 +3,12 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-SaveProjectAsCommand::SaveProjectAsCommand(ApplicationBuilderPtr TheApplicationBuilder) : Inherited(),
-_TheApplicationBuilder(TheApplicationBuilder)
+SaveProjectAsCommand::SaveProjectAsCommand(void) : Inherited()
 {
 }
 
 inline
-SaveProjectAsCommand::SaveProjectAsCommand(const SaveProjectAsCommand& source) : Inherited(source),
-_TheApplicationBuilder(source._TheApplicationBuilder)
+SaveProjectAsCommand::SaveProjectAsCommand(const SaveProjectAsCommand& source) : Inherited(source)
 {
 }
 
@@ -18,7 +16,6 @@ inline
 void SaveProjectAsCommand::operator =(const SaveProjectAsCommand& source)
 {
 	Inherited::operator=(source);
-	_TheApplicationBuilder = source._TheApplicationBuilder;
 }
 
 inline 

@@ -34,21 +34,20 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
-#include "Builder/KEApplicationBuilder.h"
+#include <OpenSG/OSGCommand.h>
 
 OSG_BEGIN_NAMESPACE
 
 class CloseProjectCommand;
-typedef boost::intrusive_ptr<CloseProjectCommand> CloseProjectCommandPtr;
+typedef boost::shared_ptr<CloseProjectCommand> CloseProjectCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING CloseProjectCommand: public Command
+class KE_KABALAENGINE_DLLMAPPING CloseProjectCommand: public Command
 {
 protected:
 	typedef Command Inherited;
 	typedef CloseProjectCommandPtr Ptr;
 
-	CloseProjectCommand(ApplicationBuilderPtr TheApplicationBuilder);
+	CloseProjectCommand(void);
 
 	CloseProjectCommand(const CloseProjectCommand& source);
 
@@ -57,8 +56,6 @@ protected:
 	static CommandType _Type;
 	
 	virtual void execute(void);
-
-	ApplicationBuilderPtr _TheApplicationBuilder;
 public:
 
 	virtual std::string getCommandDescription(void) const;
@@ -69,7 +66,7 @@ public:
 
 	virtual ~CloseProjectCommand(void);
 	
-	static CloseProjectCommandPtr create(ApplicationBuilderPtr TheApplicationBuilder);
+	static CloseProjectCommandPtr create(void);
 };
 
 OSG_END_NAMESPACE

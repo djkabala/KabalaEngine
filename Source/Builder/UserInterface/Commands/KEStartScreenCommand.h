@@ -34,14 +34,14 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
+#include <OpenSG/OSGCommand.h>
 
 OSG_BEGIN_NAMESPACE
 
 class StartScreenCommand;
-typedef boost::intrusive_ptr<StartScreenCommand> StartScreenCommandPtr;
+typedef boost::shared_ptr<StartScreenCommand> StartScreenCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING StartScreenCommand: public Command
+class KE_KABALAENGINE_DLLMAPPING StartScreenCommand: public Command
 {
 protected:
 	typedef Command Inherited;

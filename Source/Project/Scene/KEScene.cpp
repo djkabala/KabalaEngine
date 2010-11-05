@@ -71,6 +71,7 @@
 #include <OpenSG/OSGPhysicsHandler.h>
 #include <OpenSG/OSGPhysicsUtils.h>
 #include <OpenSG/OSGGenericEventDetails.h>
+#include <OpenSG/OSGNameAttachment.h>
 #include "Project/SceneObject/KESceneObject.h"
 
 #include <boost/filesystem/operations.hpp>
@@ -164,6 +165,8 @@ void Scene::start(void)
     attachInitialParticleSystems();
 
     _IsStarted = true;
+
+    checkBehaviorInitialization();
 }
 
 void Scene::end(void)
@@ -281,7 +284,7 @@ void Scene::attachPhysics(void)
     if(getPhysicsWorld() != NULL && getPhysicsHandler() != NULL)
     {
         PhysicsAttachmentsFinder PhysicsFinder;
-        PhysicsFinder.traverse(getViewports(0)->getRoot());
+        PhysicsFinder.traverse(getPrimaryViewport()->getRoot());
 
         //For each Body set it's world to this scenes world
         const std::vector<PhysicsBody*>& FoundBodies(PhysicsFinder.getFoundBodies());
@@ -310,9 +313,9 @@ void Scene::attachPhysics(void)
             getPhysicsHandler()->attachUpdateProducer(this);
 
             //Attach all Physics spaces without a parent space to the Physics handler
-            if(getPhysicsHandler()->getUpdateNode() != getViewports(0)->getRoot())
+            if(getPhysicsHandler()->getUpdateNode() != getPrimaryViewport()->getRoot())
             {
-                getPhysicsHandler()->setUpdateNode(getViewports(0)->getRoot());
+                getPhysicsHandler()->setUpdateNode(getPrimaryViewport()->getRoot());
             }
             if(getPhysicsHandler()->getWorld() != getPhysicsWorld())
             {
@@ -472,6 +475,20 @@ UInt32 Scene::registerNewGenericEvent(const std::string& EventName,
         SWARNING << "Scene::registerNewGenericEvent(): Attempted to reregister Event with name : " << EventName << std::endl;
         return getGenericEventId(EventName);
     }
+}
+    
+SceneObject* Scene::findParentSceneObject(Node* const SceneNode) const
+{
+    for(UInt32 i(0) ; i<getMFSceneObjects()->size() ; ++i)
+    {
+        if(getSceneObjects(i)->isDecendentNode(SceneNode))
+        {
+            return getSceneObjects(i);
+        }
+    }
+    
+    //No scene object could find this node as a decendent
+    return NULL;
 }
 
 bool Scene::unregisterNewGenericEvent(UInt32 Id)
