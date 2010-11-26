@@ -377,12 +377,12 @@ void Project::loadScripts(void)
         ModulePath = getProjectFilePath() / getLuaDirectories(i);
 
         //Set the BoostPath used for finding modules by lua
-        PackagePath += ";" + (ModulePath / "?" ).file_string() + ";"
+        PackagePath += ";" /*+ (ModulePath / "?" ).file_string() + ";"*/
                            + (ModulePath / "?.lua" ).file_string() + ";"
                            + (ModulePath / "?" /  "init.lua").file_string();
 
 
-        PackageCPath += ";" + (ModulePath / "?" ).file_string() + ";"
+        PackageCPath += ";" /*+ (ModulePath / "?" ).file_string() + ";"*/
                             + (ModulePath / PlatformLibExt  ).file_string();
 
     }

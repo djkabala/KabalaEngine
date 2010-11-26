@@ -223,13 +223,6 @@ UInt32  MainApplication::numSlotsLog(void) const
 }
 
 inline
-void MainApplication::produceLog(LogEventDetailsType* const e)
-{
-    _LogEvent.set_combiner(ConsumableEventCombiner(e));
-    _LogEvent(dynamic_cast<LogEventDetailsType* const>(e), LogEventId);
-}
-
-inline
 BoostPath MainApplication::getUserAppDataDir(void) const
 {
     return BoostPath(getPlatformUserAppDataDir()

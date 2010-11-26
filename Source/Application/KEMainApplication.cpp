@@ -996,6 +996,13 @@ void MainApplication::setCurrentMode( ApplicationMode* const value )
     _CurrentMode = value;
 }
 
+void MainApplication::produceLog(LogEventDetailsType* const e)
+{
+    ConsumableEventCombiner comb(static_cast<EventDetails* const>(e));
+    _LogEvent.set_combiner(comb);
+    _LogEvent(e, LogEventId);
+}
+
 /*-------------------------------------------------------------------------*\
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
@@ -1048,7 +1055,7 @@ void MainApplication::cleanupLoggingDir(void)
               ++DirItor )
         {
             //Remove all non-logging files
-            if ( DirItor->path().string().find_last_of(".log") == std::string::npos )
+            if ( boost::filesystem::extension(DirItor->path()).compare(".log") !=0 )
             {
                 boost::filesystem::remove(DirItor->path());
             }
