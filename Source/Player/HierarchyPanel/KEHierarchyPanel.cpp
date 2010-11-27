@@ -70,6 +70,7 @@
 #include <OpenSG/OSGMenuButton.h>
 #include <OpenSG/OSGBorderLayout.h>
 #include <OpenSG/OSGCardLayout.h>
+#include <OpenSG/OSGSceneNodeTreeComponentGenerator.h>
 
 #include <OpenSG/OSGPhysics.h>
 
@@ -129,6 +130,9 @@ void HierarchyPanel::createSceneGraphTree(void)
 
     _TheSceneGraphTree->setPreferredSize(Vec2f(100, 500));
     _TheSceneGraphTree->setModel(_TheSceneGraphTreeModel);
+
+    SceneNodeTreeComponentGeneratorRecPtr TreeCompGen = SceneNodeTreeComponentGenerator::create();
+    _TheSceneGraphTree->setCellGenerator(TreeCompGen);
 
 	
     _SceneGraphTreeKeyTypedConnection = _TheSceneGraphTree->connectKeyTyped(boost::bind(&HierarchyPanel::handleSceneGraphTreeKeyTyped, this, _1));
@@ -479,7 +483,7 @@ void HierarchyPanel::handlePasteOntoSelectedNode(EventDetails* const details)
     {
         ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
                                                this,
-                                               MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
+                                               MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot(),
                                                true);
     }
 
@@ -500,7 +504,7 @@ void HierarchyPanel::handlePasteInstOntoSelectedNode(EventDetails* const details
     {
         ThePasteCommand = PasteCommand::create(_ApplicationPlayer,
                                                this,
-                                               MainApplication::the()->getProject()->getActiveScene()->getViewports(0)->getRoot(),
+                                               MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot(),
                                                false);
     }
 

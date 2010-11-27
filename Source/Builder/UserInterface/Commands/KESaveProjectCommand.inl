@@ -3,7 +3,7 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-SaveProjectCommand::SaveProjectCommand(ApplicationBuilderPtr TheApplicationBuilder) : Inherited(),
+SaveProjectCommand::SaveProjectCommand(ApplicationBuilder* const TheApplicationBuilder) : Inherited(),
 _TheApplicationBuilder(TheApplicationBuilder)
 {
 }

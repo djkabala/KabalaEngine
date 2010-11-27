@@ -150,6 +150,10 @@ class KE_KABALAENGINE_DLLMAPPING Scene : public SceneBase
 
     Project* getParentProject(void) const;
 
+    Viewport* getPrimaryViewport(void) const;
+
+    SceneObject* findParentSceneObject(Node* const SceneNode) const;
+
     /*=========================  PROTECTED  ===============================*/
 
   protected:

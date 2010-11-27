@@ -57,6 +57,8 @@
 #include <OpenSG/OSGTextArea.h>
 #include <OpenSG/OSGCardLayout.h>
 #include <OpenSG/OSGTabPanel.h>
+#include <OpenSG/OSGStackedTransform.h>
+#include <OpenSG/OSGTransformationElement.h>
 #include <sstream>
 
 OSG_BEGIN_NAMESPACE
@@ -336,6 +338,7 @@ void ContentPanel::createSceneEditorPanel()
     _SceneEditorPanel = Panel::createEmpty();
     _SceneEditorPanelMouseClickedConnection = _SceneEditorPanel->connectMouseClicked(boost::bind(&ContentPanel::handleSceneEditorPanelMouseClicked, this, _1));
     _SceneEditorPanelMousePressedConnection = _SceneEditorPanel->connectMousePressed(boost::bind(&ContentPanel::handleSceneEditorPanelMousePressed, this, _1));
+    _SceneEditorPanelMouseMovedConnection = _SceneEditorPanel->connectMouseMoved(boost::bind(&ContentPanel::handleSceneEditorPanelMouseMoved, this, _1));
     _SceneEditorPanelMouseWheelMovedConnection = _SceneEditorPanel->connectMouseWheelMoved(boost::bind(&ContentPanel::handleSceneEditorPanelMouseWheelMoved, this, _1));
     _SceneEditorPanelKeyTypedConnection = _SceneEditorPanel->connectKeyTyped(boost::bind(&ContentPanel::handleSceneEditorPanelKeyTyped, this, _1));
 }
@@ -393,8 +396,7 @@ void ContentPanel::handleSceneEditorPanelMouseDragged(MouseEventDetails* const d
 
     if( _ApplicationPlayer->editXFormManipMgr().isManipulating() )
     {
-        _ApplicationPlayer->editXFormManipMgr().mouseMove(details->getX(),
-                                                                         details->getViewport()->getPixelHeight() - details->getY());
+        _ApplicationPlayer->editXFormManipMgr().mouseMove(details->getX(), details->getY());
     }
 }
 
@@ -439,6 +441,11 @@ void ContentPanel::handleSceneEditorPanelKeyTyped(KeyEventDetails* const details
 
 }
 
+void ContentPanel::handleSceneEditorPanelMouseMoved(MouseEventDetails* const details)
+{
+    _ApplicationPlayer->editXFormManipMgr().handleMouseMoveTest(details->getX(),details->getY());
+}
+
 void ContentPanel::handleSceneEditorPanelMousePressed(MouseEventDetails* const details)
 {
     if(dynamic_cast<WindowEventProducer*>(details->getSource())->getKeyModifiers() & KeyEventDetails::KEY_MODIFIER_ALT)
@@ -461,24 +468,14 @@ void ContentPanel::handleSceneEditorPanelMousePressed(MouseEventDetails* const d
     }
     else if(details->getButton() == MouseEventDetails::BUTTON1)
     {
-        Line ViewRay;
-        ViewportRefPtr
-            TheViewport(_ApplicationPlayer->getDebugViewport());
-        TheViewport->getCamera()->calcViewRay( ViewRay, details->getX(),details->getY(), *TheViewport);
-
-        IntersectAction *CastRayAction = IntersectAction::create();
-
-        CastRayAction->setLine( ViewRay );
-        CastRayAction->setTravMask(ApplicationPlayer::DEBUG_GRAPH_INTERSECTABLE);
-        CastRayAction->apply( TheViewport->getRoot() );             
-
-        if ( (CastRayAction->didHit()) &&
-             (_ApplicationPlayer->editXFormManipMgr().startManip( CastRayAction->getHitObject()) ) )
+        _ApplicationPlayer->editXFormManipMgr().handleMouseSelectionTest(details->getButton(), details->getX(),details->getY());
+        if (_ApplicationPlayer->editXFormManipMgr().isManipulating() )
         {
-            _ApplicationPlayer->editXFormManipMgr().mouseButtonPress(details->getButton(), details->getX(),details->getViewport()->getPixelHeight() - details->getY());
+            _SceneEditorPanelMouseDraggedConnection = dynamic_cast<WindowEventProducer*>(details->getSource())->connectMouseDragged(boost::bind(&ContentPanel::handleSceneEditorPanelMouseDragged, this, _1));
+            _SceneEditorPanelMouseReleasedConnection = dynamic_cast<WindowEventProducer*>(details->getSource())->connectMouseReleased(boost::bind(&ContentPanel::handleSceneEditorPanelMouseReleased, this, _1));
+            details->consume();
+            return;
         }
-        _SceneEditorPanelMouseDraggedConnection = dynamic_cast<WindowEventProducer*>(details->getSource())->connectMouseDragged(boost::bind(&ContentPanel::handleSceneEditorPanelMouseDragged, this, _1));
-        _SceneEditorPanelMouseReleasedConnection = dynamic_cast<WindowEventProducer*>(details->getSource())->connectMouseReleased(boost::bind(&ContentPanel::handleSceneEditorPanelMouseReleased, this, _1));
     }
 }
 
@@ -500,30 +497,41 @@ void ContentPanel::handleSceneEditorPanelMouseReleased(MouseEventDetails* const 
     {
         if(_ApplicationPlayer->editXFormManipMgr().isManipulating() )
         {
-            _ApplicationPlayer->editXFormManipMgr().mouseButtonRelease(details->getButton(), details->getX(),details->getViewport()->getPixelHeight() - details->getY());
+            _ApplicationPlayer->editXFormManipMgr().mouseButtonRelease(details->getButton(), details->getX(),details->getY());
             _ApplicationPlayer->editXFormManipMgr().endManip();
 
             Node* target(_ApplicationPlayer->editXFormManipMgr().getTarget());
             if(target &&
-               target->getCore() &&
-               target->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+               target->getCore())
             {
-                std::ostringstream initMatStrStream;
-                OutStream theinitMatOutStream(initMatStrStream);
-                FieldTraits<Matrix>::putToStream(_ApplicationPlayer->editXFormManipMgr().getManipulator()->getInitialXForm(),theinitMatOutStream);
+                if(target->getCore()->getType().isDerivedFrom(Transform::getClassType()))
+                {
+                    std::ostringstream initMatStrStream;
+                    OutStream theinitMatOutStream(initMatStrStream);
+                    FieldTraits<Matrix>::putToStream(_ApplicationPlayer->editXFormManipMgr().getManipulator()->getInitialXForm(),theinitMatOutStream);
 
 
-                std::ostringstream matStrStream;
-                OutStream theOutStream(matStrStream);
-                dynamic_cast<Transform*>(target->getCore())->getField(Transform::MatrixFieldId)->pushValueToStream(theOutStream);
+                    std::ostringstream matStrStream;
+                    OutStream theOutStream(matStrStream);
+                    dynamic_cast<Transform*>(target->getCore())->getField(Transform::MatrixFieldId)->pushValueToStream(theOutStream);
 
-                SetFieldValueCommandPtr SetCommand =
-                    SetFieldValueCommand::create(target->getCore(),
-                                                 Transform::MatrixFieldId,
-                                                 matStrStream.str(),
-                                                 initMatStrStream.str());
+                    SetFieldValueCommandPtr SetCommand =
+                        SetFieldValueCommand::create(target->getCore(),
+                                                     Transform::MatrixFieldId,
+                                                     matStrStream.str(),
+                                                     initMatStrStream.str());
 
-                _ApplicationPlayer->getCommandManager()->executeCommand(SetCommand);
+                    _ApplicationPlayer->getCommandManager()->executeCommand(SetCommand);
+                }
+                else if(target->getCore()->getType().isDerivedFrom(StackedTransform::getClassType()))
+                {
+                    //Translate
+                    //RotateX
+                    //RotateY
+                    //RotateZ
+                    //Scale
+                }
+                details->consume();
             }
         }
     }
@@ -534,7 +542,29 @@ void ContentPanel::handleSceneEditorPanelMouseReleased(MouseEventDetails* const 
 void ContentPanel::handleSceneEditorPanelMouseWheelMoved(MouseWheelEventDetails* const details)
 {
     Navigator& TheNav(_ApplicationPlayer->getDebugSceneNavigator());
-    TheNav.setDistance(TheNav.getDistance() + details->getUnitsToScroll() * TheNav.getMotionFactor());
+
+    if(TheNav.getMode() != Navigator::NONE)
+    {
+        if(details->getUnitsToScroll() > 0)
+        {
+            for(UInt32 i(0) ; i<details->getUnitsToScroll() ;++i)
+            {
+                TheNav.buttonPress(Navigator::DOWN_MOUSE,details->getLocation().x(),details->getLocation().y());
+                TheNav.buttonRelease(Navigator::DOWN_MOUSE,details->getLocation().x(),details->getLocation().y());
+                TheNav.updateCameraTransformation();
+            }
+        }
+        else if(details->getUnitsToScroll() < 0)
+        {
+            for(UInt32 i(0) ; i<abs(details->getUnitsToScroll()) ;++i)
+            {
+                TheNav.buttonPress(Navigator::UP_MOUSE,details->getLocation().x(),details->getLocation().y());
+                TheNav.buttonRelease(Navigator::UP_MOUSE,details->getLocation().x(),details->getLocation().y());
+                TheNav.updateCameraTransformation();
+            }
+        }
+    }
+    details->setConsumed(true);
 }
 
 /*-------------------------------------------------------------------------*\
@@ -551,6 +581,7 @@ void ContentPanel::resolveLinks(void)
     _SceneEditorPanelMouseDraggedConnection.disconnect();
     _SceneEditorPanelMouseClickedConnection.disconnect();
     _SceneEditorPanelMousePressedConnection.disconnect();
+    _SceneEditorPanelMouseMovedConnection.disconnect();
     _SceneEditorPanelMouseReleasedConnection.disconnect();
     _SceneEditorPanelMouseWheelMovedConnection.disconnect();
     _SceneEditorPanelKeyTypedConnection.disconnect();

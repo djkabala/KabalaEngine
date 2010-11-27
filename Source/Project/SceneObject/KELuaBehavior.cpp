@@ -84,13 +84,13 @@ void LuaBehavior::initMethod(InitPhase ePhase)
 
 LuaBehaviorType* const LuaBehavior::getLuaBehaviorType(void) const
 {
-    return dynamic_cast<LuaBehaviorType* const>(theBehaviorType);
+    return dynamic_cast<LuaBehaviorType* const>(_BehaviorType);
 }
 
 void LuaBehavior::initEvents(SceneObject* const rootSceneObject)
 {
     getLuaBehaviorType()->registerWithScene(rootSceneObject->getParentScene());
-    eventsInitted = true;
+    _EventsInitted = true;
 }
 
 void LuaBehavior::initLinks(SceneObject* const rootSceneObject)
@@ -178,7 +178,7 @@ void LuaBehavior::initLinks(SceneObject* const rootSceneObject)
                 }
                 UInt32 EventID(fc->getProducerType().getProducedEventId(getLuaBehaviorType()->getEventLinks()[i]));
                 fc->connectEvent(EventID, boost::bind(&LuaBehavior::handleDepFieldContainerEvent, this, _1, EventID));
-                linksMade++;
+                _LinksMade++;
             }
             else
             {

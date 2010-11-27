@@ -48,32 +48,34 @@
 
 // Input
 #include <OpenSG/OSGWindowUtils.h>
-#include <OpenSG/OSGSimpleGeometry.h>
-#include <OpenSG/OSGGroup.h>
-#include <OpenSG/OSGSolidBackground.h>
-#include <OpenSG/OSGTextureBackground.h>
-#include <OpenSG/OSGTextureObjChunk.h>
-#include <OpenSG/OSGImageFileHandler.h>
 #include <OpenSG/OSGViewport.h>
-#include <OpenSG/OSGTransform.h>
-#include <OpenSG/OSGPointLight.h>
-#include <OpenSG/OSGPerspectiveCamera.h>
 #include <OpenSG/OSGNameAttachment.h>
-
 
 #include "KEApplicationSettings.h"
 #include "KEApplicationMode.h"
+#include "KEDefaults.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
 
 // UserInterface Headers
 #include "Application/KELookAndFeel.h"
 
-//TODO: Uncomment
-//#include "KEApplicationBuilder.h"
+#ifdef BUILD_WITH_WORLD_BUILDER
+#include "Builder/KEApplicationBuilder.h"
+#include "Builder/UserInterface/MainWindow/KEMainWindow.h"
+#include "Builder/UserInterface/MainWindow/MainMenu/KEMainMenu.h"
+#include "Builder/UserInterface/MainWindow/MainToolbar/KEMainToolbar.h"
+#include "Builder/UserInterface/MainWindow/StatusBar/KEStatusBar.h"
+#include "Builder/UserInterface/MainWindow/HelpPanel/KEHelpPanel.h"
+#include "Builder/UserInterface/MainWindow/SceneComponentTree/KESceneComponentTree.h"
+#include "Builder/UserInterface/MainWindow/SceneNavigationPanel/KESceneNavigationPanel.h"
+#include "Builder/UserInterface/MainWindow/SceneViewportPanel/KESceneViewportPanel.h"
+#include "Builder/UserInterface/MainWindow/SceneViewportToolbar/KESceneViewportToolbar.h"
+#include "Builder/UserInterface/MainWindow/Editors/KEEditors.h"
+#endif
+
 #include "Player/KEApplicationPlayer.h"
 #include "StartScreen/KEApplicationStartScreen.h"
-//#include "KEFieldContainerEditorFactory.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -180,16 +182,16 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<Real32>("basic.default_scene.camera.near_plane", 0.1f, overwriteIfDefined);
     TheSettings.put<Real32>("basic.default_scene.camera.far_plane", 5000.0f, overwriteIfDefined);
     TheSettings.put<Real32>("basic.default_scene.camera.fov", 60.0f, overwriteIfDefined);
-    TheSettings.put<Pnt3f>("basic.default_scene.camera.position", Pnt3f(0.0f,0.0f, 9.0f), overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.camera.position", Pnt3f(0.0f,8.0f, 9.0f), overwriteIfDefined);
     
     TheSettings.put<bool>("basic.default_scene.torus.draw", true, overwriteIfDefined);
-    TheSettings.put<Pnt3f>("basic.default_scene.torus.position", Pnt3f(0.0f,0.0f, 0.0f), overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.torus.position", Pnt3f(0.0f,8.0f, 0.0f), overwriteIfDefined);
     
     TheSettings.put<bool>("basic.default_scene.box.draw", true, overwriteIfDefined);
-    TheSettings.put<Pnt3f>("basic.default_scene.box.position", Pnt3f(5.0f,0.0f, 0.0f), overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.box.position", Pnt3f(5.0f,8.0f, 0.0f), overwriteIfDefined);
     
     TheSettings.put<bool>("basic.default_scene.cone.draw", true, overwriteIfDefined);
-    TheSettings.put<Pnt3f>("basic.default_scene.cone.position", Pnt3f(-5.0f,0.0f, 0.0f), overwriteIfDefined);
+    TheSettings.put<Pnt3f>("basic.default_scene.cone.position", Pnt3f(-5.0f,8.0f, 0.0f), overwriteIfDefined);
     
     //TheSettings.put<bool>("basic.default_scene.point_light.draw", true, overwriteIfDefined);
     TheSettings.put<Pnt3f>("basic.default_scene.point_light.position", Pnt3f(0.0f,5.0f, 5.0f), overwriteIfDefined);
@@ -294,6 +296,15 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
 	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.collide_mask",          4294967295, overwriteIfDefined);
 	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.category_mask",          4294967295, overwriteIfDefined);
 
+
+#ifdef BUILD_WITH_WORLD_BUILDER
+    //Builder Settings
+    TheSettings.put<BoostPath>("builder.ui.main_window.path", BoostPath("./UI/Builder/MainWindow.xml") , overwriteIfDefined);
+    TheSettings.put<BoostPath>("builder.ui.about_window.path", BoostPath("./UI/Builder/AboutWindow.xml") , overwriteIfDefined);
+    TheSettings.put<BoostPath>("builder.ui.credits_window.path", BoostPath("./UI/Builder/CreditsWindow.xml") , overwriteIfDefined);
+    TheSettings.put<BoostPath>("builder.ui.visual_annotations.camera.path", BoostPath("./UI/Models/Camera.osb") , overwriteIfDefined);
+    
+#endif
 }
 
 ApplicationSettings MainApplication::createDefaultSettings(void)
@@ -532,23 +543,28 @@ Int32 MainApplication::run(int argc, char **argv)
         if(LastOpenedProjectFile)
         {
             loadProject(LastOpenedProjectFile.get());
+            commitChanges();
         }
     }
 
     if(getProject() == NULL)
     {
         //Project Failed to load, or file didn't exist
-        setProject(createDefaultProject());
+        ProjectRecPtr NewProject = createDefaultProject();
+        setProject(NewProject);
     }
 
     //Detach the loading screen
     detachLoadingScreen();
 
+#ifdef BUILD_WITH_WORLD_BUILDER
     if(OptionsVariableMap.count("builder"))
     {
         attachBuilder();
     }
-    else if(OptionsVariableMap.count("play"))
+    else 
+#endif
+        if(OptionsVariableMap.count("play"))
     {
         attachPlayer();
         if(OptionsVariableMap.count("debug"))
@@ -558,11 +574,14 @@ Int32 MainApplication::run(int argc, char **argv)
     }
     else
     {
+#ifdef BUILD_WITH_WORLD_BUILDER
         if(getSettings().get<std::string>("basic.initial_mode").compare(std::string("builder")) == 0)
         {
             attachBuilder();
         }
-        else if(getSettings().get<std::string>("basic.initial_mode").compare(std::string("play")) == 0)
+        else
+#endif
+            if(getSettings().get<std::string>("basic.initial_mode").compare(std::string("play")) == 0)
         {
             attachPlayer();
             if(OptionsVariableMap.count("debug") || getSettings().get<bool>("player.debugger.initially_active"))
@@ -653,6 +672,7 @@ void MainApplication::attachStartScreen(void)
     getCurrentMode()->start();
 }
 
+#ifdef BUILD_WITH_WORLD_BUILDER
 void MainApplication::attachBuilder(void)
 {
     createDefaultBuilderMode();
@@ -668,6 +688,21 @@ void MainApplication::attachBuilder(void)
 
     getCurrentMode()->start();
 }
+
+void MainApplication::createDefaultBuilderMode(void)
+{
+    if(getBuilderMode() == NULL)
+    {
+        ApplicationModeRecPtr BuilderMode = ApplicationBuilder::create();
+        setBuilderMode(BuilderMode);
+    }
+}
+
+void MainApplication::setBuilderMode( ApplicationMode* const value )
+{
+    _BuilderMode = value;
+}
+#endif
 
 void MainApplication::attachPlayer(void)
 {
@@ -700,7 +735,16 @@ void MainApplication::updateRecentProject(const BoostPath& ProjectFile)
     getSettings().put<BoostPath>("basic.last_opened_project",ProjectFile);
 
     //Update Recent Projects
-    std::vector<BoostPath> RecentProjects(getSettings().get_vec<BoostPath>("basic.recent_projects"));
+    std::vector<BoostPath> RecentProjects;
+    
+    try
+    {
+        RecentProjects = getSettings().get_vec<BoostPath>("basic.recent_projects.files");
+    }
+    catch(boost::property_tree::ptree_bad_path&)
+    {
+    }
+
     std::vector<BoostPath>::iterator SearchItor(RecentProjects.begin());
     for( ; SearchItor!=RecentProjects.end() ; ++SearchItor)
     {
@@ -713,18 +757,18 @@ void MainApplication::updateRecentProject(const BoostPath& ProjectFile)
     {
         RecentProjects.erase(SearchItor);
     }
-    RecentProjects.push_back(ProjectFile);
+    RecentProjects.insert(RecentProjects.begin(), ProjectFile);
 
     //Resize
     UInt32 MaxRecProj(getSettings().get<UInt32>("basic.recent_projects.max"));
-    while(RecentProjects.size() > MaxRecProj)
+    if(RecentProjects.size() > MaxRecProj)
     {
         //Pop off the front
-        RecentProjects.erase(RecentProjects.begin());
+        RecentProjects.resize(MaxRecProj);
     }
 
 
-    getSettings().put_vec("basic.recent_projects.file", RecentProjects);
+    getSettings().put_vec("basic.recent_projects.files.file", RecentProjects);
 
 }
 
@@ -771,15 +815,6 @@ void MainApplication::loadSettings(const BoostPath& SettingsFile)
     setSettings(LoadedSettings);
 }
 
-void MainApplication::createDefaultBuilderMode(void)
-{
-    if(getBuilderMode() == NULL)
-    {
-    //TODO: Uncomment
-        //setBuilderMode(ApplicationBuilder::create());
-    }
-}
-
 void MainApplication::createDefaultPlayerMode(void)
 {
     if(getPlayerMode() == NULL)
@@ -803,149 +838,6 @@ void MainApplication::exit(void)
     getMainWindow()->closeWindow();
 }
 
-SceneRefPtr MainApplication::createDefaultScene(void)
-{
-    //The Default Scene
-    //Camera Transformation Node
-    Matrix CameraTransformMatrix;
-    CameraTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.camera.position"));
-    TransformRefPtr CameraBeaconTransform = Transform::create();
-    CameraBeaconTransform->setMatrix(CameraTransformMatrix);
-
-    NodeRefPtr CameraBeaconNode = Node::create();
-    setName(CameraBeaconNode, "Camera Beacon" );
-    CameraBeaconNode->setCore(CameraBeaconTransform);
-
-    //Camera
-    PerspectiveCameraRefPtr DefaultSceneCamera = PerspectiveCamera::create();
-    setName(DefaultSceneCamera, "Untitled Camera" );
-
-    DefaultSceneCamera->setFov(getSettings().get<Real32>("basic.default_scene.camera.fov"));
-    DefaultSceneCamera->setNear(getSettings().get<Real32>("basic.default_scene.camera.near_plane"));
-    DefaultSceneCamera->setFar(getSettings().get<Real32>("basic.default_scene.camera.far_plane"));
-    DefaultSceneCamera->setBeacon(CameraBeaconNode);
-
-    //Light Beacon
-    Matrix LightTransformMatrix;
-    LightTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.point_light.position"));
-    TransformRefPtr LightBeaconTransform = Transform::create();
-    LightBeaconTransform->setMatrix(LightTransformMatrix);
-
-    NodeRefPtr LightBeaconNode = Node::create();
-    setName(LightBeaconNode, "Light Beacon" );
-    LightBeaconNode->setCore(LightBeaconTransform);
-
-    //Make the Light
-    PointLightRefPtr ThePointLight = PointLight::create();
-
-    ThePointLight->setBeacon(LightBeaconNode);
-
-    NodeRefPtr LightNode = Node::create();
-    setName(LightNode, "Light " );
-    LightNode->setCore(ThePointLight);
-
-    // Make Torus Node (creates Torus in background of scene)
-    if(getSettings().get<bool>("basic.default_scene.torus.draw"))
-    {
-        NodeRefPtr TorusGeometryNode = makeTorus(.5, 2, 64, 64);
-        setName(TorusGeometryNode, "Torus" );
-
-        Matrix TorusTransformMatrix;
-        TorusTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.torus.position"));
-
-        TransformRefPtr TorusTransform = Transform::create();
-        TorusTransform->setMatrix(TorusTransformMatrix);
-
-        NodeRefPtr TorusTransformNode = Node::create();
-        setName(TorusTransformNode, "Torus Transform" );
-        TorusTransformNode->setCore(TorusTransform);
-        TorusTransformNode->addChild(TorusGeometryNode);
-
-        LightNode->addChild(TorusTransformNode);
-    }
-
-    if(getSettings().get<bool>("basic.default_scene.box.draw"))
-    {
-        // Make Box Node (creates Box in background of scene)
-        NodeRefPtr BoxGeometryNode = makeBox(3.0f, 3.0f, 3.0f, 8, 8, 8);
-        setName(BoxGeometryNode, "Box" );
-
-        Matrix BoxTransformMatrix;
-        BoxTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.box.position"));
-
-        TransformRefPtr BoxTransform = Transform::create();
-        BoxTransform->setMatrix(BoxTransformMatrix);
-
-        NodeRefPtr BoxTransformNode = Node::create();
-        setName(BoxTransformNode, "Box Transform" );
-        BoxTransformNode->setCore(BoxTransform);
-        BoxTransformNode->addChild(BoxGeometryNode);
-        LightNode->addChild(BoxTransformNode);
-    }
-
-
-    if(getSettings().get<bool>("basic.default_scene.cone.draw"))
-    {
-        // Make Cone Node (creates Cone in background of scene)
-        NodeRefPtr ConeGeometryNode = makeCone(3.5, 1.5f, 96, true, true);
-        setName(ConeGeometryNode, "Cone" );
-
-        Matrix ConeTransformMatrix;
-        ConeTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.default_scene.cone.position"));
-
-        TransformRefPtr ConeTransform = Transform::create();
-        ConeTransform->setMatrix(ConeTransformMatrix);
-
-        NodeRefPtr ConeTransformNode = Node::create();
-        setName(ConeTransformNode, "Cone Transform" );
-        ConeTransformNode->setCore(ConeTransform);
-        ConeTransformNode->addChild(ConeGeometryNode);
-        LightNode->addChild(ConeTransformNode);
-    }
-
-    //Scene Root Node
-    NodeRefPtr DefaultSceneNode = Node::create();
-    setName(DefaultSceneNode, "Scene Root" );
-    DefaultSceneNode->setCore(OSG::Group::create());
-    DefaultSceneNode->addChild(LightBeaconNode);
-    DefaultSceneNode->addChild(CameraBeaconNode);
-    DefaultSceneNode->addChild(LightNode);
-
-    //Background
-    SolidBackgroundRefPtr DefaultSceneBackground = SolidBackground::create();
-    setName(DefaultSceneBackground, "Untitled Background" );
-    DefaultSceneBackground->setColor(getSettings().get<Color3r>("basic.default_scene.background.color"));
-
-    //Viewport
-    ViewportRefPtr DefaultSceneViewport = Viewport::create();
-    setName(DefaultSceneViewport, "Untitled Viewport" );
-    DefaultSceneViewport->setSize(0.0,0.0,1.0,1.0);
-    DefaultSceneViewport->setCamera(DefaultSceneCamera);
-    DefaultSceneViewport->setBackground(DefaultSceneBackground);
-    DefaultSceneViewport->setRoot(DefaultSceneNode);
-
-
-    SceneRefPtr TheDefaultScene = Scene::create();
-    setName(TheDefaultScene, "Untitled Scene" );
-
-    TheDefaultScene->pushToViewports(DefaultSceneViewport);
-
-    return TheDefaultScene;
-}
-
-ProjectRefPtr MainApplication::createDefaultProject(void)
-{
-    ProjectRefPtr TheDefaultProject = ProjectBase::create();
-
-
-    SceneRefPtr TheDefaultScene(createDefaultScene());
-
-    TheDefaultProject->pushToScenes(TheDefaultScene);
-    TheDefaultProject->setInitialScene(TheDefaultScene);	
-    setName(TheDefaultProject,"Untitled Project");
-
-    return TheDefaultProject;
-}
 
 
 void MainApplication::setSettings( const ApplicationSettings &value )
@@ -974,11 +866,6 @@ void MainApplication::setProject ( Project* const value )
     {
         SLOG << "Set Project to " << ( getName(_Project) ? getName(_Project) : "UNNAMED_PROJECT" ) << std::endl;
     }
-}
-
-void MainApplication::setBuilderMode( ApplicationMode* const value )
-{
-    _BuilderMode = value;
 }
 
 void MainApplication::setPlayerMode( ApplicationMode* const value )
@@ -1188,84 +1075,11 @@ void MainApplication::handleCrashLastExecution(void)
     removeCrashIndicationFile();
 }
 
-ViewportTransitPtr MainApplication::createLoadingViewport(void)
-{
-    //Camera Transformation Node
-    Matrix CameraTransformMatrix;
-    CameraTransformMatrix.setTranslate(getSettings().get<Pnt3f>("basic.loading_viewport.camera.position"));
-    TransformRefPtr CameraBeaconTransform = Transform::create();
-
-    NodeRefPtr CameraBeaconNode = Node::create();
-    CameraBeaconNode->setCore(CameraBeaconTransform);
-
-    //Camera
-    PerspectiveCameraRefPtr DefaultCamera = PerspectiveCamera::create();
-
-    DefaultCamera->setFov(getSettings().get<Real32>("basic.loading_viewport.camera.fov"));
-    DefaultCamera->setNear(getSettings().get<Real32>("basic.loading_viewport.camera.near_plane"));
-    DefaultCamera->setFar(getSettings().get<Real32>("basic.loading_viewport.camera.far_plane"));
-    DefaultCamera->setBeacon(CameraBeaconNode);
-
-    // Root Node
-    NodeRefPtr DefaultNode = Node::create();
-    DefaultNode->setCore(OSG::Group::create());
-    DefaultNode->addChild(CameraBeaconNode);
-
-    //Background
-    BoostPath LoadingImagePath = getSettings().get<BoostPath>("basic.loading_viewport.background.image_path");
-
-    BackgroundRefPtr DefaultBackground;
-    if(!LoadingImagePath.empty())
-    {
-        if(boost::filesystem::exists(LoadingImagePath))
-        {
-            ImageRefPtr LoadingImage = ImageFileHandler::the()->read(LoadingImagePath.string().c_str());
-            if(LoadingImage != NULL)
-            {
-                TextureObjChunkRefPtr LoadingTexture = TextureObjChunk::create();
-                LoadingTexture->setImage(LoadingImage);
-                LoadingTexture->setMinFilter(GL_LINEAR);
-
-                DefaultBackground = TextureBackground::create();
-                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->setTexture(LoadingTexture);
-                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->editMFTexCoords()->push_back(Pnt2f(0.0f,0.0f));
-                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->editMFTexCoords()->push_back(Pnt2f(1.0f,0.0f));
-                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->editMFTexCoords()->push_back(Pnt2f(1.0f,1.0f));
-                dynamic_pointer_cast<TextureBackground>(DefaultBackground)->editMFTexCoords()->push_back(Pnt2f(0.0f,1.0f));
-            }
-            else
-            {
-                SWARNING << "Failed to load 'loading image' from: " << LoadingImagePath.string() << std::endl;
-            }
-        }
-        else
-        {
-            SWARNING << "Loading image file does not exist: " << LoadingImagePath.string() << std::endl;
-        }
-    }
-
-    //If the image failed to load
-    if(DefaultBackground == NULL)
-    {
-        DefaultBackground = SolidBackground::create();
-        dynamic_pointer_cast<SolidBackground>(DefaultBackground)->setColor(getSettings().get<Color3r>("basic.loading_viewport.background.color"));
-    }
-
-    //Viewport
-    ViewportRefPtr DefaultViewport = Viewport::create();
-    DefaultViewport->setSize(0.0,0.0,1.0,1.0);
-    DefaultViewport->setCamera(DefaultCamera);
-    DefaultViewport->setBackground(DefaultBackground);
-    DefaultViewport->setRoot(DefaultNode);
-
-    return ViewportTransitPtr(DefaultViewport);
-}
-
  void MainApplication::attachLoadingScreen(void)
  {
      if(_LoadingViewport == NULL)
      {
-         _LoadingViewport = createLoadingViewport();
+         _LoadingViewport = createDefaultLoadingViewport();
      }
      getMainWindow()->addPort(_LoadingViewport);
  }

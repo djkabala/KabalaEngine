@@ -590,6 +590,50 @@ void ProjectBase::produceSceneChanged(SceneChangedEventDetailsType* const e)
 }
 
 inline
+boost::signals2::connection  ProjectBase::connectScenesChanged(const ScenesChangedEventType::slot_type &listener, 
+                                                                               boost::signals2::connect_position at)
+{
+    return _ScenesChangedEvent.connect(listener, at);
+}
+
+inline
+boost::signals2::connection  ProjectBase::connectScenesChanged(const ScenesChangedEventType::group_type &group,
+                                                    const ScenesChangedEventType::slot_type &listener, boost::signals2::connect_position at)
+{
+    return _ScenesChangedEvent.connect(group, listener, at);
+}
+
+inline
+void  ProjectBase::disconnectScenesChanged(const ScenesChangedEventType::group_type &group)
+{
+    _ScenesChangedEvent.disconnect(group);
+}
+
+inline
+void  ProjectBase::disconnectAllSlotsScenesChanged(void)
+{
+    _ScenesChangedEvent.disconnect_all_slots();
+}
+
+inline
+bool  ProjectBase::isEmptyScenesChanged(void) const
+{
+    return _ScenesChangedEvent.empty();
+}
+
+inline
+UInt32  ProjectBase::numSlotsScenesChanged(void) const
+{
+    return _ScenesChangedEvent.num_slots();
+}
+
+inline
+void ProjectBase::produceScenesChanged(ScenesChangedEventDetailsType* const e)
+{
+    produceEvent(ScenesChangedEventId, e);
+}
+
+inline
 boost::signals2::connection  ProjectBase::connectWindowOpened(const WindowOpenedEventType::slot_type &listener, 
                                                                                boost::signals2::connect_position at)
 {

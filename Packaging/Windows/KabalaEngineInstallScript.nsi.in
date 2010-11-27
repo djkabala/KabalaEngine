@@ -1,29 +1,105 @@
+!include "MUI2.nsh"
+!include "FileFunc.nsh"
+
 # name the installer
 !define ProjectName "@NSIS_PROJECT_NAME@"
 !define SMPROGRAMSFolder $SMPROGRAMS\${ProjectName}
 !define OutFileName Install${ProjectName}.exe
 !define InstallDirName ${ProjectName}
 !define UninstallFileName "Uninstall ${ProjectName}.exe"
+!define VERSION "@KABALA_ENGINE_VERSION@"
+!define Publisher "Iowa State University"
+!define Description "A VR/Game Authoring Engine"
+!define HelpLink  "http://www.vrac.iastate.edu/~dkabala"
+!define URLUpdateInfo  "http://www.vrac.iastate.edu/~dkabala"
+!define URLInfoAbout  "http://www.vrac.iastate.edu/~dkabala"
 
 !define ProjectRootDir "@CMAKE_SOURCE_DIR@"
 
 outFile "${OutFileName}"
+;--------------------------------
+;General
 
-# define the directory to install to, the desktop in this case as specified  
-# by the predefined $DESKTOP variable
-installDir $PROGRAMFILES\${InstallDirName}
+  ;Name and file
+  Name "${ProjectName}"
+  OutFile "Install${ProjectName}-${VERSION}.exe"
 
-Page license
-   LicenseText "GNU Library General Public License v. 3"
-   LicenseData "${ProjectRootDir}\LICENSE.txt"
-   LicenseForceSelection checkbox
+  ;Default installation folder
+  InstallDir "$LOCALAPPDATA\${ProjectName}"
+  
+  ;Get installation folder from registry if available
+  InstallDirRegKey HKCU "Software\${ProjectName}" ""
+
+  ;Request application privileges for Windows Vista
+  RequestExecutionLevel user
+  
+;--------------------------------
+;Variables
+
+  Var StartMenuFolder
+  
+;--------------------------------
+;Interface Configuration
+
+  !define MUI_HEADERIMAGE
+  ;!define MUI_HEADERIMAGE_BITMAP "${InputDirName}\Release\MetablastLogo.bmp" ; optional
+  
+  !define MUI_ICON "${ProjectRootDir}\Data\UI\Icons\EngineLogo.ico"
+  ;!define MUI_UNICON "${InputDirName}\Release\Meta Icon.ico"
+  
+  !define MUI_ABORTWARNING
+  
+
+;--------------------------------
+;Windows 7 taskbar progress
+   ;!addplugindir ".\"
    
-Page components
-Page Directory
-Page instfiles
+   ;Function createInstFiles
+   ;  w7tbp::Start
+   ;FunctionEnd
+    
+   ;!define MUI_PAGE_CUSTOMFUNCTION_PRE createInstFiles
+  ; page instfiles "" createInstFiles
+   
+;--------------------------------
+;Pages
 
-UninstPage uninstConfirm
-UninstPage instfiles
+  !insertmacro MUI_PAGE_LICENSE "${ProjectRootDir}\LICENSE.txt"
+
+  ;!insertmacro MUI_PAGE_WELCOME
+  !insertmacro MUI_PAGE_COMPONENTS
+  !insertmacro MUI_PAGE_DIRECTORY  
+  
+  ;Start Menu Folder Page Configuration
+  !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${ProjectName}" 
+  !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+  
+  !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
+  
+  !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_PAGE_FINISH
+
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_COMPONENTS
+  !insertmacro MUI_UNPAGE_INSTFILES
+  
+;--------------------------------
+;Languages
+
+  !insertmacro MUI_LANGUAGE "English"
+
+;--------------------------------
+;Version Information
+  VIProductVersion ${VERSION}
+  
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "${ProjectName}"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductVersion" "${VERSION}"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "${Publisher}"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "${Description}"
+
+;--------------------------------
 
 # default section start; every NSIS script has at least one section.
 section
@@ -40,13 +116,32 @@ section
    # define uninstaller name
    writeUninstaller "$INSTDIR\${UninstallFileName}"
    
-   #Create OpenSGToolbox environment variable
-   
-   # create a shortcut named "new shortcut" in the start menu programs directory
-   # presently, the new shortcut doesn't call anything (the second field is blank)
-   CreateDirectory "${SMPROGRAMSFolder}"
-   createShortCut "${SMPROGRAMSFolder}\${ProjectName}.lnk" "$INSTDIR\KabalaEngine.exe"
-   createShortCut "${SMPROGRAMSFolder}\Uninstall ${ProjectName}.lnk" "$INSTDIR\${UninstallFileName}"
+   ;Add Add/Remove programs options
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" \
+                 "DisplayName" "${ProjectName} -- ${Description}"
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" \
+                 "UninstallString" "$INSTDIR\${UninstallFileName}$\""
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" \
+                 "DisplayVersion" "${VERSION}"
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" \
+                 "DisplayIcon" "$INSTDIR\Meta Icon.ico"
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" \
+                 "Publisher" "${Publisher}"
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" \
+                 "HelpLink" "${HelpLink}"
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" \
+                 "URLUpdateInfo" "${URLUpdateInfo}"
+   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" \
+                 "URLInfoAbout " "${URLInfoAbout}"
+     
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+    
+    ;Create shortcuts
+    CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\World Builder.lnk" "$INSTDIR\KabalaEngine.exe" '-b' "$INSTDIR\share\KabalaEngine\Data\UI\Icons\EngineLogo.ico" "0"
+    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\${UninstallFileName}"
+  
+  !insertmacro MUI_STARTMENU_WRITE_END
 
 # default section end
 sectionEnd
@@ -99,16 +194,14 @@ section "Main Application"
    File "@CMAKE_BINARY_DIR@\Release\KabalaEngine.exe"
    
    #Create the Data Directory
-   CreateDirectory $INSTDIR\Data
+   File /r "@CMAKE_INSTALL_PREFIX@\share"
    
-   CreateDirectory $INSTDIR\Data\Models
-   setOutPath $INSTDIR\Data\Models
-   File "${ProjectRootDir}\Data\Models\TorusKnot.osb"
-   
-   CreateDirectory $INSTDIR\Data\Images
-   CreateDirectory $INSTDIR\Data\Images\icons
-   setOutPath $INSTDIR\Data\Images\icons
-   File /nonfatal /r "${ProjectRootDir}\Data\Images\icons\"
+   ;Register the size estimate of this install
+   ;This needs to be after adding all of the files in the script
+   ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+   IntFmt $0 "0x%08X" $0
+   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}" "EstimatedSize" "$0"
+
 sectionEnd
 
 section "Documentation"
@@ -122,18 +215,21 @@ sectionEnd
 
 # create a section to define what the uninstaller does.
 # the section will always be named "Uninstall"
-section "un.Uninstall ${ProjectName}"
+section "un.${ProjectName}"
+    Delete "$INSTDIR\${UninstallFileName}"
 
-   # Always delete uninstaller first
-   delete "$INSTDIR\${UninstallFileName}"
+    RMDir /r "$INSTDIR"
     
-   #Remove the Install Directory
-   RMDir /r $INSTDIR
-   
-   # now delete installed file
-   #delete $INSTDIR\test.txt
-   
-   # second, remove the link from the start menu
-   RMDir /r "${SMPROGRAMSFolder}"
+    !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
+    
+    Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"
+    Delete "$SMPROGRAMS\$StartMenuFolder\${ProjectName}.lnk"
+    RMDir /r "$SMPROGRAMS\$StartMenuFolder"
+
+
+    DeleteRegKey /ifempty HKCU "Software\${ProjectName}"
+    
+   ;Remove Add/Remove programs options
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProjectName}"
  
 sectionEnd

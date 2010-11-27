@@ -49,22 +49,9 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-bool Behavior::eventsAreInitted()
+BehaviorType * Behavior::getBehaviorType(void) const
 {
-	return Behavior::eventsInitted;
-}
-
-
-inline
-bool Behavior::isLinked()
-{
-	return Behavior::linksMade == theBehaviorType->getEventLinks().size();
-}
-
-inline
-BehaviorType * Behavior::getBehaviorType(void)
-{
-	return theBehaviorType;
+	return _BehaviorType;
 }
 
 OSG_END_NAMESPACE

@@ -43,7 +43,7 @@
 #include "KEKabalaEngineDef.h"
 
 #include <OpenSG/OSGCommand.h>
-#include "Player/KEApplicationPlayer.h"
+#include "Player/KEApplicationPlayerFields.h"
 
 OSG_BEGIN_NAMESPACE
 

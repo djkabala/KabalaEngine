@@ -44,6 +44,7 @@
 #include "KECopyCommand.h"
 
 #include <OpenSG/OSGNameAttachment.h>
+#include "Player/KEApplicationPlayer.h"
 
 OSG_USING_NAMESPACE
 

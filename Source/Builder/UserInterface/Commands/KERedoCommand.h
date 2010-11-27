@@ -34,21 +34,21 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
-#include "Builder/KEApplicationBuilder.h"
+#include <OpenSG/OSGCommand.h>
+#include <OpenSG/OSGUndoManager.h>
 
 OSG_BEGIN_NAMESPACE
 
 class RedoCommand;
-typedef boost::intrusive_ptr<RedoCommand> RedoCommandPtr;
+typedef boost::shared_ptr<RedoCommand> RedoCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING RedoCommand: public Command
+class KE_KABALAENGINE_DLLMAPPING RedoCommand: public Command
 {
 protected:
 	typedef Command Inherited;
 	typedef RedoCommandPtr Ptr;
 
-	RedoCommand(ApplicationBuilderPtr TheApplicationBuilder);
+	RedoCommand(UndoManagerPtr TheUndoManager);
 
 	RedoCommand(const RedoCommand& source);
 
@@ -58,7 +58,7 @@ protected:
 	
 	virtual void execute(void);
 
-	ApplicationBuilderPtr _TheApplicationBuilder;
+	UndoManagerPtr _UndoManager;
 public:
 
 	virtual std::string getCommandDescription(void) const;
@@ -69,7 +69,7 @@ public:
 
 	virtual ~RedoCommand(void);
 	
-	static RedoCommandPtr create(ApplicationBuilderPtr TheApplicationBuilder);
+	static RedoCommandPtr create(UndoManagerPtr TheUndoManager);
 };
 
 OSG_END_NAMESPACE

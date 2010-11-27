@@ -79,6 +79,9 @@ class KE_KABALAENGINE_DLLMAPPING SceneObject : public SceneObjectBase
                       const BitVector  bvFlags  = 0) const;
 
     /*! \}                                                                 */
+
+    bool isDecendentNode(Node* const TheNode) const;
+
     /*=========================  PROTECTED  ===============================*/
 
 	

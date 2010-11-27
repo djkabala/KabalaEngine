@@ -34,14 +34,14 @@
 #include <OpenSG/OSGConfig.h>
 #include "KEKabalaEngineDef.h"
 
-#include <OpenSG/UserInterface/OSGCommand.h>
+#include <OpenSG/OSGCommand.h>
 
 OSG_BEGIN_NAMESPACE
 
 class QuitAppCommand;
-typedef boost::intrusive_ptr<QuitAppCommand> QuitAppCommandPtr;
+typedef boost::shared_ptr<QuitAppCommand> QuitAppCommandPtr;
 
-class KE_KABALAENGINELIB_DLLMAPPING QuitAppCommand: public Command
+class KE_KABALAENGINE_DLLMAPPING QuitAppCommand: public Command
 {
 protected:
 	typedef Command Inherited;

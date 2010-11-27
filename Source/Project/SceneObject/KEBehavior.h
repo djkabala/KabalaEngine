@@ -79,12 +79,12 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
     virtual void initEvents(SceneObject* const rootSceneObject) = 0;
 	virtual void initLinks(SceneObject* const rootSceneObject) = 0;
 
-	BehaviorType * getBehaviorType(void);
+	BehaviorType * getBehaviorType(void) const;
 
-	bool isLinked();
-    bool eventsAreInitted();
+	virtual bool isLinked(void) const;
+    virtual bool eventsAreInitted(void) const;
 
-	void checkListenerAttachment();
+	void checkListenerAttachment(void);
 
     void produceEvent(std::string name, GenericEventDetails* const eventData = NULL);
     void produceEvent(UInt32 id, GenericEventDetails* const eventData = NULL);
@@ -118,9 +118,9 @@ class KE_KABALAENGINE_DLLMAPPING Behavior : public BehaviorBase
 
 	void attachHandlers (Scene* const eventProducer);
 
-	BehaviorType* theBehaviorType;
-    UInt32 linksMade;
-    bool eventsInitted;
+	BehaviorType* _BehaviorType;
+    UInt32 _LinksMade;
+    bool _EventsInitted;
 
     // Variables should all be in BehaviorBase.
 

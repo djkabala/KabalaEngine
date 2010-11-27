@@ -65,9 +65,9 @@ CommandType NewProjectCommand::_Type("NewProjectCommand", "Command");
  *                           Class methods                                 *
 \***************************************************************************/
 
-NewProjectCommandPtr NewProjectCommand::create(ApplicationBuilderPtr TheApplicationBuilder)
+NewProjectCommandPtr NewProjectCommand::create(void)
 {
-	return Ptr(new NewProjectCommand(TheApplicationBuilder));
+	return Ptr(new NewProjectCommand());
 }
 
 /***************************************************************************\
@@ -81,7 +81,7 @@ void NewProjectCommand::execute(void)
 
 std::string NewProjectCommand::getCommandDescription(void) const
 {
-	return std::string("NewProject");
+	return std::string("New Project");
 }
 
 const CommandType &NewProjectCommand::getType(void) const
@@ -99,19 +99,4 @@ NewProjectCommand::~NewProjectCommand(void)
 }
 
 /*----------------------------- class specific ----------------------------*/
-
-/*------------------------------------------------------------------------*/
-/*                              cvs id's                                  */
-
-#ifdef OSG_SGI_CC
-#pragma set woff 1174
-#endif
-
-#ifdef OSG_LINUX_ICC
-#pragma warning( disable : 177 )
-#endif
-
-#ifdef __sgi
-#pragma reset woff 1174
-#endif
 

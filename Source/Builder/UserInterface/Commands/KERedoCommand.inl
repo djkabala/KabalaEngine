@@ -3,14 +3,14 @@
 OSG_BEGIN_NAMESPACE
 
 inline
-RedoCommand::RedoCommand(ApplicationBuilderPtr TheApplicationBuilder) : Inherited(),
-_TheApplicationBuilder(TheApplicationBuilder)
+RedoCommand::RedoCommand(UndoManagerPtr TheUndoManager) : Inherited(),
+_UndoManager(TheUndoManager)
 {
 }
 
 inline
 RedoCommand::RedoCommand(const RedoCommand& source) : Inherited(source),
-_TheApplicationBuilder(source._TheApplicationBuilder)
+_UndoManager(source._UndoManager)
 {
 }
 
@@ -18,7 +18,7 @@ inline
 void RedoCommand::operator =(const RedoCommand& source)
 {
 	Inherited::operator=(source);
-	_TheApplicationBuilder = source._TheApplicationBuilder;
+	_UndoManager = source._UndoManager;
 }
 
 inline 
