@@ -61,6 +61,12 @@
 #include <OpenSG/OSGDefaultListModel.h>
 #include <OpenSG/OSGTabPanel.h>
 #include <OpenSG/OSGScrollPanel.h>
+#include <OpenSG/OSGTextEditor.h>
+#include <OpenSG/OSGTextDomArea.h>
+#include <OpenSG/OSGAdvancedTextDomArea.h>
+#include <OpenSG/OSGTextDomLayoutManager.h>
+#include <OpenSG/OSGGlyphView.h>
+#include <OpenSG/OSGDocument.h>
 
 #ifdef OSG_WITH_LUA_DEBUGGER
 #include <OpenSG/OSGLuaIntrospectionTreeModel.h>
@@ -104,15 +110,18 @@ void HelperPanel::initMethod(InitPhase ePhase)
 void HelperPanel::setupLuaTab()
 {
     // Create a _CodeTextArea
-    _CodeTextArea = TextArea::create();
-    _CodeTextArea->setText("");
+    _CodeTextArea = TextEditor::create();
+	_CodeTextArea->setText("print(\"hello world\");");
+    _CodeTextArea->setIsSplit(false);
+	_CodeTextArea->setClipboardVisible(false);
+	_CodeTextArea->setPreferredSize(Vec2f(200,1200));
     setName(_CodeTextArea,"__KABALA_ENGINE_PLAYER_CODE_TEXT_AREA");
 
-    _LuaConsoleScrollPanel = ScrollPanel::create();
+    /*_LuaConsoleScrollPanel = ScrollPanel::create();
     _LuaConsoleScrollPanel->setPreferredSize(Vec2f(300,1200));
     _LuaConsoleScrollPanel->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
     // Add the _CodeTextArea to the ScrollPanel so it is displayed
-    _LuaConsoleScrollPanel->setViewComponent(_CodeTextArea);
+    _LuaConsoleScrollPanel->setViewComponent(_CodeTextArea);*/
 
 
     _HistoryList = List::create();
@@ -145,10 +154,10 @@ void HelperPanel::setupLuaTab()
 
     SpringLayoutRefPtr LuaConsoleContentLayout = SpringLayout::create();
 
-    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleScrollPanel, 0, SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleContent);  
-    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _LuaConsoleScrollPanel, 0, SpringLayoutConstraints::SOUTH_EDGE, _LuaConsoleContent); 
-    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _LuaConsoleScrollPanel, -5, SpringLayoutConstraints::WEST_EDGE, _HistoryScrollPanel);
-    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _LuaConsoleScrollPanel, 0, SpringLayoutConstraints::WEST_EDGE, _LuaConsoleContent);  
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _CodeTextArea, 0, SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleContent);  
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::SOUTH_EDGE, _CodeTextArea, 0, SpringLayoutConstraints::SOUTH_EDGE, _LuaConsoleContent); 
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _CodeTextArea, -5, SpringLayoutConstraints::WEST_EDGE, _HistoryScrollPanel);
+    LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::WEST_EDGE, _CodeTextArea, 0, SpringLayoutConstraints::WEST_EDGE, _LuaConsoleContent);  
 
     LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::NORTH_EDGE, _HistoryLabel, 5, SpringLayoutConstraints::NORTH_EDGE, _LuaConsoleContent);  
     LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::EAST_EDGE, _HistoryLabel, -5, SpringLayoutConstraints::EAST_EDGE, _LuaConsoleContent);
@@ -162,7 +171,7 @@ void HelperPanel::setupLuaTab()
     LuaConsoleContentLayout->putConstraint(SpringLayoutConstraints::HORIZONTAL_CENTER_EDGE, _ExecuteBtn, 0, SpringLayoutConstraints::HORIZONTAL_CENTER_EDGE, _HistoryScrollPanel);  
 
     _LuaConsoleContent->setLayout(LuaConsoleContentLayout);
-    _LuaConsoleContent->pushToChildren(_LuaConsoleScrollPanel);
+    _LuaConsoleContent->pushToChildren(_CodeTextArea);
     _LuaConsoleContent->pushToChildren(_HistoryLabel);
     _LuaConsoleContent->pushToChildren(_HistoryScrollPanel);
     _LuaConsoleContent->pushToChildren(_ExecuteBtn);
@@ -171,31 +180,36 @@ void HelperPanel::setupLuaTab()
 void HelperPanel::setupErrorTab()
 {
     // Create an _ErrorTextArea	
-    _ErrorTextArea = TextArea::create();
+    _ErrorTextArea = TextEditor::create();
     _ErrorTextArea->setText("Error List");
     _ErrorTextArea->setEditable(false);
+	_ErrorTextArea->setIsSplit(false);
+	_ErrorTextArea->setClipboardVisible(false);
+	_ErrorTextArea->setPreferredSize(Vec2f(200,1200));
     setName(_ErrorTextArea,"__KABALA_ENGINE_PLAYER_ERROR_TEXT_AREA");
 
-    _TabPanel2Content = ScrollPanel::create();
-    _TabPanel2Content->setPreferredSize(Vec2f(200,1200));
-    _TabPanel2Content->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    // Add the _ErrorTextArea to the ScrollPanel so it is displayed
-    _TabPanel2Content->setViewComponent(_ErrorTextArea);
+    //_TabPanel2Content = ScrollPanel::create();
+    //_TabPanel2Content->setPreferredSize(Vec2f(200,1200));
+    //_TabPanel2Content->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    //// Add the _ErrorTextArea to the ScrollPanel so it is displayed
+    //_TabPanel2Content->setViewComponent(_ErrorTextArea);
 
 }
 
 void HelperPanel::setupTraceTab()
 {
     // Create a _StackTraceTextArea
-    _StackTraceTextArea = TextArea::create();
+    _StackTraceTextArea = TextEditor::create();
     _StackTraceTextArea->setText("Stack Trace");
     _StackTraceTextArea->setEditable(false);
+	_StackTraceTextArea->setIsSplit(false);
+	_StackTraceTextArea->setClipboardVisible(false);
 
-    _TabPanel3Content = ScrollPanel::create();
-    _TabPanel3Content->setPreferredSize(Vec2f(200,1200));
-    _TabPanel3Content->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
-    // Add the _StackTraceTextArea to the ScrollPanel so it is displayed
-    _TabPanel3Content->setViewComponent(_StackTraceTextArea);
+    //_TabPanel3Content = ScrollPanel::create();
+    //_TabPanel3Content->setPreferredSize(Vec2f(200,1200));
+    //_TabPanel3Content->setHorizontalResizePolicy(ScrollPanel::RESIZE_TO_VIEW);
+    //// Add the _StackTraceTextArea to the ScrollPanel so it is displayed
+    //_TabPanel3Content->setViewComponent(_StackTraceTextArea);
 }
 
 void HelperPanel::createLoggingTab()
@@ -301,7 +315,7 @@ void HelperPanel::setupInfoTabLabels()
 void HelperPanel::setupInfoTabPanel()
 {
     setupInfoTabLabels();	//TabPanel(1,2,3,4)
-    setupLuaTab();			//_LuaConsoleScrollPanel
+    setupLuaTab();			//_CodeTextArea
     setupErrorTab();		//_TabPanel2Content
     setupTraceTab();		//_TabPanel3Content
     setupPropertiesTab();	//_TabPanel4Content
@@ -310,8 +324,8 @@ void HelperPanel::setupInfoTabPanel()
     _InfoTabPanel= TabPanel::create();
     _InfoTabPanel->setPreferredSize(Vec2f(1200,200));
     _InfoTabPanel->addTab(_TabPanel1Label, _LuaConsoleContent);
-    _InfoTabPanel->addTab(_TabPanel2Label, _TabPanel2Content);
-    _InfoTabPanel->addTab(_TabPanel3Label, _TabPanel3Content);
+    _InfoTabPanel->addTab(_TabPanel2Label, _ErrorTextArea);
+    _InfoTabPanel->addTab(_TabPanel3Label, _StackTraceTextArea);
     _InfoTabPanel->addTab(_TabPanel4Label, _TabPanel4Content);
     _InfoTabPanel->addTab(_LoggingContentLabel, _LoggingContent);
 #ifdef OSG_WITH_LUA_DEBUGGER
@@ -565,11 +579,7 @@ void HelperPanel::handleLuaError(LuaErrorEventDetails* const details)
             break;
     }
     _ErrorTextArea->clear();
-    if(_ErrorTextArea->getText().size() != 0)
-    {
-        _ErrorTextArea->write("\n");
-    }
-    _ErrorTextArea->write(ErrorType + ":\n    " + details->getErrorString());
+    _ErrorTextArea->write(ErrorType + ":\n    " + details->getErrorString() + "\r\n");
 
     //Select the Error Tab
     _InfoTabPanel->setSelectedIndex(1);
@@ -589,7 +599,7 @@ void HelperPanel::handleLuaError(LuaErrorEventDetails* const details)
             ss << "     " << (*ListItor) << std::endl;
         }
         _StackTraceTextArea->clear();
-        _StackTraceTextArea->write(ss.str());
+        _StackTraceTextArea->write(ss.str() + "\r\n");
     }
 }
 

@@ -128,6 +128,12 @@
 #include <OpenSG/OSGManipulatorManager.h>
 #include <OpenSG/OSGReplicateTransformFields.h>
 
+#include <OpenSG/OSGTextEditor.h>
+#include <OpenSG/OSGTextDomArea.h>
+#include <OpenSG/OSGAdvancedTextDomArea.h>
+#include <OpenSG/OSGTextDomLayoutManager.h>
+#include <OpenSG/OSGGlyphView.h>
+
 OSG_BEGIN_NAMESPACE
 
 /*! \brief ApplicationPlayer class. See \ref
@@ -197,6 +203,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 	void selectNode(const Pnt2f& ViewportPoint);
 	ContentPanel* getContentPanel(void);
 	void setContentPanel(ContentPanelRefPtr);
+	TextEditor* getTextEditor(void);
 
     Navigator& getDebugSceneNavigator(void);
 
@@ -277,6 +284,7 @@ class KE_KABALAENGINE_DLLMAPPING ApplicationPlayer : public ApplicationPlayerBas
 
     //Selected Node
     NodeRefPtr _SelectedNode;
+	TextEditorRefPtr theTextEditor;
 
     void createGenericEditor(void);
 

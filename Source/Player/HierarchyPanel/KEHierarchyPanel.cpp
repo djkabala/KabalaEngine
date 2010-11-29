@@ -71,6 +71,12 @@
 #include <OpenSG/OSGBorderLayout.h>
 #include <OpenSG/OSGCardLayout.h>
 
+#include <OpenSG/OSGGridBagLayout.h>
+#include <OpenSG/OSGGridBagLayoutConstraints.h>
+
+
+#include <OpenSG/OSGTextEditor.h>
+
 #include <OpenSG/OSGPhysics.h>
 
 #include "Player/LuaGraphTreeModel/KELuaGraphTreeModel.h"
@@ -117,6 +123,43 @@ void HierarchyPanel::initMethod(InitPhase ePhase)
     }
 }
 
+void HierarchyPanel::handleLoadButtonAction(ActionEventDetails* const details)
+{
+	std::vector<WindowEventProducer::FileDialogFilter> Filters;
+	Filters.push_back(WindowEventProducer::FileDialogFilter("All","*"));
+	Filters.push_back(WindowEventProducer::FileDialogFilter("Lua Files","lua"));
+
+
+	std::vector<BoostPath> FilesToOpen;
+	FilesToOpen = MainApplication::the()->getMainWindow()->openFileDialog("Open File Window",
+												Filters,
+												BoostPath(".."),
+												false);
+
+    if(FilesToOpen.size() > 0)
+    {
+	    _ApplicationPlayer->getTextEditor()->loadFile(FilesToOpen[0]);
+    }
+}
+
+void HierarchyPanel::handleSaveButtonAction(ActionEventDetails* const details)
+{
+	std::vector<WindowEventProducer::FileDialogFilter> Filters;
+	Filters.push_back(WindowEventProducer::FileDialogFilter("All","*"));
+	Filters.push_back(WindowEventProducer::FileDialogFilter("Lua Files","lua"));
+
+	BoostPath SavePath = MainApplication::the()->getMainWindow()->saveFileDialog("Save File Window",
+														Filters,
+														std::string("newFile.lua"),
+														BoostPath(".."),
+														true);
+	if(SavePath.string() != "")
+    {
+	    _ApplicationPlayer->getTextEditor()->saveFile(SavePath);
+    }
+
+}
+
 
 /***************************************************************************\
  *                           Instance methods                              *
@@ -146,18 +189,61 @@ void HierarchyPanel::createSceneGraphTree(void)
 	_NewNodeMenuModel = DerivedFieldContainerComboBoxModel::create();
 	_NewNodeMenuModel->editMFDerivedFieldContainerTypes()->push_back(std::string(OSG::NodeCore::getClassType().getCName()));
 
+	BorderLayoutConstraintsRefPtr _ButtonPanelLayoutConstraints = OSG::BorderLayoutConstraints::create();
+	_ButtonPanelLayoutConstraints->setRegion(BorderLayoutConstraints::BORDER_NORTH);
+
+	_ButtonPanel = Panel::create();
+	
+	_ButtonPanelLayout = OSG::GridBagLayout::create();
+
+	_ButtonPanelLayout->setColumns(3);
+	_ButtonPanelLayout->setRows(1);
+
+	_ButtonPanel->setLayout(_ButtonPanelLayout);
+	_ButtonPanel->setConstraints(_ButtonPanelLayoutConstraints);
+
+
+	_CreateNewNodeButtonConstraints = OSG::GridBagLayoutConstraints::create();
+	_SaveFileButtonConstraints = OSG::GridBagLayoutConstraints::create();
+	_LoadFileButtonConstraints = OSG::GridBagLayoutConstraints::create();
+
+	_CreateNewNodeButtonConstraints->setGridX(0);
+	_CreateNewNodeButtonConstraints->setGridY(0);
+	_SaveFileButtonConstraints->setGridX(1);
+	_SaveFileButtonConstraints->setGridY(0);
+	_LoadFileButtonConstraints->setGridX(2);
+	_LoadFileButtonConstraints->setGridY(0);
+
+	
 	_CreateNewNodeMenuButton = MenuButton::create();
-
-	_CreateNewButtonConstraints = OSG::BorderLayoutConstraints::create();
-
-	_CreateNewButtonConstraints->setRegion(BorderLayoutConstraints::BORDER_NORTH);
-
-    _CreateNewNodeMenuButton->setText("Create New Node");
-    _CreateNewNodeMenuButton->setPreferredSize(Vec2f(120, 20));
+	
+			
+	_CreateNewNodeMenuButton->setText("Create New Node");
+    _CreateNewNodeMenuButton->setPreferredSize(Vec2f(40, 20));
     _CreateNewNodeMenuButton->setModel(_NewNodeMenuModel);
-	_CreateNewNodeMenuButton->setConstraints(_CreateNewButtonConstraints);
+	_CreateNewNodeMenuButton->setConstraints(_CreateNewNodeButtonConstraints);
+	
     
     _NewNodeMenuButtonActionConnection = _CreateNewNodeMenuButton->connectMenuActionPerformed(boost::bind(&HierarchyPanel::handleNewNodeMenuButtonAction, this, _1));
+
+	
+	_LoadFileButton = Button::create();
+	_LoadFileButton->setText("Load File");
+	_LoadFileButton->setPreferredSize(Vec2f(40, 20));
+	_LoadFileButton->setConstraints(_LoadFileButtonConstraints);
+	_LoadFileButton->connectActionPerformed(boost::bind(&HierarchyPanel::handleLoadButtonAction,this, _1));
+
+	
+	_SaveFileButton = Button::create();
+	_SaveFileButton->setText("Save File");
+	_SaveFileButton->setPreferredSize(Vec2f(40, 20));
+	_SaveFileButton->setConstraints(_SaveFileButtonConstraints);
+	_SaveFileButton->connectActionPerformed(boost::bind(&HierarchyPanel::handleSaveButtonAction,this, _1));
+
+	_ButtonPanel->pushToChildren(_CreateNewNodeMenuButton);
+	_ButtonPanel->pushToChildren(_LoadFileButton);
+	_ButtonPanel->pushToChildren(_SaveFileButton);
+	_ButtonPanel->setPreferredSize(Vec2f(120,20));
 
 	BorderLayoutRefPtr SceneGraphTreeLayout = OSG::BorderLayout::create();
 
@@ -165,7 +251,7 @@ void HierarchyPanel::createSceneGraphTree(void)
 
 	_SceneGraphPanel = Panel::createEmpty();
 	_SceneGraphPanel->pushToChildren(_TheSceneGraphTreeScrollPanel);
-	_SceneGraphPanel->pushToChildren(_CreateNewNodeMenuButton);
+	_SceneGraphPanel->pushToChildren(_ButtonPanel);
 	_SceneGraphPanel->setLayout(SceneGraphTreeLayout);
 }
 
@@ -1103,14 +1189,20 @@ void HierarchyPanel::resolveLinks(void)
     _SelectedNode = NULL;
     _TheSceneGraphTreeScrollPanel = NULL;
     _TheLuaGraphTreeScrollPanel = NULL;
+	_ButtonPanel = NULL;
     _HighlightNode = NULL;
     _CardLayout = NULL;
+	_ButtonPanelLayout = NULL;
     _LayoutConstraints = NULL;
     _ApplicationPlayer = NULL;
     _NewNodeMenuModel = NULL;
     _CreateNewNodeMenuButton = NULL;
+	_LoadFileButton = NULL;
+	_SaveFileButton = NULL;
     _SceneGraphPanel = NULL;
-    _CreateNewButtonConstraints = NULL;
+    _CreateNewNodeButtonConstraints = NULL;
+	_SaveFileButtonConstraints = NULL;
+	_LoadFileButtonConstraints = NULL;
     _HierarchyPanelPopupMenu = NULL;
     _ShowHideItem  = NULL;
     _ShowRecursiveItem  = NULL;

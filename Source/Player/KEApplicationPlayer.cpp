@@ -104,7 +104,14 @@
 #include <OpenSG/OSGTree.h>
 #include <OpenSG/OSGBorderLayout.h>
 #include <OpenSG/OSGTextArea.h>
+
 #include <OpenSG/OSGUIDrawUtils.h>
+
+#include <OpenSG/OSGTextEditor.h>
+#include <OpenSG/OSGTextDomArea.h>
+#include <OpenSG/OSGTextDomLayoutManager.h>
+#include <OpenSG/OSGAdvancedTextDomArea.h>
+#include <OpenSG/OSGGlyphView.h>
 
 
 #include <OpenSG/OSGParticleSystem.h>
@@ -387,16 +394,24 @@ void ApplicationPlayer::createDebugInterface(void)
     _HierarchyPanel->setApplicationPlayer(ApplicationPlayerRefPtr(this));
     _HierarchyPanel->createDefaultHierarchyPanel();
 
-    _ContentPanel = ContentPanel::create();
-    setName(_ContentPanel,"__KABALA_ENGINE_DEBUGGER_CONTENT_PANEL");
-    _ContentPanel->setApplicationPlayer(ApplicationPlayerRefPtr(this));
+    //_ContentPanel = ContentPanel::create();
+	theTextEditor = TextEditor::create();
+	theTextEditor->setText(" \r\n");
+    //theTextEditor->setEditable(false);
+	//theTextEditor->setIsSplit(false);
+	//theTextEditor->setClipboardVisible(false);
+	theTextEditor->setPreferredSize(Vec2f(1200,1200));
+
+
+    setName(theTextEditor,"__KABALA_ENGINE_DEBUGGER_CONTENT_PANEL");
+    //_ContentPanel->setApplicationPlayer(ApplicationPlayerRefPtr(this));
 
     BorderLayoutConstraintsRefPtr ContentConstraints = OSG::BorderLayoutConstraints::create();
 
     ContentConstraints->setRegion(BorderLayoutConstraints::BORDER_CENTER);
 
-    _ContentPanel->setConstraints(ContentConstraints);
-    _ContentPanel->init();
+    theTextEditor->setConstraints(ContentConstraints);
+    //_ContentPanel->init();
 
     // creation of menus and addition of menu items to them
     _ProjectMenu = Menu::create();
@@ -522,7 +537,7 @@ void ApplicationPlayer::createDebugInterface(void)
     _ToolbarAndContentPanel = OSG::Panel::createEmpty();
 
     _ToolbarAndContentPanel->setLayout(ToolbarAndContentPanelLayout);
-    _ToolbarAndContentPanel->pushToChildren(_ContentPanel);
+    _ToolbarAndContentPanel->pushToChildren(theTextEditor);
 
     _TopHalfSplitPanel = OSG::SplitPanel::create();
 
@@ -575,7 +590,7 @@ void ApplicationPlayer::createDebugInterface(void)
     MainInternalWindow->setDrawTitlebar(false);
     MainInternalWindow->setResizable(false);
 
-    MainInternalWindow->setFocusedComponent(_HelperPanel->_CodeTextArea);
+//    MainInternalWindow->setFocusedComponent(_HelperPanel->_CodeTextArea);
 
     /*************************************************** END MainInternalWindow creation*************************************************************/
 
@@ -953,6 +968,8 @@ void ApplicationPlayer::handlePlayerKeyTyped(KeyEventDetails* const details)
         return;
     }
 
+	
+
     if(_IsDebugActive)
     {
         if(isNumericKey(static_cast<KeyEventDetails::Key>(details->getKey())) && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_SHIFT)
@@ -964,6 +981,14 @@ void ApplicationPlayer::handlePlayerKeyTyped(KeyEventDetails* const details)
                 MainApplication::the()->getProject()->setActiveScene(MainApplication::the()->getProject()->getScenes(SceneNumber));
             }
         }
+		if(details->getKey() == KeyEventDetails::KEY_1 && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND)
+		{
+		   theTextEditor->setClipboardVisible(!theTextEditor->getClipboardVisible());
+		}
+		else if(details->getKey() == KeyEventDetails::KEY_2 && details->getModifiers() & KeyEventDetails::KEY_MODIFIER_COMMAND)
+		{
+		   theTextEditor->setIsSplit(!theTextEditor->getIsSplit());
+		}
     }
 }
 
@@ -1618,7 +1643,7 @@ void ApplicationPlayer::updateUndoRedoInterfaces(UndoManagerPtr TheUndoManager)
 void ApplicationPlayer::setDebugView(UInt32 Index)
 {
     _HierarchyPanel->setView(Index);
-    _ContentPanel->setView(Index);
+    //_ContentPanel->setView(Index);
 }
 
 void ApplicationPlayer::updateFromSettings(void)

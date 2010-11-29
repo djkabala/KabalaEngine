@@ -48,7 +48,8 @@
 #include <OpenSG/OSGPanelFields.h>
 
 #include <OpenSG/OSGCardLayoutFields.h>
-#include <OpenSG/OSGGridLayoutFields.h>
+#include <OpenSG/OSGGridBagLayoutFields.h>
+#include <OpenSG/OSGGridBagLayoutConstraintsFields.h>
 
 #include <OpenSG/OSGSimpleMaterialFields.h>
 
@@ -67,6 +68,9 @@
 #include <OpenSG/OSGMenuButtonFields.h>
 #include <OpenSG/OSGMenuItemFields.h>
 #include <OpenSG/OSGMenuFields.h>
+#include <OpenSG/OSGButtonFields.h>
+
+#include <OpenSG/OSGTextEditorFields.h>
 
 
 #include <OpenSG/OSGCameraFields.h>
@@ -129,7 +133,7 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
   protected:
 
-    // Variables should all be in HierarchyPanelBase.
+	// Variables should all be in HierarchyPanelBase.
 
     /*---------------------------------------------------------------------*/
     /*! \name                  Constructors                                */
@@ -182,11 +186,19 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
     CardLayoutRefPtr				_CardLayout;
     BorderLayoutConstraintsRefPtr	_LayoutConstraints;
 
+	PanelRefPtr						_ButtonPanel;
+	GridBagLayoutRefPtr				_ButtonPanelLayout;
+	GridBagLayoutConstraintsRefPtr _CreateNewNodeButtonConstraints;
+	GridBagLayoutConstraintsRefPtr _SaveFileButtonConstraints;
+	GridBagLayoutConstraintsRefPtr _LoadFileButtonConstraints;
+
+
     ApplicationPlayerRefPtr _ApplicationPlayer;
     DerivedFieldContainerComboBoxModelRefPtr _NewNodeMenuModel;
     MenuButtonRefPtr _CreateNewNodeMenuButton;
+	ButtonRefPtr _LoadFileButton;
+	ButtonRefPtr _SaveFileButton;
     PanelRefPtr _SceneGraphPanel;
-    BorderLayoutConstraintsRefPtr _CreateNewButtonConstraints;
 
     PopupMenuRefPtr _HierarchyPanelPopupMenu;
 
@@ -264,6 +276,8 @@ class KE_KABALAENGINE_DLLMAPPING HierarchyPanel : public HierarchyPanelBase
 
     void handleLuaGraphTreeMouseClicked(MouseEventDetails* const details);
     void handleNewNodeMenuButtonAction(ActionEventDetails* const details);
+	void handleLoadButtonAction(ActionEventDetails* const details);
+	void handleSaveButtonAction(ActionEventDetails* const details);
     void handleSceneGraphPopupMenuWillBecomeVisible   (PopupMenuEventDetails* const details);
     boost::signals2::connection _LuaGraphTreeMouseClickedConnection,
                                 _NewNodeMenuButtonActionConnection,

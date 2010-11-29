@@ -130,6 +130,12 @@ ContentPanel* ApplicationPlayer::getContentPanel(void)
 }
 
 inline 
+TextEditor* ApplicationPlayer::getTextEditor(void)
+{
+	return theTextEditor;
+}
+
+inline 
 void ApplicationPlayer::setContentPanel(ContentPanelRefPtr contentPanel)
 {
 	_ContentPanel = contentPanel;

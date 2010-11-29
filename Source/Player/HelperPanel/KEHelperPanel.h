@@ -69,6 +69,7 @@
 #include <OpenSG/OSGGridLayoutFields.h>
 #include <OpenSG/OSGFieldContainerEditorFactory.h>
 #include <OpenSG/OSGActionEventDetailsFields.h>
+#include <OpenSG/OSGTextEditorFields.h>
 
 #include "Application/KEMainApplication.h"
 
@@ -181,9 +182,10 @@ class KE_KABALAENGINE_DLLMAPPING HelperPanel : public HelperPanelBase
 	ButtonRefPtr _ExecuteBtn;
 
 	TabPanelRefPtr _InfoTabPanel;
-	TextAreaRefPtr _CodeTextArea;
-	TextAreaRefPtr _ErrorTextArea;
-	TextAreaRefPtr _StackTraceTextArea;
+	//TextAreaRefPtr _CodeTextArea;
+	TextEditorRefPtr _CodeTextArea;
+	TextEditorRefPtr _ErrorTextArea;
+	TextEditorRefPtr _StackTraceTextArea;
 
 	LabelRefPtr _TabPanel1Label;
 	LabelRefPtr _TabPanel2Label;
