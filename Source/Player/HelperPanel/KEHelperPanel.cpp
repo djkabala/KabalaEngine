@@ -110,10 +110,10 @@ void HelperPanel::initMethod(InitPhase ePhase)
 void HelperPanel::setupLuaTab()
 {
     // Create a _CodeTextArea
-    _CodeTextArea = TextEditor::create();
+    _CodeTextArea = AdvancedTextDomArea::create();
 	_CodeTextArea->setText("print(\"hello world\");");
-    _CodeTextArea->setIsSplit(false);
-	_CodeTextArea->setClipboardVisible(false);
+    //_CodeTextArea->setIsSplit(false);
+	//_CodeTextArea->setClipboardVisible(false);
 	_CodeTextArea->setPreferredSize(Vec2f(200,1200));
     setName(_CodeTextArea,"__KABALA_ENGINE_PLAYER_CODE_TEXT_AREA");
 
@@ -180,11 +180,11 @@ void HelperPanel::setupLuaTab()
 void HelperPanel::setupErrorTab()
 {
     // Create an _ErrorTextArea	
-    _ErrorTextArea = TextEditor::create();
+    _ErrorTextArea = AdvancedTextDomArea::create();
     _ErrorTextArea->setText("Error List");
     _ErrorTextArea->setEditable(false);
-	_ErrorTextArea->setIsSplit(false);
-	_ErrorTextArea->setClipboardVisible(false);
+	//_ErrorTextArea->setIsSplit(false);
+	//_ErrorTextArea->setClipboardVisible(false);
 	_ErrorTextArea->setPreferredSize(Vec2f(200,1200));
     setName(_ErrorTextArea,"__KABALA_ENGINE_PLAYER_ERROR_TEXT_AREA");
 
@@ -199,11 +199,11 @@ void HelperPanel::setupErrorTab()
 void HelperPanel::setupTraceTab()
 {
     // Create a _StackTraceTextArea
-    _StackTraceTextArea = TextEditor::create();
+    _StackTraceTextArea = AdvancedTextDomArea::create();
     _StackTraceTextArea->setText("Stack Trace");
     _StackTraceTextArea->setEditable(false);
-	_StackTraceTextArea->setIsSplit(false);
-	_StackTraceTextArea->setClipboardVisible(false);
+	//_StackTraceTextArea->setIsSplit(false);
+	//_StackTraceTextArea->setClipboardVisible(false);
 
     //_TabPanel3Content = ScrollPanel::create();
     //_TabPanel3Content->setPreferredSize(Vec2f(200,1200));
