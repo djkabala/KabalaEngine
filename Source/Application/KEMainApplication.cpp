@@ -423,25 +423,44 @@ Int32 MainApplication::run(int argc, char **argv)
     initOpenSG(argc,argv);
 
     //Log information about the Engine
-    SLOG << "Starting Kabala Engine:" << std::endl;
-    OSG::indentLog(4,PLOG);
-    PLOG << "Time: " << to_simple_string(_DateTimeRun) << std::endl;
-    OSG::indentLog(4,PLOG);
-    PLOG << "Version: " << getKabalaEngineVersion() << std::endl;
-    OSG::indentLog(4,PLOG);
-    PLOG << "Revision: " << getKabalaEngineBuildRepositoryRevision() << std::endl;
-    OSG::indentLog(4,PLOG);
-    PLOG << "Build Type: " << getKabalaEngineBuildType() << std::endl;
+    {
+        SLOG << "Starting Kabala Engine:" << std::endl;
+        OSG::indentLog(4,PLOG);
+        PLOG << "Time: " << to_simple_string(_DateTimeRun) << std::endl;
+        OSG::indentLog(4,PLOG);
+        PLOG << "Version: " << getKabalaEngineVersion() << std::endl;
+        OSG::indentLog(4,PLOG);
+        PLOG << "Revision: " << getKabalaEngineBuildRepositoryRevision() << std::endl;
+        OSG::indentLog(4,PLOG);
+        PLOG << "Build Type: " << getKabalaEngineBuildType() << std::endl;
+        OSG::indentLog(4,PLOG);
+        PLOG << "Working Directory: " << boost::filesystem::current_path().string() << std::endl;
+        OSG::indentLog(4,PLOG);
+        PLOG << "Executable Directory: " << CommandPath.parent_path().string() << std::endl;
+    }
 
     //Check if the Data Directory exists
     if(!boost::filesystem::exists(getSettings().get<BoostPath>("basic.data.directory")))
     {
+        BoostPath DataDirPath(getSettings().get<BoostPath>("basic.data.directory"));
+        DataDirPath = boost::filesystem::complete(DataDirPath);
+        DataDirPath.normalize();
         SWARNING << "Could not find Application Data directory: \""
-                 << getSettings().get<BoostPath>("basic.data.directory").string()
+                 << DataDirPath.string()
                  << "\" specified in the Settings file because the directory doesn't exist." << std::endl;
 
         //Try to find the data directory in a few locations
         std::vector<BoostPath> PathsToTry;
+
+#ifdef __APPLE__
+        PathsToTry.push_back(CommandPath.parent_path() /
+                             BoostPath("../Resources") /
+                             EngineAppDataDirectory);       //Path to try for OS X Bundles
+        PathsToTry.push_back(CommandPath.parent_path() /
+                             BoostPath("../Resources/share") /
+                             EngineAppDataDirectory);       //Path to try for OS X Bundles
+#endif
+
         PathsToTry.push_back(BoostPath("/usr/local/share") / EngineAppDataDirectory);
         PathsToTry.push_back(BoostPath("/usr/share") / EngineAppDataDirectory);
         PathsToTry.push_back(CommandPath.parent_path() / EngineAppDataDirectory);
