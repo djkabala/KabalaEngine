@@ -954,7 +954,7 @@ void ApplicationPlayer::handleBasicAction(ActionEventDetails* const details)
 
         //Update the Menu Item
         //Add the Physics Drawable Node to the project
-        if(MainApplication::the()->getProject()->getActiveScene()->getPrimaryViewport()->getRoot()->findChild(getPhysicsDrawableNode()) < 0)
+        if(_DebugViewport->getRoot()->findChild(getPhysicsDrawableNode()) < 0)
         {
             _DrawPhysicsCharacteristicsItem->setText("Draw Physics Characteristics");
         }
@@ -1024,13 +1024,13 @@ void ApplicationPlayer::toggleDrawPhysicsCharacteristics(void)
     _PhysDrawable->setRoot(CurrentRoot);
 
     //Add the Physics Drawable Node to the project
-    if(CurrentRoot->findChild(PhysNode) < 0)
+    if(_DebugViewport->getRoot()->findChild(PhysNode) < 0)
     {
-        CurrentRoot->addChild(PhysNode);
+        _DebugViewport->getRoot()->addChild(PhysNode);
     }
     else
     {
-        CurrentRoot->subChild(PhysNode);
+        _DebugViewport->getRoot()->subChild(PhysNode);
     }
 }
 
@@ -1041,6 +1041,7 @@ Node* ApplicationPlayer::getPhysicsDrawableNode(void)
     {
         //Make The Physics Characteristics Core
         _PhysDrawable = PhysicsCharacteristicsDrawable::create();
+        _PhysDrawable->setGeomColor(MainApplication::the()->getSettings().get<Color4f>("player.debugger.physics.collision_geom_color"));
     }
     if(_PhysDrawableNode == NULL)
     {
@@ -1501,8 +1502,12 @@ ViewportRefPtr ApplicationPlayer::createDebugViewport(void)
     _DebugCameraBeacon->setCore(_DebugBeaconTransform);
 
     //Debug Root Node
+    DirectionalLightRefPtr DefaultLight = DirectionalLight::create();
+    DefaultLight->setBeacon(_DebugCameraBeacon);
+
     NodeRefPtr DefaultRootNode = OSG::Node::create();
-    DefaultRootNode->setCore(OSG::DirectionalLight::create());
+
+    DefaultRootNode->setCore(DefaultLight);
     DefaultRootNode->addChild(_DebugCameraBeacon);
     DefaultRootNode->addChild(_HighlightNode);
     DefaultRootNode->addChild(_XFormManipNode);

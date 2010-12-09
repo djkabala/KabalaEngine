@@ -218,6 +218,8 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
 
     TheSettings.put<UInt32>("player.debugger.lua.console.max_history", 50, overwriteIfDefined);
 
+    TheSettings.put<Color4f>("player.debugger.physics.collision_geom_color",          Color4f(0.5f,0.5f,1.0f,0.5f), overwriteIfDefined);
+
     TheSettings.put<Real32>("player.debugger.camera.near_plane", 0.1f, overwriteIfDefined);
     TheSettings.put<Real32>("player.debugger.camera.far_plane", 5000.0f, overwriteIfDefined);
     TheSettings.put<Real32>("player.debugger.camera.fov", 60.0f, overwriteIfDefined);
