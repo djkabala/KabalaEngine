@@ -244,21 +244,21 @@ void ApplicationBuilder::createInterface(void)
 
 	//Camera Beacon
 	Matrix TransformMatrix;
-	TransformPtr CameraBeaconTransform = Transform::create();
+	TransformRecPtr CameraBeaconTransform = Transform::create();
     CameraBeaconTransform->setMatrix(TransformMatrix);
 
-	NodePtr CameraBeaconNode = Node::create();
+	NodeRecPtr CameraBeaconNode = Node::create();
     CameraBeaconNode->setCore(CameraBeaconTransform);
 
     // Make Main Scene Node empty
-    NodePtr DefaultRootNode = Node::create();
+    NodeRecPtr DefaultRootNode = Node::create();
     DefaultRootNode->setCore(Group::create());
     DefaultRootNode->addChild(CameraBeaconNode);
 	
 	//Camera
 	PerspectiveCameraRecPtr DefaultCamera = PerspectiveCamera::create();
 	DefaultCamera->setBeacon(CameraBeaconNode);
-	DefaultCamera->setFov   (deg2rad(60.f));
+	DefaultCamera->setFov   (osgDegree2Rad(60.f));
 	DefaultCamera->setNear  (0.1f);
 	DefaultCamera->setFar   (10000.f);
 

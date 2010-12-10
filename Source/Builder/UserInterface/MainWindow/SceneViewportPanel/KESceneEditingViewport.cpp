@@ -252,7 +252,7 @@ void SceneEditingViewport::keyTyped(KeyEventDetails* const details)
 
 void SceneEditingViewport::focusSelectedNodes(void)
 {
-    std::vector<Node* const> NodesToShow;
+    std::vector<Node*> NodesToShow;
     for(UInt32 i(0) ; i<getMFSelectedNodes()->size() ; ++i)
     {
         NodesToShow.push_back(getSelectedNodes(i));
@@ -274,7 +274,7 @@ void SceneEditingViewport::focusSelectedNodes(void)
 
 void SceneEditingViewport::focusNode(Node* TheNode)
 {
-    std::vector<Node* const> NodesToShow;
+    std::vector<Node*> NodesToShow;
     NodesToShow.push_back(TheNode);
 
     Matrix NewCamBeaconMatrix;
@@ -424,7 +424,7 @@ void SceneEditingViewport::attachScene(Scene* const TheScene)
             _CameraNodeCore->setTarget(TheScene->getViewports(i)->getCamera()->getBeacon());
             commitChanges();
             
-            std::vector<Node* const> NodesToShow;
+            std::vector<Node*> NodesToShow;
             NodesToShow.push_back(getSceneViewports(i)->getPort()->getRoot());
             Matrix NewCamBeaconMatrix;
             calcCameraShowAll(getEditorOverlayViewports(i)->getCamera(), getEditorOverlayViewports(i)->getPort(), NodesToShow,NewCamBeaconMatrix);

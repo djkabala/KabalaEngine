@@ -66,7 +66,7 @@ void recurseSetTravMasRecord(Node* const RootNode,
 
 void calcCameraShowAll(Camera* const LocalCamera,
                        Viewport* const LocalViewport,
-                       const std::vector<Node* const>& NodesToShow,
+                       const std::vector<Node*>& NodesToShow,
                        Matrix& ResultCameraBeacon)
 {
     PerspectiveCameraRefPtr ThePerspCamera;
