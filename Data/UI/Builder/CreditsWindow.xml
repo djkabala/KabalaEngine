@@ -147,7 +147,7 @@
 		 skipMipMapLevels="0"/>
 	<Image
 		 fieldcontainerid="13"
-		 filePathAttachment="../KabalaEngine/LocallInstall/share/KabalaEngine/Data/UI/Images/ScrollUp.png"/>
+		 filePathAttachment="../Images/ScrollUp.png"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="14"
 		 nameAttachment=""
@@ -1124,7 +1124,7 @@
 		 skipMipMapLevels="0"/>
 	<Image
 		 fieldcontainerid="83"
-		 filePathAttachment="../KabalaEngine/Data/UI/Images/Logo.png"/>
+		 filePathAttachment="../Images/Logo.png"/>
 	<FlowLayout
 		 fieldcontainerid="84"
 		 Orientation="1"
