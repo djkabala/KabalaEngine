@@ -38,6 +38,19 @@
 #include "KEConfig.h"
 #include "KEKabalaEngineDef.h"
 
+#include <string>
+#include <OpenSG/OSGPathType.h>
+
+OSG_BEGIN_NAMESPACE
+
+std::string getPlatformName(void);
+std::string getPlatformProcessors(void);
+std::string getPlatformRAM(void);
+std::string getPlatformGraphicsChips(void);
+bool openFile(const BoostPath& FileToOpen);
+
+OSG_END_NAMESPACE
+
 #endif
 
 

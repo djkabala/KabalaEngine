@@ -575,19 +575,18 @@ void HelperPanel::handleLuaError(LuaErrorEventDetails* const details)
     _InfoTabPanel->setSelectedIndex(1);
 
     //Fill Stack Trace
-    if(details->getStackTraceEnabled() && 
-       (details->getStatus() == LUA_ERRMEM ||
-        details->getStatus() == LUA_ERRERR ||
-        details->getStatus() == LUA_ERRRUN))
+    if(details->getStatus() == LUA_ERRMEM ||
+       details->getStatus() == LUA_ERRERR ||
+       details->getStatus() == LUA_ERRRUN)
     {
         std::stringstream ss;
         ss << "Lua Stack Trace: " << std::endl;
 
-        MFString::StorageType::const_iterator ListItor(details->getMFStackTrace()->begin());
-        for(; ListItor != details->getMFStackTrace()->end() ; ++ListItor)
-        {
-            ss << "     " << (*ListItor) << std::endl;
-        }
+        //MFString::StorageType::const_iterator ListItor(details->getMFStackTrace()->begin());
+        //for(; ListItor != details->getMFStackTrace()->end() ; ++ListItor)
+        //{
+            //ss << "     " << (*ListItor) << std::endl;
+        //}
         _StackTraceTextArea->clear();
         _StackTraceTextArea->write(ss.str());
     }

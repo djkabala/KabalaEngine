@@ -369,7 +369,7 @@ SceneTransitPtr createDefaultScene(void)
     //Background
     SolidBackgroundRefPtr DefaultSceneBackground = SolidBackground::create();
     setName(DefaultSceneBackground, "Untitled Background" );
-    DefaultSceneBackground->setColor(MainApplication::the()->getSettings().get<Color3r>("basic.default_scene.background.color"));
+    DefaultSceneBackground->setColor(MainApplication::the()->getSettings().get<Color3f>("basic.default_scene.background.color"));
 
     //Viewport
     ViewportRefPtr DefaultSceneViewport = Viewport::create();
@@ -473,7 +473,7 @@ ViewportTransitPtr createDefaultLoadingViewport(void)
     if(DefaultBackground == NULL)
     {
         DefaultBackground = SolidBackground::create();
-        dynamic_pointer_cast<SolidBackground>(DefaultBackground)->setColor(MainApplication::the()->getSettings().get<Color3r>("basic.loading_viewport.background.color"));
+        dynamic_pointer_cast<SolidBackground>(DefaultBackground)->setColor(MainApplication::the()->getSettings().get<Color3f>("basic.loading_viewport.background.color"));
     }
 
     //Viewport

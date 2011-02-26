@@ -240,6 +240,25 @@ BoostPath MainApplication::getLoggingDir(void) const
 }
 
 inline
+BoostPath MainApplication::getLoggingFilePath(void) const
+{
+    return _LogFilePath;
+}
+
+inline
+bool MainApplication::getLoggingEnabled(void) const
+{
+    return _EnableLogging;
+}
+
+inline
+bool MainApplication::getLoggingToFile(void) const
+{
+    return _LogToFile;
+}
+
+
+inline
 Thread*  MainApplication::getApplicationThread(void)
 {
     return _ApplicationThread;

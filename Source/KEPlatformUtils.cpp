@@ -33,12 +33,114 @@
  *                                                                           *
 \*---------------------------------------------------------------------------*/
 #include "KEPlatformUtils.h"
+#include <boost/lexical_cast.hpp>
 
 #ifdef __APPLE__
+#include "CoreServices/CoreServices.h"
+#include <mach-o/arch.h>
+#endif
+
+OSG_BEGIN_NAMESPACE
+
+#ifdef __APPLE__
+std::string getPlatformName(void)
+{
+    SInt32 verMajor, verMinor, verPatch;
+    Gestalt( gestaltSystemVersionMajor, &verMajor );
+    Gestalt( gestaltSystemVersionMinor, &verMinor );
+    Gestalt( gestaltSystemVersionBugFix, &verPatch );
+
+    return std::string("Mac OS X ") + boost::lexical_cast<std::string>(verMajor)
+                              + "." + boost::lexical_cast<std::string>(verMinor)
+                              + "." + boost::lexical_cast<std::string>(verPatch);
+}
+
+std::string getPlatformProcessors(void)
+{
+    const NXArchInfo* ArchInfo = NXGetLocalArchInfo();
+    if(ArchInfo != NULL)
+    {
+        return std::string(ArchInfo->description);
+    }
+    else
+    {
+        return std::string("Unknown");
+    }
+}
+
+std::string getPlatformRAM(void)
+{
+    SInt32 sizeInBytes;
+    Gestalt( gestaltPhysicalRAMSize, &sizeInBytes );
+    return boost::lexical_cast<std::string>(sizeInBytes/1000000) + " Mb";
+}
+
+std::string getPlatformGraphicsChips(void)
+{
+    return "NYI";
+}
+
+bool openFile(const BoostPath& FileToOpen)
+{
+    return false;
+}
+
 #endif
 
 #ifdef WIN32
+std::string getPlatformName(void)
+{
+    return "NYI";
+}
+
+std::string getPlatformProcessors(void)
+{
+    return "NYI";
+}
+
+std::string getPlatformRAM(void)
+{
+    return "NYI";
+}
+
+std::string getPlatformGraphicsChips(void)
+{
+    return "NYI";
+}
+
+bool openFile(const BoostPath& FileToOpen)
+{
+    return false;
+}
+
 #endif
 
 #ifdef __linux
+std::string getPlatformName(void)
+{
+    return "NYI";
+}
+
+std::string getPlatformProcessors(void)
+{
+    return "NYI";
+}
+
+std::string getPlatformRAM(void)
+{
+    return "NYI";
+}
+
+std::string getPlatformGraphicsChips(void)
+{
+    return "NYI";
+}
+
+bool openFile(const BoostPath& FileToOpen)
+{
+    return false;
+}
+
 #endif
+
+OSG_END_NAMESPACE

@@ -145,9 +145,9 @@ bool ParticleSystemEffect::checkTimeoutEndCondition(void)
 
 bool ParticleSystemEffect::checkVolumeEndCondition(void)
 {
-    Pnt3r min = getTheSystem()->getVolume().getMin();
-    Pnt3r max = getTheSystem()->getVolume().getMax();
-    Vec3r diff = max - min;
+    Pnt3f min = getTheSystem()->getVolume().getMin();
+    Pnt3f max = getTheSystem()->getVolume().getMax();
+    Vec3f diff = max - min;
     //assert max>min warn bad
     if(getMaxVolume() >= 0.0f)
     {

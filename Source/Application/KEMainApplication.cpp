@@ -53,6 +53,7 @@
 
 #include "KEApplicationSettings.h"
 #include "KEApplicationMode.h"
+#include "KEPlatformUtils.h"
 #include "KEDefaults.h"
 #include "Project/KEProject.h"
 #include "Project/Scene/KEScene.h"
@@ -131,6 +132,20 @@ const EventProducerType &MainApplication::getProducerType(void) const
     return _producerType;
 }
 
+#ifdef __APPLE__
+std::pair<std::string, std::string> procSerialNumParser(const std::string& s)
+{
+    if (s.find("-psn_") == 0)
+    {
+        return std::make_pair("process-serial-number", s.substr(5));
+    }
+    else
+    {
+        return std::make_pair(std::string(), std::string());
+    }
+}
+#endif
+
 MainApplication *MainApplication::the(void)
 {
     if(_Instance == NULL)
@@ -139,17 +154,28 @@ MainApplication *MainApplication::the(void)
 
         //Initialize static variables
         _OptionsDescription.add_options()
-            ("help,h", "Produce help message.")
-            ("settings-file,s", boost::program_options::value<std::string>(), "The settings file to use.")
-            ("project-file,f", boost::program_options::value<std::string>(), "The Project file to use.")
-            ("builder,b", "Start the world builder.")
-            ("play,p", "Play the project file.")
-            ("fullscreen,u", "Run in fullscreen.")
-            ("debug,d", "Only relevant if -p option is present.  Startup with the dubugger attached.")
-		    ("log-level,l", boost::program_options::value<UInt32>(), "The logging level.  Higher values logs more information. 0=LOG_LOG,1=LOG_FATAL,2=LOG_WARNING,3=LOG_NOTICE,4=LOG_INFO,5=LOG_DEBUG.  This will override the value defined in the settings file.")
-		    ("disable-log,y", boost::program_options::value<bool>(), "Disables all logging.")
-		    ("disable-file-log,z", boost::program_options::value<bool>(), "Disables logging to a file.")
-		    ("log-file,g", boost::program_options::value<std::string>(), "The file to route the logging to.  This will override the value defined in the settings file.  This option is only relavent if log-route is 3(LOG_FILE).")
+            ("help,h",            "Produce help message.")
+            ("settings-file,s",    boost::program_options::value<std::string>(),
+                                  "The settings file to use.")
+            ("project-file,f",     boost::program_options::value<std::string>(),
+                                  "The Project file to use.")
+            ("builder,b",         "Start the world builder.")
+            ("play,p",            "Play the project file.")
+            ("fullscreen,u",      "Run in fullscreen mode. This will override the value defined in the settings file.")
+            ("no-fullscreen,o",   "Run in windowed mode. This will override the value defined in the settings file.")
+            ("debug,d",           "Only relevant if -p option is present.  Startup with the dubugger attached.")
+		    ("log-level,l",        boost::program_options::value<UInt32>(),
+                                  "The logging level.  Higher values logs more information. 0=LOG_LOG,1=LOG_FATAL,2=LOG_WARNING,3=LOG_NOTICE,4=LOG_INFO,5=LOG_DEBUG.  This will override the value defined in the settings file.")
+		    ("disable-log,y",      boost::program_options::value<bool>(),
+                                  "Disables all logging.")
+		    ("disable-file-log,z", boost::program_options::value<bool>(),
+                                  "Disables logging to a file.")
+		    ("log-file,g",         boost::program_options::value<std::string>(),
+                                  "The file to route the logging to.  This will override the value defined in the settings file.  This option is only relavent if log-route is 3(LOG_FILE).")
+
+#ifdef __APPLE__
+		    ("process-serial-number", boost::program_options::value<std::string>(), "The process serial number when run as a Bundle in OS X.")
+#endif
             ;
 
         _PositionalOptions.add("project-file", -1);
@@ -176,8 +202,8 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<Real32>("basic.loading_viewport.camera.far_plane", 100.0f, overwriteIfDefined);
     TheSettings.put<Real32>("basic.loading_viewport.camera.fov", 60.0f, overwriteIfDefined);
     TheSettings.put<Pnt3f> ("basic.loading_viewport.camera.position", Pnt3f(0.0f,0.0f, 0.0f), overwriteIfDefined);
-    TheSettings.put<Color3r>("basic.loading_viewport.background.color", Color3r(0.0f,0.0f, 0.0f), overwriteIfDefined);
-    TheSettings.put<BoostPath>("basic.loading_viewport.background.image_path", BoostPath(""), overwriteIfDefined);
+    TheSettings.put<Color3f>("basic.loading_viewport.background.color", Color3f(0.0f,0.0f, 0.0f), overwriteIfDefined);
+    TheSettings.put<BoostPath>("basic.loading_viewport.background.image_path",BoostPath("./UI/Loading.jpg"), overwriteIfDefined);
 
     TheSettings.put<Real32>("basic.default_scene.camera.near_plane", 0.1f, overwriteIfDefined);
     TheSettings.put<Real32>("basic.default_scene.camera.far_plane", 5000.0f, overwriteIfDefined);
@@ -196,7 +222,7 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     //TheSettings.put<bool>("basic.default_scene.point_light.draw", true, overwriteIfDefined);
     TheSettings.put<Pnt3f>("basic.default_scene.point_light.position", Pnt3f(0.0f,5.0f, 5.0f), overwriteIfDefined);
     
-    TheSettings.put<Color3r>("basic.default_scene.background.color", Color3r(0.3f,0.3f,0.3f), overwriteIfDefined);
+    TheSettings.put<Color3f>("basic.default_scene.background.color", Color3f(0.3f,0.3f,0.3f), overwriteIfDefined);
 
     //Logging
     TheSettings.put<UInt8>    ("logging.type",            LOG_FILE, overwriteIfDefined);
@@ -345,7 +371,12 @@ Int32 MainApplication::run(int argc, char **argv)
     try
     {
         boost::program_options::store(boost::program_options::command_line_parser(argc, argv).
-                                      options(_OptionsDescription).positional(_PositionalOptions).run(), OptionsVariableMap);
+                                      options(_OptionsDescription).
+#ifdef __APPLE__
+                                      extra_parser(procSerialNumParser).
+#endif
+                                      positional(_PositionalOptions).run(), OptionsVariableMap);
+
         boost::program_options::notify(OptionsVariableMap);
     }
     catch(boost::program_options::error& e)
@@ -426,19 +457,45 @@ Int32 MainApplication::run(int argc, char **argv)
 
     //Log information about the Engine
     {
-        SLOG << "Starting Kabala Engine:" << std::endl;
+        PLOG << "Starting Kabala Engine:" << std::endl;
+        OSG::indentLog(4,PLOG);
+        PLOG << "Arguments: ";
+        for(UInt32 i(0) ; i<argc ; ++i)
+        {
+            PLOG << argv[i] << " ";
+        }
+        PLOG << std::endl;
+
+        OSG::indentLog(4,PLOG);
+        PLOG << "System:" << std::endl;
+        OSG::indentLog(8,PLOG);
+        PLOG << "Operating System: " << getPlatformName() << std::endl;
+        OSG::indentLog(8,PLOG);
+        PLOG << "Processor: " << getPlatformProcessors() << std::endl;
+        OSG::indentLog(8,PLOG);
+        PLOG << "RAM: " << getPlatformRAM() << std::endl;
         OSG::indentLog(4,PLOG);
         PLOG << "Time: " << to_simple_string(_DateTimeRun) << std::endl;
         OSG::indentLog(4,PLOG);
         PLOG << "Version: " << getKabalaEngineVersion() << std::endl;
-        OSG::indentLog(4,PLOG);
+        OSG::indentLog(8,PLOG);
         PLOG << "Revision: " << getKabalaEngineBuildRepositoryRevision() << std::endl;
-        OSG::indentLog(4,PLOG);
+        OSG::indentLog(8,PLOG);
         PLOG << "Build Type: " << getKabalaEngineBuildType() << std::endl;
         OSG::indentLog(4,PLOG);
         PLOG << "Working Directory: " << boost::filesystem::current_path().string() << std::endl;
         OSG::indentLog(4,PLOG);
         PLOG << "Executable Directory: " << CommandPath.parent_path().string() << std::endl;
+        OSG::indentLog(4,PLOG);
+        PLOG << "Settings File: " << getSettingsLoadFile().string() << std::endl;
+
+        OSG::indentLog(4,PLOG);
+        PLOG << "Logging: " << (_EnableLogging ? "Enabled" : "Disabled" ) << std::endl;
+        if(_EnableLogging)
+        {
+            OSG::indentLog(8,PLOG);
+            PLOG << "Log File: " << (_LogToFile ? _LogFilePath.string() : "Disabled" ) << std::endl;
+        }
     }
 
     //Check if the Data Directory exists
@@ -505,7 +562,21 @@ Int32 MainApplication::run(int argc, char **argv)
     setMainWindow(MainWindow);
     setName(getMainWindow(),"__KABALA_ENGINE_WINDOW_EVENT_PRODUCER");
 
-    getMainWindow()->setFullscreen(OptionsVariableMap.count("fullscreen") || getSettings().get<bool>("basic.window.fullscreen"));
+    //If Fullscreen option -> Fullscreen
+    if(OptionsVariableMap.count("fullscreen"))
+    {
+        getMainWindow()->setFullscreen(true);
+    }
+    //If no-fullscreen     -> not Fullscreen
+    else if(OptionsVariableMap.count("no-fullscreen"))
+    {
+        getMainWindow()->setFullscreen(false);
+    }
+    //else                 -> use the value in the settings
+    else
+    {
+        getMainWindow()->setFullscreen(getSettings().get<bool>("basic.window.fullscreen"));
+    }
 
     getMainWindow()->initWindow();
 

@@ -163,6 +163,9 @@ class KE_KABALAENGINE_DLLMAPPING MainApplication
 
     BoostPath getUserAppDataDir(void) const;
     BoostPath getLoggingDir(void) const;
+    BoostPath getLoggingFilePath(void) const;
+    bool getLoggingEnabled(void) const;
+    bool getLoggingToFile(void) const;
     /*=========================  PROTECTED  ===============================*/
   protected:
 

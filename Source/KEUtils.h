@@ -46,6 +46,7 @@
 #include <OpenSG/OSGCameraFields.h>
 #include <OpenSG/OSGViewportFields.h>
 #include <OpenSG/OSGNodeFields.h>
+#include <OpenSG/OSGMatrix.h>
 
 #include <string>
 

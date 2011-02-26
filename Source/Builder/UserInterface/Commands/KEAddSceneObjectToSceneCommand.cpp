@@ -129,7 +129,7 @@ void AddSceneObjectToSceneCommand::execute(void)
 	std::vector<BoostPath> FilesToOpen;
     FilesToOpen = MainApplication::the()->getMainWindow()->openFileDialog("Import a model file.",
                                                                           Filters,
-                                                                          BoostPath("C:\\Users\\David\\Documents\\Work\\Study\\Models"),
+                                                                          BoostPath("."),
                                                                           false);
 
 	NodeRecPtr NewNode;

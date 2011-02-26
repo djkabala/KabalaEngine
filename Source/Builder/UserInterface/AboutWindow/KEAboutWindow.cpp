@@ -44,6 +44,7 @@
 
 #include <OpenSG/OSGConfig.h>
 
+
 #include "KEAboutWindow.h"
 #include "Builder/KEApplicationBuilder.h"
 #include "Project/KEProject.h"
@@ -60,8 +61,12 @@
 
 #include <OpenSG/OSGDialogWindow.h>
 #include <OpenSG/OSGButton.h>
+#include <OpenSG/OSGStringListModel.h>
 #include <OpenSG/OSGFCFileHandler.h>
 #include <OpenSG/OSGUIDrawUtils.h>
+//#include <OpenSG/OSGGL.h>
+
+#include "KEPlatformUtils.h"
 
 OSG_BEGIN_NAMESPACE
 
@@ -71,10 +76,83 @@ void openAboutWindow(void)
 
     DialogWindowRecPtr TheAboutWindow = createAboutWindow();
     
-    dynamic_cast<Button*>(AppBuilder->findContainer("KE.WorldBuilder.Overview.CloseButton"))->connectActionPerformed(boost::bind(&handleAboutWindowCloseButton, _1, TheAboutWindow.get()));
+    dynamic_cast<Button*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.OkButton"))->connectActionPerformed(boost::bind(&handleAboutWindowCloseButton, _1, TheAboutWindow.get()));
 
     TheAboutWindow->setPosition(calculateAlignment(Pnt2f(0.0f,0.0f), AppBuilder->getDrawingSurface()->getSize(), TheAboutWindow->getPreferredSize(), 0.5f,0.5f));
+
+    //Update the Values
+
+    //General
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.GeneralPanel.VersionValueLabel"))->setText(getKabalaEngineVersion());
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.GeneralPanel.CodeRevisionValueLabel"))->setText(getKabalaEngineBuildRepositoryRevision());
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.GeneralPanel.BuildTypeValueLabel"))->setText(getKabalaEngineBuildType());
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.GeneralPanel.OpenSGVersionValueLabel"))->setText(OSG_VERSION_STRING);
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.GeneralPanel.LoggingValueLabel"))
+        ->setText(MainApplication::the()->getLoggingEnabled() ? "Enabled" : "Disabled");
+    if(MainApplication::the()->getLoggingEnabled() &&
+       MainApplication::the()->getLoggingToFile())
+    {
+        dynamic_cast<Button*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.GeneralPanel.LogFileButton"))
+            ->setText(MainApplication::the()->getLoggingFilePath().string());
+        dynamic_cast<Button*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.GeneralPanel.LogFileButton"))
+            ->connectActionPerformed(boost::bind(&openFile, MainApplication::the()->getLoggingFilePath()));
+    }
+    //FMod
+    //Lua
+    //ODE
+    //VLC
+    //DirectShow
+    //
     
+    //System
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.SystemPanel.OSValueLabel"))->setText(getPlatformName());
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.SystemPanel.ProcessorsValueLabel"))->setText(getPlatformProcessors());
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.SystemPanel.RAMValueLabel"))->setText(getPlatformRAM());
+
+    //Activate the window in order to bind the OpenGL context
+    AppBuilder->getDrawingSurface()->getEventProducer()->activate();
+
+    {
+        const char* glVersion   = 
+            reinterpret_cast<const char *>(glGetString(GL_VERSION));
+        dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.SystemPanel.OpenGLValueLabel"))
+            ->setText(glVersion ? glVersion : "Unknown");
+    }
+
+    const char* glVendor   = 
+        reinterpret_cast<const char *>(glGetString(GL_VENDOR));
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.SystemPanel.OpenGLVendorValueLabel"))
+        ->setText(glVendor ? glVendor : "Unknown");
+
+    const char* glRenderer = 
+        reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+    dynamic_cast<Label*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.SystemPanel.OpenGLRendererValueLabel"))
+        ->setText(glRenderer ? glRenderer : "Unknown");
+
+    //Dectivate the window
+    AppBuilder->getDrawingSurface()->getEventProducer()->deactivate();
+
+    //OpenSG libraries
+    StringListModelUnrecPtr OpenSGLibListModel = dynamic_cast<StringListModel*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.PlugintsPanel.OpenSGLibsListModel"));
+    OpenSGLibListModel->editMFItems()->reserve(getNumLibraries());
+    std::string LibName;
+    for(UInt32 i(0) ; i<getNumLibraries() ; ++i)
+    {
+        LibName = getLibraryName(i);
+        OpenSGLibListModel->editMFItems()->push_back(LibName +
+                                                     ": " +
+                                                     getLibraryVersion(LibName) +
+                                                     "  Rev: " +
+                                                     getLibraryRevision(LibName)
+                                                     );
+    }
+
+
+    //OpenGL Extensions
+    StringListModelUnrecPtr OpenGLExtListModel = dynamic_cast<StringListModel*>(AppBuilder->findContainer("KabalaEngine.AboutWindow.PlugintsPanel.KabalaEnginePluginsListModel"));
+    std::vector<std::string> GLExtList(AppBuilder->getDrawingSurface()->getEventProducer()->getExtensions());
+    OpenGLExtListModel->editMFItems()->setValues(GLExtList);
+
 	AppBuilder->getDrawingSurface()->openWindow(TheAboutWindow);
 }
 

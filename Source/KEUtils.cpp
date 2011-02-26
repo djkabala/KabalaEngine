@@ -84,7 +84,7 @@ void calcCameraShowAll(Camera* const LocalCamera,
     //Get the Minimum and Maximum bounds of the volume
     Vec3f min,max;
     BoxVolume AllVolume, NodeVolume;
-    AllVolume.setBoundsByCenterAndSize(Pnt3r(0.0f,0.0f,0.0f),Vec3f(0.0f,0.0f,0.0f));
+    AllVolume.setBoundsByCenterAndSize(Pnt3f(0.0f,0.0f,0.0f),Vec3f(0.0f,0.0f,0.0f));
     for(UInt32 i(0) ; i<NodesToShow.size() ; ++i)
     {
         NodesToShow[i]->getWorldVolume(NodeVolume);
