@@ -18,7 +18,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="3"
 		 nameAttachment=""
@@ -91,7 +91,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<GradientLayer
 		 fieldcontainerid="7"
 		 nameAttachment=""
@@ -627,7 +627,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="40"
 		 nameAttachment=""
@@ -700,7 +700,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<GradientLayer
 		 fieldcontainerid="44"
 		 nameAttachment=""
@@ -1232,7 +1232,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="76"
 		 nameAttachment=""
@@ -1305,7 +1305,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<GradientLayer
 		 fieldcontainerid="80"
 		 nameAttachment=""
@@ -1837,7 +1837,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="112"
 		 nameAttachment=""
@@ -2432,7 +2432,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="147"
 		 nameAttachment=""
@@ -3027,7 +3027,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="182"
 		 nameAttachment=""
@@ -3632,7 +3632,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="219"
 		 nameAttachment=""
@@ -4227,7 +4227,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="254"
 		 nameAttachment=""
@@ -4822,7 +4822,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="289"
 		 nameAttachment=""
@@ -5417,7 +5417,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="324"
 		 nameAttachment=""
@@ -6012,7 +6012,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="359"
 		 nameAttachment=""
@@ -6607,7 +6607,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="394"
 		 nameAttachment=""
@@ -7202,7 +7202,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="429"
 		 nameAttachment=""
@@ -7972,7 +7972,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="487"
 		 nameAttachment=""
@@ -8567,7 +8567,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="522"
 		 nameAttachment=""
@@ -9162,7 +9162,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<DefaultComboBoxComponentGenerator
 		 fieldcontainerid="557"
 		 nameAttachment="KE.LookAndFeel.DefaultComboBoxComponentGenerator"
@@ -9194,7 +9194,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="561"
 		 nameAttachment=""
@@ -10011,7 +10011,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<DefaultComboBoxComponentGenerator
 		 fieldcontainerid="619"
 		 nameAttachment="KE.LookAndFeel.DefaultComboBoxComponentGenerator"
@@ -10043,7 +10043,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="623"
 		 nameAttachment=""
@@ -10842,7 +10842,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<DefaultComboBoxComponentGenerator
 		 fieldcontainerid="678"
 		 nameAttachment="KE.LookAndFeel.DefaultComboBoxComponentGenerator"
@@ -10874,7 +10874,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="682"
 		 nameAttachment=""
@@ -11663,7 +11663,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="735"
 		 nameAttachment=""
@@ -12268,7 +12268,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="772"
 		 nameAttachment=""
@@ -12873,7 +12873,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="809"
 		 nameAttachment=""
@@ -13468,7 +13468,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="844"
 		 nameAttachment=""
@@ -14063,7 +14063,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="879"
 		 nameAttachment=""
@@ -14228,7 +14228,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="892"
 		 nameAttachment=""
@@ -14393,7 +14393,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="905"
 		 nameAttachment=""
@@ -14558,7 +14558,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="918"
 		 nameAttachment=""
@@ -14723,7 +14723,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="931"
 		 nameAttachment=""
@@ -14888,7 +14888,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="944"
 		 nameAttachment=""
@@ -15053,7 +15053,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<DefaultComboBoxComponentGenerator
 		 fieldcontainerid="957"
 		 nameAttachment="KE.LookAndFeel.DefaultComboBoxComponentGenerator"
@@ -15085,7 +15085,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<UIDrawObjectCanvas
 		 fieldcontainerid="961"
 		 nameAttachment=""
@@ -17326,7 +17326,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<ColorLayer
 		 fieldcontainerid="1134"
 		 Color="1 1 1 1"/>
@@ -18511,8 +18511,8 @@
 	<Graphics2D
 		 fieldcontainerid="1231"
 		 Opacity="1"
-		 EnablePointAntiAliasing="TRUE"
-		 EnableLineAntiAliasing="TRUE"
+		 EnablePointAntiAliasing="FALSE"
+		 EnableLineAntiAliasing="FALSE"
 		 EnablePolygonAntiAliasing="FALSE"/>
 	<BorderLayout
 		 fieldcontainerid="1232"/>
@@ -18923,7 +18923,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<MenuBar
 		 fieldcontainerid="1250"
 		 nameAttachment="KE.WorldBuilder.MenuBar"
@@ -23620,7 +23620,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="1"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<Label
 		 fieldcontainerid="1414"
 		 nameAttachment=""
@@ -162621,7 +162621,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<ComponentMenuItem
 		 fieldcontainerid="5003"
 		 MinSize="0 0"

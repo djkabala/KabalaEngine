@@ -13,7 +13,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<ColorLayer
 		 fieldcontainerid="2"
 		 nameAttachment=""
@@ -74,7 +74,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<ColorLayer
 		 fieldcontainerid="13"
 		 nameAttachment=""
@@ -423,7 +423,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<ColorLayer
 		 fieldcontainerid="41"
 		 nameAttachment=""
@@ -1017,7 +1017,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<ColorLayer
 		 fieldcontainerid="93"
 		 nameAttachment=""
@@ -1049,7 +1049,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<GradientLayer
 		 fieldcontainerid="98"
 		 nameAttachment=""
@@ -1336,7 +1336,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<PolygonUIDrawObject
 		 fieldcontainerid="120"
 		 Verticies="0 0, 0 4, 8 4, 8 0"
@@ -1442,7 +1442,7 @@
 		 Gap="2"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<GradientLayer
 		 fieldcontainerid="131"
 		 nameAttachment=""
@@ -1879,8 +1879,8 @@
 	<Graphics2D
 		 fieldcontainerid="160"
 		 Opacity="1"
-		 EnablePointAntiAliasing="TRUE"
-		 EnableLineAntiAliasing="TRUE"
+		 EnablePointAntiAliasing="FALSE"
+		 EnableLineAntiAliasing="FALSE"
 		 EnablePolygonAntiAliasing="FALSE"/>
 	<Panel
 		 fieldcontainerid="161"
@@ -11622,7 +11622,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<Image
 		 fieldcontainerid="436"
 		 filePathAttachment="../Images/ode_logo.png"/>

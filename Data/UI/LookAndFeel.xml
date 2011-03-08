@@ -36,7 +36,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<RoundedCornerLineBorder
 		 fieldcontainerid="4"
 		 Width="1"
@@ -336,7 +336,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<ColorLayer
 		 fieldcontainerid="34"
 		 Color="1 1 1 1"/>
@@ -525,7 +525,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<EmptyBorder
 		 fieldcontainerid="45"
 		 LeftWidth="0"
@@ -679,7 +679,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<DefaultComboBoxComponentGenerator
 		 fieldcontainerid="63"
 		 nameAttachment="KE.LookAndFeel.DefaultComboBoxComponentGenerator"
@@ -711,7 +711,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<LineBorder
 		 fieldcontainerid="67"
 		 Width="1"
@@ -834,7 +834,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<EmptyBorder
 		 fieldcontainerid="75"
 		 LeftWidth="0"
@@ -849,7 +849,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<EmptyLayer
 		 fieldcontainerid="77"/>
 	<MatteBorder
@@ -1317,7 +1317,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<PolygonUIDrawObject
 		 fieldcontainerid="117"
 		 Verticies="0 0, 0 4, 8 4, 8 0"
@@ -2072,8 +2072,8 @@
 	<Graphics2D
 		 fieldcontainerid="181"
 		 Opacity="1"
-		 EnablePointAntiAliasing="TRUE"
-		 EnableLineAntiAliasing="TRUE"
+		 EnablePointAntiAliasing="FALSE"
+		 EnableLineAntiAliasing="FALSE"
 		 EnablePolygonAntiAliasing="FALSE"/>
 	<FlowLayout
 		 fieldcontainerid="182"
@@ -2097,7 +2097,7 @@
 		 Gap="3"
 		 TextureWidth="0"
 		 Style="0"
-		 AntiAliasing="TRUE"/>
+		 AntiAliasing="FALSE"/>
 	<GradientLayer
 		 fieldcontainerid="185"
 		 nameAttachment=""
@@ -3967,14 +3967,14 @@
 		 Focused="FALSE"
 		 Constraints="0"
 		 Border="60"
-		 Background="195"
+		 Background="35"
 		 DisabledBorder="60"
-		 DisabledBackground="195"
+		 DisabledBackground="35"
 		 DragEnabled="FALSE"
 		 FocusedBorder="60"
-		 FocusedBackground="195"
+		 FocusedBackground="35"
 		 RolloverBorder="60"
-		 RolloverBackground="195"
+		 RolloverBackground="35"
 		 Opacity="0.9"
 		 Clipping="TRUE"
 		 FocusedForeground="0"
