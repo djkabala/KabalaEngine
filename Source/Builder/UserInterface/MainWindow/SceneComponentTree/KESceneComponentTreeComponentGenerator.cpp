@@ -305,6 +305,10 @@ ComponentTransitPtr SceneComponentTreeComponentGenerator::getTreeComponent(Tree*
                 CompPanel->setLayout(TreeCompLayout);
                 CompPanel->pushToChildren(LabelComp);
                 CompPanel->pushToChildren(_AddLightButton);
+
+                commitChanges();
+                std::cout << "MenuModel " << MenuModel->getSize() << std::endl;
+                _AddLightButton->setModel(MenuModel);
                 
                 return ComponentTransitPtr(CompPanel);
             }

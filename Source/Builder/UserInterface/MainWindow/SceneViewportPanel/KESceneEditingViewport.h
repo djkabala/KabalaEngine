@@ -49,6 +49,7 @@
 //XForm Manipulator
 #include <OpenSG/OSGManipulatorManager.h>
 #include <OpenSG/OSGReplicateTransformFields.h>
+#include <OpenSG/OSGScreenTransformFields.h>
 
 //Animation
 #include <OpenSG/OSGKeyframeTransformationSequenceFields.h>
@@ -193,9 +194,15 @@ class KE_KABALAENGINE_DLLMAPPING SceneEditingViewport : public SceneEditingViewp
     NodeRefPtr         _XFormManipNode;
 
     //Camera Node
-    NodeRefPtr               _CameraNode;
-    ReplicateTransformRefPtr _CameraNodeCore;
+    NodeRefPtr            _CameraNode;
+    ScreenTransformRefPtr _CameraNodeCore;
 
+    //Light Nodes
+    NodeRefPtr              _LightGroupNode;
+    std::vector<NodeRefPtr> _LightNodes;
+    static Action::ResultE findLight(std::vector<LightRefPtr>*  vLights,
+                                     Node            * const node);
+    void updateLightNodes(Viewport* const TheViewport);
 
     void handleSceneEditorPanelMouseDragged(MouseEventDetails* const details);
     void handleSceneEditorPanelMouseReleased(MouseEventDetails* const details);
@@ -224,6 +231,7 @@ class KE_KABALAENGINE_DLLMAPPING SceneEditingViewport : public SceneEditingViewp
     void createHighlightTriMeshNode(void);
     void createXFormManipulator(void);
     void createCameraNode(void);
+    void createLightNodes(void);
     void updateHighlightNode(void);
     void updateWireframeNode(void);
     void updateXFormManipulator(void);

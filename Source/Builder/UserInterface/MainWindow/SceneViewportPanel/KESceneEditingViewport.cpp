@@ -54,18 +54,22 @@
 #include <OpenSG/OSGMaterialChunk.h>
 #include <OpenSG/OSGDepthChunk.h>
 #include <OpenSG/OSGReplicateTransform.h>
+#include <OpenSG/OSGScreenTransform.h>
 #include <OpenSG/OSGSimpleGeometryExt.h>
 #include <OpenSG/OSGTypedGeoIntegralProperty.h>
 #include <OpenSG/OSGTypedGeoVectorProperty.h>
 #include <OpenSG/OSGVisitSubTree.h>
 #include <OpenSG/OSGMaterialGroup.h>
 #include <OpenSG/OSGPassiveBackground.h>
+#include <OpenSG/OSGPointLight.h>
 #include <OpenSG/OSGDirectionalLight.h>
+#include <OpenSG/OSGSpotLight.h>
 #include <OpenSG/OSGStackedTransform.h>
 #include <OpenSG/OSGTransformationElement.h>
 #include <OpenSG/OSGPhysicsBody.h>
 #include <OpenSG/OSGSetFieldValueCommand.h>
 #include <OpenSG/OSGSceneFileHandler.h>
+#include <OpenSG/OSGMultiCore.h>
 
 
 #include <OpenSG/OSGMaterialChunkOverrideGroup.h>
@@ -332,6 +336,109 @@ bool SceneEditingViewport::getStatisticsEnabled(void) const
  -  private                                                                 -
 \*-------------------------------------------------------------------------*/
 
+Action::ResultE SceneEditingViewport::findLight(std::vector<LightRefPtr>*  vLights,
+                                                Node            * const node)
+{
+    if(node->getCore()->getType().isDerivedFrom(Light::getClassType()))
+    {
+        vLights->push_back(dynamic_cast<Light*>(node->getCore()));
+    }
+    else if(node->getCore()->getType().isDerivedFrom(MultiCore::getClassType()))
+    {
+        MultiCore *pCore = dynamic_cast<MultiCore *>(node->getCore());
+
+        MultiCore::MFCoresType::const_iterator cIt = 
+            pCore->getMFCores()->begin();
+
+        MultiCore::MFCoresType::const_iterator cEnd = 
+            pCore->getMFCores()->end();
+
+        for(; cIt != cEnd; ++cIt)
+        {
+            if((*cIt)->getType().isDerivedFrom(Light::getClassType()))
+            {
+                vLights->push_back(dynamic_cast<Light*>(*cIt));
+            }
+        }
+    }
+
+    return Action::Continue;
+}
+
+void SceneEditingViewport::updateLightNodes(Viewport* const TheViewport)
+{
+    //Find all of the lights in the scene
+    _LightGroupNode->clearChildren();
+
+    //Finding lights by going through whole Scenegraph
+    std::vector<LightRefPtr> vLights;
+    traverse(TheViewport->getRoot(), 
+             boost::bind(&SceneEditingViewport::findLight,
+                         &vLights,
+                         _1));
+
+    std::cout << "Lights: " << vLights.size() <<  std::endl;
+
+    BoostPath PointLightModelPath(MainApplication::the()->getSettings().get<BoostPath>("builder.ui.visual_annotations.point_light.path"));
+    BoostPath DirectionalLightModelPath(MainApplication::the()->getSettings().get<BoostPath>("builder.ui.visual_annotations.directional_light.path"));
+    BoostPath SpotLightModelPath(MainApplication::the()->getSettings().get<BoostPath>("builder.ui.visual_annotations.spot_light.path"));
+
+    if(!PointLightModelPath.is_complete())
+    {
+        PointLightModelPath = MainApplication::the()->getSettings().get<BoostPath>("basic.data.directory") / PointLightModelPath;
+    }
+    if(!DirectionalLightModelPath.is_complete())
+    {
+        DirectionalLightModelPath = MainApplication::the()->getSettings().get<BoostPath>("basic.data.directory") / DirectionalLightModelPath;
+    }
+    if(!SpotLightModelPath.is_complete())
+    {
+        SpotLightModelPath = MainApplication::the()->getSettings().get<BoostPath>("basic.data.directory") / SpotLightModelPath;
+    }
+    NodeRecPtr PointLightGeometryNode = SceneFileHandler::the()->read(PointLightModelPath.string().c_str());
+    NodeRecPtr DirectionalLightGeometryNode = SceneFileHandler::the()->read(DirectionalLightModelPath.string().c_str());
+    NodeRecPtr SpotLightGeometryNode = SceneFileHandler::the()->read(SpotLightModelPath.string().c_str());
+
+    for(std::vector<LightRefPtr>::iterator LightItor(vLights.begin()) ;
+        LightItor != vLights.end() ;
+        ++LightItor)
+    {
+        //For each light
+        NodeRecPtr DuplicatedLightGeoNode;
+        Real32 AnnotationDepth(1.0f);
+        if((*LightItor)->getType() == PointLight::getClassType())
+        {
+            DuplicatedLightGeoNode = cloneTree(PointLightGeometryNode);
+            AnnotationDepth = MainApplication::the()->getSettings().get<Real32>("builder.ui.visual_annotations.point_light.depth");
+        }
+        else if((*LightItor)->getType() == DirectionalLight::getClassType())
+        {
+            DuplicatedLightGeoNode = cloneTree(DirectionalLightGeometryNode);
+            AnnotationDepth = MainApplication::the()->getSettings().get<Real32>("builder.ui.visual_annotations.directional_light.depth");
+        }
+        else if((*LightItor)->getType() == SpotLight::getClassType())
+        {
+            DuplicatedLightGeoNode = cloneTree(SpotLightGeometryNode);
+            AnnotationDepth = MainApplication::the()->getSettings().get<Real32>("builder.ui.visual_annotations.spot_light.depth");
+        }
+
+        ScreenTransformRecPtr LightNodeCore = ScreenTransform::create();
+        Matrix ScreenTransformView;
+        ScreenTransformView.setTranslate(0.0f,0.0f,-AnnotationDepth);
+        LightNodeCore->setView(ScreenTransformView);
+        LightNodeCore->setApplyBeaconRotation(true);
+        LightNodeCore->setApplyBeaconScreenTranslation(true);
+        LightNodeCore->setInvertWorldTransform(true);
+        LightNodeCore->setInvertViewTransform(true);
+        LightNodeCore->setBeacon((*LightItor)->getBeacon());
+
+        NodeRecPtr LightNode = makeNodeFor(LightNodeCore);
+        LightNode->addChild(DuplicatedLightGeoNode);
+
+        _LightGroupNode->addChild(LightNode);
+    }
+}
+
 void SceneEditingViewport::drawInternal(Graphics* const TheGraphics, Real32 Opacity) const
 {
     const_cast<SceneEditingViewport*>(this)->updateHighlightNode();
@@ -421,7 +528,8 @@ void SceneEditingViewport::attachScene(Scene* const TheScene)
             getEditorOverlayViewports(i)->getPort()->setCamera(getSceneViewports(i)->getPort()->getCamera());
 
             _OverlayLight->setBeacon(getEditorOverlayViewports(i)->getDrawingViewport()->getCamera()->getBeacon());
-            _CameraNodeCore->setTarget(TheScene->getViewports(i)->getCamera()->getBeacon());
+            _CameraNodeCore->setBeacon(TheScene->getViewports(i)->getCamera()->getBeacon());
+            updateLightNodes(TheScene->getViewports(i));
             commitChanges();
             
             std::vector<Node*> NodesToShow;
@@ -463,6 +571,12 @@ void SceneEditingViewport::dettachScene(void)
 {
 }
 
+
+void SceneEditingViewport::createLightNodes(void)
+{
+    _LightGroupNode = makeCoredNode<Group>();
+}
+
 void SceneEditingViewport::createCameraNode(void)
 {
     BoostPath CameraModelPath(MainApplication::the()->getSettings().get<BoostPath>("builder.ui.visual_annotations.camera.path"));
@@ -474,7 +588,14 @@ void SceneEditingViewport::createCameraNode(void)
     
     NodeRecPtr CameraGeometryNode = SceneFileHandler::the()->read(CameraModelPath.string().c_str());
 
-    _CameraNodeCore = ReplicateTransform::create();
+    _CameraNodeCore = ScreenTransform::create();
+    Matrix ScreenTransformView;
+    ScreenTransformView.setTranslate(0.0f,0.0f,-MainApplication::the()->getSettings().get<Real32>("builder.ui.visual_annotations.camera.depth"));
+    _CameraNodeCore->setView(ScreenTransformView);
+    _CameraNodeCore->setApplyBeaconRotation(true);
+    _CameraNodeCore->setApplyBeaconScreenTranslation(true);
+    _CameraNodeCore->setInvertWorldTransform(true);
+    _CameraNodeCore->setInvertViewTransform(true);
 
     _CameraNode = makeNodeFor(_CameraNodeCore);
     _CameraNode->addChild(CameraGeometryNode);
@@ -512,6 +633,9 @@ ViewportTransitPtr SceneEditingViewport::createOverlayViewport(GLViewport* const
     //Camera Node
     createCameraNode();
 
+    //Light Node
+    createLightNodes();
+
     //Create the Light
     _OverlayLight = DirectionalLight::create();
 
@@ -524,6 +648,7 @@ ViewportTransitPtr SceneEditingViewport::createOverlayViewport(GLViewport* const
     DefaultRootNode->addChild(_XFormManipNode);
     DefaultRootNode->addChild(_WorkspaceGrid);
     DefaultRootNode->addChild(_CameraNode);
+    DefaultRootNode->addChild(_LightGroupNode);
 
     //Background
     PassiveBackgroundRefPtr DefaultBackground = PassiveBackground::create();

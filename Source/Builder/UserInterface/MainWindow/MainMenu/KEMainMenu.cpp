@@ -103,6 +103,7 @@ void MainMenu::initMethod(InitPhase ePhase)
 
 void MainMenu::createInterface(ApplicationBuilder* const TheApplicationBuilder)
 {
+    MenuRecPtr FileMenu = dynamic_cast<Menu*>(findContainer("KE.WorldBuilder.FileMenu", TheApplicationBuilder));
     _OpenMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.OpenMenuItem", TheApplicationBuilder));
     _SaveMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.SaveProjectMenuItem", TheApplicationBuilder));
     _SaveAsMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.SaveProjectAsMenuItem", TheApplicationBuilder));
@@ -111,17 +112,45 @@ void MainMenu::createInterface(ApplicationBuilder* const TheApplicationBuilder)
     _NewMenuItem = dynamic_cast<MenuItem*> (findContainer("KE.WorldBuilder.MainMenu.NewProjectMenuItem", TheApplicationBuilder));
     _QuitMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.QuitMenuItem", TheApplicationBuilder));
     _RecentProjectsMenu = dynamic_cast<Menu*>(findContainer("KE.WorldBuilder.MainMenu.RecentProjectsMenu", TheApplicationBuilder));
+    FileMenu->removeAllItems();
+    FileMenu->addItem(_NewMenuItem);
+    FileMenu->addItem(_OpenMenuItem);
+    FileMenu->addItem(_CloseMenuItem);
+    FileMenu->addSeparator();
+    FileMenu->addItem(_SaveMenuItem);
+    FileMenu->addItem(_SaveAsMenuItem);
+    FileMenu->addSeparator();
+    FileMenu->addItem(_SettingsMenuItem);
+    FileMenu->addSeparator();
+    FileMenu->addItem(_RecentProjectsMenu);
+    FileMenu->addSeparator();
+    FileMenu->addItem(_QuitMenuItem);
  
+    MenuRecPtr EditMenu = dynamic_cast<Menu*>(findContainer("KE.WorldBuilder.EditMenu", TheApplicationBuilder));
     _UndoMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.UndoMenuItem", TheApplicationBuilder));
     _RedoMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.RedoMenuItem", TheApplicationBuilder));
+    EditMenu->removeAllItems();
+    EditMenu->addItem(_UndoMenuItem);
+    EditMenu->addItem(_RedoMenuItem);
     
+    MenuRecPtr ProjectMenu = dynamic_cast<Menu*>(findContainer("KE.WorldBuilder.ProjectMenu", TheApplicationBuilder));
     _PlayMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.PlayMenuItem", TheApplicationBuilder));
     _ProjectAdvancedSettingsMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.ProjectAdvancedSettingsMenuItem", TheApplicationBuilder));
     _ProjectPropertiesMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.ProjectPropertiesMenuItem", TheApplicationBuilder));
+    ProjectMenu->removeAllItems();
+    ProjectMenu->addItem(_PlayMenuItem);
+    ProjectMenu->addItem(_ProjectAdvancedSettingsMenuItem);
+    ProjectMenu->addItem(_ProjectPropertiesMenuItem);
     
+    MenuRecPtr HelpMenu = dynamic_cast<Menu*>(findContainer("KE.WorldBuilder.HelpMenu", TheApplicationBuilder));
     _HelpMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.HelpMenuItem", TheApplicationBuilder));
     _CreditsMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.CreditsMenuItem", TheApplicationBuilder));
     _AboutMenuItem = dynamic_cast<MenuItem*>(findContainer("KE.WorldBuilder.MainMenu.AboutMenuItem", TheApplicationBuilder));
+    HelpMenu->removeAllItems();
+    HelpMenu->addItem(_HelpMenuItem);
+    HelpMenu->addItem(_CreditsMenuItem);
+    FileMenu->addSeparator();
+    HelpMenu->addItem(_AboutMenuItem);
 }
 
 void MainMenu::destroyInterface(ApplicationBuilder* const TheApplicationBuilder)

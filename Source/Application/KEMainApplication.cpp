@@ -156,25 +156,29 @@ MainApplication *MainApplication::the(void)
         _OptionsDescription.add_options()
             ("help,h",            "Produce help message.")
             ("settings-file,s",    boost::program_options::value<std::string>(),
-                                  "The settings file to use.")
+             "The settings file to use.")
             ("project-file,f",     boost::program_options::value<std::string>(),
-                                  "The Project file to use.")
+             "The Project file to use.")
             ("builder,b",         "Start the world builder.")
             ("play,p",            "Play the project file.")
             ("fullscreen,u",      "Run in fullscreen mode. This will override the value defined in the settings file.")
             ("no-fullscreen,o",   "Run in windowed mode. This will override the value defined in the settings file.")
             ("debug,d",           "Only relevant if -p option is present.  Startup with the dubugger attached.")
-		    ("log-level,l",        boost::program_options::value<UInt32>(),
-                                  "The logging level.  Higher values logs more information. 0=LOG_LOG,1=LOG_FATAL,2=LOG_WARNING,3=LOG_NOTICE,4=LOG_INFO,5=LOG_DEBUG.  This will override the value defined in the settings file.")
-		    ("disable-log,y",      boost::program_options::value<bool>(),
-                                  "Disables all logging.")
-		    ("disable-file-log,z", boost::program_options::value<bool>(),
-                                  "Disables logging to a file.")
-		    ("log-file,g",         boost::program_options::value<std::string>(),
-                                  "The file to route the logging to.  This will override the value defined in the settings file.  This option is only relavent if log-route is 3(LOG_FILE).")
+            ("log-level,l",        boost::program_options::value<UInt32>(),
+             "The logging level.  Higher values logs more information. 0=LOG_LOG,1=LOG_FATAL,2=LOG_WARNING,3=LOG_NOTICE,4=LOG_INFO,5=LOG_DEBUG.  This will override the value defined in the settings file.")
+            ("disable-log,y",      boost::program_options::value<bool>(),
+             "Disables all logging.")
+            ("disable-file-log,z", boost::program_options::value<bool>(),
+             "Disables logging to a file.")
+            ("master,m", boost::program_options::value<bool>(),
+             "Start as the master node.")
+            ("master,m",  "Start as the master node.")
+            ("render,r",  "Start as a render node.")
+            ("log-file,g",         boost::program_options::value<std::string>(),
+             "The file to route the logging to.  This will override the value defined in the settings file.  This option is only relevant if log-route is 3(LOG_FILE).")
 
 #ifdef __APPLE__
-		    ("process-serial-number", boost::program_options::value<std::string>(), "The process serial number when run as a Bundle in OS X.")
+            ("process-serial-number", boost::program_options::value<std::string>(), "The process serial number when run as a Bundle in OS X.")
 #endif
             ;
 
@@ -282,47 +286,47 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<Real32>    ("player.debugger.auto_save_project.time_between",  120.0f, overwriteIfDefined);
     TheSettings.put<BoostPath> ("player.debugger.auto_save_project.recovery_file", BoostPath("./KabalaEngineProject.xml.recovery"), overwriteIfDefined);
 
-	TheSettings.put<bool>      ("player.debugger.model_import.trav_mask_graph_op.enabled", true, overwriteIfDefined);
+    TheSettings.put<bool>      ("player.debugger.model_import.trav_mask_graph_op.enabled", true, overwriteIfDefined);
 
-	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_name",                true, overwriteIfDefined);
-	TheSettings.put<std::string>("player.debugger.trav_mask_graph_op.search_regex",              ".*_Col$", overwriteIfDefined);
-	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_whole_name",          true, overwriteIfDefined);
-	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_node_core_type",      false, overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_name",                true, overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.trav_mask_graph_op.search_regex",              ".*_Col$", overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_whole_name",          true, overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_node_core_type",      false, overwriteIfDefined);
     TheSettings.put<std::string>("player.debugger.trav_mask_graph_op.node_core_typename",        "Drawable", overwriteIfDefined);
-	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_derived_core_types",  true, overwriteIfDefined);
-	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_trav_mask",           false, overwriteIfDefined);
-	TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.match_trav_mask_value",     1, overwriteIfDefined);
-	TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.match_mask_condition",      0, overwriteIfDefined);
-	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.apply_mask_to_decendents",  false, overwriteIfDefined);
-	TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.apply_to_non_matching",     false, overwriteIfDefined);
-	TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.applied_trav_mask",         0, overwriteIfDefined);
-	TheSettings.put<UInt8>      ("player.debugger.trav_mask_graph_op.apply_trav_mask_operation", 0, overwriteIfDefined);
-	
-	TheSettings.put<Vec3f>      ("player.debugger.lod_graph_op.lod_ranges", Vec3f(50.0f,100.0f,300.0f), overwriteIfDefined);
-	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_high_tag", "_High", overwriteIfDefined);
-	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_mid_tag", "_Mid", overwriteIfDefined);
-	TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_low_tag", "_Low", overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_derived_core_types",  true, overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.match_trav_mask",           false, overwriteIfDefined);
+    TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.match_trav_mask_value",     1, overwriteIfDefined);
+    TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.match_mask_condition",      0, overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.apply_mask_to_decendents",  false, overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.trav_mask_graph_op.apply_to_non_matching",     false, overwriteIfDefined);
+    TheSettings.put<UInt32>     ("player.debugger.trav_mask_graph_op.applied_trav_mask",         0, overwriteIfDefined);
+    TheSettings.put<UInt8>      ("player.debugger.trav_mask_graph_op.apply_trav_mask_operation", 0, overwriteIfDefined);
 
-	TheSettings.put<UInt16>("player.debugger.split_graph_op.max_polygons",1500,overwriteIfDefined);
+    TheSettings.put<Vec3f>      ("player.debugger.lod_graph_op.lod_ranges", Vec3f(50.0f,100.0f,300.0f), overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_high_tag", "_High", overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_mid_tag", "_Mid", overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.lod_graph_op.lod_low_tag", "_Low", overwriteIfDefined);
 
-	TheSettings.put<std::string>("player.debugger.share_ptr_graph_op.includes", "", overwriteIfDefined);
-	TheSettings.put<std::string>("player.debugger.share_ptr_graph_op.excludes", "", overwriteIfDefined);
+    TheSettings.put<UInt16>("player.debugger.split_graph_op.max_polygons",1500,overwriteIfDefined);
 
-	TheSettings.put<std::string>("player.debugger.prune_graph_op.method", "sum_of_dimensions", overwriteIfDefined);
-	TheSettings.put<std::string>("player.debugger.prune_graph_op.size", "1.0", overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.share_ptr_graph_op.includes", "", overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.share_ptr_graph_op.excludes", "", overwriteIfDefined);
 
-	TheSettings.put<std::string>("player.debugger.geo_merge_graph_op.max_geos_to_merge","200",overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.prune_graph_op.method", "sum_of_dimensions", overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.prune_graph_op.size", "1.0", overwriteIfDefined);
+
+    TheSettings.put<std::string>("player.debugger.geo_merge_graph_op.max_geos_to_merge","200",overwriteIfDefined);
 
     //Attach Collision Geom Graph Op
-	TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_name",                true, overwriteIfDefined);
-	TheSettings.put<std::string>("player.debugger.col_geom_graph_op.search_regex",              ".*_Col$", overwriteIfDefined);
-	TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_whole_name",          true, overwriteIfDefined);
-	TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_trav_mask",           false, overwriteIfDefined);
-	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.match_trav_mask_value",     1, overwriteIfDefined);
-	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.match_mask_condition",      0, overwriteIfDefined);
-	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.create_geom_type",          0, overwriteIfDefined);
-	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.collide_mask",          4294967295, overwriteIfDefined);
-	TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.category_mask",          4294967295, overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_name",                true, overwriteIfDefined);
+    TheSettings.put<std::string>("player.debugger.col_geom_graph_op.search_regex",              ".*_Col$", overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_whole_name",          true, overwriteIfDefined);
+    TheSettings.put<bool>       ("player.debugger.col_geom_graph_op.match_trav_mask",           false, overwriteIfDefined);
+    TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.match_trav_mask_value",     1, overwriteIfDefined);
+    TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.match_mask_condition",      0, overwriteIfDefined);
+    TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.create_geom_type",          0, overwriteIfDefined);
+    TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.collide_mask", TypeTraits<UInt32>::getMax(), overwriteIfDefined);
+    TheSettings.put<UInt32>     ("player.debugger.col_geom_graph_op.category_mask",          TypeTraits<UInt32>::getMax(), overwriteIfDefined);
 
 
 #ifdef BUILD_WITH_WORLD_BUILDER
@@ -331,6 +335,13 @@ void MainApplication::applyDefaultSettings(ApplicationSettings& TheSettings, boo
     TheSettings.put<BoostPath>("builder.ui.about_window.path", BoostPath("./UI/Builder/AboutWindow.xml") , overwriteIfDefined);
     TheSettings.put<BoostPath>("builder.ui.credits_window.path", BoostPath("./UI/Builder/CreditsWindow.xml") , overwriteIfDefined);
     TheSettings.put<BoostPath>("builder.ui.visual_annotations.camera.path", BoostPath("./UI/Models/Camera.osb") , overwriteIfDefined);
+    TheSettings.put<BoostPath>("builder.ui.visual_annotations.point_light.path", BoostPath("./UI/Models/PointLight.osb") , overwriteIfDefined);
+    TheSettings.put<BoostPath>("builder.ui.visual_annotations.directional_light.path", BoostPath("./UI/Models/DirectionalLight.osb") , overwriteIfDefined);
+    TheSettings.put<BoostPath>("builder.ui.visual_annotations.spot_light.path", BoostPath("./UI/Models/SpotLight.osb") , overwriteIfDefined);
+    TheSettings.put<Real32>("builder.ui.visual_annotations.camera.depth", 16.0f, overwriteIfDefined);
+    TheSettings.put<Real32>("builder.ui.visual_annotations.point_light.depth", 16.0f, overwriteIfDefined);
+    TheSettings.put<Real32>("builder.ui.visual_annotations.directional_light.depth", 16.0f, overwriteIfDefined);
+    TheSettings.put<Real32>("builder.ui.visual_annotations.spot_light.depth", 16.0f, overwriteIfDefined);
     
 #endif
 }
@@ -416,7 +427,7 @@ Int32 MainApplication::run(int argc, char **argv)
 
     initializeLogging(_LogFilePath);
     osgLogP->setLogLevel(KELogLevel, true);
-	osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_FUNCNAME_HEADER), true);
+    osgLogP->setHeaderElem((LOG_TYPE_HEADER | LOG_FUNCNAME_HEADER), true);
 
     //Check if the last run crashed
     if(didCrashLastExecution())
@@ -450,7 +461,7 @@ Int32 MainApplication::run(int argc, char **argv)
     {
         osgLogP->setLogLevel(static_cast<LogLevel>(getSettings().get<UInt8>("logging.level")), true);
     }
-	osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
+    osgLogP->setHeaderElem(getSettings().get<UInt32>("logging.header_elements"), true);
 
     //Initialize OpenSG
     initOpenSG(argc,argv);
@@ -704,7 +715,7 @@ Int32 MainApplication::run(int argc, char **argv)
     OSG::indentLog(4,PLOG);
     PLOG << "Time: " << to_simple_string(boost::posix_time::second_clock::local_time()) << std::endl;
 
-	//OSG exit
+    //OSG exit
     OSG::osgExit();
 
     //Uninitialize logging
@@ -745,7 +756,7 @@ void MainApplication::initOpenSG(int argc, char **argv)
     //ChangeList::setReadWriteDefault(true);
 
     // OSG init
-	OSG::osgInit(argc,argv);
+    OSG::osgInit(argc,argv);
 }
 
 void MainApplication::attachStartScreen(void)
@@ -1000,7 +1011,7 @@ void MainApplication::KELogBufferCallback(const Char8 *data,
 
     if(GlobalSystemState == Running)
     {
-	    //Send to the Log Listeners
+        //Send to the Log Listeners
         LogEventDetailsUnrecPtr details = LogEventDetails::create(NULL, getTimeStamp(),value);
         MainApplication::the()->produceLog(details);
     }
@@ -1082,8 +1093,8 @@ void MainApplication::initializeLogging(BoostPath KELogFilePath)
         osgLogP->getLogBuf().setEnabled(true);
         osgLogP->getLogBuf().setCallback(KELogBufferCallback);
 
-	    if(_LogToFile)
-	    {
+        if(_LogToFile)
+        {
             //Make sure the directory is created
             try
             {
@@ -1092,11 +1103,11 @@ void MainApplication::initializeLogging(BoostPath KELogFilePath)
             catch(std::exception& ex)
             {
                 SWARNING << "Failed to create directory: " << KELogFilePath.parent_path() 
-                         << ", error: " << ex.what() << std::endl;
-	            return;
+                    << ", error: " << ex.what() << std::endl;
+                return;
             }
 
-		    //If the Log is to a file then set the filev
+            //If the Log is to a file then set the filev
             _LogFile.open(KELogFilePath.string().c_str());
         }
     }
